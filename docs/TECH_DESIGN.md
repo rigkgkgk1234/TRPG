@@ -112,6 +112,7 @@ trpg/
 ```
 
 규칙
+- 라우트 폴더는 Expo 기본 템플릿 관례에 따라 src/app에 둔다. 위 트리의 app 폴더는 src/app을 가리킨다.
 - app 폴더의 파일은 화면 조립만 한다. 로직은 store와 engine에 둔다.
 - engine은 types, content 인터페이스 외에는 아무것도 import하지 않는다.
 - 텍스트는 데이터 파일에 직접 쓰지 않고 키만 쓴다. 실제 문장은 i18n/locales에 둔다.

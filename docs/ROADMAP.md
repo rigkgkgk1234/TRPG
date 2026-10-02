@@ -40,8 +40,8 @@
 
 만들 파일
 - package.json, app.json, tsconfig.json (템플릿 생성물)
-- app/_layout.tsx
-- app/index.tsx (제목 텍스트만)
+- src/app/_layout.tsx
+- src/app/index.tsx (제목 텍스트만)
 - .gitignore, README.md (실행 방법 3줄 기록)
 
 완료 조건
@@ -63,10 +63,10 @@
 목표: 모든 화면의 빈 껍데기가 있고, 버튼을 눌러 기획서의 이동 흐름대로 돌아다닐 수 있다.
 
 만들 파일
-- app/index.tsx (타이틀: 새로 시작, 불러오기, 도감, 설정 버튼)
-- app/new-game.tsx, app/load.tsx, app/settings.tsx
-- app/game/_layout.tsx, app/game/index.tsx, app/game/season-start.tsx, app/game/season-result.tsx, app/game/ending.tsx
-- app/menu/inventory.tsx, app/menu/people.tsx, app/menu/journal.tsx, app/menu/codex.tsx
+- src/app/index.tsx (타이틀: 새로 시작, 불러오기, 도감, 설정 버튼)
+- src/app/new-game.tsx, src/app/load.tsx, src/app/settings.tsx
+- src/app/game/_layout.tsx, src/app/game/index.tsx, src/app/game/season-start.tsx, src/app/game/season-result.tsx, src/app/game/ending.tsx
+- src/app/menu/inventory.tsx, src/app/menu/people.tsx, src/app/menu/journal.tsx, src/app/menu/codex.tsx
 - src/ 아래 빈 폴더와 index 파일: engine, types, data, content, store, save, ui, i18n, services
 - 각 화면에는 화면 이름과 다음 화면으로 가는 버튼만 둔다
 
@@ -88,7 +88,7 @@
 - src/ui/components/StoryPane.tsx (스크롤되는 본문 영역)
 - src/ui/components/ChoiceDock.tsx (하단 선택 버튼 최대 4개, 성공률 표시)
 - src/ui/components/ChoiceButton.tsx
-- app/game/index.tsx 에 위 컴포넌트를 조립하고 가짜 데이터를 넣는다
+- src/app/game/index.tsx 에 위 컴포넌트를 조립하고 가짜 데이터를 넣는다
 - 안전 영역(노치, 제스처 바)은 react-native-safe-area-context로 처리한다
 
 완료 조건
@@ -110,7 +110,7 @@
 - src/types/core.ts (Stat, Resource, Slot, Season, OutcomeTier 등 공용 타입)
 - src/engine/rng.ts (createRng, nextFloat, rollDice)
 - tests/engine/rng.test.ts
-- app/debug/dice.tsx (시드 입력, 굴리기 버튼, 결과 리스트)
+- src/app/debug/dice.tsx (시드 입력, 굴리기 버튼, 결과 리스트)
 - vitest 설정과 test 스크립트 추가
 
 완료 조건
@@ -130,7 +130,7 @@
 - src/engine/check.ts (computeModifiers, totalModifier, successRate, rollCheck, resolveTier)
 - src/types/player.ts, src/types/event.ts (CheckDef 포함)
 - tests/engine/check.test.ts
-- app/debug/check.tsx (슬라이더로 능력치, 준비, 도움, 페널티, 난이도 조절. 성공률 표시와 굴리기 버튼. 결과 단계 5종을 색으로 구분)
+- src/app/debug/check.tsx (슬라이더로 능력치, 준비, 도움, 페널티, 난이도 조절. 성공률 표시와 굴리기 버튼. 결과 단계 5종을 색으로 구분)
 
 완료 조건
 - 보정 0, 난이도 7일 때 성공률이 58퍼센트로 표시된다(기획서 확률표와 일치).
@@ -218,7 +218,7 @@
 - src/save/saveRepo.ts (슬롯 저장, 불러오기, 삭제, 체크포인트 저장)
 - src/save/metaRepo.ts
 - 스토어 액션에 자동 저장 연결(선택 확정, 결과 확정, 슬롯 이동, 밤 정산, 앱 백그라운드)
-- app/index.tsx에 이어하기 버튼, app/load.tsx에 슬롯 목록(요약 표시, 삭제)
+- src/app/index.tsx에 이어하기 버튼, src/app/load.tsx에 슬롯 목록(요약 표시, 삭제)
 - tests/save/migration.test.ts (과거 버전 샘플 세이브 보관 시작)
 
 완료 조건
@@ -236,8 +236,8 @@
 
 만들 파일
 - src/engine/season.ts (startSeason, settleSeason, applySeasonChoice, isSeasonEnd)
-- app/game/season-start.tsx (지난 계절 요약, 이번 계절 목표와 세금)
-- app/game/season-result.tsx (세금 납부, 빚 이자, 큰 선택 1회, 성과 정리)
+- src/app/game/season-start.tsx (지난 계절 요약, 이번 계절 목표와 세금)
+- src/app/game/season-result.tsx (세금 납부, 빚 이자, 큰 선택 1회, 성과 정리)
 - src/data/events/ 에 봄 시즌 이벤트 30개(일상 20, 인연 6, 위기 2, 고정 메인 2)
 - 계절 시작 때 체크포인트 저장
 - 디버그 메뉴에 날짜 점프와 자원 수정 기능(테스트 편의)
@@ -262,8 +262,8 @@
 - src/engine/growth.ts (grantXp, checkLevelUp, tickCareer)
 - src/data/items.json 확장(도구 8종, 식량 5종, 선물 5종, 재료 5종)
 - src/data/npcs.json 확장(NPC 10명과 인연 단계 해금 목록)
-- src/ui/sheets/InventorySheet.tsx, app/menu/inventory.tsx (도구 내구도, 식량, 선물 사용)
-- app/menu/people.tsx (NPC 목록, 인연 단계, 개인 이야기 진행도)
+- src/ui/sheets/InventorySheet.tsx, src/app/menu/inventory.tsx (도구 내구도, 식량, 선물 사용)
+- src/app/menu/people.tsx (NPC 목록, 인연 단계, 개인 이야기 진행도)
 - 레벨 업 때 나오는 알림 카드와 새로 열린 카드 표시
 
 완료 조건
@@ -281,7 +281,7 @@
 
 만들 파일
 - src/data/origins.json (출신 6종: 능력치 4점 배분, 시작 아이템, 시작 인연, 첫 계절 이벤트)
-- app/new-game.tsx (이름 입력, 출신 카드 스와이프, 능력치와 시작 인연 미리보기, 시작 확인)
+- src/app/new-game.tsx (이름 입력, 출신 카드 스와이프, 능력치와 시작 인연 미리보기, 시작 확인)
 - 출신별 첫 계절 이벤트 각 3개
 - 시작 시 시드 생성과 마을 시드(날씨, 소문, 랜덤 덱 순서)
 
@@ -299,7 +299,7 @@
 만들 파일
 - src/engine/ending.ts (dominantValue, evaluateEnding, buildEpilogue)
 - src/data/endings.json (엔딩 6종 조건과 에필로그, 숨김 엔딩은 틀만 만든다)
-- app/game/ending.tsx (엔딩 연출, 10년 후 에필로그, 놓친 이야기 목록)
+- src/app/game/ending.tsx (엔딩 연출, 10년 후 에필로그, 놓친 이야기 목록)
 - src/store/metaStore.ts, metaRepo 연동(연대기 기록과 도감 해금)
 - 가치 태그 누적 로직(선택지 valueTags를 효과 적용 시 합산)
 - 디버그 메뉴에 가치 축 수치, 평판, 빚, 핵심 플래그를 직접 설정하는 도구
@@ -338,7 +338,7 @@
 목표: 설정 화면에서 바꾼 값이 즉시 게임에 반영되고 재시작 후에도 유지된다.
 
 만들 파일
-- app/settings.tsx (손 방향, 글자 크기, 텍스트 속도, 햅틱, 사운드, 색약 모드, 알림)
+- src/app/settings.tsx (손 방향, 글자 크기, 텍스트 속도, 햅틱, 사운드, 색약 모드, 알림)
 - src/store/settingsStore.ts (meta 저장소에 영속화)
 - src/ui/theme 에 색약 팔레트와 글자 크기 배율 적용
 - 손 방향이 left일 때 하단 영역 정렬과 플로팅 메뉴 반전
@@ -358,10 +358,10 @@
 목표: 수집 요소와 데이터 백업이 동작한다.
 
 만들 파일
-- app/menu/codex.tsx (이벤트, 엔딩, 노하우 수집 현황, 미해금은 실루엣 표시)
-- app/menu/journal.tsx (날짜별 기록, 획득한 노하우)
+- src/app/menu/codex.tsx (이벤트, 엔딩, 노하우 수집 현황, 미해금은 실루엣 표시)
+- src/app/menu/journal.tsx (날짜별 기록, 획득한 노하우)
 - src/save/backup.ts (내보내기와 가져오기, 체크섬 검증)
-- app/settings.tsx에 백업 버튼 추가
+- src/app/settings.tsx에 백업 버튼 추가
 - 놓친 이야기 힌트와 도감 연결
 
 완료 조건
