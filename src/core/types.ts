@@ -712,6 +712,8 @@ export interface RunState {
   /** 진행 중 이벤트가 없으면 행동 선택 화면 */
   activeEvent: ActiveEventState | null;
   combat: CombatState | null;
+  /** 회차가 끝났으면 엔딩 ID (사망 포함). null이면 진행 중 */
+  ending: EndingId | null;
   /** 엔딩 화면용 누적 통계 */
   stats: RunStats;
 }
