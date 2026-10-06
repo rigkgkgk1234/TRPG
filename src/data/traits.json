@@ -1,0 +1,4 @@
+[
+  { "id": "old_wound", "name": "오래된 상처", "description": "제때 치료하지 못한 상처가 굳었다. 몸이 예전 같지 않다.", "statDelta": { "agi": -1 } },
+  { "id": "survivor", "name": "죽다 살아남", "description": "한 번 죽음의 문턱을 넘었다. 웬만한 일로는 겁먹지 않는다.", "advantageTags": ["fear"] }
+]

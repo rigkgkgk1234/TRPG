@@ -14,6 +14,9 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="new-game" options={{ title: "새 게임" }} />
+        <Stack.Screen name="game/index" options={{ headerShown: false }} />
+        <Stack.Screen name="game/status" options={{ title: "상태", presentation: "modal" }} />
         <Stack.Screen name="dev/dice" options={{ title: "판정 테스트" }} />
       </Stack>
     </>

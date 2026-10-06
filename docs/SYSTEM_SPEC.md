@@ -1046,7 +1046,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 0~3 | 상쾌 | — |
 | 4~6 | 피곤 | — (UI 경고 색) |
 | 7~9 | 지침 | 모든 판정 불리함 |
-| 10 | 탈진 | 즉시 그날 종료, 다음 날 오전 소실, 피로 6으로 |
+| 10 | 탈진 | 즉시 그날 종료, 다음 날 오전 소실, 피로 6으로 (그날 밤 수면 회복 대신 6으로 맞춤) |
 
 - **저녁 수면 회복**: 기본 -3. 굶주림 1단계 이상이면 -2. 그날 휴식 행동을 했다면 추가 -1.
 - 계산 예) 하루 일하기 2회(+4) → 수면(-3) = 하루 +1 누적 → 약 6일마다 쉬는 날이 필요.
@@ -1100,6 +1100,8 @@ export interface TimeState {
   skipNextAm: boolean;
   /** 오늘 휴식 행동 횟수 (수면 보너스 계산) */
   restsToday: number;
+  /** 오늘 탈진했는지. 저녁 수면에서 회복 대신 피로를 FATIGUE_AFTER_COLLAPSE로 맞춘다 */
+  collapsedToday: boolean;
 }
 
 export const LAST_DAY = 30;

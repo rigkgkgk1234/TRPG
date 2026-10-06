@@ -1,0 +1,41 @@
+[
+  { "id": "hunting_knife", "name": "사냥칼", "category": "weapon", "description": "가죽을 벗길 때 쓰는 짧은 칼.", "price": 5, "sellable": true, "stackMax": 1,
+    "skill": "blade", "damage": "1d4", "twoHanded": false, "durabilityMax": 20 },
+  { "id": "pitchfork", "name": "쇠스랑", "category": "weapon", "description": "건초를 뒤집던 농기구. 찌르면 아프다.", "price": 6, "sellable": true, "stackMax": 1,
+    "skill": "blunt", "damage": "1d6", "twoHanded": true, "durabilityMax": 20 },
+  { "id": "old_hammer", "name": "낡은 망치", "category": "weapon", "description": "브록의 대장간에서 물려받은 망치.", "price": 8, "sellable": true, "stackMax": 1,
+    "skill": "blunt", "damage": "1d6", "twoHanded": false, "durabilityMax": 20 },
+  { "id": "rusty_sword", "name": "녹슨 검", "category": "weapon", "description": "날이 무디지만 검은 검이다.", "price": 15, "sellable": true, "stackMax": 1,
+    "skill": "blade", "damage": "1d6", "twoHanded": false, "durabilityMax": 20 },
+  { "id": "soldier_sword", "name": "병사의 검", "category": "weapon", "description": "왕국 병사에게 지급되던 곧은 검.", "price": 40, "sellable": true, "stackMax": 1,
+    "skill": "blade", "damage": "1d8", "twoHanded": false, "durabilityMax": 20 },
+  { "id": "hunting_bow", "name": "사냥활", "category": "weapon", "description": "손때 묻은 짧은 활.", "price": 12, "sellable": true, "stackMax": 1,
+    "skill": "bow", "damage": "1d6", "twoHanded": true, "ammo": "arrow", "durabilityMax": 20 },
+  { "id": "longbow", "name": "장궁", "category": "weapon", "description": "키만 한 활. 당기려면 힘이 필요하다.", "price": 35, "sellable": true, "stackMax": 1,
+    "skill": "bow", "damage": "1d8", "twoHanded": true, "ammo": "arrow", "requires": { "str": 1 }, "durabilityMax": 20 },
+
+  { "id": "padded_coat", "name": "누빔 옷", "category": "armor", "description": "솜을 두껍게 누빈 겉옷.", "price": 10, "sellable": true, "stackMax": 1,
+    "defense": 1, "durabilityMax": 25 },
+  { "id": "leather_armor", "name": "가죽 갑옷", "category": "armor", "description": "무두질한 소가죽 조끼.", "price": 25, "sellable": true, "stackMax": 1,
+    "defense": 2, "durabilityMax": 25 },
+  { "id": "chain_shirt", "name": "사슬 셔츠", "category": "armor", "description": "무겁지만 든든하다.", "price": 60, "sellable": true, "stackMax": 1,
+    "defense": 3, "checkPenalty": { "stat": "agi", "value": -1 }, "durabilityMax": 25 },
+  { "id": "wooden_shield", "name": "나무 방패", "category": "shield", "description": "참나무 판자에 쇠테를 둘렀다.", "price": 12, "sellable": true, "stackMax": 1,
+    "defense": 1, "durabilityMax": 15 },
+
+  { "id": "arrow", "name": "화살", "category": "consumable", "description": "깃이 고르지 않은 사냥용 화살.", "price": 0, "sellable": true, "stackMax": 20,
+    "use": [], "usableInCombat": false },
+  { "id": "herb", "name": "약초", "category": "consumable", "description": "씹으면 쓰지만 상처가 아문다.", "price": 2, "sellable": true, "stackMax": 5,
+    "use": [{ "type": "hp", "delta": 2 }], "chanceEffects": [{ "p": 0.5, "effects": [{ "type": "healWound", "to": "none" }] }], "usableInCombat": true },
+  { "id": "bandage", "name": "붕대", "category": "consumable", "description": "깨끗한 천 조각.", "price": 3, "sellable": true, "stackMax": 5,
+    "use": [{ "type": "healWound", "to": "none" }], "usableInCombat": false },
+  { "id": "bitter_tea", "name": "쓴 약차", "category": "consumable", "description": "정신이 번쩍 드는 맛.", "price": 3, "sellable": true, "stackMax": 5,
+    "use": [{ "type": "fatigue", "delta": -2 }], "usableInCombat": false },
+  { "id": "healing_potion", "name": "치유 물약", "category": "consumable", "description": "신전에서 축성한 붉은 물약.", "price": 25, "sellable": true, "stackMax": 3,
+    "use": [{ "type": "hp", "delta": 6 }, { "type": "healWound", "to": "serious" }], "usableInCombat": true },
+
+  { "id": "wolf_pelt", "name": "늑대 가죽", "category": "material", "description": "여관에서 값을 쳐준다.", "price": 0, "sellPrice": 4, "sellable": true, "stackMax": 5 },
+  { "id": "rare_herb", "name": "늪 약초", "category": "material", "description": "늪지에서만 자라는 귀한 풀.", "price": 0, "sellPrice": 8, "sellable": true, "stackMax": 5 },
+
+  { "id": "goblin_token", "name": "고블린 부적", "category": "quest", "description": "뼈와 깃털을 엮은 부적. 촌장에게 보여야 한다.", "price": 0, "sellable": false, "stackMax": 1 }
+]

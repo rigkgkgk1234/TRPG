@@ -1,4 +1,4 @@
-import type { RollMode, CheckOutcome, SkillId, StatId, WoundLevel } from "./types";
+import type { CheckOutcome, DayPhase, EndingId, RollMode, SkillId, StatId, WoundLevel } from "./types";
 
 /** 보정치 표기: +2, 0, -1 */
 export function formatSigned(n: number): string {
@@ -46,4 +46,20 @@ export const WOUND_LABEL: Record<WoundLevel, string> = {
   light: "경상",
   serious: "중상",
   critical: "치명상",
+};
+
+export const PHASE_LABEL: Record<DayPhase, string> = {
+  morning: "아침",
+  am: "오전",
+  pm: "오후",
+  evening: "저녁",
+};
+
+export const ENDING_LABEL: Record<EndingId, string> = {
+  shield_of_village: "마을의 방패",
+  flee_together: "이웃과 함께 떠나다",
+  rowen_spearman: "로웬의 창병",
+  survivor: "살아남은 자",
+  debtor: "빚진 자",
+  death: "사망",
 };

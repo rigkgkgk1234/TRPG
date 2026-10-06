@@ -73,7 +73,7 @@ export interface TraitDef {
   id: TraitId;
   name: string;
   description: string;
-  /** 판정 보정. tags·stat 중 지정된 조건이 모두 맞을 때 적용 (둘 다 없으면 모든 판정) */
+  /** 판정 보정. stat을 지정하면 그 능력치 판정만, tags를 지정하면 그중 하나 이상이 붙은 판정만 (둘 다 없으면 모든 판정) */
   checkBonus?: { tags?: string[]; stat?: StatId; value: number };
   /** 이 태그가 붙은 판정에 유리함 */
   advantageTags?: string[];
@@ -629,6 +629,8 @@ export interface TimeState {
   skipNextAm: boolean;
   /** 오늘 휴식 행동 횟수 (수면 보너스 계산) */
   restsToday: number;
+  /** 오늘 탈진했는지. 저녁 수면에서 회복 대신 피로를 FATIGUE_AFTER_COLLAPSE로 맞춘다 */
+  collapsedToday: boolean;
 }
 
 export const LAST_DAY = 30;
