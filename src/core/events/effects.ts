@@ -1,5 +1,6 @@
 import type { Ctx } from "../commands";
 import { gainSkillXp } from "../check/progress";
+import { startCombat } from "../combat/combat";
 import { gainTrait } from "../day/evening";
 import { changeFatigue, changeFood, changeHp, changeReputation, changeSilver, setWound, worsenWound } from "../day/resources";
 import { addItem, removeItem } from "../items/inventory";
@@ -7,7 +8,7 @@ import type { Effect } from "../types";
 import { WOUND_RANK } from "./conditions";
 import { stopExplore } from "./explore";
 
-/** 사망 굴림(4주차) 전까지 이벤트 피해로는 쓰러지기 직전(HP 1)까지만 간다 */
+/** 이벤트 피해로는 쓰러지기 직전(HP 1)까지만 간다. 쓰러지고 사망 굴림을 하는 것은 전투에서 진 때뿐이다. */
 const EVENT_HP_FLOOR = 1;
 
 /**
@@ -52,14 +53,15 @@ export function applyEffect(ctx: Ctx, e: Effect): void {
       s.ending = e.ending;
       return;
     case "startCombat":
-      // build-content가 4주차 전까지 이 효과를 막는다
-      throw new Error("전투는 4주차에 구현된다");
+      // 전투가 끝나면 runner.resolveCombat가 결과 장면으로 잇는다
+      startCombat(ctx, e.combat);
+      return;
   }
 }
 
 export function applyEffects(ctx: Ctx, effects: readonly Effect[] | undefined): void {
   for (const e of effects ?? []) {
-    if (ctx.draft.ending) return;
+    if (ctx.draft.ending || ctx.draft.combat?.result) return;
     applyEffect(ctx, e);
   }
 }

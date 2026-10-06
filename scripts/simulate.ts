@@ -4,6 +4,7 @@ import type { GameCommand } from "@/core/commands";
 import { actionStatus } from "@/core/day/actions";
 import { FOOD_PER_DAY } from "@/core/day/evening";
 import { maxFoodAffordable } from "@/core/day/town";
+import { combatView } from "@/core/combat/combat";
 import { sceneView } from "@/core/events/runner";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
@@ -26,9 +27,14 @@ const POLICIES: Policy[] = [
 
 /**
  * 일을 못 하는 상태(치명상)면 쉰다. 저녁마다 모자란 식량을 산다(autoPlay).
- * 탐험 중에는 고를 수 있는 첫 선택지를 고르고, 더 깊이는 들어가지 않는다.
+ * 탐험 중에는 고를 수 있는 첫 선택지를 고르고, 더 깊이는 들어가지 않는다. 싸움이 붙으면 공격만 한다.
  */
 function pickCommand(run: RunState, policy: Policy): GameCommand {
+  const fight = combatView(run, CONTENT);
+  if (fight) {
+    const attack = fight.actions.find((a) => a.type === "attack")!;
+    return { type: "combat", action: attack.lockedReason || !fight.targetId ? { type: "flee" } : { type: "attack", targetId: fight.targetId } };
+  }
   const scene = sceneView(run, CONTENT);
   if (scene?.kind === "deeper") return { type: "goDeeper", yes: false };
   if (scene?.kind === "continue") return { type: "continue" };

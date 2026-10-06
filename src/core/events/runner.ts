@@ -2,16 +2,17 @@ import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { buildCheckContext, previewCheck } from "../check/modifiers";
 import { performCheck } from "../check/perform";
+import { combatStep, finishCombat } from "../combat/combat";
 import { changeFatigue, changeFood, changeSilver } from "../day/resources";
 import { advanceSlot } from "../day/time";
 import { countInBag, removeItem } from "../items/inventory";
 import { josa, REGION_LABEL } from "../labels";
 import type {
-  ActiveEventState, CheckOutcome, ChoiceCost, ChoiceDef, Effect, EventDef, Outcome, OutcomeMap, RegionId, RollMode, RunState, SceneDef, SceneId,
+  ActiveEventState, CheckOutcome, ChoiceCost, CombatAction, ChoiceDef, Effect, EventDef, Outcome, OutcomeMap, RegionId, RollMode, RunState, SceneDef, SceneId,
 } from "../types";
 import { conditionReason, evalAll, evalCondition, itemName } from "./conditions";
 import { applyEffects } from "./effects";
-import { DEEP_FATIGUE, EXPLORE_CARDS, isDeeperPrompt } from "./explore";
+import { DEEP_FATIGUE, EXPLORE_CARDS, isDeeperPrompt, stopExplore } from "./explore";
 import { recordEvent, selectEvent } from "./selector";
 import { resolveText } from "./text";
 
@@ -30,7 +31,7 @@ export interface ChoiceView {
   /** 판정이 있으면 성공 확률 (부분 성공 제외) */
   chance?: number;
   mode?: RollMode;
-  /** 실패하면 다치거나 싸우게 된다 */
+  /** 판정 선택지: 실패하면 다치거나 싸우게 된다. 판정 없는 선택지: 고르면 싸움이 벌어진다 */
   danger: boolean;
   /** "은화 -3", "화살 -1", "피로 +1" */
   cost: string[];
@@ -67,7 +68,7 @@ function choiceView(run: RunState, content: ContentDB, ev: EventDef, c: ChoiceDe
     id: c.id,
     label: c.label,
     lockedReason: choiceBlock(run, content, c),
-    danger: c.check ? isDangerous(ev, c.outcomes) : false,
+    danger: isDangerous(ev, c.check ? [c.outcomes.fail, c.outcomes.critFail] : [c.outcome]),
     cost: costText(content, c.cost),
   };
   if (c.check) {
@@ -102,9 +103,12 @@ function costText(content: ContentDB, cost: ChoiceCost | undefined): string[] {
   ].filter((x): x is string => !!x);
 }
 
-/** 실패·대실패 결과(와 그 결과가 들어가는 장면의 onEnter)에 전투·부상·엔딩이 있으면 위험 */
-function isDangerous(ev: EventDef, outcomes: OutcomeMap): boolean {
-  return [outcomes.fail, outcomes.critFail].some((o) => {
+/**
+ * 판정 선택지는 실패·대실패 결과, 판정 없는 선택지는 그 결과를 본다.
+ * 결과(와 그 결과가 들어가는 장면의 onEnter)에 전투·부상·엔딩이 있으면 위험.
+ */
+function isDangerous(ev: EventDef, outcomes: (Outcome | undefined)[]): boolean {
+  return outcomes.some((o) => {
     if (!o) return false;
     const next = o.next === "END" ? undefined : ev.scenes[o.next];
     return [...(o.effects ?? []), ...(next?.onEnter ?? [])].some((e) => DANGER_EFFECTS.has(e.type));
@@ -164,6 +168,14 @@ export function handleGoDeeper(ctx: Ctx, yes: boolean): boolean {
   return true;
 }
 
+/** 전투 행동 하나. 전투가 끝나면 결과에 맞는 이벤트 장면으로 돌아간다. */
+export function handleCombat(ctx: Ctx, action: CombatAction): boolean {
+  const blocked = combatStep(ctx, action);
+  if (blocked) return reject(ctx, blocked);
+  if (ctx.draft.combat?.result) resolveCombat(ctx);
+  return true;
+}
+
 /** 탐험 행동: 피로는 행동 쪽에서 이미 더했다. 첫 카드를 뽑는다. */
 export function startExplore(ctx: Ctx, region: RegionId): void {
   ctx.feed.push({ kind: "text", text: `${josa(REGION_LABEL[region], "으로/로")} 들어섰다.` });
@@ -178,7 +190,7 @@ export function startExplore(ctx: Ctx, region: RegionId): void {
 
 function currentScene(ctx: Ctx): { ev: EventDef; scene: SceneDef } | null {
   const active = ctx.draft.activeEvent;
-  if (!active || isDeeperPrompt(active)) return null;
+  if (!active || ctx.draft.combat || isDeeperPrompt(active)) return null;
   const ev = ctx.content.events[active.eventId];
   const scene = ev?.scenes[active.sceneId];
   return ev && scene ? { ev, scene } : null;
@@ -225,8 +237,35 @@ function enterScene(ctx: Ctx, sceneId: SceneId): void {
   active.sceneId = sceneId;
   const scene = ctx.content.events[active.eventId]?.scenes[sceneId];
   if (!scene) throw new Error(`없는 장면: ${active.eventId}/${sceneId}`);
+  // 전투 장면은 화면이 바로 전투로 넘어가므로 장면 글을 결과 카드에 남긴다
+  if (scene.onEnter?.some((e) => e.type === "startCombat")) ctx.feed.push({ kind: "text", text: resolveText(scene.text, s) });
   applyEffects(ctx, scene.onEnter);
   if (s.ending) s.activeEvent = null;
+  // 기습당해 전투가 시작하자마자 끝날 수도 있다
+  else if (s.combat?.result) resolveCombat(ctx);
+}
+
+/**
+ * 끝난 전투를 정리하고 이벤트로 돌아간다.
+ * 도주·패배면 탐험의 남은 카드는 버린다 (SYSTEM_SPEC 3-4). 사망이면 회차가 끝난다.
+ */
+function resolveCombat(ctx: Ctx): void {
+  const s = ctx.draft;
+  const result = s.combat!.result;
+  const next = finishCombat(ctx);
+  if (next === null || s.ending) {
+    s.activeEvent = null;
+    return;
+  }
+  const ex = s.activeEvent?.explore;
+  if (result !== "victory" && ex) stopExplore(ex);
+  // 쓰러졌다가 실려 왔거나 털린 뒤라면 "마을로 돌아왔다"를 덧붙이지 않고 조용히 탐험을 끝낸다
+  if (result === "defeated" && ex && next === "END") {
+    s.activeEvent = null;
+    advanceSlot(s);
+    return;
+  }
+  goTo(ctx, next);
 }
 
 function startEvent(ctx: Ctx, ev: EventDef, explore?: ActiveEventState["explore"]): void {

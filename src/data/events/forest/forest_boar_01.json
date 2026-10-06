@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_boar_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "성난 멧돼지",
+  "conditions": [],
+  "weight": 6,
+  "repeat": { "mode": "cooldown", "days": 5 },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "덤불을 헤치자 멧돼지 한 마리가 코를 벌름거리며 앞발로 땅을 긁는다. 금방이라도 달려들 기세다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "가까운 나무 위로 피한다",
+          "check": { "stat": "agi", "dc": 12 },
+          "outcomes": {
+            "success": { "text": "나뭇가지에 매달려 멧돼지가 지나가기를 기다렸다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" },
+            "fail": { "text": "나무껍질에 발이 미끄러졌다!", "next": "fight_ambushed" }
+          }
+        },
+        { "id": "fight", "label": "무기를 들고 맞선다", "outcome": { "next": "fight" } }
+      ]
+    },
+    "fight": {
+      "text": "멧돼지가 고개를 숙이고 돌진해 온다.",
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "땅에 떨어지자마자 멧돼지가 들이닥쳤다.",
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "choices": []
+    },
+    "win": {
+      "text": "거친 숨을 고른다. 이만한 고기면 온 식구가 며칠은 배불리 먹겠다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "덤불 사이로 몸을 던져 겨우 빠져나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

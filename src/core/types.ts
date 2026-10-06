@@ -118,7 +118,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
   },
   hunter: {
     id: "hunter", name: "사냥꾼", mvp: true,
-    stats: { str: 0, agi: 2, con: 0, per: 2, cha: -1 },
+    stats: { str: 0, agi: 2, con: 1, per: 2, cha: -1 },
     startSkills: { bow: 2, tracking: 1 },
     silver: 5, food: 4, reputation: 5,
     startItems: [

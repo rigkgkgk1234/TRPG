@@ -122,7 +122,10 @@ export function checkContent(content: ContentDB): ContentIssues {
           case "gainTrait": checkTrait(e.trait, where); break;
           case "setFlag": case "incFlag": flagsSet.add(e.flag); break;
           case "startCombat":
+            if (e.combat.enemies.length === 0) err(where, "적이 없는 전투");
             for (const enemy of e.combat.enemies) if (!content.enemies[enemy]) err(where, `없는 적: ${enemy}`);
+            if (e.combat.canFlee && !e.combat.onFled) warn(where, "도주할 수 있는데 onFled가 없다 (도주하면 이벤트가 바로 끝난다)");
+            if (e.combat.enemies.some((id) => content.enemies[id]?.onDefeat === "scripted") && !e.combat.onDefeat) err(where, "스토리 전투(scripted)는 onDefeat 장면이 있어야 한다");
             for (const next of [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat]) if (next) checkNext(next, where);
             break;
         }
@@ -134,6 +137,11 @@ export function checkContent(content: ContentDB): ContentIssues {
     function checkTrait(id: string, where: string) {
       if (!content.traits[id]) err(where, `없는 흔적: ${id}`);
     }
+  }
+
+  for (const enemy of Object.values(content.enemies)) {
+    for (const l of enemy.loot) if (!content.items[l.itemId]) errors.push(`적 ${enemy.id}: 없는 전리품 ${l.itemId}`);
+    if (enemy.onRoutFlag) flagsSet.add(enemy.onRoutFlag);
   }
 
   // 아무도 세우지 않는 플래그를 읽으면 오타일 가능성이 높다 (스토리 플래그는 6주차 코드가 세울 수도 있으니 경고만)

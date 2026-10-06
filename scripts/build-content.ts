@@ -9,7 +9,7 @@ import { basename, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ContentDB } from "@/core/content";
 import { checkContent } from "@/core/contentCheck";
-import { JOBS, type EventDef, type ItemDef, type TraitDef } from "@/core/types";
+import { JOBS, type EnemyDef, type EventDef, type ItemDef, type TraitDef } from "@/core/types";
 
 const ROOT = join(fileURLToPath(import.meta.url), "../..");
 const DATA = join(ROOT, "src/data");
@@ -19,6 +19,7 @@ export const GENERATED = join(DATA, "content.generated.json");
 export interface GeneratedContent {
   items: Record<string, ItemDef>;
   traits: Record<string, TraitDef>;
+  enemies: Record<string, EnemyDef>;
   events: Record<string, EventDef>;
 }
 
@@ -35,6 +36,7 @@ export function buildContent(): BuildResult {
 
   const items = readList<ItemDef>(ajv, "items.json", validator("item"), errors);
   const traits = readList<TraitDef>(ajv, "traits.json", validator("trait"), errors);
+  const enemies = readList<EnemyDef>(ajv, "enemies.json", validator("enemy"), errors);
 
   const validateEvent = validator("event");
   const events: Record<string, EventDef> = {};
@@ -51,8 +53,8 @@ export function buildContent(): BuildResult {
     events[ev.id] = ev;
   }
 
-  const generated: GeneratedContent = { items, traits, events: sortKeys(events) };
-  const content: ContentDB = { ...generated, jobs: JOBS, enemies: {} };
+  const generated: GeneratedContent = { items, traits, enemies, events: sortKeys(events) };
+  const content: ContentDB = { ...generated, jobs: JOBS };
   // 구조가 틀린 파일이 있으면 참조 검사는 엉뚱한 오류를 쏟아내므로 건너뛴다
   if (errors.length > 0) return { generated, errors, warnings: [] };
   const issues = checkContent(content);
@@ -99,7 +101,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     process.exit(1);
   }
   const text = serialize(generated);
-  const summary = `이벤트 ${Object.keys(generated.events).length} · 아이템 ${Object.keys(generated.items).length} · 흔적 ${Object.keys(generated.traits).length}`;
+  const summary = `이벤트 ${Object.keys(generated.events).length}, 적 ${Object.keys(generated.enemies).length}, 아이템 ${Object.keys(generated.items).length}, 흔적 ${Object.keys(generated.traits).length}`;
   if (process.argv.includes("--check")) {
     const current = (() => { try { return readFileSync(GENERATED, "utf8"); } catch { return ""; } })();
     if (current !== text) {

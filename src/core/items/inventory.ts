@@ -1,5 +1,9 @@
 import type { Ctx } from "../commands";
-import type { Inventory, ItemId } from "../types";
+import type { ContentDB } from "../content";
+import { setWound } from "../day/resources";
+import { applyEffect } from "../events/effects";
+import { josa } from "../labels";
+import type { ConsumableDef, Effect, Inventory, ItemId, RunState, WoundLevel } from "../types";
 
 /**
  * 이벤트가 쓰는 최소한의 가방 조작: 세기·넣기·빼기. (SYSTEM_SPEC 5-2)
@@ -68,4 +72,46 @@ export function removeItem(ctx: Ctx, itemId: ItemId, qty: number): number {
 /** 장착 칸은 빼고 가방에 든 개수 (소모·지불에 쓸 수 있는 것) */
 export function countInBag(inv: Inventory, itemId: ItemId): number {
   return inv.slots.reduce((n, s) => n + (s?.itemId === itemId ? s.qty : 0), 0);
+}
+
+const WOUND_STEPS: WoundLevel[] = ["none", "light", "serious", "critical"];
+
+/** 아이템을 쓸 때 문장. 없으면 "○○을 썼다" */
+const USE_TEXT: Record<string, string> = {
+  herb: "약초를 씹었다. 쓴맛이 혀에 퍼진다.",
+  bandage: "붕대를 단단히 감았다.",
+  bitter_tea: "쓴 약차를 마셨다. 정신이 번쩍 든다.",
+  healing_potion: "치유 물약을 들이켰다. 몸이 후끈 달아오른다.",
+};
+
+/** 지금 쓸 수 있는 소모품인지: 가방에 있고, 효과가 있고, 전투 중이면 전투용이어야 한다 */
+export function canUseItem(run: RunState, content: Pick<ContentDB, "items">, itemId: ItemId, inCombat: boolean): boolean {
+  const def = content.items[itemId];
+  if (def?.category !== "consumable" || def.use.length === 0) return false;
+  if (inCombat && !def.usableInCombat) return false;
+  return countInBag(run.inventory, itemId) > 0;
+}
+
+/**
+ * 소모품 하나를 쓴다: 가방에서 1개 빼고 효과를 적용한다.
+ * 아이템의 부상 치료는 한 단계만 낫게 한다 (붕대·약초: 경상 → 없음, 치유 물약: 치명상 → 중상). (SYSTEM_SPEC 5-5)
+ * @returns 썼으면 true
+ */
+export function consumeItem(ctx: Ctx, itemId: ItemId, inCombat: boolean): boolean {
+  if (!canUseItem(ctx.draft, ctx.content, itemId, inCombat)) return false;
+  const def = ctx.content.items[itemId] as ConsumableDef;
+  removeItem(ctx, itemId, 1);
+  ctx.feed.push({ kind: "text", text: USE_TEXT[itemId] ?? `${josa(def.name, "을/를")} 썼다.` });
+
+  const effects: Effect[] = [...def.use];
+  for (const ce of def.chanceEffects ?? []) if (ctx.rng() < ce.p) effects.push(...ce.effects);
+  for (const e of effects) {
+    if (e.type === "healWound") {
+      const now = WOUND_STEPS.indexOf(ctx.draft.player.wound.level);
+      if (now === WOUND_STEPS.indexOf(e.to) + 1) setWound(ctx, e.to);
+    } else {
+      applyEffect(ctx, e);
+    }
+  }
+  return true;
 }

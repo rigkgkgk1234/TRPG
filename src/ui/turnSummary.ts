@@ -1,7 +1,8 @@
 import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
 import { josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
-import type { CheckOutcome, CheckResult, RunState } from "@/core/types";
+import { equippedWeapon, isBow } from "@/core/combat/combat";
+import type { CheckOutcome, CheckResult, CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import type { LogGroup } from "@/store/gameStore";
 import { colors } from "./theme";
@@ -139,14 +140,34 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
     }
     case "continue": return "계속";
     case "goDeeper": return cmd.yes ? "더 깊이 들어간다" : "마을로 돌아간다";
+    case "combat": return combatTitle(cmd.action, run);
     case "endDay": return "하루 정산";
     case "shop": return cmd.op === "buyFood" ? "식량 사기" : "빚 갚기";
   }
 }
 
+/** "공격: 늑대", "조준 사격: 늑대", "방어 자세", "약초 사용", "도주" */
+function combatTitle(a: CombatAction, run: RunState): string {
+  const c = run.combat;
+  const target = (id: string) => {
+    const e = c?.enemies.find((x) => x.instanceId === id);
+    return e ? CONTENT.enemies[e.defId]?.name : undefined;
+  };
+  const bow = isBow(equippedWeapon(run, CONTENT));
+  switch (a.type) {
+    case "attack": return withTarget(bow ? "활 쏘기" : "공격", target(a.targetId));
+    case "powerAttack": return withTarget(bow ? "조준 사격" : "강타", target(a.targetId));
+    case "defend": return "방어 자세";
+    case "useItem": return `${CONTENT.items[a.itemId]?.name ?? "아이템"} 사용`;
+    case "flee": return "도주";
+  }
+}
+
+const withTarget = (action: string, name?: string) => (name ? `${action}: ${name}` : action);
+
 /** 이벤트 안에서 한 일이면 그 이벤트 제목 (카드 윗줄에 시각과 함께) */
 function eventTitle(cmd: GameCommand, run: RunState): string | null {
-  if (cmd.type !== "chooseChoice" && cmd.type !== "continue") return null;
+  if (cmd.type !== "chooseChoice" && cmd.type !== "continue" && cmd.type !== "combat") return null;
   const a = run.activeEvent;
   return (a && CONTENT.events[a.eventId]?.title) ?? null;
 }

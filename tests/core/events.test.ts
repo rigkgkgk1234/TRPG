@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildContent, GENERATED, serialize } from "../../scripts/build-content";
 import type { Ctx, GameCommand } from "@/core/commands";
 import type { ContentDB } from "@/core/content";
+import { combatView } from "@/core/combat/combat";
 import { checkContent } from "@/core/contentCheck";
 import { actionStatus } from "@/core/day/actions";
 import { dispatch } from "@/core/engine";
@@ -397,6 +398,14 @@ describe("콘텐츠", () => {
 describe("무작위 플레이", () => {
   /** 할 수 있는 것 중 하나를 무작위로 고른다. 엔진이 받아 주지 않는 명령을 고르면 실패. */
   function randomCommand(run: RunState, pick: Rng): GameCommand {
+    const fight = combatView(run, CONTENT);
+    if (fight) {
+      const open = fight.actions.filter((a) => a.lockedReason === null);
+      const a = open[Math.floor(pick() * open.length)];
+      if (a.type === "attack" || a.type === "powerAttack") return { type: "combat", action: { type: a.type, targetId: fight.targetId! } };
+      if (a.type === "useItem") return { type: "combat", action: { type: "useItem", itemId: fight.items[0].itemId } };
+      return { type: "combat", action: { type: a.type } };
+    }
     const view = sceneView(run, CONTENT);
     if (view?.kind === "deeper") return { type: "goDeeper", yes: pick() < 0.5 };
     if (view?.kind === "continue") return { type: "continue" };
@@ -421,7 +430,7 @@ describe("무작위 플레이", () => {
         const pick = createRng({ seed: seed * 7919, state: seed * 7919 });
         let steps = 0;
         while (!run.ending) {
-          if (run.activeEvent) expect(sceneView(run, CONTENT)).not.toBeNull();
+          if (run.activeEvent && !run.combat) expect(sceneView(run, CONTENT)).not.toBeNull();
           const cmd = randomCommand(run, pick);
           const res = dispatch(run, cmd, CONTENT);
           expect(res.feed.filter((f) => f.kind === "toast"), JSON.stringify(cmd)).toEqual([]);

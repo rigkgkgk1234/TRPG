@@ -191,7 +191,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
   },
   hunter: {
     id: "hunter", name: "사냥꾼", mvp: true,
-    stats: { str: 0, agi: 2, con: 0, per: 2, cha: -1 },
+    stats: { str: 0, agi: 2, con: 1, per: 2, cha: -1 },
     startSkills: { bow: 2, tracking: 1 },
     silver: 5, food: 4, reputation: 5,
     startItems: [
@@ -444,7 +444,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 성공 | 누군가에게 발견됨. HP 1, 중상, 은화 -30%, 그날의 남은 행동 소실(다음 날 아침 집에서 깨어남). 흔적 「죽다 살아난 자」 |
 | 실패 / 자연 1 | **사망 → 회차 종료** (사망 엔딩, 묘비문 기록) |
 
-- 시작 확률: 농부(체력+2) 65%, 사냥꾼(체력0) 55%. 죽음은 언제나 진짜 위협이다.
+- 시작 확률: 농부(체력+2) 65%, 사냥꾼(체력+1) 60%. 죽음은 언제나 진짜 위협이다.
 
 ### 3-6. MVP 적 데이터
 
@@ -461,7 +461,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 
 **밸런스 확인 (시작 사냥꾼 vs 늑대)**
 - 사냥꾼 명중 70% × 평균 피해 3.5 → 늑대(HP 6)를 약 2.5라운드에 처치.
-- 늑대 명중 `+3 vs 방어도 12` 60% × 3.5 → 라운드당 2.1 피해. 2.5라운드면 약 5 피해 → 사냥꾼 HP 8 중 3 남음(부상 조건 2에 걸릴 확률 높음).
+- 늑대 명중 `+3 vs 방어도 12` 60% × 3.5 → 라운드당 2.1 피해. 2.5라운드면 약 5 피해 → 사냥꾼 HP 10 중 5 남음(부상 조건 2에 걸릴 확률 높음).
 - 20일차(민첩3·활4·가죽 갑옷): 명중 85%, 늑대 명중 45% → 받는 피해가 절반 이하. **성장을 숫자로 체감**.
 
 **최종 습격 전투 보정** (`scripted` 스토리 전투 전용)

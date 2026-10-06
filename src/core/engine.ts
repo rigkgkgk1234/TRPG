@@ -4,7 +4,7 @@ import type { ContentDB } from "./content";
 import { handleAction } from "./day/actions";
 import { runEvening } from "./day/evening";
 import { buyFood, payDebt } from "./day/town";
-import { handleChoice, handleContinue, handleGoDeeper } from "./events/runner";
+import { handleChoice, handleCombat, handleContinue, handleGoDeeper } from "./events/runner";
 import { createRng, type RunState } from "./types";
 
 /**
@@ -36,6 +36,9 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         break;
       case "goDeeper":
         save = handleGoDeeper(ctx, cmd.yes);
+        break;
+      case "combat":
+        save = handleCombat(ctx, cmd.action);
         break;
       case "endDay":
         if (draft.time.phase !== "evening") {

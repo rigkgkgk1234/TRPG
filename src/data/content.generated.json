@@ -282,7 +282,228 @@
    ]
   }
  },
+ "enemies": {
+  "wolf": {
+   "id": "wolf",
+   "name": "늑대",
+   "hp": 6,
+   "defense": 11,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 4,
+   "morale": 0.5,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": [
+    {
+     "itemId": "wolf_pelt",
+     "qty": 1,
+     "chance": 0.8
+    }
+   ],
+   "food": 1
+  },
+  "boar": {
+   "id": "boar",
+   "name": "멧돼지",
+   "hp": 10,
+   "defense": 10,
+   "attackBonus": 3,
+   "damage": "1d6+1",
+   "speed": 2,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": [],
+   "food": 3
+  },
+  "bandit": {
+   "id": "bandit",
+   "name": "도적",
+   "hp": 9,
+   "defense": 12,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 2,
+   "morale": 0.3,
+   "onDefeat": "robbed",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": [
+    {
+     "itemId": "rusty_sword",
+     "qty": 1,
+     "chance": 0.3
+    }
+   ],
+   "silver": 4
+  },
+  "goblin_scout": {
+   "id": "goblin_scout",
+   "name": "고블린 정찰병",
+   "hp": 6,
+   "defense": 12,
+   "attackBonus": 2,
+   "damage": "1d4+1",
+   "speed": 3,
+   "morale": 0.5,
+   "onRoutFlag": "goblin_alerted",
+   "onDefeat": "deathSave",
+   "tags": [
+    "goblin"
+   ],
+   "loot": [
+    {
+     "itemId": "goblin_token",
+     "qty": 1,
+     "chance": 1
+    }
+   ]
+  },
+  "goblin_warrior": {
+   "id": "goblin_warrior",
+   "name": "고블린 전사",
+   "hp": 12,
+   "defense": 14,
+   "attackBonus": 4,
+   "damage": "1d8",
+   "speed": 2,
+   "onDefeat": "deathSave",
+   "tags": [
+    "goblin"
+   ],
+   "loot": []
+  },
+  "raid_leader": {
+   "id": "raid_leader",
+   "name": "약탈대장",
+   "hp": 24,
+   "defense": 15,
+   "attackBonus": 6,
+   "damage": "1d10+2",
+   "speed": 2,
+   "onDefeat": "scripted",
+   "tags": [
+    "goblin",
+    "boss"
+   ],
+   "loot": []
+  }
+ },
  "events": {
+  "forest_bandit_01": {
+   "id": "forest_bandit_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "숲길의 도적",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "나무 뒤에서 복면을 쓴 사내가 걸어 나온다. 녹슨 칼을 까딱이며 가진 것을 내놓으라고 한다.",
+     "choices": [
+      {
+       "id": "pay",
+       "label": "은화를 건넨다",
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "사내는 은화를 세어 보더니 코웃음을 치며 사라졌다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "가진 게 없다고 사정한다",
+       "check": {
+        "stat": "cha",
+        "dc": 13,
+        "tags": [
+         "humanoid"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내가 혀를 차더니 길을 비켜 주었다. 빈털터리를 털어 봐야 소용없다는 얼굴이다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "\"거짓말은 몸으로 갚아야지.\" 사내가 칼을 휘두르며 달려든다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 칼을 고쳐 쥐며 거리를 잰다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "칼날이 코앞까지 들이닥쳤다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "숨을 고르고, 도적이 떨어뜨린 것들을 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "숲길을 벗어날 때까지 뒤도 돌아보지 않았다.",
+     "choices": []
+    }
+   }
+  },
   "forest_berries_01": {
    "id": "forest_berries_01",
    "category": "explore",
@@ -471,6 +692,102 @@
      ],
      "choices": [],
      "autoNext": "END"
+    }
+   }
+  },
+  "forest_boar_01": {
+   "id": "forest_boar_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "성난 멧돼지",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "덤불을 헤치자 멧돼지 한 마리가 코를 벌름거리며 앞발로 땅을 긁는다. 금방이라도 달려들 기세다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "가까운 나무 위로 피한다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "나뭇가지에 매달려 멧돼지가 지나가기를 기다렸다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "나무껍질에 발이 미끄러졌다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "멧돼지가 고개를 숙이고 돌진해 온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "boar"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "땅에 떨어지자마자 멧돼지가 들이닥쳤다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "boar"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "거친 숨을 고른다. 이만한 고기면 온 식구가 며칠은 배불리 먹겠다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "덤불 사이로 몸을 던져 겨우 빠져나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
     }
    }
   },
@@ -1218,6 +1535,210 @@
        }
       }
      ]
+    }
+   }
+  },
+  "forest_wolf_01": {
+   "id": "forest_wolf_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "덤불 속의 눈",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 2
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "job",
+          "job": "hunter"
+         }
+        ],
+        "text": "익숙한 냄새가 난다. 늑대 한 마리가 바람을 등지고 덤불 뒤에 숨어 있다."
+       }
+      ],
+      "fallback": "덤불 사이로 누런 눈이 번뜩인다. 낮게 으르렁거리는 소리가 들린다."
+     },
+     "choices": [
+      {
+       "id": "shoot",
+       "label": "먼저 활을 쏜다",
+       "conditions": [
+        {
+         "type": "equipped",
+         "itemId": "hunting_bow"
+        }
+       ],
+       "cost": {
+        "item": {
+         "itemId": "arrow",
+         "qty": 1
+        }
+       },
+       "check": {
+        "stat": "agi",
+        "skill": "bow",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "화살이 늑대의 어깨에 꽂혔다!",
+         "next": "fight_advantage"
+        },
+        "fail": {
+         "text": "화살이 빗나갔다. 늑대가 달려든다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back_off",
+       "label": "눈을 마주친 채 천천히 물러난다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 10,
+        "allowPartial": true,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "늑대는 따라오지 않았다.",
+         "next": "END"
+        },
+        "partial": {
+         "text": "가시덤불에 긁혀 가며 겨우 물러났다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "등을 보인 순간, 늑대가 뛰어올랐다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "throw_food",
+       "label": "말린 고기를 던져 준다",
+       "conditions": [
+        {
+         "type": "food",
+         "min": 1
+        }
+       ],
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "늑대는 고기를 물고 사라졌다. 오늘 저녁은 조금 모자라겠다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "피할 수 없다. 무기를 고쳐 쥔다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_advantage": {
+     "text": "상처 입은 늑대가 다리를 절며 다가온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "enemyHpModifier": -3,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "날카로운 이빨이 등을 노린다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 무기를 내렸다.",
+     "onEnter": [
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
     }
    }
   },

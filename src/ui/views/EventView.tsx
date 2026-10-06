@@ -77,7 +77,7 @@ function ChoiceButton({ choice: c, onPress }: { choice: ChoiceView; onPress: () 
   const locked = c.lockedReason !== null;
   const detail = locked
     ? [c.lockedReason!]
-    : [...c.cost, c.mode && c.mode !== "normal" ? MODE_LABEL[c.mode] : null, c.danger ? "실패하면 위험" : null].filter((x): x is string => !!x);
+    : [...c.cost, c.mode && c.mode !== "normal" ? MODE_LABEL[c.mode] : null, c.danger ? (c.chance === undefined ? "싸움이 벌어진다" : "실패하면 위험") : null].filter((x): x is string => !!x);
   return (
     <ActionButton
       label={c.label}

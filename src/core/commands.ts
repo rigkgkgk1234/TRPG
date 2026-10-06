@@ -1,5 +1,5 @@
 import type { ContentDB } from "./content";
-import type { CheckResult, DailyActionId, ItemId, RegionId, Rng, RunState, SkillId, StatId, WoundLevel } from "./types";
+import type { CheckResult, CombatAction, DailyActionId, ItemId, RegionId, Rng, RunState, SkillId, StatId, WoundLevel } from "./types";
 
 /** UI가 엔진에 보낼 수 있는 명령. 전투·가방 명령은 4·5주차에 더한다. (ARCHITECTURE 3-1) */
 export type GameCommand =
@@ -10,6 +10,8 @@ export type GameCommand =
   | { type: "continue" }
   /** 탐험 카드 2장 뒤 "더 깊이" 갈지 */
   | { type: "goDeeper"; yes: boolean }
+  /** 전투 중 내 행동 */
+  | { type: "combat"; action: CombatAction }
   /** 저녁 정산 실행. 식량이 모자랄 때 누구부터 먹일지 고른다 */
   | { type: "endDay"; order?: FeedOrder }
   | { type: "shop"; op: "buyFood" | "payDebt"; qty: number };

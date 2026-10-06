@@ -7,12 +7,13 @@ import { RunStatusBar } from "@/ui/components/RunStatusBar";
 import { TurnLog } from "@/ui/components/TurnLog";
 import { colors } from "@/ui/theme";
 import { EndingHeader, EndingPanel } from "@/ui/views/EndingView";
+import { CombatPanel } from "@/ui/views/CombatView";
 import { EventPanel } from "@/ui/views/EventView";
 import { EveningPanel } from "@/ui/views/EveningView";
 import { HubPanel } from "@/ui/views/HubView";
 
 /**
- * 게임 본 화면: 상태 바 / 결과 기록 / 아래 패널. 허브·이벤트·저녁·엔딩은 라우터 이동 없이 상태에서 고른다. (ARCHITECTURE 3-3)
+ * 게임 본 화면: 상태 바 / 결과 기록 / 아래 패널. 허브·이벤트·전투·저녁·엔딩은 라우터 이동 없이 상태에서 고른다. (ARCHITECTURE 3-3)
  * 결과 카드가 연출되는 동안에는 명령 전 상태를 그려서, 숫자와 화면 전환이 주사위보다 먼저 결과를 알려 주지 않게 한다.
  */
 export default function GameScreen() {
@@ -39,6 +40,7 @@ export default function GameScreen() {
 function Panel({ view, run }: { view: GameView; run: RunState }) {
   switch (view) {
     case "ending": return <EndingPanel run={run} />;
+    case "combat": return <CombatPanel run={run} />;
     case "event": return <EventPanel run={run} />;
     case "evening": return <EveningPanel run={run} />;
     case "hub": return <HubPanel run={run} />;

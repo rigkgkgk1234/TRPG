@@ -1,5 +1,5 @@
 import type { ContentDB } from "@/core/content";
-import { JOBS, type EventDef, type ItemDef, type TraitDef } from "@/core/types";
+import { JOBS, type EnemyDef, type EventDef, type ItemDef, type TraitDef } from "@/core/types";
 import generated from "./content.generated.json";
 
 /**
@@ -11,6 +11,6 @@ export const CONTENT: ContentDB = {
   items: generated.items as unknown as Record<string, ItemDef>,
   traits: generated.traits as unknown as Record<string, TraitDef>,
   events: generated.events as unknown as Record<string, EventDef>,
+  enemies: generated.enemies as unknown as Record<string, EnemyDef>,
   jobs: JOBS,
-  enemies: {},
 };

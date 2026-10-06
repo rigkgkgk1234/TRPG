@@ -1,6 +1,8 @@
 import type { Ctx, FeedOrder } from "../commands";
 import { rollStatGrowth } from "../check/progress";
 import {
+  CRITICAL_WOUND_MORNING_DC,
+  d,
   DEBT_ENDING_THRESHOLD,
   DEBT_INTEREST,
   FATIGUE_AFTER_COLLAPSE,
@@ -67,6 +69,7 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
   // 7. 최종 습격(story_raid)은 6주차, 밤 이벤트(25%)는 밤 이벤트 콘텐츠와 함께 붙인다 (엔진은 3주차에 준비됨). 그 전까지 30일차 밤을 넘기면 생존 엔딩.
   if (s.time.day >= LAST_DAY) return endRun(ctx, "survivor", "서른 번째 밤이 지났다. 아직 살아 있다.");
   startNextDay(ctx);                                     // 8. 다음 날
+  if (!survivesCriticalWound(ctx)) return endRun(ctx, "death", "상처가 끝내 아물지 않았다. 다시는 일어나지 못했다.");
   return true;
 }
 
@@ -106,7 +109,7 @@ function regenHp(ctx: Ctx): void {
   else if (s.player.wound.level === "none" || s.player.wound.level === "light") changeHp(ctx, 1);
 }
 
-/** 중상: 치료 후 3일 → 경상, 방치 5일 → 경상 + 「오래된 상처」. 치명상의 아침 사망 굴림은 4주차. */
+/** 중상: 치료 후 3일 → 경상, 방치 5일 → 경상 + 「오래된 상처」. 치명상은 아침마다 사망 굴림(survivesCriticalWound). */
 function tickWound(ctx: Ctx): void {
   const w = ctx.draft.player.wound;
   if (w.level !== "serious") return;
@@ -146,6 +149,18 @@ export function gainTrait(ctx: Ctx, traitId: string): void {
   for (const [stat, delta] of Object.entries(def?.statDelta ?? {}) as [keyof typeof p.stats, number][]) {
     p.stats[stat] = Math.max(STAT_MIN, p.stats[stat] + delta);
   }
+}
+
+/** 치명상을 방치하면 아침마다 D20 + 체력 ≥ 8을 굴려 버텨야 한다 (SYSTEM_SPEC 3-5) */
+function survivesCriticalWound(ctx: Ctx): boolean {
+  const p = ctx.draft.player;
+  if (p.wound.level !== "critical") return true;
+  const roll = d(20, ctx.rng);
+  const total = roll + p.stats.con;
+  ctx.feed.push({ kind: "text", text: `밤새 열에 시달렸다. 사망 굴림: 주사위 ${roll}, 합계 ${total} (목표 ${CRITICAL_WOUND_MORNING_DC})` });
+  const ok = roll !== 1 && total >= CRITICAL_WOUND_MORNING_DC;
+  if (ok) ctx.feed.push({ kind: "text", text: "간신히 아침을 맞았다. 이대로 두면 위험하다." });
+  return ok;
 }
 
 function startNextDay(ctx: Ctx): void {

@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_bandit_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "숲길의 도적",
+  "conditions": [{ "type": "dayRange", "min": 8 }],
+  "weight": 5,
+  "repeat": { "mode": "cooldown", "days": 7 },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "나무 뒤에서 복면을 쓴 사내가 걸어 나온다. 녹슨 칼을 까딱이며 가진 것을 내놓으라고 한다.",
+      "choices": [
+        {
+          "id": "pay",
+          "label": "은화를 건넨다",
+          "cost": { "silver": 3 },
+          "outcome": { "text": "사내는 은화를 세어 보더니 코웃음을 치며 사라졌다.", "next": "END" }
+        },
+        {
+          "id": "talk",
+          "label": "가진 게 없다고 사정한다",
+          "check": { "stat": "cha", "dc": 13, "tags": ["humanoid"] },
+          "outcomes": {
+            "success": { "text": "사내가 혀를 차더니 길을 비켜 주었다. 빈털터리를 털어 봐야 소용없다는 얼굴이다.", "next": "END" },
+            "fail": { "text": "\"거짓말은 몸으로 갚아야지.\" 사내가 칼을 휘두르며 달려든다!", "next": "fight_ambushed" }
+          }
+        },
+        { "id": "fight", "label": "무기를 들고 맞선다", "outcome": { "next": "fight" } }
+      ]
+    },
+    "fight": {
+      "text": "사내가 칼을 고쳐 쥐며 거리를 잰다.",
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["bandit"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "칼날이 코앞까지 들이닥쳤다.",
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["bandit"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "choices": []
+    },
+    "win": {
+      "text": "숨을 고르고, 도적이 떨어뜨린 것들을 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "숲길을 벗어날 때까지 뒤도 돌아보지 않았다.",
+      "choices": []
+    }
+  }
+}

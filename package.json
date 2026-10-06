@@ -45,7 +45,8 @@
     "lint": "expo lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "simulate": "tsx scripts/simulate.ts"
+    "simulate": "tsx scripts/simulate.ts",
+    "simulate:combat": "tsx scripts/simulate-combat.ts"
   },
   "private": true
 }
