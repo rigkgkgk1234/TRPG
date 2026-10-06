@@ -1,0 +1,32 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_berries_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "산딸기 덤불",
+  "conditions": [],
+  "weight": 10,
+  "repeat": { "mode": "cooldown", "days": 3 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "볕이 잘 드는 비탈에 산딸기가 붉게 익었다. 가시가 촘촘하지만 손만 조심하면 된다.",
+      "choices": [
+        {
+          "id": "pick",
+          "label": "조심스럽게 딴다",
+          "check": { "stat": "agi", "dc": 9, "allowPartial": true },
+          "outcomes": {
+            "critSuccess": { "text": "덤불 안쪽까지 손이 닿았다. 두 손 가득이다.", "effects": [{ "type": "food", "delta": 2 }], "next": "END" },
+            "success": { "text": "주머니가 불룩하도록 땄다. 동생이 좋아하겠다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "partial": { "text": "가시에 손등이 긁혔지만 꽤 땄다.", "effects": [{ "type": "food", "delta": 1 }, { "type": "hp", "delta": -1 }], "next": "END" },
+            "fail": { "text": "가시에 찔려 몇 알 줍지 못했다.", "effects": [{ "type": "hp", "delta": -1 }], "next": "END" },
+            "critFail": { "text": "덤불 속 벌집을 건드렸다! 정신없이 달아났다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" }
+          }
+        },
+        { "id": "eat", "label": "몇 알 먹고 숨을 고른다", "outcome": { "text": "달콤한 즙에 기운이 조금 난다.", "effects": [{ "type": "fatigue", "delta": -1 }], "next": "END" } }
+      ]
+    }
+  }
+}

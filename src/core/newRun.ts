@@ -50,7 +50,7 @@ export function newRun(content: ContentDB, jobId: JobId, name: string, { seed, n
     },
     resources: { silver: job.silver, food: job.food, debt: 0, fatigue: 0, hunger: 0, familyHunger: 0 },
     inventory: startInventory(content, job.startItems),
-    // 아침 이벤트는 3주차. 그 전까지 하루는 오전 행동부터 시작한다
+    // 아침 이벤트는 아침 이벤트 콘텐츠(7주차)와 함께 붙인다. 그 전까지 하루는 오전 행동부터 시작한다
     time: { day: 1, phase: "am", skipNextAm: false, restsToday: 0, collapsedToday: false },
     flags: {},
     eventHistory: {},
@@ -79,7 +79,7 @@ function startInventory(content: ContentDB, items: { itemId: string; qty: number
     if (equip && (def.category === "weapon" || def.category === "armor" || def.category === "shield")) {
       inv.equipment[def.category] = stack;
     } else {
-      // 시작 아이템은 몇 개뿐이라 칸이 모자랄 일은 없다. 겹치기 규칙은 5주차 inventory.ts에서.
+      // 시작 아이템은 몇 개뿐이라 칸이 모자랄 일도, 겹칠 일도 없다. 겹치기는 items/inventory.ts의 addItem.
       inv.slots[next++] = stack;
     }
   }

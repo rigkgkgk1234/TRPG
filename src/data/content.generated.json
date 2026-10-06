@@ -1,0 +1,1448 @@
+{
+ "items": {
+  "hunting_knife": {
+   "id": "hunting_knife",
+   "name": "사냥칼",
+   "category": "weapon",
+   "description": "가죽을 벗길 때 쓰는 짧은 칼.",
+   "price": 5,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d4",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "pitchfork": {
+   "id": "pitchfork",
+   "name": "쇠스랑",
+   "category": "weapon",
+   "description": "건초를 뒤집던 농기구. 찌르면 아프다.",
+   "price": 6,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d6",
+   "twoHanded": true,
+   "durabilityMax": 20
+  },
+  "old_hammer": {
+   "id": "old_hammer",
+   "name": "낡은 망치",
+   "category": "weapon",
+   "description": "브록의 대장간에서 물려받은 망치.",
+   "price": 8,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d6",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "rusty_sword": {
+   "id": "rusty_sword",
+   "name": "녹슨 검",
+   "category": "weapon",
+   "description": "날이 무디지만 검은 검이다.",
+   "price": 15,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d6",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "soldier_sword": {
+   "id": "soldier_sword",
+   "name": "병사의 검",
+   "category": "weapon",
+   "description": "왕국 병사에게 지급되던 곧은 검.",
+   "price": 40,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d8",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "hunting_bow": {
+   "id": "hunting_bow",
+   "name": "사냥활",
+   "category": "weapon",
+   "description": "손때 묻은 짧은 활.",
+   "price": 12,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "bow",
+   "damage": "1d6",
+   "twoHanded": true,
+   "ammo": "arrow",
+   "durabilityMax": 20
+  },
+  "longbow": {
+   "id": "longbow",
+   "name": "장궁",
+   "category": "weapon",
+   "description": "키만 한 활. 당기려면 힘이 필요하다.",
+   "price": 35,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "bow",
+   "damage": "1d8",
+   "twoHanded": true,
+   "ammo": "arrow",
+   "requires": {
+    "str": 1
+   },
+   "durabilityMax": 20
+  },
+  "padded_coat": {
+   "id": "padded_coat",
+   "name": "누빔 옷",
+   "category": "armor",
+   "description": "솜을 두껍게 누빈 겉옷.",
+   "price": 10,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 1,
+   "durabilityMax": 25
+  },
+  "leather_armor": {
+   "id": "leather_armor",
+   "name": "가죽 갑옷",
+   "category": "armor",
+   "description": "무두질한 소가죽 조끼.",
+   "price": 25,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 2,
+   "durabilityMax": 25
+  },
+  "chain_shirt": {
+   "id": "chain_shirt",
+   "name": "사슬 셔츠",
+   "category": "armor",
+   "description": "무겁지만 든든하다.",
+   "price": 60,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 3,
+   "checkPenalty": {
+    "stat": "agi",
+    "value": -1
+   },
+   "durabilityMax": 25
+  },
+  "wooden_shield": {
+   "id": "wooden_shield",
+   "name": "나무 방패",
+   "category": "shield",
+   "description": "참나무 판자에 쇠테를 둘렀다.",
+   "price": 12,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 1,
+   "durabilityMax": 15
+  },
+  "arrow": {
+   "id": "arrow",
+   "name": "화살",
+   "category": "consumable",
+   "description": "깃이 고르지 않은 사냥용 화살.",
+   "price": 0,
+   "sellable": true,
+   "stackMax": 20,
+   "use": [],
+   "usableInCombat": false
+  },
+  "herb": {
+   "id": "herb",
+   "name": "약초",
+   "category": "consumable",
+   "description": "씹으면 쓰지만 상처가 아문다.",
+   "price": 2,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "hp",
+     "delta": 2
+    }
+   ],
+   "chanceEffects": [
+    {
+     "p": 0.5,
+     "effects": [
+      {
+       "type": "healWound",
+       "to": "none"
+      }
+     ]
+    }
+   ],
+   "usableInCombat": true
+  },
+  "bandage": {
+   "id": "bandage",
+   "name": "붕대",
+   "category": "consumable",
+   "description": "깨끗한 천 조각.",
+   "price": 3,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "healWound",
+     "to": "none"
+    }
+   ],
+   "usableInCombat": false
+  },
+  "bitter_tea": {
+   "id": "bitter_tea",
+   "name": "쓴 약차",
+   "category": "consumable",
+   "description": "정신이 번쩍 드는 맛.",
+   "price": 3,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "fatigue",
+     "delta": -2
+    }
+   ],
+   "usableInCombat": false
+  },
+  "healing_potion": {
+   "id": "healing_potion",
+   "name": "치유 물약",
+   "category": "consumable",
+   "description": "신전에서 축성한 붉은 물약.",
+   "price": 25,
+   "sellable": true,
+   "stackMax": 3,
+   "use": [
+    {
+     "type": "hp",
+     "delta": 6
+    },
+    {
+     "type": "healWound",
+     "to": "serious"
+    }
+   ],
+   "usableInCombat": true
+  },
+  "wolf_pelt": {
+   "id": "wolf_pelt",
+   "name": "늑대 가죽",
+   "category": "material",
+   "description": "여관에서 값을 쳐준다.",
+   "price": 0,
+   "sellPrice": 4,
+   "sellable": true,
+   "stackMax": 5
+  },
+  "rare_herb": {
+   "id": "rare_herb",
+   "name": "늪 약초",
+   "category": "material",
+   "description": "늪지에서만 자라는 귀한 풀.",
+   "price": 0,
+   "sellPrice": 8,
+   "sellable": true,
+   "stackMax": 5
+  },
+  "goblin_token": {
+   "id": "goblin_token",
+   "name": "고블린 부적",
+   "category": "quest",
+   "description": "뼈와 깃털을 엮은 부적. 촌장에게 보여야 한다.",
+   "price": 0,
+   "sellable": false,
+   "stackMax": 1
+  }
+ },
+ "traits": {
+  "old_wound": {
+   "id": "old_wound",
+   "name": "오래된 상처",
+   "description": "제때 치료하지 못한 상처가 굳었다. 몸이 예전 같지 않다.",
+   "statDelta": {
+    "agi": -1
+   }
+  },
+  "survivor": {
+   "id": "survivor",
+   "name": "죽다 살아난 자",
+   "description": "한 번 죽음의 문턱을 넘었다. 웬만한 일로는 겁먹지 않는다.",
+   "advantageTags": [
+    "fear"
+   ]
+  }
+ },
+ "events": {
+  "forest_berries_01": {
+   "id": "forest_berries_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "산딸기 덤불",
+   "conditions": [],
+   "weight": 10,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "볕이 잘 드는 비탈에 산딸기가 붉게 익었다. 가시가 촘촘하지만 손만 조심하면 된다.",
+     "choices": [
+      {
+       "id": "pick",
+       "label": "조심스럽게 딴다",
+       "check": {
+        "stat": "agi",
+        "dc": 9,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "critSuccess": {
+         "text": "덤불 안쪽까지 손이 닿았다. 두 손 가득이다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "success": {
+         "text": "주머니가 불룩하도록 땄다. 동생이 좋아하겠다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "가시에 손등이 긁혔지만 꽤 땄다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "가시에 찔려 몇 알 줍지 못했다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "critFail": {
+         "text": "덤불 속 벌집을 건드렸다! 정신없이 달아났다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "eat",
+       "label": "몇 알 먹고 숨을 고른다",
+       "outcome": {
+        "text": "달콤한 즙에 기운이 조금 난다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_black_arrow_01": {
+   "id": "forest_black_arrow_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "까마귀 깃털 화살",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 5
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "job",
+          "job": "hunter"
+         }
+        ],
+        "text": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 보리울 사냥꾼 중에 이런 화살을 쓰는 사람은 없다."
+       }
+      ],
+      "fallback": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 마을 사냥꾼의 화살은 아닌 것 같다."
+     },
+     "choices": [
+      {
+       "id": "search",
+       "label": "주변을 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "작은 발자국 여럿이 동쪽으로 이어진다. 사람치고는 발이 너무 작다.",
+         "next": "tracks"
+        },
+        "fail": {
+         "text": "아무것도 찾지 못했다. 그런데도 등골이 서늘하다.",
+         "next": "END"
+        },
+        "critFail": {
+         "text": "등 뒤에서 나뭇가지 부러지는 소리. 뒤도 안 보고 달아났다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "모른 척 지나간다",
+       "outcome": {
+        "text": "괜한 일에 엮이고 싶지 않다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "tracks": {
+     "text": "발자국은 숲 깊은 곳으로 사라진다. 여럿이 함께 움직였다. 촌장에게 알려야 할까.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "strange_tracks_seen"
+      }
+     ],
+     "choices": [],
+     "autoNext": "END"
+    }
+   }
+  },
+  "forest_boar_wallow_01": {
+   "id": "forest_boar_wallow_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "멧돼지 진흙탕",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "질척한 웅덩이 둘레로 나무껍질이 허리 높이까지 벗겨져 있다. 멧돼지가 몸을 비빈 자국이다. 냄새가 아직 진하다.",
+     "choices": [
+      {
+       "id": "sneak",
+       "label": "조용히 돌아서 지나간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "웅덩이를 크게 돌아 무사히 빠져나왔다.",
+         "next": "END"
+        },
+        "partial": {
+         "text": "마른 가지를 밟았다. 멀리서 콧김 소리. 냅다 뛰었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "덤불이 갈라지며 멧돼지가 들이받았다!",
+         "effects": [
+          {
+           "type": "wound",
+           "steps": 1
+          },
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "hunt",
+       "label": "발자국을 쫓아 사냥감을 노린다",
+       "conditions": [
+        {
+         "type": "skill",
+         "skill": "tracking",
+         "min": 2
+        }
+       ],
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "진흙에 빠진 새끼 멧돼지를 찾았다. 고기를 넉넉히 챙겼다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "어미가 돌아왔다. 간신히 나무 위로 피했지만 정강이를 받혔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "critFail": {
+         "text": "어미의 엄니가 허벅지를 스쳤다.",
+         "effects": [
+          {
+           "type": "wound",
+           "steps": 1
+          },
+          {
+           "type": "hp",
+           "delta": -3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "왔던 길로 돌아간다",
+       "outcome": {
+        "text": "멧돼지와 씨름할 날은 오늘이 아니다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_fallback": {
+   "id": "forest_fallback",
+   "category": "explore",
+   "region": "forest",
+   "title": "조용한 숲길",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "새소리와 바람 소리뿐이다. 별다른 일 없이 숲길을 걸었다.",
+     "choices": []
+    }
+   }
+  },
+  "forest_herb_01": {
+   "id": "forest_herb_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "이끼 낀 바위 아래",
+   "conditions": [],
+   "weight": 12,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "바위 틈에 잎이 톱니 모양인 풀이 자라 있다. 약초일까, 독초일까.",
+     "choices": [
+      {
+       "id": "inspect",
+       "label": "잎을 자세히 살펴본다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10
+       },
+       "outcomes": {
+        "critSuccess": {
+         "text": "약초다. 바위 뒤쪽에도 한 무더기가 더 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 3
+          }
+         ],
+         "next": "END"
+        },
+        "success": {
+         "text": "약초다. 뿌리째 조심스럽게 캤다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "확신이 서지 않아 그냥 두었다.",
+         "next": "END"
+        },
+        "critFail": {
+         "text": "독초였다. 손끝이 저려 온다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_mushroom_01": {
+   "id": "forest_mushroom_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "고목 아래 버섯",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "쓰러진 고목 밑동에 갓이 넓은 버섯이 무리 지어 났다. 먹는 버섯과 독버섯은 생김새가 비슷하다.",
+     "choices": [
+      {
+       "id": "identify",
+       "label": "잘 살펴보고 고른다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 12
+       },
+       "outcomes": {
+        "critSuccess": {
+         "text": "귀한 버섯까지 섞여 있었다. 넉넉히 챙겼다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "success": {
+         "text": "먹는 버섯이다. 국에 넣으면 한 끼는 된다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "아무래도 확신이 서지 않는다. 그냥 두었다.",
+         "next": "END"
+        },
+        "critFail": {
+         "text": "먹는 버섯인 줄 알았는데 만진 손이 따끔거린다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "taste",
+       "label": "한 입 베어 물어 본다",
+       "check": {
+        "stat": "con",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "멀쩡하다. 나머지도 챙겼다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 게워 냈다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "괜한 모험은 하지 않는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_old_trap_01": {
+   "id": "forest_old_trap_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "녹슨 덫",
+   "conditions": [],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "낙엽 밑에서 쇳소리가 났다. 누군가 버리고 간 곰 덫이다. 이빨은 녹슬었지만 용수철은 아직 팽팽하다.",
+     "choices": [
+      {
+       "id": "disarm",
+       "label": "덫을 풀어 쇠붙이를 챙긴다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "용수철을 조심조심 풀어 쇠붙이를 챙겼다. 돌아오는 길에 브록에게 넘기고 은화 두 닢을 받았다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "쇠붙이는 챙겼지만 녹슨 이빨에 손끝이 찢어졌다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "덫이 덜컥 닫히며 소매를 물었다. 옷만 찢기고 겨우 빼냈다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "critFail": {
+         "text": "덫이 발목을 물었다!",
+         "effects": [
+          {
+           "type": "wound",
+           "steps": 1
+          },
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "mark",
+       "label": "나뭇가지로 표시만 해 둔다",
+       "outcome": {
+        "text": "다른 사람이 밟지 않게 덫 옆에 가지를 꽂아 두었다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "멀찍이 돌아간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_peddler_01": {
+   "id": "forest_peddler_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "길 잃은 행상",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 3
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "봇짐을 진 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
+     "choices": [
+      {
+       "id": "guide",
+       "label": "큰길까지 데려다준다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "큰길에 닿자 행상이 은화 두 닢을 쥐여 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "둘이서 한참을 헤맸다. 결국 행상이 먼저 길을 찾았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "sell_herb",
+       "label": "약초를 판다",
+       "conditions": [
+        {
+         "type": "hasItem",
+         "itemId": "herb"
+        }
+       ],
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "로웬 시세라며 후하게 쳐주었다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "buy_tea",
+       "label": "쓴 약차를 산다",
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "피로가 싹 가신다는 약차다. 맛은 장담 못 한다고 한다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bitter_tea",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길을 알려 주고 헤어진다",
+       "outcome": {
+        "text": "행상이 손을 흔들며 멀어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_rabbit_01": {
+   "id": "forest_rabbit_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "덤불 속 토끼",
+   "conditions": [],
+   "weight": 10,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 2
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "덤불이 바스락거리더니 살진 토끼 한 마리가 고개를 내민다. 아직 이쪽을 눈치채지 못했다.",
+     "choices": [
+      {
+       "id": "shoot",
+       "label": "활을 쏜다",
+       "conditions": [
+        {
+         "type": "equipped",
+         "itemId": "hunting_bow"
+        }
+       ],
+       "cost": {
+        "item": {
+         "itemId": "arrow",
+         "qty": 1
+        }
+       },
+       "check": {
+        "stat": "agi",
+        "skill": "bow",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "critSuccess": {
+         "text": "옆에 한 마리가 더 있었다. 연달아 쏘아 둘 다 잡았다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "success": {
+         "text": "화살이 정확히 꽂혔다. 오늘 저녁거리가 생겼다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "화살은 풀숲으로, 토끼는 굴속으로 사라졌다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "snare",
+       "label": "올무를 놓고 기다린다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "allowPartial": true,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "올무가 조여졌다. 생각보다 묵직하다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "잡긴 했지만 한참을 쭈그려 기다리느라 다리가 저리다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "해가 기울도록 기다렸지만 허탕이었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "토끼는 제 갈 길을 갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_stream_01": {
+   "id": "forest_stream_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "맑은 개울",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 2
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "숲 한가운데로 차가운 개울이 흐른다. 물속에 작은 물고기 그림자가 언뜻 비친다.",
+     "choices": [
+      {
+       "id": "rest",
+       "label": "발을 담그고 쉰다",
+       "outcome": {
+        "text": "차가운 물에 발을 담그니 다리가 한결 가볍다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "fish",
+       "label": "맨손으로 물고기를 잡아 본다",
+       "check": {
+        "stat": "agi",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "미끈한 놈을 움켜쥐었다!",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "물만 잔뜩 튀기고 옷이 다 젖었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "critFail": {
+         "text": "이끼 낀 돌을 밟고 그대로 넘어졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_wolf_tracks_01": {
+   "id": "forest_wolf_tracks_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "진흙 위의 발자국",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 2
+    }
+   ],
+   "weight": 9,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "job",
+          "job": "hunter"
+         }
+        ],
+        "text": "늑대 발자국이다. 크기로 보아 다 자란 수컷이고, 지나간 지 반나절도 안 됐다."
+       }
+      ],
+      "fallback": "진흙 위에 개 발자국 같은 것이 줄지어 나 있다. 개치고는 너무 크다."
+     },
+     "choices": [
+      {
+       "id": "follow",
+       "label": "발자국을 따라가 본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "allowPartial": true,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "바위 틈의 굴을 찾았다. 앞으로 이쪽은 피해 다녀야겠다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "wolf_den_known"
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "굴 근처까지 갔다가 으르렁 소리에 허겁지겁 물러났다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "wolf_den_known"
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발자국이 개울에서 끊겼다. 괜히 헤매기만 했다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "critFail": {
+         "text": "발자국만 보다가 비탈 아래로 굴러떨어졌다.",
+         "effects": [
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "avoid",
+       "label": "발자국 반대쪽으로 간다",
+       "outcome": {
+        "text": "괜히 마주칠 필요는 없다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_woodcutter_01": {
+   "id": "forest_woodcutter_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "쓰러진 나무꾼",
+   "conditions": [],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "길가에 나무꾼 오스윈이 발목을 붙잡고 앉아 있다. 넘어가는 나무를 피하다 접질렸다고 한다.",
+     "choices": [
+      {
+       "id": "herb",
+       "label": "약초를 짓이겨 붙여 준다",
+       "conditions": [
+        {
+         "type": "hasItem",
+         "itemId": "herb"
+        }
+       ],
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "오스윈이 고맙다며 품삯 몇 푼을 쥐여 주었다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 2
+         },
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "bind",
+       "label": "발목을 살펴 단단히 묶어 준다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "단단히 묶어 주자 지팡이를 짚고 혼자 일어섰다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "어설프게 묶은 천이 자꾸 풀린다. 결국 마을까지 업고 갔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "carry",
+       "label": "마을까지 부축해 간다",
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "text": "땀범벅이 되어 마을에 닿았다. 지나던 사람들이 그 모습을 보았다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길이 바쁘다",
+       "outcome": {
+        "text": "등 뒤로 오스윈의 한숨 소리가 들렸다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

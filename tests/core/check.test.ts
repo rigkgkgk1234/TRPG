@@ -40,13 +40,13 @@ describe("createRng", () => {
 
 describe("resolveMode", () => {
   it("유리함과 불리함은 상쇄된다", () => {
-    expect(resolveMode(ctx(0, ["정보"], ["지침"]))).toBe("normal");
+    expect(resolveMode(ctx(0, ["정보"], ["지친 상태"]))).toBe("normal");
     expect(resolveMode(ctx(0, ["정보", "도구"]))).toBe("advantage");
-    expect(resolveMode(ctx(0, [], ["지침", "굶주림"]))).toBe("disadvantage");
+    expect(resolveMode(ctx(0, [], ["지친 상태", "굶주림"]))).toBe("disadvantage");
   });
 
   it("forceMode가 우선한다", () => {
-    expect(resolveMode(ctx(0, [], ["지침"]), "advantage")).toBe("advantage");
+    expect(resolveMode(ctx(0, [], ["지친 상태"]), "advantage")).toBe("advantage");
   });
 });
 
@@ -84,13 +84,13 @@ describe("rollCheck", () => {
     const adv = rollCheck(spec(12), ctx(0, ["정보"]), d20Sequence(3, 15));
     expect(adv.dice).toEqual([3, 15]);
     expect(adv.kept).toBe(15);
-    const dis = rollCheck(spec(12), ctx(0, [], ["지침"]), d20Sequence(3, 15));
+    const dis = rollCheck(spec(12), ctx(0, [], ["지친 상태"]), d20Sequence(3, 15));
     expect(dis.kept).toBe(3);
   });
 
   it("유리함에서 20이 채택되면 대성공, 불리함에서 1이 채택되면 대실패", () => {
     expect(rollCheck(spec(12), ctx(0, ["정보"]), d20Sequence(1, 20)).outcome).toBe("critSuccess");
-    expect(rollCheck(spec(12), ctx(0, [], ["지침"]), d20Sequence(20, 1)).outcome).toBe("critFail");
+    expect(rollCheck(spec(12), ctx(0, [], ["지친 상태"]), d20Sequence(20, 1)).outcome).toBe("critFail");
   });
 });
 

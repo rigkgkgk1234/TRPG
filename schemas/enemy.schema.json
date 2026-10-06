@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/EnemyDef",
+  "definitions": {
+    "EnemyDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/EnemyId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "hp": {
+          "type": "number"
+        },
+        "defense": {
+          "type": "number"
+        },
+        "attackBonus": {
+          "type": "number"
+        },
+        "damage": {
+          "$ref": "#/definitions/DiceExpr"
+        },
+        "speed": {
+          "type": "number"
+        },
+        "morale": {
+          "type": "number",
+          "description": "HP 절반 이하일 때 라운드 종료마다 도망칠 확률 (없으면 끝까지 싸움)"
+        },
+        "onRoutFlag": {
+          "$ref": "#/definitions/FlagId",
+          "description": "도망쳤을 때 세울 플래그"
+        },
+        "onDefeat": {
+          "$ref": "#/definitions/DefeatRule"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "loot": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LootEntry"
+          }
+        },
+        "food": {
+          "type": "number",
+          "description": "승리 시 먹거리 획득 (짐승)"
+        },
+        "silver": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "hp",
+        "defense",
+        "attackBonus",
+        "damage",
+        "speed",
+        "onDefeat",
+        "tags",
+        "loot"
+      ],
+      "additionalProperties": false
+    },
+    "EnemyId": {
+      "type": "string"
+    },
+    "DiceExpr": {
+      "type": "string",
+      "pattern": "^\\d+d\\d+([+-]\\d+)?$"
+    },
+    "FlagId": {
+      "type": "string"
+    },
+    "DefeatRule": {
+      "type": "string",
+      "enum": [
+        "deathSave",
+        "robbed",
+        "scripted"
+      ]
+    },
+    "LootEntry": {
+      "type": "object",
+      "properties": {
+        "itemId": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "qty": {
+          "type": "number"
+        },
+        "chance": {
+          "type": "number",
+          "description": "0~1"
+        }
+      },
+      "required": [
+        "itemId",
+        "qty",
+        "chance"
+      ],
+      "additionalProperties": false
+    },
+    "ItemId": {
+      "type": "string",
+      "description": "콘텐츠 ID. 데이터 파일의 키와 일치해야 한다."
+    }
+  }
+}

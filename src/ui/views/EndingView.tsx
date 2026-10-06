@@ -33,12 +33,12 @@ export function EndingPanel({ run }: { run: RunState }) {
         <Figure label="대실패" value={String(st.fumbles)} />
       </View>
       <View style={styles.stats}>
-        <Figure label="번 은화" value={String(st.silverEarned)} />
+        <Figure label="벌어들인 은화" value={String(st.silverEarned)} />
         <Figure label="남은 은화" value={String(run.resources.silver)} />
         <Figure label="빚" value={String(run.resources.debt)} />
       </View>
-      <Text style={styles.line}>가장 높은 솜씨는 {SKILL_LABEL[best]} {run.player.skills[best].rank}등급</Text>
-      <ActionButton primary label="타이틀로" onPress={toTitle} />
+      <Text style={styles.line}>가장 많이 익힌 숙련: {SKILL_LABEL[best]} {run.player.skills[best].rank}등급</Text>
+      <ActionButton primary label="처음 화면으로" onPress={toTitle} />
     </View>
   );
 }

@@ -1,0 +1,187 @@
+import type { ContentDB } from "./content";
+import { EXPLORE_REGIONS } from "./events/explore";
+import { fallbackId, isFallback } from "./events/selector";
+import type { ChoiceDef, Condition, Effect, EventDef, Outcome, SceneDef, TextBlock } from "./types";
+
+/** 장면 텍스트가 이보다 길면 한 화면에 안 들어간다 (ARCHITECTURE 2-5) */
+const SCENE_TEXT_MAX = 220;
+const CHOICES_MAX = 4;
+const PLACEHOLDER_ALL = /\{[^}]*\}/g;
+/** {name} {job} {silver}, 이름·직업 뒤 조사는 {name:이/가}처럼 */
+const PLACEHOLDER_OK = /^\{(?:(?:name|job)(?::(?:을\/를|이\/가|은\/는|과\/와|으로\/로))?|silver)\}$/;
+
+export interface ContentIssues {
+  /** 빌드를 멈추는 것 */
+  errors: string[];
+  /** 고치는 게 좋지만 플레이는 되는 것 */
+  warnings: string[];
+}
+
+/**
+ * 구조 검증(ajv)으로는 못 잡는 실수를 찾는다: 없는 아이템·장면 참조, 끝나지 않는 이벤트, 화면 제약 등.
+ * build-content와 테스트가 같이 쓴다.
+ */
+export function checkContent(content: ContentDB): ContentIssues {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const flagsSet = new Set<string>();
+  const flagsRead: { flag: string; where: string }[] = [];
+
+  for (const ev of Object.values(content.events)) {
+    const at = (where: string) => `${ev.id}${where ? `/${where}` : ""}`;
+    const err = (where: string, msg: string) => errors.push(`${at(where)}: ${msg}`);
+    const warn = (where: string, msg: string) => warnings.push(`${at(where)}: ${msg}`);
+
+    // ── 이벤트 단위 ──
+    if (ev.category === "explore") {
+      if (!ev.region) err("", "탐험 이벤트에 region이 없다");
+      else if (!EXPLORE_REGIONS.includes(ev.region)) err("", `탐험할 수 없는 지역: ${ev.region}`);
+    }
+    if (isFallback(ev)) {
+      if (ev.conditions.length > 0) warn("", "대체 이벤트에 조건이 있으면 아무것도 안 나올 수 있다");
+      if (ev.repeat.mode !== "always") warn("", "대체 이벤트는 repeat: always여야 한다");
+    } else if (ev.weight <= 0) {
+      err("", "가중치가 0 이하라 뽑히지 않는다");
+    }
+    if (!ev.scenes[ev.startScene]) err("", `startScene "${ev.startScene}" 장면이 없다`);
+    if ("END" in ev.scenes) err("END", `"END"는 이벤트 끝을 뜻하는 예약어라 장면 ID로 쓸 수 없다`);
+    checkConditions(ev.conditions, "", { allowChance: true });
+
+    // ── 장면 단위 ──
+    for (const [sceneId, scene] of Object.entries(ev.scenes)) {
+      checkText(scene.text, sceneId, "장면");
+      checkEffects(scene.onEnter, `${sceneId} onEnter`);
+      if (scene.choices.length > CHOICES_MAX) warn(sceneId, `선택지가 ${scene.choices.length}개 (최대 ${CHOICES_MAX})`);
+      if (scene.choices.length > 0 && scene.autoNext) warn(sceneId, "선택지가 있으면 autoNext는 쓰이지 않는다");
+      if (scene.autoNext) checkNext(scene.autoNext, `${sceneId} autoNext`);
+
+      const ids = new Set<string>();
+      for (const choice of scene.choices) {
+        const where = `${sceneId}/${choice.id}`;
+        if (ids.has(choice.id)) err(where, "선택지 ID 중복");
+        ids.add(choice.id);
+        checkConditions(choice.conditions, where, { allowChance: false });
+        if (choice.cost?.item) checkItem(choice.cost.item.itemId, `${where} cost`);
+        if (choice.hideIfLocked && !choice.conditions?.length) warn(where, "조건 없이 hideIfLocked만 있다");
+        if (choice.check) {
+          const o = choice.outcomes;
+          if (choice.check.allowPartial && !o.partial) warn(where, "allowPartial인데 partial 분기가 없다 (실패로 처리됨)");
+          if (!choice.check.allowPartial && o.partial) warn(where, "partial 분기가 있지만 allowPartial이 없어 나오지 않는다");
+        }
+        for (const [label, outcome] of outcomesOf(choice)) checkOutcome(outcome, `${where} ${label}`);
+      }
+    }
+
+    // ── 도달·종료 ──
+    const edges = sceneEdges(ev);
+    const reachable = walk([ev.startScene], (id) => edges.get(id) ?? []);
+    for (const id of Object.keys(ev.scenes)) {
+      if (!reachable.has(id)) warn(id, "어디서도 들어오지 않는 장면");
+    }
+    const reverse = new Map<string, string[]>();
+    for (const [from, tos] of edges) for (const to of tos) reverse.set(to, [...(reverse.get(to) ?? []), from]);
+    const canEnd = walk(["END"], (id) => reverse.get(id) ?? []);
+    for (const id of reachable) {
+      if (id !== "END" && !canEnd.has(id)) err(id, "이 장면에서는 END에 도달할 수 없다 (끝나지 않는 이벤트)");
+    }
+
+    // ── 도우미 (이벤트 안의 at·err·warn을 쓴다) ──
+    function checkOutcome(o: Outcome, where: string) {
+      if (o.text) checkText(o.text, where, "결과");
+      checkEffects(o.effects, where);
+      checkNext(o.next, where);
+    }
+    function checkNext(next: string, where: string) {
+      if (next !== "END" && !ev.scenes[next]) err(where, `없는 장면으로 간다: "${next}"`);
+    }
+    function checkText(t: TextBlock, where: string, kind: string) {
+      const texts = typeof t === "string" ? [t] : [...t.variants.map((v) => v.text), t.fallback];
+      if (typeof t !== "string") for (const v of t.variants) checkConditions(v.when, `${where} 문장 변형`, { allowChance: false });
+      for (const s of texts) {
+        if (kind === "장면" && s.length > SCENE_TEXT_MAX) warn(where, `장면 텍스트 ${s.length}자 (최대 ${SCENE_TEXT_MAX})`);
+        for (const m of s.matchAll(PLACEHOLDER_ALL)) if (!PLACEHOLDER_OK.test(m[0])) err(where, `모르는 치환어 ${m[0]}`);
+      }
+    }
+    function checkConditions(conds: readonly Condition[] | undefined, where: string, opts: { allowChance: boolean }) {
+      for (const c of conds ?? []) {
+        switch (c.type) {
+          case "chance":
+            if (!opts.allowChance) err(where, "chance 조건은 이벤트 발생 조건에만 쓸 수 있다 (화면이 미리 그릴 수 없다)");
+            break;
+          case "hasItem": case "equipped": checkItem(c.itemId, where); break;
+          case "trait": checkTrait(c.trait, where); break;
+          case "flag": case "notFlag": flagsRead.push({ flag: c.flag, where: at(where) }); break;
+          case "any": checkConditions(c.of, where, opts); break;
+        }
+      }
+    }
+    function checkEffects(effects: readonly Effect[] | undefined, where: string) {
+      for (const e of effects ?? []) {
+        switch (e.type) {
+          case "addItem": case "removeItem": checkItem(e.itemId, where); break;
+          case "gainTrait": checkTrait(e.trait, where); break;
+          case "setFlag": case "incFlag": flagsSet.add(e.flag); break;
+          case "startCombat":
+            for (const enemy of e.combat.enemies) if (!content.enemies[enemy]) err(where, `없는 적: ${enemy}`);
+            for (const next of [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat]) if (next) checkNext(next, where);
+            break;
+        }
+      }
+    }
+    function checkItem(id: string, where: string) {
+      if (!content.items[id]) err(where, `없는 아이템: ${id}`);
+    }
+    function checkTrait(id: string, where: string) {
+      if (!content.traits[id]) err(where, `없는 흔적: ${id}`);
+    }
+  }
+
+  // 아무도 세우지 않는 플래그를 읽으면 오타일 가능성이 높다 (스토리 플래그는 6주차 코드가 세울 수도 있으니 경고만)
+  for (const { flag, where } of flagsRead) {
+    if (!flagsSet.has(flag)) warnings.push(`${where}: 어떤 이벤트도 세우지 않는 플래그 "${flag}"`);
+  }
+
+  for (const region of EXPLORE_REGIONS) {
+    const has = Object.values(content.events).some((ev) => ev.category === "explore" && ev.region === region && !isFallback(ev));
+    if (has && !content.events[fallbackId("explore", region)]) {
+      warnings.push(`${region}: 대체 이벤트 없음 (${fallbackId("explore", region)}). 후보가 없으면 탐험이 바로 끝난다`);
+    }
+  }
+
+  return { errors, warnings };
+}
+
+function outcomesOf(c: ChoiceDef): [string, Outcome][] {
+  if (!c.check) return [["outcome", c.outcome]];
+  return Object.entries(c.outcomes).filter((e): e is [string, Outcome] => e[1] !== undefined);
+}
+
+/** 장면 → 갈 수 있는 다음 장면들 ("END" 포함) */
+function sceneEdges(ev: EventDef): Map<string, string[]> {
+  const edges = new Map<string, string[]>();
+  for (const [id, scene] of Object.entries(ev.scenes)) edges.set(id, nextsOf(scene));
+  return edges;
+}
+
+function nextsOf(scene: SceneDef): string[] {
+  // 전투는 끝나면 결과별 장면으로 이어진다 (4주차)
+  const combat = (scene.onEnter ?? []).flatMap((e) =>
+    e.type === "startCombat" ? [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat].filter((x): x is string => !!x) : []);
+  if (combat.length > 0) return combat;
+  if (scene.choices.length === 0) return [scene.autoNext ?? "END"];
+  return scene.choices.flatMap((c) => outcomesOf(c).map(([, o]) => o.next));
+}
+
+function walk(start: string[], next: (id: string) => string[]): Set<string> {
+  const seen = new Set<string>(start);
+  const queue = [...start];
+  while (queue.length) {
+    for (const n of next(queue.shift()!)) {
+      if (!seen.has(n)) {
+        seen.add(n);
+        queue.push(n);
+      }
+    }
+  }
+  return seen;
+}

@@ -1,0 +1,1176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/EventDef",
+  "definitions": {
+    "EventDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/EventId"
+        },
+        "category": {
+          "$ref": "#/definitions/EventCategory"
+        },
+        "region": {
+          "$ref": "#/definitions/RegionId"
+        },
+        "npc": {
+          "type": "string",
+          "description": "npc 이벤트의 대상 NPC"
+        },
+        "title": {
+          "type": "string"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Condition"
+          }
+        },
+        "weight": {
+          "type": "number"
+        },
+        "priority": {
+          "type": "number",
+          "description": "story 이벤트 우선순위 (높을수록 먼저)"
+        },
+        "repeat": {
+          "$ref": "#/definitions/RepeatRule"
+        },
+        "dangerTier": {
+          "type": "number",
+          "enum": [
+            1,
+            2,
+            3
+          ]
+        },
+        "startScene": {
+          "$ref": "#/definitions/SceneId"
+        },
+        "scenes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/SceneDef"
+          }
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "title",
+        "conditions",
+        "weight",
+        "repeat",
+        "startScene",
+        "scenes"
+      ],
+      "additionalProperties": false
+    },
+    "EventId": {
+      "type": "string"
+    },
+    "EventCategory": {
+      "type": "string",
+      "enum": [
+        "story",
+        "morning",
+        "explore",
+        "npc",
+        "night"
+      ]
+    },
+    "RegionId": {
+      "type": "string",
+      "enum": [
+        "village",
+        "forest",
+        "watchtower",
+        "marsh",
+        "rowen"
+      ]
+    },
+    "Condition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "dayRange"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "flag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            },
+            "value": {
+              "type": [
+                "boolean",
+                "number"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "flag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "notFlag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            }
+          },
+          "required": [
+            "type",
+            "flag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "stat"
+            },
+            "stat": {
+              "$ref": "#/definitions/StatId"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "stat",
+            "min"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "skill"
+            },
+            "skill": {
+              "$ref": "#/definitions/SkillId"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "skill",
+            "min"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "reputation"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "silver"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "min"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "food"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "min"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "hasItem"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "itemId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "equipped"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            }
+          },
+          "required": [
+            "type",
+            "itemId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "job"
+            },
+            "job": {
+              "$ref": "#/definitions/JobId"
+            }
+          },
+          "required": [
+            "type",
+            "job"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "wound"
+            },
+            "max": {
+              "$ref": "#/definitions/WoundLevel"
+            }
+          },
+          "required": [
+            "type",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "fatigue"
+            },
+            "max": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "trait"
+            },
+            "trait": {
+              "$ref": "#/definitions/TraitId"
+            }
+          },
+          "required": [
+            "type",
+            "trait"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "chance"
+            },
+            "p": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "p"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "any"
+            },
+            "of": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Condition"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "of"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "FlagId": {
+      "type": "string"
+    },
+    "StatId": {
+      "type": "string",
+      "enum": [
+        "str",
+        "agi",
+        "con",
+        "per",
+        "cha"
+      ]
+    },
+    "SkillId": {
+      "type": "string",
+      "enum": [
+        "blade",
+        "blunt",
+        "bow",
+        "guard",
+        "farming",
+        "smithing",
+        "tracking",
+        "herbalism"
+      ]
+    },
+    "ItemId": {
+      "type": "string",
+      "description": "콘텐츠 ID. 데이터 파일의 키와 일치해야 한다."
+    },
+    "JobId": {
+      "type": "string",
+      "enum": [
+        "farmer",
+        "smith",
+        "hunter",
+        "herbalist",
+        "errand"
+      ]
+    },
+    "WoundLevel": {
+      "type": "string",
+      "enum": [
+        "none",
+        "light",
+        "serious",
+        "critical"
+      ]
+    },
+    "TraitId": {
+      "type": "string"
+    },
+    "RepeatRule": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "once"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "cooldown"
+            },
+            "days": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "mode",
+            "days"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "always"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SceneId": {
+      "type": "string"
+    },
+    "SceneDef": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "$ref": "#/definitions/TextBlock"
+        },
+        "onEnter": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Effect"
+          }
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChoiceDef"
+          },
+          "description": "비어 있으면 \"계속\" 버튼 → autoNext"
+        },
+        "autoNext": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SceneId"
+            },
+            {
+              "type": "string",
+              "const": "END"
+            }
+          ]
+        }
+      },
+      "required": [
+        "text",
+        "choices"
+      ],
+      "additionalProperties": false
+    },
+    "TextBlock": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "variants": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "when": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/Condition"
+                    }
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "when",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fallback": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "variants",
+            "fallback"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Effect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "silver"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "food"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "hp"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "fatigue"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "reputation"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "addItem"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "qty"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "removeItem"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "qty"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "wound"
+            },
+            "steps": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "steps"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "healWound"
+            },
+            "to": {
+              "$ref": "#/definitions/WoundLevel"
+            }
+          },
+          "required": [
+            "type",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "setFlag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            },
+            "value": {
+              "type": [
+                "boolean",
+                "number"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "flag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "incFlag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "flag",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "skillXp"
+            },
+            "skill": {
+              "$ref": "#/definitions/SkillId"
+            },
+            "amount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "skill",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "gainTrait"
+            },
+            "trait": {
+              "$ref": "#/definitions/TraitId"
+            }
+          },
+          "required": [
+            "type",
+            "trait"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "startCombat"
+            },
+            "combat": {
+              "$ref": "#/definitions/CombatSetup"
+            }
+          },
+          "required": [
+            "type",
+            "combat"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "endDay"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "loseNextSlot"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "ending"
+            },
+            "ending": {
+              "$ref": "#/definitions/EndingId"
+            }
+          },
+          "required": [
+            "type",
+            "ending"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CombatSetup": {
+      "type": "object",
+      "properties": {
+        "enemies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnemyId"
+          }
+        },
+        "initiative": {
+          "$ref": "#/definitions/CombatInitiative"
+        },
+        "canFlee": {
+          "type": "boolean"
+        },
+        "noFleeReason": {
+          "type": "string",
+          "description": "도주 불가 사유 (UI 표시)"
+        },
+        "enemyHpModifier": {
+          "type": "number",
+          "description": "스토리 전투에서 적용할 추가 보정"
+        },
+        "playerDefenseBonus": {
+          "type": "number"
+        },
+        "firstAttackAdvantage": {
+          "type": "boolean"
+        },
+        "onVictory": {
+          "$ref": "#/definitions/SceneId"
+        },
+        "onFled": {
+          "$ref": "#/definitions/SceneId"
+        },
+        "onDefeat": {
+          "$ref": "#/definitions/SceneId"
+        }
+      },
+      "required": [
+        "enemies",
+        "initiative",
+        "canFlee",
+        "onVictory"
+      ],
+      "additionalProperties": false
+    },
+    "EnemyId": {
+      "type": "string"
+    },
+    "CombatInitiative": {
+      "type": "string",
+      "enum": [
+        "player",
+        "enemy",
+        "roll"
+      ]
+    },
+    "EndingId": {
+      "type": "string",
+      "enum": [
+        "shield_of_village",
+        "flee_together",
+        "rowen_spearman",
+        "survivor",
+        "debtor",
+        "death"
+      ]
+    },
+    "ChoiceDef": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "check": {
+              "not": {}
+            },
+            "outcome": {
+              "$ref": "#/definitions/Outcome"
+            },
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Condition"
+              },
+              "description": "표시·활성 조건"
+            },
+            "hideIfLocked": {
+              "type": "boolean",
+              "description": "조건 미충족 시 숨김 (기본 false → 잠김 표시)"
+            },
+            "lockedReason": {
+              "type": "string",
+              "description": "잠김 사유 문구 (생략 시 조건에서 자동 생성)"
+            },
+            "cost": {
+              "$ref": "#/definitions/ChoiceCost"
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "outcome"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "check": {
+              "$ref": "#/definitions/CheckSpec"
+            },
+            "outcomes": {
+              "$ref": "#/definitions/OutcomeMap"
+            },
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Condition"
+              },
+              "description": "표시·활성 조건"
+            },
+            "hideIfLocked": {
+              "type": "boolean",
+              "description": "조건 미충족 시 숨김 (기본 false → 잠김 표시)"
+            },
+            "lockedReason": {
+              "type": "string",
+              "description": "잠김 사유 문구 (생략 시 조건에서 자동 생성)"
+            },
+            "cost": {
+              "$ref": "#/definitions/ChoiceCost"
+            }
+          },
+          "required": [
+            "check",
+            "id",
+            "label",
+            "outcomes"
+          ]
+        }
+      ]
+    },
+    "Outcome": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "$ref": "#/definitions/TextBlock"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Effect"
+          }
+        },
+        "next": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SceneId"
+            },
+            {
+              "type": "string",
+              "const": "END"
+            }
+          ],
+          "description": "다음 장면 ID, 또는 \"END\"로 이벤트 종료"
+        }
+      },
+      "required": [
+        "next"
+      ],
+      "additionalProperties": false
+    },
+    "ChoiceCost": {
+      "type": "object",
+      "properties": {
+        "silver": {
+          "type": "number"
+        },
+        "food": {
+          "type": "number"
+        },
+        "fatigue": {
+          "type": "number"
+        },
+        "item": {
+          "type": "object",
+          "properties": {
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "itemId",
+            "qty"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "CheckSpec": {
+      "type": "object",
+      "properties": {
+        "stat": {
+          "$ref": "#/definitions/StatId"
+        },
+        "skill": {
+          "$ref": "#/definitions/SkillId"
+        },
+        "dc": {
+          "type": "number"
+        },
+        "situational": {
+          "type": "number",
+          "description": "상황 보정 (이벤트 고정값)"
+        },
+        "allowPartial": {
+          "type": "boolean",
+          "description": "부분 성공 허용 여부 (기본 false)"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "흔적 보정 매칭용 태그: \"beast\", \"fear\", \"goblin\" ..."
+        },
+        "forceMode": {
+          "$ref": "#/definitions/RollMode",
+          "description": "이 판정에만 적용할 유리/불리"
+        }
+      },
+      "required": [
+        "stat",
+        "dc"
+      ],
+      "additionalProperties": false,
+      "description": "데이터(이벤트·행동)에 적히는 판정 명세"
+    },
+    "RollMode": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "advantage",
+        "disadvantage"
+      ]
+    },
+    "OutcomeMap": {
+      "type": "object",
+      "properties": {
+        "critSuccess": {
+          "$ref": "#/definitions/Outcome"
+        },
+        "success": {
+          "$ref": "#/definitions/Outcome"
+        },
+        "partial": {
+          "$ref": "#/definitions/Outcome"
+        },
+        "fail": {
+          "$ref": "#/definitions/Outcome"
+        },
+        "critFail": {
+          "$ref": "#/definitions/Outcome"
+        }
+      },
+      "required": [
+        "success",
+        "fail"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

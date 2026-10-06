@@ -26,10 +26,10 @@ export function EveningPanel({ run }: { run: RunState }) {
   if (p.foodShort) notes.push({ text: `식량이 ${shortBy} 모자라 누군가는 굶는다.`, tone: "warn" });
   if (p.taxDue) {
     notes.push(p.taxShort
-      ? { text: `세금날(은화 ${p.taxDue})인데 은화가 모자라 빚과 평판 손실이 생긴다.`, tone: "bad" }
-      : { text: `오늘은 세금날이라 은화 ${p.taxDue}을 낸다.`, tone: "info" });
+      ? { text: `오늘은 납세일인데 세금(은화 ${p.taxDue}닢)을 낼 은화가 모자라다. 모자란 만큼 빚이 생기고 평판이 떨어진다.`, tone: "bad" }
+      : { text: `오늘은 납세일이다. 잠들기 전에 세금으로 은화 ${p.taxDue}닢을 낸다.`, tone: "info" });
   }
-  if (p.debtEnding) notes.push({ text: "빚이 너무 많다. 이대로 세금날을 맞으면 끝이다.", tone: "bad" });
+  if (p.debtEnding) notes.push({ text: "빚이 너무 많다. 이대로 납세일을 맞으면 끝이다.", tone: "bad" });
   if (p.lastDay) notes.push({ text: "서른 번째 밤이다.", tone: "info" });
 
   return (

@@ -1,4 +1,4 @@
-import type { CheckOutcome, DayPhase, EndingId, RollMode, SkillId, StatId, WoundLevel } from "./types";
+import type { CheckOutcome, DayPhase, EndingId, JobId, RegionId, RollMode, SkillId, StatId, WoundLevel } from "./types";
 
 /** 보정치 표기: +2, 0, -1 */
 export function formatSigned(n: number): string {
@@ -63,3 +63,35 @@ export const ENDING_LABEL: Record<EndingId, string> = {
   debtor: "빚진 자",
   death: "사망",
 };
+
+export const REGION_LABEL: Record<RegionId, string> = {
+  village: "보리울",
+  forest: "개암나무 숲",
+  watchtower: "버려진 감시탑",
+  marsh: "회색 늪지",
+  rowen: "로웬",
+};
+
+/** 직업 이름. 확장 직업은 jobs 데이터가 없어도 이름은 있어야 해서 여기 둔다 */
+export const JOB_LABEL: Record<JobId, string> = {
+  farmer: "농부",
+  smith: "대장장이 견습",
+  hunter: "사냥꾼",
+  herbalist: "약초꾼",
+  errand: "여관 심부름꾼",
+};
+
+export type JosaPair = "을/를" | "이/가" | "은/는" | "과/와" | "으로/로";
+
+/**
+ * 받침에 맞는 조사를 붙인다: josa("검술", "을/를") → "검술을", josa("활", "으로/로") → "활로".
+ * "으로/로"는 ㄹ 받침도 "로". 한글로 끝나지 않으면(숫자·영문) 받침 없는 쪽을 쓴다.
+ */
+export function josa(word: string, pair: JosaPair): string {
+  const [withFinal, withoutFinal] = pair.split("/");
+  const code = word.charCodeAt(word.length - 1) - 0xac00;
+  if (code < 0 || code > 11171) return word + withoutFinal;
+  const final = code % 28;
+  const useWithout = final === 0 || (pair === "으로/로" && final === 8);
+  return word + (useWithout ? withoutFinal : withFinal);
+}

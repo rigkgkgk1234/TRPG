@@ -114,7 +114,7 @@ export default function DiceTestScreen() {
 
         <Section title="상태 · 상황">
           <ChipRow>
-            <Chip label="지침 (피로 8)" selected={input.fatigued} onPress={() => set("fatigued", !input.fatigued)} />
+            <Chip label="지친 상태 (피로 8)" selected={input.fatigued} onPress={() => set("fatigued", !input.fatigued)} />
             <Chip label="굶주림 2" selected={input.hungry} onPress={() => set("hungry", !input.hungry)} />
             <Chip label="사슬 셔츠" selected={input.chainShirt} onPress={() => set("chainShirt", !input.chainShirt)} />
             <Chip label="사전 정보 (유리함)" selected={intel} onPress={() => setIntel(!intel)} />

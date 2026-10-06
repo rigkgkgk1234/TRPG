@@ -1,9 +1,10 @@
-// 하루 루프 자동 플레이: 정해진 방침으로 30일을 보내고 은화·피로 곡선을 본다. (ARCHITECTURE 2주차)
+// 하루 루프 자동 플레이: 정해진 방침으로 30일을 보내고 은화·피로 곡선을 본다. (ARCHITECTURE 2주차, 3주차에 숲 탐험 추가)
 // 사용법: npm run simulate [-- --runs 500]
 import type { GameCommand } from "@/core/commands";
 import { actionStatus } from "@/core/day/actions";
 import { FOOD_PER_DAY } from "@/core/day/evening";
 import { maxFoodAffordable } from "@/core/day/town";
+import { sceneView } from "@/core/events/runner";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
 import type { JobId, RunState } from "@/core/types";
@@ -15,18 +16,29 @@ const CHECKPOINT_DAYS = [1, 7, 8, 14, 15, 21, 22, 28, 29, 30];
 
 interface DaySnapshot { silver: number; fatigue: number; food: number; debt: number }
 
-type Policy = { name: string; pm: "work" | "rest" };
+type Policy = { name: string; pm: "work" | "rest" | "explore" };
 /** 오전은 늘 일한다. 오후 행동만 다르다. */
 const POLICIES: Policy[] = [
   { name: "오전 일하기 + 오후 휴식", pm: "rest" },
   { name: "하루 두 번 일하기", pm: "work" },
+  { name: "오전 일하기 + 오후 숲 탐험", pm: "explore" },
 ];
 
-/** 일을 못 하는 상태(치명상)면 쉰다. 저녁마다 모자란 식량을 산다(autoPlay). */
+/**
+ * 일을 못 하는 상태(치명상)면 쉰다. 저녁마다 모자란 식량을 산다(autoPlay).
+ * 탐험 중에는 고를 수 있는 첫 선택지를 고르고, 더 깊이는 들어가지 않는다.
+ */
 function pickCommand(run: RunState, policy: Policy): GameCommand {
+  const scene = sceneView(run, CONTENT);
+  if (scene?.kind === "deeper") return { type: "goDeeper", yes: false };
+  if (scene?.kind === "continue") return { type: "continue" };
+  if (scene?.kind === "choices") return { type: "chooseChoice", choiceId: scene.choices.find((c) => c.lockedReason === null)!.id };
   if (run.time.phase === "evening") return { type: "endDay" };
   const action = run.time.phase === "am" ? "work" : policy.pm;
-  return { type: "chooseAction", action: actionStatus(run, action).available ? action : "rest" };
+  const region = action === "explore" ? "forest" : undefined;
+  return actionStatus(run, CONTENT, action, { region }).available
+    ? { type: "chooseAction", action, region }
+    : { type: "chooseAction", action: "rest" };
 }
 
 function autoPlay(job: JobId, seed: number, policy: Policy): { run: RunState; days: Map<number, DaySnapshot>; collapses: number } {
@@ -73,7 +85,7 @@ for (const policy of POLICIES) for (const job of JOBS) {
 
   const finals = results.map((r) => r.run);
   console.log(
-    `최종 평균: 은화 ${fmt(avg(finals.map((r) => r.resources.silver)))}, 번 은화 ${fmt(avg(finals.map((r) => r.stats.silverEarned)))}, ` +
+    `최종 평균: 은화 ${fmt(avg(finals.map((r) => r.resources.silver)))}, 벌어들인 은화 ${fmt(avg(finals.map((r) => r.stats.silverEarned)))}, ` +
     `숙련 등급 합 ${fmt(avg(finals.map((r) => Object.values(r.player.skills).reduce((n, s) => n + s.rank, 0))))}`,
   );
 }

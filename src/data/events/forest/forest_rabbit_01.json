@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_rabbit_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "덤불 속 토끼",
+  "conditions": [],
+  "weight": 10,
+  "repeat": { "mode": "cooldown", "days": 2 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "덤불이 바스락거리더니 살진 토끼 한 마리가 고개를 내민다. 아직 이쪽을 눈치채지 못했다.",
+      "choices": [
+        {
+          "id": "shoot",
+          "label": "활을 쏜다",
+          "conditions": [{ "type": "equipped", "itemId": "hunting_bow" }],
+          "cost": { "item": { "itemId": "arrow", "qty": 1 } },
+          "check": { "stat": "agi", "skill": "bow", "dc": 11, "tags": ["beast"] },
+          "outcomes": {
+            "critSuccess": { "text": "옆에 한 마리가 더 있었다. 연달아 쏘아 둘 다 잡았다.", "effects": [{ "type": "food", "delta": 3 }], "next": "END" },
+            "success": { "text": "화살이 정확히 꽂혔다. 오늘 저녁거리가 생겼다.", "effects": [{ "type": "food", "delta": 2 }], "next": "END" },
+            "fail": { "text": "화살은 풀숲으로, 토끼는 굴속으로 사라졌다.", "next": "END" }
+          }
+        },
+        {
+          "id": "snare",
+          "label": "올무를 놓고 기다린다",
+          "check": { "stat": "per", "skill": "tracking", "dc": 12, "allowPartial": true, "tags": ["beast"] },
+          "outcomes": {
+            "success": { "text": "올무가 조여졌다. 생각보다 묵직하다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "partial": { "text": "잡긴 했지만 한참을 쭈그려 기다리느라 다리가 저리다.", "effects": [{ "type": "food", "delta": 1 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
+            "fail": { "text": "해가 기울도록 기다렸지만 허탕이었다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" }
+          }
+        },
+        { "id": "leave", "label": "그냥 지나간다", "outcome": { "text": "토끼는 제 갈 길을 갔다.", "next": "END" } }
+      ]
+    }
+  }
+}

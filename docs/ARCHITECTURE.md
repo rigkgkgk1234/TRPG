@@ -555,7 +555,7 @@ export function buildCheckContext(run: RunState, spec: CheckSpec, content: Conte
   modifiers.push(...traitModifiers(player.traits, spec, content));   // 예: 늑대 사냥꾼 +1 (beast)
 
   const disadvantageSources: string[] = [];
-  if (resources.fatigue >= FATIGUE_DISADVANTAGE_AT) disadvantageSources.push("지침");
+  if (resources.fatigue >= FATIGUE_DISADVANTAGE_AT) disadvantageSources.push("지친 상태");
   if (resources.hunger >= 2) disadvantageSources.push("굶주림");
   if (w === "serious" || w === "critical") disadvantageSources.push("중상");
 

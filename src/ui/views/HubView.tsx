@@ -5,8 +5,9 @@ import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { canTrade } from "@/core/day/town";
-import { SKILL_IDS, SKILL_LABEL } from "@/core/labels";
-import { FOOD_PRICE, SKILL_STAT, type CheckSpec, type DailyActionDef, type RunState, type SkillId } from "@/core/types";
+import { DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
+import { REGION_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
+import { FOOD_PRICE, SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
@@ -16,37 +17,47 @@ import { BasketIcon, HandCoinsIcon } from "@/ui/icons";
 import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
+/** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
+type Picking = Training | "explore";
+
+const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore";
 
 /** 오전·오후 행동을 고르는 아래 패널. 버튼은 엄지가 닿는 아래쪽에 모은다. */
 export function HubPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
-  const [training, setTraining] = useState<Training | null>(null);
+  const [picking, setPicking] = useState<Picking | null>(null);
 
   const choose = (def: DailyActionDef) => {
-    if (def.id === "trainSolo" || def.id === "trainLesson") {
-      setTraining(training === def.id ? null : def.id);
+    if (isPicking(def.id)) {
+      setPicking(picking === def.id ? null : def.id);
       return;
     }
-    setTraining(null);
+    setPicking(null);
     send({ type: "chooseAction", action: def.id });
   };
 
   const train = (skill: SkillId) => {
-    if (!training) return;
-    send({ type: "chooseAction", action: training, skill });
-    setTraining(null);
+    if (picking !== "trainSolo" && picking !== "trainLesson") return;
+    send({ type: "chooseAction", action: picking, skill });
+    setPicking(null);
+  };
+
+  const explore = (region: RegionId) => {
+    send({ type: "chooseAction", action: "explore", region });
+    setPicking(null);
   };
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
-      {training && (
-        <TrainingPicker run={run} kind={training} onPick={train} />
-      )}
+      {picking === "explore" ? (
+        <RegionPicker run={run} onPick={explore} />
+      ) : picking ? (
+        <TrainingPicker run={run} kind={picking} onPick={train} />
+      ) : null}
       <ButtonGrid>
         {MVP_ACTIONS.map((def) => {
-          const isTraining = def.id === "trainSolo" || def.id === "trainLesson";
-          const status = isTraining ? trainingStatus(run, def.id as Training) : actionStatus(run, def.id);
+          const status = isPicking(def.id) ? pickingStatus(run, def.id) : actionStatus(run, CONTENT, def.id);
           return (
             <GridCell key={def.id}>
               <ActionButton
@@ -55,7 +66,7 @@ export function HubPanel({ run }: { run: RunState }) {
                 badge={status.available && def.id === "work" ? percent(chance(run, jobOf(CONTENT, run).work.check)) : undefined}
                 detail={status.available ? actionDetail(run, def) : status.reason}
                 disabled={!status.available}
-                selected={training === def.id}
+                selected={picking === def.id}
                 onPress={() => choose(def)}
               />
             </GridCell>
@@ -76,7 +87,7 @@ function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; 
       </Text>
       <ChipRow>
         {skills.map((skill) => {
-          const ok = actionStatus(run, kind, skill).available;
+          const ok = actionStatus(run, CONTENT, kind, { skill }).available;
           const p = run.player.skills[skill];
           const extra = ok && kind === "trainSolo" ? `  ${percent(soloChance(run, skill))}` : "";
           return (
@@ -86,6 +97,28 @@ function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; 
               selected={false}
               disabled={!ok}
               onPress={() => onPick(skill)}
+            />
+          );
+        })}
+      </ChipRow>
+    </View>
+  );
+}
+
+function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void }) {
+  return (
+    <View style={styles.picker}>
+      <Text style={styles.pickerTitle}>어디로 갈까? 카드 {EXPLORE_CARDS}장을 보고, 원하면 더 깊이 들어간다</Text>
+      <ChipRow>
+        {EXPLORE_REGIONS.map((region) => {
+          const status = actionStatus(run, CONTENT, "explore", { region });
+          return (
+            <Chip
+              key={region}
+              label={status.available ? REGION_LABEL[region] : `${REGION_LABEL[region]} (${status.reason})`}
+              selected={false}
+              disabled={!status.available}
+              onPress={() => onPick(region)}
             />
           );
         })}
@@ -132,6 +165,7 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
       return [`은화 ${w.baseSilver}~${w.baseSilver + w.bonusSilver * 2}`, `피로 +${w.fatigue}`];
     }
     case "trainSolo": return ["숙련 고르기", `피로 +${def.fatigue}`];
+    case "explore": return [`카드 ${EXPLORE_CARDS}~${EXPLORE_CARDS + 1}장`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`];
     case "trainLesson": return [`은화 -${def.silverCost}`, `경험 +${LESSON_XP}`, `피로 +${def.fatigue}`];
     case "rest": return [`피로 ${def.fatigue}`, `HP +${REST_HP}`];
     default: return [];
@@ -139,14 +173,18 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
 }
 
 /**
- * 훈련 버튼은 숙련을 고르기 전에 그려진다: 고를 수 있는 숙련이 하나라도 있으면 열고,
- * 없으면 오늘 경험을 더 쌓을 수 있는 숙련의 사유(은화·부상 등)를, 그것도 없으면 하루 상한을 보여 준다.
+ * 훈련·탐험 버튼은 숙련·지역을 고르기 전에 그려진다: 고를 수 있는 것이 하나라도 있으면 열고,
+ * 없으면 대표 사유를 보여 준다. 훈련은 오늘 경험을 더 쌓을 수 있는 숙련의 사유(은화·부상 등), 그것도 없으면 하루 상한.
  */
-function trainingStatus(run: RunState, kind: Training): ActionStatus {
+function pickingStatus(run: RunState, kind: Picking): ActionStatus {
+  if (kind === "explore") {
+    const statuses = EXPLORE_REGIONS.map((region) => actionStatus(run, CONTENT, "explore", { region }));
+    return statuses.find((s) => s.available) ?? statuses[0];
+  }
   const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;
-  if (skills.some((s) => actionStatus(run, kind, s).available)) return { available: true };
+  if (skills.some((skill) => actionStatus(run, CONTENT, kind, { skill }).available)) return { available: true };
   const withRoom = skills.find((s) => skillXpRoomToday(run.player, s) > 0);
-  return withRoom ? actionStatus(run, kind, withRoom) : { available: false, reason: "오늘은 더 익힐 수 없다" };
+  return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없다" };
 }
 
 function soloChance(run: RunState, skill: SkillId): number {

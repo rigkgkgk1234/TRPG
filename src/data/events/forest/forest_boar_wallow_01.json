@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_boar_wallow_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "멧돼지 진흙탕",
+  "conditions": [],
+  "weight": 6,
+  "repeat": { "mode": "cooldown", "days": 5 },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "질척한 웅덩이 둘레로 나무껍질이 허리 높이까지 벗겨져 있다. 멧돼지가 몸을 비빈 자국이다. 냄새가 아직 진하다.",
+      "choices": [
+        {
+          "id": "sneak",
+          "label": "조용히 돌아서 지나간다",
+          "check": { "stat": "agi", "dc": 12, "allowPartial": true, "tags": ["beast"] },
+          "outcomes": {
+            "success": { "text": "웅덩이를 크게 돌아 무사히 빠져나왔다.", "next": "END" },
+            "partial": { "text": "마른 가지를 밟았다. 멀리서 콧김 소리. 냅다 뛰었다.", "effects": [{ "type": "fatigue", "delta": 2 }], "next": "END" },
+            "fail": { "text": "덤불이 갈라지며 멧돼지가 들이받았다!", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -2 }], "next": "END" }
+          }
+        },
+        {
+          "id": "hunt",
+          "label": "발자국을 쫓아 사냥감을 노린다",
+          "conditions": [{ "type": "skill", "skill": "tracking", "min": 2 }],
+          "check": { "stat": "per", "skill": "tracking", "dc": 13, "tags": ["beast"] },
+          "outcomes": {
+            "success": { "text": "진흙에 빠진 새끼 멧돼지를 찾았다. 고기를 넉넉히 챙겼다.", "effects": [{ "type": "food", "delta": 3 }], "next": "END" },
+            "fail": { "text": "어미가 돌아왔다. 간신히 나무 위로 피했지만 정강이를 받혔다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
+            "critFail": { "text": "어미의 엄니가 허벅지를 스쳤다.", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -3 }], "next": "END" }
+          }
+        },
+        { "id": "back", "label": "왔던 길로 돌아간다", "outcome": { "text": "멧돼지와 씨름할 날은 오늘이 아니다.", "next": "END" } }
+      ]
+    }
+  }
+}

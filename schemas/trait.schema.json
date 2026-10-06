@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/TraitDef",
+  "definitions": {
+    "TraitDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/TraitId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "checkBonus": {
+          "type": "object",
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stat": {
+              "$ref": "#/definitions/StatId"
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false,
+          "description": "판정 보정. stat을 지정하면 그 능력치 판정만, tags를 지정하면 그중 하나 이상이 붙은 판정만 (둘 다 없으면 모든 판정)"
+        },
+        "advantageTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "이 태그가 붙은 판정에 유리함"
+        },
+        "statDelta": {
+          "type": "object",
+          "properties": {
+            "str": {
+              "type": "number"
+            },
+            "agi": {
+              "type": "number"
+            },
+            "con": {
+              "type": "number"
+            },
+            "per": {
+              "type": "number"
+            },
+            "cha": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "description": "획득 시 한 번 적용하는 능력치 변화 (예: 오래된 상처 → agi -1)"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "additionalProperties": false,
+      "description": "흔적(특성) 데이터. 판정 보정은 buildCheckContext가 읽는다."
+    },
+    "TraitId": {
+      "type": "string"
+    },
+    "StatId": {
+      "type": "string",
+      "enum": [
+        "str",
+        "agi",
+        "con",
+        "per",
+        "cha"
+      ]
+    }
+  }
+}

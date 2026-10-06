@@ -11,7 +11,7 @@ import { CONTENT } from "@/data";
 import { d20Sequence } from "./fixtures";
 
 const NOW = "2026-10-07T00:00:00.000Z";
-const start = (job: JobId = "farmer", seed = 1) => newRun(CONTENT, job, "테스트", { seed, now: NOW });
+const start = (job: JobId = "farmer", seed = 1) => newRun(CONTENT, job, "하람", { seed, now: NOW });
 
 /** 정해 둔 주사위로 코어 함수를 직접 부른다. draft 대신 깊은 복사본을 고친다. */
 function withDice(run: RunState, rng: Rng = d20Sequence()): Ctx {
@@ -99,9 +99,9 @@ describe("일하기", () => {
 describe("훈련·휴식", () => {
   it("혼자 훈련은 숙련을 골라야 하고, 해당 능력치로 DC 10", () => {
     const run = start("hunter");
-    expect(actionStatus(run, "trainSolo")).toMatchObject({ available: false });
+    expect(actionStatus(run, CONTENT, "trainSolo")).toMatchObject({ available: false });
     const ctx = withDice(run, d20Sequence(6)); // 6 + 민첩2 + 활2 = 10
-    handleAction(ctx, "trainSolo", "bow");
+    handleAction(ctx, "trainSolo", { skill: "bow" });
     expect(ctx.draft.player.skills.bow.xp).toBe(1);
     expect(ctx.draft.player.statUses.agi).toBe(1);
     expect(ctx.draft.resources.fatigue).toBe(2);
@@ -109,14 +109,14 @@ describe("훈련·휴식", () => {
 
   it("혼자 훈련 대실패는 피로 +1 추가 (SYSTEM_SPEC 2-4)", () => {
     const ctx = withDice(start("hunter"), d20Sequence(1));
-    handleAction(ctx, "trainSolo", "bow");
+    handleAction(ctx, "trainSolo", { skill: "bow" });
     expect(ctx.draft.resources.fatigue).toBe(3);
     expect(ctx.draft.player.skills.bow.xp).toBe(2);
   });
 
   it("교습: 은화 3, XP +3, 피로 +3, 등급이 오르면 XP 0", () => {
     const ctx = withDice(start("farmer"));
-    handleAction(ctx, "trainLesson", "guard");
+    handleAction(ctx, "trainLesson", { skill: "guard" });
     const s = ctx.draft;
     expect(s.resources.silver).toBe(7);
     expect(s.resources.fatigue).toBe(3);
@@ -125,9 +125,9 @@ describe("훈련·휴식", () => {
   });
 
   it("교습은 레나가 가르치는 숙련만, 은화 3 이상", () => {
-    expect(actionStatus(start("farmer"), "trainLesson", "farming")).toMatchObject({ available: false });
+    expect(actionStatus(start("farmer"), CONTENT, "trainLesson", { skill: "farming" })).toMatchObject({ available: false });
     const poor = edit(start("farmer"), (s) => { s.resources.silver = 2; });
-    expect(actionStatus(poor, "trainLesson", "blade")).toEqual({ available: false, reason: "은화 3 필요" });
+    expect(actionStatus(poor, CONTENT, "trainLesson", { skill: "blade" })).toEqual({ available: false, reason: "은화 3 필요" });
   });
 
   it("휴식: HP +2(최대치까지), 피로 -3, 경상은 휴식 2회로 회복", () => {
@@ -148,9 +148,9 @@ describe("훈련·휴식", () => {
 
   it("중상이면 훈련·교습 불가, 일하기·휴식은 가능", () => {
     const run = edit(start("farmer"), (s) => { s.player.wound.level = "serious"; });
-    expect(actionStatus(run, "trainSolo", "blade").available).toBe(false);
-    expect(actionStatus(run, "work").available).toBe(true);
-    expect(actionStatus(run, "rest").available).toBe(true);
+    expect(actionStatus(run, CONTENT, "trainSolo", { skill: "blade" }).available).toBe(false);
+    expect(actionStatus(run, CONTENT, "work").available).toBe(true);
+    expect(actionStatus(run, CONTENT, "rest").available).toBe(true);
   });
 
   it("없는 숙련 ID는 크래시 없이 거절", () => {
@@ -160,8 +160,9 @@ describe("훈련·휴식", () => {
     expect(res.feed).toEqual([{ kind: "toast", text: "그런 기술은 없다" }]);
   });
 
-  it("탐험·마을 볼일은 아직 잠겨 있다", () => {
-    expect(actionStatus(start(), "explore")).toEqual({ available: false, reason: "준비 중 (3주차)" });
+  it("마을 볼일은 아직 잠겨 있고, 탐험은 지역을 골라야 한다", () => {
+    expect(actionStatus(start(), CONTENT, "village")).toEqual({ available: false, reason: "준비 중" });
+    expect(actionStatus(start(), CONTENT, "explore")).toEqual({ available: false, reason: "갈 곳을 고른다" });
   });
 });
 
@@ -274,7 +275,7 @@ describe("저녁 정산", () => {
     expect(ctx.draft.player.reputation).toBe(5);
   });
 
-  it("빚 20 이상으로 세금일을 맞으면 「빚진 자」", () => {
+  it("빚 20 이상으로 납세일을 맞으면 「빚진 자」", () => {
     const ctx = withDice(evening((s) => { s.time.day = 21; s.resources.debt = 20; }));
     expect(runEvening(ctx)).toBe(false);
     expect(ctx.draft.ending).toBe("debtor");

@@ -8,7 +8,7 @@ const content: Pick<ContentDB, "items" | "traits"> = {
   items: Object.fromEntries(SAMPLE_ITEMS.map((item) => [item.id, item])),
   traits: {
     wolf_hunter: { id: "wolf_hunter", name: "늑대 사냥꾼", description: "", checkBonus: { tags: ["beast"], value: 1 } },
-    survivor: { id: "survivor", name: "죽다 살아남", description: "", advantageTags: ["fear"] },
+    survivor: { id: "survivor", name: "죽다 살아난 자", description: "", advantageTags: ["fear"] },
     calloused: { id: "calloused", name: "굳은살", description: "", checkBonus: { tags: [], value: 1 } },
     keen_eye: { id: "keen_eye", name: "밝은 눈", description: "", checkBonus: { stat: "per", value: 1 } },
   },
@@ -45,7 +45,7 @@ describe("buildCheckContext", () => {
 
   it("피로 7 이상, 굶주림 2 이상이면 불리함", () => {
     expect(buildCheckContext(makeSubject({ fatigue: 6 }), bow, content).disadvantageSources).toEqual([]);
-    expect(buildCheckContext(makeSubject({ fatigue: 7, hunger: 2 }), bow, content).disadvantageSources).toEqual(["지침", "굶주림"]);
+    expect(buildCheckContext(makeSubject({ fatigue: 7, hunger: 2 }), bow, content).disadvantageSources).toEqual(["지친 상태", "굶주림"]);
   });
 
   it("흔적 보정은 태그가 맞을 때만", () => {
@@ -57,8 +57,8 @@ describe("buildCheckContext", () => {
   it("흔적 유리함과 상황 유리/불리를 합친다", () => {
     const subject = makeSubject({ traits: ["survivor"], fatigue: 8 });
     const c = buildCheckContext(subject, { stat: "con", dc: 12, tags: ["fear"] }, content, { advantage: ["정찰 정보"] });
-    expect(c.advantageSources).toEqual(["정찰 정보", "죽다 살아남"]);
-    expect(c.disadvantageSources).toEqual(["지침"]);
+    expect(c.advantageSources).toEqual(["정찰 정보", "죽다 살아난 자"]);
+    expect(c.disadvantageSources).toEqual(["지친 상태"]);
   });
 
   it("상황 보정과 알 수 없는 흔적 ID", () => {

@@ -1,6 +1,6 @@
 import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
-import { PHASE_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
+import { josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import type { CheckOutcome, CheckResult, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import type { LogGroup } from "@/store/gameStore";
@@ -46,7 +46,8 @@ const RESOURCE_ORDER: ResourceKey[] = ["silver", "food", "hp", "fatigue", "reput
 /** 늘어나면 나쁜 자원 */
 const COST_KEYS = new Set<ResourceKey>(["fatigue", "debt"]);
 
-export interface Change { key: ResourceKey; label: string; delta: number; tone: Tone }
+/** key: 자원 이름, 아이템이면 "item:herb" */
+export interface Change { key: string; label: string; delta: number; tone: Tone }
 /** mark: 문장 앞에 붙일 아이콘 종류 */
 export interface Line { text: string; tone: Tone; mark?: "levelUp" | "wound" | "heal" }
 
@@ -65,8 +66,10 @@ export interface TurnSummary {
   notices: string[];
 }
 
-export function summarizeTurn(group: LogGroup, run: RunState): TurnSummary {
+export function summarizeTurn(group: LogGroup): TurnSummary {
+  const run = group.before;
   const totals = new Map<ResourceKey, number>();
+  const items = new Map<string, { name: string; delta: number }>();
   const events: Line[] = [];
   const notices: string[] = [];
   let roll: CheckResult | undefined;
@@ -74,6 +77,11 @@ export function summarizeTurn(group: LogGroup, run: RunState): TurnSummary {
   for (const item of group.items) {
     switch (item.kind) {
       case "resource": totals.set(item.key, (totals.get(item.key) ?? 0) + item.delta); break;
+      case "item": {
+        const prev = items.get(item.itemId);
+        items.set(item.itemId, { name: item.name, delta: (prev?.delta ?? 0) + item.delta });
+        break;
+      }
       case "roll": roll ??= item.result; break;
       case "toast": notices.push(item.text); break;
       default: events.push(eventLine(item));
@@ -86,13 +94,18 @@ export function summarizeTurn(group: LogGroup, run: RunState): TurnSummary {
     const good = COST_KEYS.has(key) ? delta < 0 : delta > 0;
     return [{ key, label: RESOURCE_LABEL[key], delta, tone: good ? "good" : "bad" }];
   });
+  for (const [id, { name, delta }] of items) {
+    if (delta !== 0) changes.push({ key: `item:${id}`, label: name, delta, tone: delta > 0 ? "good" : "bad" });
+  }
 
   // 휴식처럼 문장이 없는 행동도 무엇이 일어났는지 한 줄은 있게
   if (events.length === 0 && notices.length === 0 && group.cmd.type === "chooseAction" && group.cmd.action === "rest") {
     events.push({ text: "몸을 누이고 한숨 돌렸다.", tone: "neutral" });
   }
 
-  return { when: `${group.day}일차 ${PHASE_LABEL[group.phase]}`, title: commandTitle(group.cmd, run), roll, changes, events, notices };
+  const when = `${run.time.day}일차 ${PHASE_LABEL[run.time.phase]}`;
+  const event = eventTitle(group.cmd, run);
+  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, changes, events, notices };
 }
 
 /** 지난 기록용 변화 요약: "은화 +3, 식량 +1, 피로 +2" (없으면 첫 사건이나 거절 사유) */
@@ -116,21 +129,36 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
       if (cmd.action === "trainSolo") return `혼자 훈련${skill}`;
       if (cmd.action === "trainLesson") return `레나의 교습${skill}`;
       if (cmd.action === "rest") return "휴식";
+      if (cmd.action === "explore" && cmd.region) return `${REGION_LABEL[cmd.region]} 탐험`;
       return cmd.action;
     }
+    case "chooseChoice": {
+      const a = run.activeEvent;
+      const scene = a && CONTENT.events[a.eventId]?.scenes[a.sceneId];
+      return scene?.choices.find((c) => c.id === cmd.choiceId)?.label ?? "선택";
+    }
+    case "continue": return "계속";
+    case "goDeeper": return cmd.yes ? "더 깊이 들어간다" : "마을로 돌아간다";
     case "endDay": return "하루 정산";
     case "shop": return cmd.op === "buyFood" ? "식량 사기" : "빚 갚기";
   }
 }
 
-function eventLine(item: Exclude<FeedItem, { kind: "resource" | "roll" | "toast" }>): Line {
+/** 이벤트 안에서 한 일이면 그 이벤트 제목 (카드 윗줄에 시각과 함께) */
+function eventTitle(cmd: GameCommand, run: RunState): string | null {
+  if (cmd.type !== "chooseChoice" && cmd.type !== "continue") return null;
+  const a = run.activeEvent;
+  return (a && CONTENT.events[a.eventId]?.title) ?? null;
+}
+
+function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" }>): Line {
   switch (item.kind) {
     case "text":
       return { text: item.text, tone: "neutral" };
     case "levelUp":
       return item.skill
         ? { text: `${SKILL_LABEL[item.skill]} ${item.newValue}등급이 되었다`, tone: "crit", mark: "levelUp" }
-        : { text: `${STAT_LABEL[item.stat!]}이(가) ${signed(item.newValue)}로 올랐다`, tone: "crit", mark: "levelUp" };
+        : { text: `${josa(STAT_LABEL[item.stat!], "이/가")} 올랐다 (${signed(item.newValue)})`, tone: "crit", mark: "levelUp" };
     case "wound":
       return item.level === "none"
         ? { text: "상처가 다 나았다.", tone: "good", mark: "heal" }

@@ -6,6 +6,7 @@ import type { Icon } from "phosphor-react-native";
  * 아이콘은 Phosphor 한 가족만 쓴다.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
+export const ArrowRightIcon: Icon = require("phosphor-react-native/src/icons/ArrowRight").ArrowRightIcon;
 export const BandaidsIcon: Icon = require("phosphor-react-native/src/icons/Bandaids").BandaidsIcon;
 export const BarbellIcon: Icon = require("phosphor-react-native/src/icons/Barbell").BarbellIcon;
 export const BasketIcon: Icon = require("phosphor-react-native/src/icons/Basket").BasketIcon;
@@ -19,14 +20,17 @@ export const HammerIcon: Icon = require("phosphor-react-native/src/icons/Hammer"
 export const HandCoinsIcon: Icon = require("phosphor-react-native/src/icons/HandCoins").HandCoinsIcon;
 export const HeartIcon: Icon = require("phosphor-react-native/src/icons/Heart").HeartIcon;
 export const LightningIcon: Icon = require("phosphor-react-native/src/icons/Lightning").LightningIcon;
+export const LockSimpleIcon: Icon = require("phosphor-react-native/src/icons/LockSimple").LockSimpleIcon;
 export const MedalIcon: Icon = require("phosphor-react-native/src/icons/Medal").MedalIcon;
 export const MoonStarsIcon: Icon = require("phosphor-react-native/src/icons/MoonStars").MoonStarsIcon;
 export const PlantIcon: Icon = require("phosphor-react-native/src/icons/Plant").PlantIcon;
+export const SignOutIcon: Icon = require("phosphor-react-native/src/icons/SignOut").SignOutIcon;
 export const SkullIcon: Icon = require("phosphor-react-native/src/icons/Skull").SkullIcon;
 export const StorefrontIcon: Icon = require("phosphor-react-native/src/icons/Storefront").StorefrontIcon;
 export const SunHorizonIcon: Icon = require("phosphor-react-native/src/icons/SunHorizon").SunHorizonIcon;
 export const SunIcon: Icon = require("phosphor-react-native/src/icons/Sun").SunIcon;
 export const TargetIcon: Icon = require("phosphor-react-native/src/icons/Target").TargetIcon;
+export const TreeIcon: Icon = require("phosphor-react-native/src/icons/Tree").TreeIcon;
 export const TrendUpIcon: Icon = require("phosphor-react-native/src/icons/TrendUp").TrendUpIcon;
 export const WarningIcon: Icon = require("phosphor-react-native/src/icons/Warning").WarningIcon;
 

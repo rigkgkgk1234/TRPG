@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_mushroom_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "고목 아래 버섯",
+  "conditions": [],
+  "weight": 8,
+  "repeat": { "mode": "cooldown", "days": 3 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "쓰러진 고목 밑동에 갓이 넓은 버섯이 무리 지어 났다. 먹는 버섯과 독버섯은 생김새가 비슷하다.",
+      "choices": [
+        {
+          "id": "identify",
+          "label": "잘 살펴보고 고른다",
+          "check": { "stat": "per", "skill": "herbalism", "dc": 12 },
+          "outcomes": {
+            "critSuccess": { "text": "귀한 버섯까지 섞여 있었다. 넉넉히 챙겼다.", "effects": [{ "type": "food", "delta": 2 }], "next": "END" },
+            "success": { "text": "먹는 버섯이다. 국에 넣으면 한 끼는 된다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "fail": { "text": "아무래도 확신이 서지 않는다. 그냥 두었다.", "next": "END" },
+            "critFail": { "text": "먹는 버섯인 줄 알았는데 만진 손이 따끔거린다.", "effects": [{ "type": "hp", "delta": -1 }], "next": "END" }
+          }
+        },
+        {
+          "id": "taste",
+          "label": "한 입 베어 물어 본다",
+          "check": { "stat": "con", "dc": 10 },
+          "outcomes": {
+            "success": { "text": "멀쩡하다. 나머지도 챙겼다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "fail": { "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 게워 냈다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 2 }], "next": "END" }
+          }
+        },
+        { "id": "leave", "label": "괜한 모험은 하지 않는다", "outcome": { "next": "END" } }
+      ]
+    }
+  }
+}

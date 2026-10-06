@@ -1,0 +1,822 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/ItemDef",
+  "definitions": {
+    "ItemDef": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/WeaponDef"
+        },
+        {
+          "$ref": "#/definitions/ArmorDef"
+        },
+        {
+          "$ref": "#/definitions/ShieldDef"
+        },
+        {
+          "$ref": "#/definitions/ConsumableDef"
+        },
+        {
+          "$ref": "#/definitions/MaterialDef"
+        },
+        {
+          "$ref": "#/definitions/QuestItemDef"
+        }
+      ]
+    },
+    "WeaponDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "weapon"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean"
+        },
+        "stackMax": {
+          "type": "number"
+        },
+        "skill": {
+          "$ref": "#/definitions/WeaponSkill"
+        },
+        "damage": {
+          "$ref": "#/definitions/DiceExpr"
+        },
+        "twoHanded": {
+          "type": "boolean"
+        },
+        "ammo": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "requires": {
+          "type": "object",
+          "properties": {
+            "str": {
+              "type": "number"
+            },
+            "agi": {
+              "type": "number"
+            },
+            "con": {
+              "type": "number"
+            },
+            "per": {
+              "type": "number"
+            },
+            "cha": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "durabilityMax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "damage",
+        "description",
+        "durabilityMax",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "skill",
+        "stackMax",
+        "twoHanded"
+      ],
+      "additionalProperties": false
+    },
+    "ItemId": {
+      "type": "string",
+      "description": "콘텐츠 ID. 데이터 파일의 키와 일치해야 한다."
+    },
+    "WeaponSkill": {
+      "type": "string",
+      "enum": [
+        "blade",
+        "blunt",
+        "bow"
+      ]
+    },
+    "DiceExpr": {
+      "type": "string",
+      "pattern": "^\\d+d\\d+([+-]\\d+)?$"
+    },
+    "ArmorDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "armor"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean"
+        },
+        "stackMax": {
+          "type": "number"
+        },
+        "defense": {
+          "type": "number"
+        },
+        "checkPenalty": {
+          "type": "object",
+          "properties": {
+            "stat": {
+              "$ref": "#/definitions/StatId"
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "stat",
+            "value"
+          ],
+          "additionalProperties": false,
+          "description": "특정 능력치 판정 페널티"
+        },
+        "durabilityMax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "defense",
+        "description",
+        "durabilityMax",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "stackMax"
+      ],
+      "additionalProperties": false
+    },
+    "StatId": {
+      "type": "string",
+      "enum": [
+        "str",
+        "agi",
+        "con",
+        "per",
+        "cha"
+      ]
+    },
+    "ShieldDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "shield"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean"
+        },
+        "stackMax": {
+          "type": "number"
+        },
+        "defense": {
+          "type": "number"
+        },
+        "durabilityMax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "defense",
+        "description",
+        "durabilityMax",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "stackMax"
+      ],
+      "additionalProperties": false
+    },
+    "ConsumableDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "consumable"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean"
+        },
+        "stackMax": {
+          "type": "number"
+        },
+        "use": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Effect"
+          },
+          "description": "화살처럼 직접 '사용'하지 않는 소모품이면 빈 배열"
+        },
+        "chanceEffects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "p": {
+                "type": "number"
+              },
+              "effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Effect"
+                }
+              }
+            },
+            "required": [
+              "p",
+              "effects"
+            ],
+            "additionalProperties": false
+          },
+          "description": "확률형 효과: 약초의 경상 치료 50%"
+        },
+        "usableInCombat": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "category",
+        "description",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "stackMax",
+        "usableInCombat",
+        "use"
+      ],
+      "additionalProperties": false
+    },
+    "Effect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "silver"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "food"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "hp"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "fatigue"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "reputation"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "addItem"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "qty"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "removeItem"
+            },
+            "itemId": {
+              "$ref": "#/definitions/ItemId"
+            },
+            "qty": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "qty"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "wound"
+            },
+            "steps": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "steps"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "healWound"
+            },
+            "to": {
+              "$ref": "#/definitions/WoundLevel"
+            }
+          },
+          "required": [
+            "type",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "setFlag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            },
+            "value": {
+              "type": [
+                "boolean",
+                "number"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "flag"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "incFlag"
+            },
+            "flag": {
+              "$ref": "#/definitions/FlagId"
+            },
+            "delta": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "flag",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "skillXp"
+            },
+            "skill": {
+              "$ref": "#/definitions/SkillId"
+            },
+            "amount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type",
+            "skill",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "gainTrait"
+            },
+            "trait": {
+              "$ref": "#/definitions/TraitId"
+            }
+          },
+          "required": [
+            "type",
+            "trait"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "startCombat"
+            },
+            "combat": {
+              "$ref": "#/definitions/CombatSetup"
+            }
+          },
+          "required": [
+            "type",
+            "combat"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "endDay"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "loseNextSlot"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "ending"
+            },
+            "ending": {
+              "$ref": "#/definitions/EndingId"
+            }
+          },
+          "required": [
+            "type",
+            "ending"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "WoundLevel": {
+      "type": "string",
+      "enum": [
+        "none",
+        "light",
+        "serious",
+        "critical"
+      ]
+    },
+    "FlagId": {
+      "type": "string"
+    },
+    "SkillId": {
+      "type": "string",
+      "enum": [
+        "blade",
+        "blunt",
+        "bow",
+        "guard",
+        "farming",
+        "smithing",
+        "tracking",
+        "herbalism"
+      ]
+    },
+    "TraitId": {
+      "type": "string"
+    },
+    "CombatSetup": {
+      "type": "object",
+      "properties": {
+        "enemies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnemyId"
+          }
+        },
+        "initiative": {
+          "$ref": "#/definitions/CombatInitiative"
+        },
+        "canFlee": {
+          "type": "boolean"
+        },
+        "noFleeReason": {
+          "type": "string",
+          "description": "도주 불가 사유 (UI 표시)"
+        },
+        "enemyHpModifier": {
+          "type": "number",
+          "description": "스토리 전투에서 적용할 추가 보정"
+        },
+        "playerDefenseBonus": {
+          "type": "number"
+        },
+        "firstAttackAdvantage": {
+          "type": "boolean"
+        },
+        "onVictory": {
+          "$ref": "#/definitions/SceneId"
+        },
+        "onFled": {
+          "$ref": "#/definitions/SceneId"
+        },
+        "onDefeat": {
+          "$ref": "#/definitions/SceneId"
+        }
+      },
+      "required": [
+        "enemies",
+        "initiative",
+        "canFlee",
+        "onVictory"
+      ],
+      "additionalProperties": false
+    },
+    "EnemyId": {
+      "type": "string"
+    },
+    "CombatInitiative": {
+      "type": "string",
+      "enum": [
+        "player",
+        "enemy",
+        "roll"
+      ]
+    },
+    "SceneId": {
+      "type": "string"
+    },
+    "EndingId": {
+      "type": "string",
+      "enum": [
+        "shield_of_village",
+        "flee_together",
+        "rowen_spearman",
+        "survivor",
+        "debtor",
+        "death"
+      ]
+    },
+    "MaterialDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "material"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean"
+        },
+        "stackMax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "description",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "stackMax"
+      ],
+      "additionalProperties": false
+    },
+    "QuestItemDef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/ItemId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "const": "quest"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "description": "구매가 (0이면 상점 미판매)"
+        },
+        "sellPrice": {
+          "type": "number",
+          "description": "판매가를 별도 지정 (재료 등). 없으면 price의 50%"
+        },
+        "sellable": {
+          "type": "boolean",
+          "const": false
+        },
+        "stackMax": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "category",
+        "description",
+        "id",
+        "name",
+        "price",
+        "sellable",
+        "stackMax"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,78 @@
+import type { Ctx } from "../commands";
+import type { ContentDB } from "../content";
+import type { EventCategory, EventDef, EventHistoryEntry, RegionId, Rng, RunState } from "../types";
+import { evalAll } from "./conditions";
+import { dangerTierForDay } from "./explore";
+
+/** 최근 이만큼 안에 본 카드는 덜 뽑힌다 */
+const RECENT_DAYS = 3;
+const RECENT_WEIGHT = 0.3;
+const SAME_TIER_WEIGHT = 2;
+const FALLBACK_SUFFIX = "_fallback";
+
+/** 후보가 없을 때 대신 나오는 이벤트 ID: 지역이 있으면 "forest_fallback", 없으면 "night_fallback" */
+export function fallbackId(category: EventCategory, region?: RegionId): string {
+  return `${region ?? category}${FALLBACK_SUFFIX}`;
+}
+
+export function isFallback(ev: EventDef): boolean {
+  return ev.id.endsWith(FALLBACK_SUFFIX);
+}
+
+/**
+ * 이벤트 풀에서 하나를 가중치로 뽑는다. (SYSTEM_SPEC 4-3 발생 알고리즘)
+ * `chance` 조건이 rng를 쓰므로 순회 순서가 바뀌면 결과가 바뀐다 → 항상 ID 순으로 돈다.
+ * 후보가 없으면 대체 이벤트, 그것도 없으면 null.
+ */
+export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId, deep = false): EventDef | null {
+  const { draft: s, content, rng } = ctx;
+  const tier = Math.min(3, dangerTierForDay(s.time.day) + (deep ? 1 : 0));
+
+  const pool = eventPool(content, category, region).filter((ev) =>
+    (ev.dangerTier ?? 1) <= tier &&
+    repeatAllowed(ev, s.eventHistory[ev.id], s.time.day) &&
+    evalAll(ev.conditions, s, rng));
+
+  const weighted = pool.map((ev) => {
+    let w = ev.weight;
+    if ((ev.dangerTier ?? 1) === tier) w *= SAME_TIER_WEIGHT;
+    const last = s.eventHistory[ev.id]?.lastDay;
+    if (last !== undefined && s.time.day - last <= RECENT_DAYS) w *= RECENT_WEIGHT;
+    return { ev, w };
+  });
+  return weightedPick(weighted, rng) ?? content.events[fallbackId(category, region)] ?? null;
+}
+
+/** 해당 종류·지역의 이벤트 (대체 이벤트 제외), ID 순 */
+export function eventPool(content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId): EventDef[] {
+  return Object.values(content.events)
+    .filter((ev) => ev.category === category && !isFallback(ev) && (!region || ev.region === region))
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+}
+
+export function repeatAllowed(ev: EventDef, h: EventHistoryEntry | undefined, day: number): boolean {
+  if (!h) return true;
+  switch (ev.repeat.mode) {
+    case "once": return false;
+    case "cooldown": return day - h.lastDay >= ev.repeat.days;
+    case "always": return true;
+  }
+}
+
+/** 이벤트를 봤다고 기록한다 (반복 규칙·최근 가중치용) */
+export function recordEvent(run: RunState, id: string): void {
+  const h = run.eventHistory[id];
+  run.eventHistory[id] = { count: (h?.count ?? 0) + 1, lastDay: run.time.day };
+}
+
+/** 후보가 하나라도 있으면 rng를 정확히 한 번 쓴다 */
+function weightedPick<T>(items: { ev: T; w: number }[], rng: Rng): T | null {
+  const total = items.reduce((n, x) => n + x.w, 0);
+  if (total <= 0) return null;
+  let roll = rng() * total;
+  for (const x of items) {
+    roll -= x.w;
+    if (roll < 0) return x.ev;
+  }
+  return items[items.length - 1].ev;
+}

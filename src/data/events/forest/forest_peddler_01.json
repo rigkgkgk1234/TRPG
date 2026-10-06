@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_peddler_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "길 잃은 행상",
+  "conditions": [{ "type": "dayRange", "min": 3 }],
+  "weight": 6,
+  "repeat": { "mode": "cooldown", "days": 6 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "봇짐을 진 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
+      "choices": [
+        {
+          "id": "guide",
+          "label": "큰길까지 데려다준다",
+          "check": { "stat": "per", "skill": "tracking", "dc": 10 },
+          "outcomes": {
+            "success": { "text": "큰길에 닿자 행상이 은화 두 닢을 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }], "next": "END" },
+            "fail": { "text": "둘이서 한참을 헤맸다. 결국 행상이 먼저 길을 찾았다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" }
+          }
+        },
+        {
+          "id": "sell_herb",
+          "label": "약초를 판다",
+          "conditions": [{ "type": "hasItem", "itemId": "herb" }],
+          "cost": { "item": { "itemId": "herb", "qty": 1 } },
+          "outcome": { "text": "로웬 시세라며 후하게 쳐주었다.", "effects": [{ "type": "silver", "delta": 3 }], "next": "END" }
+        },
+        {
+          "id": "buy_tea",
+          "label": "쓴 약차를 산다",
+          "cost": { "silver": 3 },
+          "outcome": { "text": "피로가 싹 가신다는 약차다. 맛은 장담 못 한다고 한다.", "effects": [{ "type": "addItem", "itemId": "bitter_tea", "qty": 1 }], "next": "END" }
+        },
+        { "id": "leave", "label": "갈 길을 알려 주고 헤어진다", "outcome": { "text": "행상이 손을 흔들며 멀어졌다.", "next": "END" } }
+      ]
+    }
+  }
+}

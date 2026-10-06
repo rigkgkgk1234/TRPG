@@ -19,7 +19,7 @@ export function maxFoodAffordable(run: RunState): number {
 export function buyFood(ctx: Ctx, qty: number): boolean {
   const n = Math.floor(qty);
   if (!canTrade(ctx.draft)) return reject(ctx, "지금은 살 수 없다");
-  if (!validQty(n)) return reject(ctx, "살 수량이 이상하다");
+  if (!validQty(n)) return reject(ctx, "살 수량이 올바르지 않다");
   if (n > maxFoodAffordable(ctx.draft)) return reject(ctx, "은화가 모자란다");
   changeSilver(ctx, -n * FOOD_PRICE);
   changeFood(ctx, n);
@@ -30,7 +30,7 @@ export function buyFood(ctx: Ctx, qty: number): boolean {
 export function payDebt(ctx: Ctx, qty: number): boolean {
   const r = ctx.draft.resources;
   if (!canTrade(ctx.draft)) return reject(ctx, "지금은 갚을 수 없다");
-  if (!validQty(Math.floor(qty))) return reject(ctx, "갚을 액수가 이상하다");
+  if (!validQty(Math.floor(qty))) return reject(ctx, "갚을 금액이 올바르지 않다");
   if (r.debt === 0) return reject(ctx, "갚을 빚이 없다");
   if (r.silver === 0) return reject(ctx, "갚을 은화가 없다");
   const n = Math.min(Math.floor(qty), r.debt, r.silver);

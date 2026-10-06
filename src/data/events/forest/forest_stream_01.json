@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_stream_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "맑은 개울",
+  "conditions": [],
+  "weight": 8,
+  "repeat": { "mode": "cooldown", "days": 2 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "숲 한가운데로 차가운 개울이 흐른다. 물속에 작은 물고기 그림자가 언뜻 비친다.",
+      "choices": [
+        { "id": "rest", "label": "발을 담그고 쉰다", "outcome": { "text": "차가운 물에 발을 담그니 다리가 한결 가볍다.", "effects": [{ "type": "fatigue", "delta": -2 }], "next": "END" } },
+        {
+          "id": "fish",
+          "label": "맨손으로 물고기를 잡아 본다",
+          "check": { "stat": "agi", "dc": 13 },
+          "outcomes": {
+            "success": { "text": "미끈한 놈을 움켜쥐었다!", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "fail": { "text": "물만 잔뜩 튀기고 옷이 다 젖었다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" },
+            "critFail": { "text": "이끼 낀 돌을 밟고 그대로 넘어졌다.", "effects": [{ "type": "hp", "delta": -1 }, { "type": "fatigue", "delta": 1 }], "next": "END" }
+          }
+        }
+      ]
+    }
+  }
+}

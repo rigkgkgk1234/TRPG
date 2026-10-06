@@ -28,7 +28,7 @@ export default function StatusScreen() {
         <Figure label="빚" value={String(r.debt)} />
       </View>
 
-      <Section title="능력치" hint={`판정에 ${STAT_GROWTH_USES}번 쓰면 성장 굴림`}>
+      <Section title="능력치" hint={`판정에 ${STAT_GROWTH_USES}번 쓸 때마다 성장 기회`}>
         {STAT_IDS.map((s) => (
           <Row key={s} label={STAT_LABEL[s]} value={formatSigned(p.stats[s])}
             progress={Math.min(1, p.statUses[s] / STAT_GROWTH_USES)} note={`${p.statUses[s]}/${STAT_GROWTH_USES}`} />

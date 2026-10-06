@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_black_arrow_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "까마귀 깃털 화살",
+  "conditions": [{ "type": "dayRange", "min": 5 }],
+  "weight": 6,
+  "repeat": { "mode": "cooldown", "days": 8 },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          { "when": [{ "type": "job", "job": "hunter" }], "text": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 보리울 사냥꾼 중에 이런 화살을 쓰는 사람은 없다." }
+        ],
+        "fallback": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 마을 사냥꾼의 화살은 아닌 것 같다."
+      },
+      "choices": [
+        {
+          "id": "search",
+          "label": "주변을 살핀다",
+          "check": { "stat": "per", "skill": "tracking", "dc": 13 },
+          "outcomes": {
+            "success": { "text": "작은 발자국 여럿이 동쪽으로 이어진다. 사람치고는 발이 너무 작다.", "next": "tracks" },
+            "fail": { "text": "아무것도 찾지 못했다. 그런데도 등골이 서늘하다.", "next": "END" },
+            "critFail": { "text": "등 뒤에서 나뭇가지 부러지는 소리. 뒤도 안 보고 달아났다.", "effects": [{ "type": "fatigue", "delta": 2 }], "next": "END" }
+          }
+        },
+        { "id": "leave", "label": "모른 척 지나간다", "outcome": { "text": "괜한 일에 엮이고 싶지 않다.", "next": "END" } }
+      ]
+    },
+    "tracks": {
+      "text": "발자국은 숲 깊은 곳으로 사라진다. 여럿이 함께 움직였다. 촌장에게 알려야 할까.",
+      "onEnter": [{ "type": "setFlag", "flag": "strange_tracks_seen" }],
+      "choices": [],
+      "autoNext": "END"
+    }
+  }
+}

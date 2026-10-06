@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_fallback",
+  "category": "explore",
+  "region": "forest",
+  "title": "조용한 숲길",
+  "conditions": [],
+  "weight": 0,
+  "repeat": { "mode": "always" },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "새소리와 바람 소리뿐이다. 별다른 일 없이 숲길을 걸었다.",
+      "choices": []
+    }
+  }
+}

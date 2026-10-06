@@ -64,7 +64,7 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
     payTax(ctx);
   }
   rollStatGrowth(ctx);                                   // 6. 능력치 성장
-  // 7. 최종 습격(story_raid)은 6주차, 밤 이벤트(25%)는 3주차. 그 전까지 30일차 밤을 넘기면 생존 엔딩.
+  // 7. 최종 습격(story_raid)은 6주차, 밤 이벤트(25%)는 밤 이벤트 콘텐츠와 함께 붙인다 (엔진은 3주차에 준비됨). 그 전까지 30일차 밤을 넘기면 생존 엔딩.
   if (s.time.day >= LAST_DAY) return endRun(ctx, "survivor", "서른 번째 밤이 지났다. 아직 살아 있다.");
   startNextDay(ctx);                                     // 8. 다음 날
   return true;
@@ -86,7 +86,7 @@ function eat(ctx: Ctx, order: FeedOrder): void {
   if (selfAte && familyAte) ctx.feed.push({ kind: "text", text: "동생과 둘러앉아 저녁을 먹었다." });
   if (!selfAte) ctx.feed.push({ kind: "text", text: `빈속으로 잠자리에 든다. (굶주림 ${r.hunger})` });
   if (!familyAte) ctx.feed.push({ kind: "text", text: `동생이 배고프다며 칭얼거린다. (가족 굶주림 ${r.familyHunger})` });
-  // 「동생이 앓아눕다」 스토리 이벤트는 3주차 이벤트 엔진에서 이 수치를 조건으로 띄운다
+  // 「동생이 앓아눕다」 스토리 이벤트는 스토리 이벤트(6주차)가 이 수치를 조건으로 띄운다
   if (r.familyHunger >= FAMILY_HUNGER_WARNING_AT) ctx.feed.push({ kind: "text", text: "동생의 얼굴이 핼쑥하다. 이대로는 안 된다." });
 }
 
@@ -133,7 +133,7 @@ function payTax(ctx: Ctx): void {
   changeSilver(ctx, -r.silver);
   changeDebt(ctx, shortfall + DEBT_INTEREST);
   changeReputation(ctx, TAX_REPUTATION_PENALTY);
-  ctx.feed.push({ kind: "text", text: `세금이 모자랐다. 부족분 ${shortfall}에 이자 ${DEBT_INTEREST}가 빚으로 남았다.` });
+  ctx.feed.push({ kind: "text", text: `세금이 모자랐다. 모자란 은화 ${shortfall}닢에 이자 ${DEBT_INTEREST}닢을 더해 빚으로 남았다.` });
 }
 
 /** 흔적을 얻고, 능력치 변화가 있으면 한 번 적용한다. */

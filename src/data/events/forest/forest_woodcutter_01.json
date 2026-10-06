@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_woodcutter_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "쓰러진 나무꾼",
+  "conditions": [],
+  "weight": 7,
+  "repeat": { "mode": "cooldown", "days": 7 },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "길가에 나무꾼 오스윈이 발목을 붙잡고 앉아 있다. 넘어가는 나무를 피하다 접질렸다고 한다.",
+      "choices": [
+        {
+          "id": "herb",
+          "label": "약초를 짓이겨 붙여 준다",
+          "conditions": [{ "type": "hasItem", "itemId": "herb" }],
+          "cost": { "item": { "itemId": "herb", "qty": 1 } },
+          "outcome": { "text": "오스윈이 고맙다며 품삯 몇 푼을 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }, { "type": "reputation", "delta": 3 }], "next": "END" }
+        },
+        {
+          "id": "bind",
+          "label": "발목을 살펴 단단히 묶어 준다",
+          "check": { "stat": "per", "skill": "herbalism", "dc": 11 },
+          "outcomes": {
+            "success": { "text": "단단히 묶어 주자 지팡이를 짚고 혼자 일어섰다.", "effects": [{ "type": "reputation", "delta": 2 }], "next": "END" },
+            "fail": { "text": "어설프게 묶은 천이 자꾸 풀린다. 결국 마을까지 업고 갔다.", "effects": [{ "type": "fatigue", "delta": 2 }, { "type": "reputation", "delta": 1 }], "next": "END" }
+          }
+        },
+        {
+          "id": "carry",
+          "label": "마을까지 부축해 간다",
+          "cost": { "fatigue": 2 },
+          "outcome": { "text": "땀범벅이 되어 마을에 닿았다. 지나던 사람들이 그 모습을 보았다.", "effects": [{ "type": "reputation", "delta": 3 }], "next": "END" }
+        },
+        { "id": "leave", "label": "갈 길이 바쁘다", "outcome": { "text": "등 뒤로 오스윈의 한숨 소리가 들렸다.", "effects": [{ "type": "reputation", "delta": -1 }], "next": "END" } }
+      ]
+    }
+  }
+}

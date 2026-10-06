@@ -80,7 +80,7 @@ export function buildCheckContext(
   }
 
   const disadvantageSources = [...(extra.disadvantage ?? [])];
-  if (resources.fatigue >= FATIGUE_DISADVANTAGE_AT) disadvantageSources.push("지침");
+  if (resources.fatigue >= FATIGUE_DISADVANTAGE_AT) disadvantageSources.push("지친 상태");
   if (resources.hunger >= HUNGER_DISADVANTAGE_AT) disadvantageSources.push("굶주림");
   if (seriouslyHurt) disadvantageSources.push(wound === "critical" ? "치명상" : "중상");
 

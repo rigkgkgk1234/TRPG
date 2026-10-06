@@ -5,6 +5,8 @@ import { colors, icon as iconToken, motion, radius, space, TOUCH_MIN, type } fro
 interface ActionButtonProps {
   label: string;
   icon?: Icon;
+  /** 아이콘 색을 바꿀 때 (위험 표시 등) */
+  iconColor?: string;
   /** 이름 오른쪽의 짧은 강조 (성공 확률 등) */
   badge?: string;
   /** 두 번째 줄: 비용·보상 또는 잠김 사유. 배열이면 항목 단위로만 줄을 바꾼다 */
@@ -16,7 +18,7 @@ interface ActionButtonProps {
 }
 
 /** 허브·저녁 화면의 큰 버튼. 잠긴 버튼도 사유는 읽을 수 있게 흐리게만 한다. 누르면 살짝 눌린다. */
-export function ActionButton({ label, icon: IconC, badge, detail, disabled, selected, primary, onPress }: ActionButtonProps) {
+export function ActionButton({ label, icon: IconC, iconColor, badge, detail, disabled, selected, primary, onPress }: ActionButtonProps) {
   const fg = primary ? colors.accentText : colors.text;
   return (
     <Pressable
@@ -35,8 +37,8 @@ export function ActionButton({ label, icon: IconC, badge, detail, disabled, sele
       ]}
     >
       <View style={[styles.labelRow, primary && styles.center]}>
-        {IconC && <IconC size={iconToken.md} weight={iconToken.weight} color={primary ? fg : selected ? colors.accent : colors.textDim} />}
-        <Text style={[styles.label, { color: fg }]} numberOfLines={1}>{label}</Text>
+        {IconC && <IconC size={iconToken.md} weight={iconToken.weight} color={iconColor ?? (primary ? fg : selected ? colors.accent : colors.textDim)} />}
+        <Text style={[styles.label, { color: fg }]} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{label}</Text>
         {badge ? <Text style={styles.badge}>{badge}</Text> : null}
       </View>
       {Array.isArray(detail) ? (
