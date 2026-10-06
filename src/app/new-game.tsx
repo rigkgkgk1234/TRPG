@@ -17,6 +17,8 @@ const MVP_JOBS = Object.values(CONTENT.jobs).filter((j): j is JobDef => !!j?.mvp
 export default function NewGameScreen() {
   const insets = useSafeAreaInsets();
   const startNew = useGame((s) => s.startNew);
+  // 진행 중인 회차가 있으면 새로 시작하는 순간 덮어쓴다 (아이언맨: 슬롯은 하나뿐, SYSTEM_SPEC 7-3)
+  const current = useGame((s) => (s.run && !s.run.ending ? `${s.run.player.name}, ${s.run.time.day}일차` : null));
   const [name, setName] = useState("");
   const [job, setJob] = useState<JobId>("farmer");
   const [focused, setFocused] = useState(false);
@@ -56,7 +58,12 @@ export default function NewGameScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + space.md }]}>
-        <ActionButton primary label="첫날을 시작한다" onPress={start} />
+        {current && (
+          <Text lineBreakStrategyIOS="hangul-word" style={styles.warn}>
+            진행 중인 회차({current})가 있다. 새로 시작하면 그 회차는 사라진다.
+          </Text>
+        )}
+        <ActionButton primary label={current ? "포기하고 새로 시작한다" : "첫날을 시작한다"} onPress={start} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -159,5 +166,6 @@ const styles = StyleSheet.create({
   meta: { gap: space.xs },
   metaLine: { ...type.caption, color: colors.textDim },
   metaKey: { fontFamily: fonts.semibold, color: colors.textFaint },
-  footer: { paddingHorizontal: space.lg, paddingTop: space.md, backgroundColor: colors.bg },
+  footer: { paddingHorizontal: space.lg, paddingTop: space.md, gap: space.sm, backgroundColor: colors.bg },
+  warn: { ...type.caption, color: colors.partial },
 });

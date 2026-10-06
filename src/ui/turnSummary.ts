@@ -142,7 +142,27 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
     case "goDeeper": return cmd.yes ? "더 깊이 들어간다" : "마을로 돌아간다";
     case "combat": return combatTitle(cmd.action, run);
     case "endDay": return "하루 정산";
-    case "shop": return cmd.op === "buyFood" ? "식량 사기" : "빚 갚기";
+    case "shop": return shopTitle(cmd, run);
+    case "equip": {
+      const name = itemName(run.inventory.slots[cmd.slotIndex]?.itemId);
+      return `${name} 장착`;
+    }
+    case "unequip": return `${itemName(run.inventory.equipment[cmd.slot]?.itemId)} ${cmd.slot === "armor" ? "벗기" : "내려놓기"}`;
+    case "useItem": return `${itemName(cmd.itemId)} 사용`;
+    case "discard": return `${itemName(run.inventory.slots[cmd.slotIndex]?.itemId)} 버리기`;
+  }
+}
+
+const itemName = (id: string | undefined) => (id && CONTENT.items[id]?.name) || "물건";
+
+function shopTitle(cmd: Extract<GameCommand, { type: "shop" }>, run: RunState): string {
+  switch (cmd.op) {
+    case "buyFood": return "식량 사기";
+    case "payDebt": return "빚 갚기";
+    case "buy": return `${itemName(cmd.target)} 사기`;
+    case "sell": return `${itemName(run.inventory.slots[Number(cmd.target)]?.itemId)} 팔기`;
+    case "repair": return "장비 수리";
+    case "treat": return "상처 치료";
   }
 }
 

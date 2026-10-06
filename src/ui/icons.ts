@@ -7,6 +7,7 @@ import type { Icon } from "phosphor-react-native";
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
 export const ArrowRightIcon: Icon = require("phosphor-react-native/src/icons/ArrowRight").ArrowRightIcon;
+export const BackpackIcon: Icon = require("phosphor-react-native/src/icons/Backpack").BackpackIcon;
 export const BandaidsIcon: Icon = require("phosphor-react-native/src/icons/Bandaids").BandaidsIcon;
 export const BarbellIcon: Icon = require("phosphor-react-native/src/icons/Barbell").BarbellIcon;
 export const BasketIcon: Icon = require("phosphor-react-native/src/icons/Basket").BasketIcon;

@@ -1,4 +1,6 @@
 import type { ContentDB } from "./content";
+import type { EquipSlot } from "./items/equipment";
+import type { ShopId } from "./items/shop";
 import type { CheckResult, CombatAction, DailyActionId, ItemId, RegionId, Rng, RunState, SkillId, StatId, WoundLevel } from "./types";
 
 /** UI가 엔진에 보낼 수 있는 명령. 전투·가방 명령은 4·5주차에 더한다. (ARCHITECTURE 3-1) */
@@ -14,7 +16,17 @@ export type GameCommand =
   | { type: "combat"; action: CombatAction }
   /** 저녁 정산 실행. 식량이 모자랄 때 누구부터 먹일지 고른다 */
   | { type: "endDay"; order?: FeedOrder }
-  | { type: "shop"; op: "buyFood" | "payDebt"; qty: number };
+  /**
+   * 마을 거래. 행동 슬롯을 쓰지 않는다. (SYSTEM_SPEC 5-4)
+   * buy: shop + target(아이템 ID) / sell: target(가방 칸 번호) + qty / repair: target("weapon" 또는 "bag:3") / treat / buyFood·payDebt: qty
+   */
+  | { type: "shop"; op: "buy" | "sell" | "repair" | "treat" | "buyFood" | "payDebt"; shop?: ShopId; target?: string; qty?: number }
+  /** 가방 칸의 장비를 걸친다 */
+  | { type: "equip"; slotIndex: number }
+  | { type: "unequip"; slot: EquipSlot }
+  /** 전투 밖에서 소모품 쓰기 (전투 중에는 combat 명령의 useItem) */
+  | { type: "useItem"; itemId: ItemId }
+  | { type: "discard"; slotIndex: number };
 
 export type FeedOrder = "selfFirst" | "familyFirst";
 

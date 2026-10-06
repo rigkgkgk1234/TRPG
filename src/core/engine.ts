@@ -4,6 +4,9 @@ import type { ContentDB } from "./content";
 import { handleAction } from "./day/actions";
 import { runEvening } from "./day/evening";
 import { buyFood, payDebt } from "./day/town";
+import { discard, equip, unequip } from "./items/equipment";
+import { consumeItem } from "./items/inventory";
+import { buy, repair, sell, treat, type RepairTarget } from "./items/shop";
 import { handleChoice, handleCombat, handleContinue, handleGoDeeper } from "./events/runner";
 import { createRng, type RunState } from "./types";
 
@@ -49,10 +52,39 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         save = true;
         break;
       case "shop":
-        save = cmd.op === "buyFood" ? buyFood(ctx, cmd.qty) : payDebt(ctx, cmd.qty);
+        save = handleShop(ctx, cmd);
+        break;
+      case "equip":
+        save = ok(ctx, equip(ctx, cmd.slotIndex));
+        break;
+      case "unequip":
+        save = ok(ctx, unequip(ctx, cmd.slot));
+        break;
+      case "discard":
+        save = ok(ctx, draft.combat ? "싸우는 중에는 할 수 없다" : discard(ctx, cmd.slotIndex));
+        break;
+      case "useItem":
+        save = ok(ctx, draft.combat ? "싸우는 중에는 전투 행동으로 쓴다" : consumeItem(ctx, cmd.itemId, false) ? null : "지금은 쓸 수 없다");
         break;
     }
   });
 
   return { state: next, feed, save: save || checkpoint, checkpoint };
+}
+
+function handleShop(ctx: Ctx, cmd: Extract<GameCommand, { type: "shop" }>): boolean {
+  switch (cmd.op) {
+    case "buyFood": return buyFood(ctx, cmd.qty ?? 1);
+    case "payDebt": return payDebt(ctx, cmd.qty ?? ctx.draft.resources.debt);
+    case "buy": return ok(ctx, cmd.shop && cmd.target ? buy(ctx, cmd.shop, cmd.target) : "무엇을 살지 정하지 않았다");
+    case "sell": return ok(ctx, sell(ctx, Number(cmd.target), cmd.qty ?? 1));
+    case "repair": return ok(ctx, repair(ctx, (cmd.target ?? "weapon") as RepairTarget));
+    case "treat": return ok(ctx, treat(ctx));
+  }
+}
+
+/** 거절 사유가 있으면 피드에 남기고 false */
+function ok(ctx: Ctx, reason: string | null): boolean {
+  if (reason) ctx.feed.push({ kind: "toast", text: reason });
+  return reason === null;
 }

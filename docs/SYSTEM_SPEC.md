@@ -865,7 +865,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 ### 5-4. 가격 규칙
 - 판매가 = 구매가의 50%(내림). `quest` 판매 불가.
-- 평판 보정: 평판 60 이상 → 구매가 -10% / 20 미만 → +20% (올림).
+- 평판 보정: 평판 60 이상 → 구매가 -10% / 10 미만 → +10% / 5 미만 → +20% (올림). 시작 평판(10)은 보정 없음, 사냥꾼(5)은 +10%.
 - 상점 이용·수리·치료 같은 **거래는 행동 슬롯을 소모하지 않는다**(아침·저녁 '마을 메뉴'에서 가능, 탐험 중 불가).
 
 ### 5-5. MVP 아이템 목록
@@ -991,8 +991,10 @@ export const SELL_RATE = 0.5;
 export const REPAIR_SILVER_PER_DURABILITY = 1 / 5;
 export const REP_DISCOUNT_THRESHOLD = 60;
 export const REP_DISCOUNT_RATE = 0.1;
-export const REP_SURCHARGE_THRESHOLD = 20;
-export const REP_SURCHARGE_RATE = 0.2;
+export const REP_SURCHARGE_THRESHOLD = 10;
+export const REP_SURCHARGE_RATE = 0.1;
+export const REP_HEAVY_SURCHARGE_THRESHOLD = 5;
+export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "hunting_bow", name: "사냥활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,

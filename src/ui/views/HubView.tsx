@@ -4,16 +4,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
-import { canTrade } from "@/core/day/town";
 import { DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { REGION_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
-import { FOOD_PRICE, SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
+import { SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
+import { TownRow } from "@/ui/components/TownRow";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { ACTION_ICON, JOB_ICON } from "@/ui/gameIcons";
-import { BasketIcon, HandCoinsIcon } from "@/ui/icons";
 import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
@@ -127,36 +126,6 @@ function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) =>
   );
 }
 
-function TownRow({ run }: { run: RunState }) {
-  const send = useGame((s) => s.send);
-  if (!canTrade(run)) return null;
-  const { silver, debt } = run.resources;
-  return (
-    <View style={styles.townRow}>
-      <View style={styles.townCell}>
-        <ActionButton
-          icon={BasketIcon}
-          label="식량 1 사기"
-          detail={["토비의 여관", `은화 -${FOOD_PRICE}`]}
-          disabled={silver < FOOD_PRICE}
-          onPress={() => send({ type: "shop", op: "buyFood", qty: 1 })}
-        />
-      </View>
-      {debt > 0 && (
-        <View style={styles.townCell}>
-          <ActionButton
-            icon={HandCoinsIcon}
-            label="빚 갚기"
-            detail={`가진 만큼 (최대 ${Math.min(silver, debt)})`}
-            disabled={silver <= 0}
-            onPress={() => send({ type: "shop", op: "payDebt", qty: debt })}
-          />
-        </View>
-      )}
-    </View>
-  );
-}
-
 /** 행동 버튼의 두 번째 줄: 비용·보상·피로 (항목 단위로 줄을 바꾼다) */
 function actionDetail(run: RunState, def: DailyActionDef): string[] {
   switch (def.id) {
@@ -208,6 +177,4 @@ const styles = StyleSheet.create({
   },
   picker: { gap: space.md, paddingBottom: space.md },
   pickerTitle: { ...type.label, color: colors.textDim },
-  townRow: { flexDirection: "row", gap: space.sm },
-  townCell: { flex: 1 },
 });

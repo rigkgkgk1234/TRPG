@@ -1,5 +1,6 @@
 import { Redirect } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { josa, PHASE_LABEL } from "@/core/labels";
 import type { RunState } from "@/core/types";
 import { selectView, type GameView } from "@/store/selectors";
 import { useGame, useShownRun } from "@/store/gameStore";
@@ -27,14 +28,26 @@ export default function GameScreen() {
   return (
     <View style={styles.root}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
-      <TurnLog
-        intro={{ title: `${run.player.name}의 첫날`, body: "보리울에 아침이 밝았다. 일해서 은화와 식량을 모으고, 저녁마다 가족을 먹여야 한다. 서른 번째 밤까지 버텨 보자." }}
-      />
+      <TurnLog intro={introFor(run)} />
       <View style={busy && styles.busy}>
         <Panel view={view} run={shown} />
       </View>
     </View>
   );
+}
+
+/** 기록이 없을 때 위쪽에 보여 줄 글: 첫날 아침이면 시작 안내, 이어서 들어왔으면 어디서 멈췄는지 */
+function introFor(run: RunState): { title: string; body: string } {
+  if (run.time.day === 1 && run.time.phase === "am") {
+    return {
+      title: `${run.player.name}의 첫날`,
+      body: "보리울에 아침이 밝았다. 일해서 은화와 식량을 모으고, 저녁마다 가족을 먹여야 한다. 서른 번째 밤까지 버텨 보자.",
+    };
+  }
+  return {
+    title: `${run.time.day}일차 ${PHASE_LABEL[run.time.phase]}`,
+    body: `${josa(run.player.name, "은/는")} 지난번에 멈춘 곳에서 다시 하루를 이어 간다.`,
+  };
 }
 
 function Panel({ view, run }: { view: GameView; run: RunState }) {

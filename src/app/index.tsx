@@ -4,17 +4,26 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
 import { colors, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 
-/** 임시 타이틀. 6주차에 기록·설정을 더한다. "이어하기"는 저장(5주차) 전까지 앱이 켜져 있는 동안만. */
+/** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 기록·설정은 6주차. */
 export default function TitleScreen() {
   const insets = useSafeAreaInsets();
-  const canResume = useGame((s) => !!s.run && !s.run.ending);
+  const hydrated = useGame((s) => s.hydrated);
+  const resume = useGame((s) => (s.run && !s.run.ending ? `${s.run.player.name}, ${s.run.time.day}일차` : null));
+  const notice = useGame((s) => s.notice);
+  const dismissNotice = useGame((s) => s.dismissNotice);
+  const canResume = resume !== null;
   return (
     <View style={[styles.root, { paddingTop: insets.top + space.xxl, paddingBottom: insets.bottom + space.xl }]}>
       <View style={styles.titleBox}>
         <Text style={styles.title}>보리울의{"\n"}30일</Text>
       </View>
-      <View style={styles.buttons}>
-        {canResume && <TitleButton href="/game" label="이어하기" primary />}
+      <View style={[styles.buttons, !hydrated && styles.hidden]}>
+        {notice && (
+          <Pressable onPress={dismissNotice} accessibilityRole="button" accessibilityHint="안내 닫기" style={styles.notice}>
+            <Text lineBreakStrategyIOS="hangul-word" style={styles.noticeText}>{notice}</Text>
+          </Pressable>
+        )}
+        {canResume && <TitleButton href="/game" label="이어하기" sub={resume} primary />}
         <TitleButton href="/new-game" label="새 게임" primary={!canResume} />
         <Pressable onPress={() => router.push("/dev/dice")} accessibilityRole="link" style={styles.devLink} hitSlop={8}>
           <Text style={styles.devText}>판정 테스트 (개발용)</Text>
@@ -25,7 +34,7 @@ export default function TitleScreen() {
 }
 
 /** Link asChild는 웹에서 Pressable의 함수형 style을 잃으므로 router.push를 직접 쓴다. */
-function TitleButton({ href, label, primary }: { href: Href; label: string; primary?: boolean }) {
+function TitleButton({ href, label, sub, primary }: { href: Href; label: string; sub?: string; primary?: boolean }) {
   return (
     <Pressable
       onPress={() => router.push(href)}
@@ -33,6 +42,7 @@ function TitleButton({ href, label, primary }: { href: Href; label: string; prim
       style={({ pressed }) => [styles.button, primary && styles.primary, pressed && styles.pressed]}
     >
       <Text style={[styles.buttonText, primary && styles.primaryText]}>{label}</Text>
+      {sub ? <Text style={[styles.buttonSub, primary && styles.primaryText]}>{sub}</Text> : null}
     </Pressable>
   );
 }
@@ -53,6 +63,10 @@ const styles = StyleSheet.create({
   pressed: { transform: [{ scale: motion.press }] },
   buttonText: { ...type.bodyStrong, color: colors.text },
   primaryText: { color: colors.accentText },
+  hidden: { opacity: 0 },
+  buttonSub: { ...type.caption, color: colors.textDim },
+  notice: { padding: space.md, borderRadius: radius.md, backgroundColor: colors.badBg, marginBottom: space.xs },
+  noticeText: { ...type.caption, color: colors.text },
   devLink: { alignSelf: "center", paddingVertical: space.md },
   devText: { ...type.caption, color: colors.textFaint },
 });

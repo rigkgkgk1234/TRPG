@@ -6,6 +6,8 @@ import { FOOD_PER_DAY } from "@/core/day/evening";
 import { maxFoodAffordable } from "@/core/day/town";
 import { combatView } from "@/core/combat/combat";
 import { sceneView } from "@/core/events/runner";
+import { countInBag } from "@/core/items/inventory";
+import { treatable } from "@/core/items/shop";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
 import type { JobId, RunState } from "@/core/types";
@@ -26,7 +28,7 @@ const POLICIES: Policy[] = [
 ];
 
 /**
- * 일을 못 하는 상태(치명상)면 쉰다. 저녁마다 모자란 식량을 산다(autoPlay).
+ * 일을 못 하는 상태(치명상)면 쉰다. 저녁마다 치료를 받고 모자란 식량을 산다(autoPlay).
  * 탐험 중에는 고를 수 있는 첫 선택지를 고르고, 더 깊이는 들어가지 않는다. 싸움이 붙으면 공격만 한다.
  */
 function pickCommand(run: RunState, policy: Policy): GameCommand {
@@ -47,12 +49,24 @@ function pickCommand(run: RunState, policy: Policy): GameCommand {
     : { type: "chooseAction", action: "rest" };
 }
 
+/** 저녁마다 마을에 들러 치료한다: 중상은 약초방 치료, 치명상은 치유 물약 (은화가 있으면). 식량보다 먼저. */
+function seekTreatment(run: RunState): RunState {
+  const send = (cmd: GameCommand) => dispatch(run, cmd, CONTENT).state;
+  if (treatable(run)) run = send({ type: "shop", op: "treat" });
+  if (run.player.wound.level === "critical") {
+    run = send({ type: "shop", op: "buy", shop: "healer", target: "healing_potion" });
+    if (countInBag(run.inventory, "healing_potion") > 0) run = send({ type: "useItem", itemId: "healing_potion" });
+  }
+  return run;
+}
+
 function autoPlay(job: JobId, seed: number, policy: Policy): { run: RunState; days: Map<number, DaySnapshot>; collapses: number } {
   let run = newRun(CONTENT, job, "시뮬", { seed, now: "2026-01-01T00:00:00.000Z" });
   const days = new Map<number, DaySnapshot>();
   let collapses = 0;
   for (let guard = 0; !run.ending && guard < 1000; guard++) {
     if (run.time.phase === "evening") {
+      run = seekTreatment(run);
       const need = FOOD_PER_DAY - run.resources.food;
       const qty = Math.min(need, maxFoodAffordable(run));
       if (qty > 0) run = dispatch(run, { type: "shop", op: "buyFood", qty }, CONTENT).state;

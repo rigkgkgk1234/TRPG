@@ -7,6 +7,7 @@ import { FOOD_PRICE, type RunState } from "@/core/types";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
+import { TownRow } from "@/ui/components/TownRow";
 import { BasketIcon, HandCoinsIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
@@ -80,6 +81,7 @@ export function EveningPanel({ run }: { run: RunState }) {
         />
       )}
 
+      <TownRow run={run} />
       <ActionButton primary icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
     </View>
   );

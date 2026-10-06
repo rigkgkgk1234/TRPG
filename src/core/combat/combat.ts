@@ -5,6 +5,7 @@ import { performCheck } from "../check/perform";
 import { gainSkillXp } from "../check/progress";
 import { gainTrait } from "../day/evening";
 import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "../day/resources";
+import { BROKEN_WEAPON_PENALTY, isBroken, wearEquipment } from "../items/equipment";
 import { addItem, canUseItem, consumeItem, countInBag, removeItem } from "../items/inventory";
 import { josa } from "../labels";
 import {
@@ -81,8 +82,9 @@ export function activeEnemies(c: CombatState): EnemyInstance[] {
 /** 방어도 = 10 + 민첩 + 방어구 + 방패 (+ 방어 자세, 스토리 보정, − 대실패 페널티) */
 export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, c: CombatState | null): number {
   const eq = run.inventory.equipment;
+  // 망가진 방어구·방패는 방어도에 보태지 않는다 (SYSTEM_SPEC 5-3)
   const gear = [eq.armor, eq.shield].reduce((sum, stack) => {
-    const def = stack ? content.items[stack.itemId] : undefined;
+    const def = stack && !isBroken(stack) ? content.items[stack.itemId] : undefined;
     return sum + (def && (def.category === "armor" || def.category === "shield") ? def.defense : 0);
   }, 0);
   const extra = c ? c.defendBonus - c.defensePenalty + (c.setup.playerDefenseBonus ?? 0) : 0;
@@ -141,7 +143,8 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const w = equippedWeapon(run, content);
   const bow = isBow(w);
   const noArrow = bow && countInBag(run.inventory, ARROW) === 0 ? "화살이 없다" : null;
-  const dmg = (bonus: number) => `피해 ${w.damage}${bow ? "" : signedOrEmpty(run.player.stats.str + bonus)}${bow && bonus ? `+${bonus}` : ""}`;
+  const brokenPenalty = isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
+  const dmg = (bonus: number) => `피해 ${w.damage}${signedOrEmpty((bow ? 0 : run.player.stats.str) + bonus + brokenPenalty)}`;
 
   const chanceOf = (power: boolean) => {
     if (!target) return {};
@@ -158,7 +161,10 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const defendBonus = DEFEND_BONUS + run.player.skills.guard.rank;
 
   const actions: CombatActionView[] = [
-    { type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false), detail: [dmg(0), ...(bow ? ["화살 -1"] : [])], lockedReason: noArrow },
+    {
+      type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false),
+      detail: [dmg(0), ...(bow ? ["화살 -1"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])], lockedReason: noArrow,
+    },
     {
       type: "powerAttack", label: bow ? "조준 사격" : "강타", ...chanceOf(true),
       detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${POWER_ATTACK_HIT_PENALTY}`, "피로 +1"], lockedReason: noArrow,
@@ -304,7 +310,8 @@ function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean)
 
   if (r.outcome === "success" || r.outcome === "critSuccess") {
     const crit = r.outcome === "critSuccess";
-    const bonus = (bow ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0);
+    const broken = isBroken(s.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
+    const bonus = (bow ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
     const dmg = Math.max(1, rollDice(w.damage, ctx.rng, crit) + bonus);
     target.hp -= dmg;
     const hitText = crit
@@ -400,6 +407,7 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
   const c = s.combat!;
   s.combat = null;
   changeFatigue(ctx, COMBAT_FATIGUE);
+  wearAfterCombat(ctx, c);
   const recovered = Math.floor(c.arrowsFired * ARROW_RECOVERY_RATE);
   if (recovered > 0) addItem(ctx, ARROW, recovered);
 
@@ -413,6 +421,18 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
       return c.setup.onFled ?? "END";
     default:
       return defeat(ctx, c);
+  }
+}
+
+/**
+ * 내구도: 공격에 쓴 무기 −1(대실패가 있었으면 −2), 한 번이라도 맞았으면 방어구·방패 −1. 전투 한 번 단위로 깎는다. (SYSTEM_SPEC 5-3)
+ */
+function wearAfterCombat(ctx: Ctx, c: CombatState): void {
+  const attacks = c.log.filter((l) => l.actor === "player" && l.check);
+  if (attacks.length > 0) wearEquipment(ctx, "weapon", attacks.some((l) => l.check!.outcome === "critFail") ? 2 : 1);
+  if (c.log.some((l) => l.actor !== "player" && l.damage)) {
+    wearEquipment(ctx, "armor", 1);
+    wearEquipment(ctx, "shield", 1);
   }
 }
 

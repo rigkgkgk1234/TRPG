@@ -605,8 +605,10 @@ export const SELL_RATE = 0.5;
 export const REPAIR_SILVER_PER_DURABILITY = 1 / 5;
 export const REP_DISCOUNT_THRESHOLD = 60;
 export const REP_DISCOUNT_RATE = 0.1;
-export const REP_SURCHARGE_THRESHOLD = 20;
-export const REP_SURCHARGE_RATE = 0.2;
+export const REP_SURCHARGE_THRESHOLD = 10;
+export const REP_SURCHARGE_RATE = 0.1;
+export const REP_HEAVY_SURCHARGE_THRESHOLD = 5;
+export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "hunting_bow", name: "사냥활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
