@@ -68,6 +68,19 @@ export interface PlayerState {
   reputation: number;
 }
 
+/** 흔적(특성) 데이터. 판정 보정은 buildCheckContext가 읽는다. */
+export interface TraitDef {
+  id: TraitId;
+  name: string;
+  description: string;
+  /** 판정 보정. tags·stat 중 지정된 조건이 모두 맞을 때 적용 (둘 다 없으면 모든 판정) */
+  checkBonus?: { tags?: string[]; stat?: StatId; value: number };
+  /** 이 태그가 붙은 판정에 유리함 */
+  advantageTags?: string[];
+  /** 획득 시 한 번 적용하는 능력치 변화 (예: 오래된 상처 → agi -1) */
+  statDelta?: Partial<Stats>;
+}
+
 export function maxHp(stats: Stats): number {
   return 8 + stats.con * 2;
 }

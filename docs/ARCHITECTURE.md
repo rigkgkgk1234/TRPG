@@ -12,7 +12,7 @@
 
 ```
 ┌─────────────────────────────────────────────┐
-│ UI 층  (app/, src/ui/)                      │  React Native 컴포넌트
+│ UI 층  (src/app/, src/ui/)                  │  React Native 컴포넌트
 │   - 상태를 "읽어서 그리기"                  │  화면, 버튼, 애니메이션
 │   - 사용자 입력을 "명령(Command)"으로 전달  │
 └───────────────▲──────────────┬──────────────┘
@@ -40,21 +40,22 @@
 
 ```
 TRPG/
-├─ app/                          # 화면 (Expo Router: 파일 하나 = 화면 하나)
-│  ├─ _layout.tsx                # 루트 레이아웃: 폰트·테마·저장 데이터 로딩
-│  ├─ index.tsx                  # 타이틀
-│  ├─ new-game.tsx               # 이름 입력 + 직업 선택
-│  ├─ game/
-│  │  ├─ _layout.tsx             # 게임 공통: 상단 상태 바
-│  │  ├─ index.tsx               # 게임 본 화면 (상태 머신으로 뷰 전환)
-│  │  ├─ inventory.tsx           # 모달: 가방·장비
-│  │  ├─ status.tsx              # 모달: 능력치·숙련·흔적
-│  │  └─ town.tsx                # 모달: 상점·대장간·의원·여관
-│  ├─ ending.tsx                 # 엔딩 / 사망
-│  ├─ records.tsx                # 기록·도감
-│  └─ settings.tsx
-│
 ├─ src/
+│  ├─ app/                    # 화면 (Expo Router: 파일 하나 = 화면 하나)
+│  │  ├─ _layout.tsx             # 루트 레이아웃: 폰트·테마·저장 데이터 로딩
+│  │  ├─ index.tsx               # 타이틀
+│  │  ├─ new-game.tsx            # 이름 입력 + 직업 선택
+│  │  ├─ game/
+│  │  │  ├─ _layout.tsx          # 게임 공통: 상단 상태 바
+│  │  │  ├─ index.tsx            # 게임 본 화면 (상태 머신으로 뷰 전환)
+│  │  │  ├─ inventory.tsx        # 모달: 가방·장비
+│  │  │  ├─ status.tsx           # 모달: 능력치·숙련·흔적
+│  │  │  └─ town.tsx             # 모달: 상점·대장간·의원·여관
+│  │  ├─ ending.tsx              # 엔딩 / 사망
+│  │  ├─ records.tsx             # 기록·도감
+│  │  ├─ settings.tsx
+│  │  └─ dev/dice.tsx            # 1주차 개발용 판정 테스트 화면
+│  │
 │  ├─ core/                      # ★ 게임 로직 (순수 TS)
 │  │  ├─ types.ts                # SYSTEM_SPEC.md에서 자동 생성 (수정 금지)
 │  │  ├─ content.ts              # ContentDB 타입 + 조회 헬퍼
@@ -124,7 +125,7 @@ TRPG/
 
 > 💡 **Expo**: React Native 앱을 네이티브 빌드 설정 없이 시작하게 해 주는 도구 모음. 개발 중에는 폰에 **Expo Go** 앱을 깔고 QR코드를 찍으면 코드가 바로 반영된다(저장 → 1초 뒤 폰 화면 갱신). 스토어 배포용 빌드는 **EAS Build**(클라우드 빌드)로 만든다.
 
-> 💡 **Expo Router**: `app/` 폴더의 파일 경로가 그대로 화면 주소가 된다. `app/game/inventory.tsx` → `/game/inventory`. `_layout.tsx`는 같은 폴더 화면들을 감싸는 공통 틀이다. 웹의 Next.js와 같은 방식.
+> 💡 **Expo Router**: `src/app/` 폴더의 파일 경로가 그대로 화면 주소가 된다(`app/`도 되지만 SDK 57 템플릿은 `src/app/`을 권장). `src/app/game/inventory.tsx` → `/game/inventory`. `_layout.tsx`는 같은 폴더 화면들을 감싸는 공통 틀이다. 웹의 Next.js와 같은 방식.
 
 ### 시작 명령
 ```bash
@@ -396,7 +397,7 @@ export function selectView(run: RunState): GameView {
 }
 ```
 ```tsx
-// app/game/index.tsx
+// src/app/game/index.tsx
 export default function GameScreen() {
   const view = useGame((s) => (s.run ? selectView(s.run) : null));
   useEndingRedirect(view);                 // "ending"이면 router.replace("/ending")
@@ -533,7 +534,7 @@ flowchart TD
 **할 일**
 - Expo 프로젝트 생성, Expo Router·ESLint(코어 import 제한)·vitest 설정
 - `extract-types.mjs`로 `types.ts` 생성, `rng`·`rollCheck`·`successChance` 테스트
-- `app/dev/dice.tsx` 개발용 화면: 능력치·숙련·DC 슬라이더, 유리/불리 토글, 굴림 버튼
+- `src/app/dev/dice.tsx` 개발용 화면: 능력치·숙련·DC 슬라이더, 유리/불리 토글, 굴림 버튼
 
 **직접 구현할 핵심 코드: `buildCheckContext`** — 상태를 읽어 보정치와 유불리를 조립하는 함수. 판정이 공정하게 느껴지는지는 전부 여기에 달려 있다.
 ```ts
@@ -703,7 +704,7 @@ export async function loadRun(): Promise<{ run: RunState; recovered: boolean } |
 }
 ```
 ```ts
-// app/_layout.tsx 안에서 — 백그라운드 전환 시 저장
+// src/app/_layout.tsx 안에서 — 백그라운드 전환 시 저장
 useEffect(() => {
   const sub = AppState.addEventListener("change", (st) => {
     const run = useGame.getState().run;
