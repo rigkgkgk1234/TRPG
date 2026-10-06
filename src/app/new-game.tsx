@@ -7,7 +7,8 @@ import { maxHp, type JobDef, type JobId, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
-import { colors, font, radius, space, TOUCH_MIN } from "@/ui/theme";
+import { JOB_ICON } from "@/ui/gameIcons";
+import { colors, fonts, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 
 const NAME_MAX = 8;
 const MVP_JOBS = Object.values(CONTENT.jobs).filter((j): j is JobDef => !!j?.mvp);
@@ -18,6 +19,7 @@ export default function NewGameScreen() {
   const startNew = useGame((s) => s.startNew);
   const [name, setName] = useState("");
   const [job, setJob] = useState<JobId>("farmer");
+  const [focused, setFocused] = useState(false);
 
   const start = () => {
     startNew(job, name);
@@ -27,21 +29,30 @@ export default function NewGameScreen() {
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          value={name}
-          onChangeText={(t) => setName(t.slice(0, NAME_MAX))}
-          placeholder="보리울 주민의 이름"
-          placeholderTextColor={colors.textDim}
-          style={styles.input}
-          returnKeyType="done"
-          maxLength={NAME_MAX}
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>이름</Text>
+          <TextInput
+            value={name}
+            onChangeText={(t) => setName(t.slice(0, NAME_MAX))}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="비워 두면 이름 없는 주민"
+            placeholderTextColor={colors.textFaint}
+            style={[styles.input, focused && styles.inputFocused]}
+            returnKeyType="done"
+            maxLength={NAME_MAX}
+          />
+          <Text style={styles.help}>{NAME_MAX}글자까지</Text>
+        </View>
 
-        <Text style={styles.label}>직업</Text>
-        {MVP_JOBS.map((j) => (
-          <JobCard key={j.id} job={j} selected={job === j.id} onPress={() => setJob(j.id)} />
-        ))}
+        <View style={styles.field}>
+          <Text style={styles.label}>직업</Text>
+          <View style={styles.jobs}>
+            {MVP_JOBS.map((j) => (
+              <JobCard key={j.id} job={j} selected={job === j.id} onPress={() => setJob(j.id)} />
+            ))}
+          </View>
+        </View>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + space.md }]}>
@@ -52,52 +63,101 @@ export default function NewGameScreen() {
 }
 
 function JobCard({ job, selected, onPress }: { job: JobDef; selected: boolean; onPress: () => void }) {
+  const JobIcon = JOB_ICON[job.id];
   const skills = (Object.entries(job.startSkills) as [SkillId, number][])
-    .map(([s, r]) => `${SKILL_LABEL[s]} ${r}`).join(" · ");
+    .map(([s, r]) => `${SKILL_LABEL[s]} ${r}`).join(", ");
   const items = job.startItems.map((it) => CONTENT.items[it.itemId]?.name ?? it.itemId).join(", ");
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="radio"
       accessibilityState={{ selected }}
-      style={[styles.card, selected && styles.cardSelected]}
+      style={({ pressed }) => [styles.card, selected && styles.cardSelected, pressed && styles.pressed]}
     >
-      <Text style={styles.cardTitle}>{job.name}</Text>
-      <Text style={styles.cardLine}>
-        {STAT_IDS.map((s) => `${STAT_LABEL[s]} ${formatSigned(job.stats[s])}`).join("  ")}
-      </Text>
-      <Text style={styles.cardLine}>숙련 {skills} · HP {maxHp(job.stats)}</Text>
-      <Text style={styles.cardDim}>은화 {job.silver} · 식량 {job.food} · 평판 {job.reputation} · {items}</Text>
-      <Text style={styles.cardDim}>일: {job.work.label} (DC {job.work.check.dc}, 은화 {job.work.baseSilver}+)</Text>
+      <View style={styles.cardHead}>
+        <View style={[styles.jobIcon, selected && styles.jobIconSelected]}>
+          <JobIcon size={icon.md} weight={icon.weight} color={selected ? colors.accentText : colors.textDim} />
+        </View>
+        <View style={styles.cardHeadText}>
+          <Text style={styles.cardTitle}>{job.name}</Text>
+          <Text style={styles.cardSub}>{job.work.label}, 목표 {job.work.check.dc}</Text>
+        </View>
+      </View>
+
+      <View style={styles.statRow}>
+        {STAT_IDS.map((s) => (
+          <View key={s} style={styles.stat}>
+            <Text style={[styles.statValue, job.stats[s] < 0 && { color: colors.fail }, job.stats[s] > 0 && { color: colors.text }]}>
+              {formatSigned(job.stats[s])}
+            </Text>
+            <Text style={styles.statLabel}>{STAT_LABEL[s]}</Text>
+          </View>
+        ))}
+        <View style={styles.stat}>
+          <Text style={[styles.statValue, { color: colors.text }]}>{maxHp(job.stats)}</Text>
+          <Text style={styles.statLabel}>HP</Text>
+        </View>
+      </View>
+
+      <View style={styles.meta}>
+        <Text style={styles.metaLine}><Text style={styles.metaKey}>숙련  </Text>{skills}</Text>
+        <Text style={styles.metaLine}>
+          <Text style={styles.metaKey}>시작  </Text>은화 {job.silver}, 식량 {job.food}, 평판 {job.reputation}
+        </Text>
+        <Text style={styles.metaLine}><Text style={styles.metaKey}>장비  </Text>{items}</Text>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: space.lg, gap: space.md },
-  label: { color: colors.textDim, fontSize: font.sm },
+  content: { padding: space.lg, gap: space.xl, paddingBottom: space.xxl },
+  field: { gap: space.sm },
+  label: { ...type.label, color: colors.textDim },
+  help: { ...type.caption, color: colors.textFaint },
   input: {
-    minHeight: TOUCH_MIN,
-    paddingHorizontal: space.md,
+    minHeight: TOUCH_MIN + 4,
+    paddingHorizontal: space.lg,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: colors.surface,
     color: colors.text,
-    fontSize: font.lg,
+    fontFamily: fonts.semibold,
+    fontSize: 18,
   },
+  inputFocused: { borderColor: colors.accent },
+  jobs: { gap: space.md },
   card: {
     padding: space.lg,
-    gap: space.xs,
+    gap: space.lg,
     borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: colors.surface,
     backgroundColor: colors.surface,
   },
-  cardSelected: { borderColor: colors.accent, backgroundColor: colors.surfaceRaised },
-  cardTitle: { color: colors.text, fontSize: font.lg, fontWeight: "700" },
-  cardLine: { color: colors.text, fontSize: font.sm },
-  cardDim: { color: colors.textDim, fontSize: font.sm },
-  footer: { paddingHorizontal: space.lg, paddingTop: space.md, backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border },
+  cardSelected: { borderColor: colors.accent },
+  pressed: { transform: [{ scale: 0.99 }] },
+  cardHead: { flexDirection: "row", alignItems: "center", gap: space.md },
+  jobIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceRaised,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  jobIconSelected: { backgroundColor: colors.accent },
+  cardHeadText: { flex: 1 },
+  cardTitle: { ...type.heading, color: colors.text },
+  cardSub: { ...type.caption, color: colors.textDim },
+  statRow: { flexDirection: "row" },
+  stat: { flex: 1, alignItems: "center", gap: 2 },
+  statValue: { ...type.number, fontSize: 17, color: colors.textFaint },
+  statLabel: { ...type.caption, color: colors.textFaint },
+  meta: { gap: space.xs },
+  metaLine: { ...type.caption, color: colors.textDim },
+  metaKey: { fontFamily: fonts.semibold, color: colors.textFaint },
+  footer: { paddingHorizontal: space.lg, paddingTop: space.md, backgroundColor: colors.bg },
 });

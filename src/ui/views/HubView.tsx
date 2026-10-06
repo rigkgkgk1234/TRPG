@@ -11,16 +11,16 @@ import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
-import { FeedLog } from "@/ui/components/FeedLog";
-import { colors, font, space } from "@/ui/theme";
+import { ACTION_ICON, JOB_ICON } from "@/ui/gameIcons";
+import { BasketIcon, HandCoinsIcon } from "@/ui/icons";
+import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
 
-/** 오전·오후 행동을 고르는 화면. 버튼은 엄지가 닿는 아래쪽에 모은다. */
-export function HubView({ run }: { run: RunState }) {
+/** 오전·오후 행동을 고르는 아래 패널. 버튼은 엄지가 닿는 아래쪽에 모은다. */
+export function HubPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
-  const log = useGame((s) => s.log);
   const [training, setTraining] = useState<Training | null>(null);
 
   const choose = (def: DailyActionDef) => {
@@ -39,32 +39,30 @@ export function HubView({ run }: { run: RunState }) {
   };
 
   return (
-    <View style={styles.root}>
-      <FeedLog log={log} empty={`${run.player.name}의 서른 날이 시작된다. 오늘은 무엇을 할까?`} />
-
-      <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
-        {training && (
-          <TrainingPicker run={run} kind={training} onPick={train} />
-        )}
-        <ButtonGrid>
-          {MVP_ACTIONS.map((def) => {
-            const isTraining = def.id === "trainSolo" || def.id === "trainLesson";
-            const status = isTraining ? trainingStatus(run, def.id as Training) : actionStatus(run, def.id);
-            return (
-              <GridCell key={def.id}>
-                <ActionButton
-                  label={def.id === "work" ? jobOf(CONTENT, run).work.label : def.label}
-                  detail={status.available ? actionDetail(run, def) : status.reason}
-                  disabled={!status.available}
-                  selected={training === def.id}
-                  onPress={() => choose(def)}
-                />
-              </GridCell>
-            );
-          })}
-        </ButtonGrid>
-        <TownRow run={run} />
-      </View>
+    <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
+      {training && (
+        <TrainingPicker run={run} kind={training} onPick={train} />
+      )}
+      <ButtonGrid>
+        {MVP_ACTIONS.map((def) => {
+          const isTraining = def.id === "trainSolo" || def.id === "trainLesson";
+          const status = isTraining ? trainingStatus(run, def.id as Training) : actionStatus(run, def.id);
+          return (
+            <GridCell key={def.id}>
+              <ActionButton
+                icon={def.id === "work" ? JOB_ICON[run.player.job] : ACTION_ICON[def.id]}
+                label={def.id === "work" ? jobOf(CONTENT, run).work.label : def.label}
+                badge={status.available && def.id === "work" ? percent(chance(run, jobOf(CONTENT, run).work.check)) : undefined}
+                detail={status.available ? actionDetail(run, def) : status.reason}
+                disabled={!status.available}
+                selected={training === def.id}
+                onPress={() => choose(def)}
+              />
+            </GridCell>
+          );
+        })}
+      </ButtonGrid>
+      <TownRow run={run} />
     </View>
   );
 }
@@ -73,18 +71,21 @@ function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; 
   const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;
   return (
     <View style={styles.picker}>
-      <Text style={styles.pickerTitle}>{kind === "trainLesson" ? "레나에게 무엇을 배울까? (경험 +3)" : "무엇을 연습할까? (DC 10)"}</Text>
+      <Text style={styles.pickerTitle}>
+        {kind === "trainLesson" ? `레나에게 무엇을 배울까? 경험 +${LESSON_XP}` : `무엇을 연습할까? 목표 ${SOLO_TRAINING_DC}`}
+      </Text>
       <ChipRow>
         {skills.map((skill) => {
           const ok = actionStatus(run, kind, skill).available;
           const p = run.player.skills[skill];
-          const extra = !ok ? " —" : kind === "trainSolo" ? ` ${percent(soloChance(run, skill))}` : "";
+          const extra = ok && kind === "trainSolo" ? `  ${percent(soloChance(run, skill))}` : "";
           return (
             <Chip
               key={skill}
               label={`${SKILL_LABEL[skill]} ${p.rank}${extra}`}
               selected={false}
-              onPress={() => ok && onPick(skill)}
+              disabled={!ok}
+              onPress={() => onPick(skill)}
             />
           );
         })}
@@ -101,8 +102,9 @@ function TownRow({ run }: { run: RunState }) {
     <View style={styles.townRow}>
       <View style={styles.townCell}>
         <ActionButton
+          icon={BasketIcon}
           label="식량 1 사기"
-          detail={`토비의 여관 · 은화 ${FOOD_PRICE}`}
+          detail={["토비의 여관", `은화 -${FOOD_PRICE}`]}
           disabled={silver < FOOD_PRICE}
           onPress={() => send({ type: "shop", op: "buyFood", qty: 1 })}
         />
@@ -110,6 +112,7 @@ function TownRow({ run }: { run: RunState }) {
       {debt > 0 && (
         <View style={styles.townCell}>
           <ActionButton
+            icon={HandCoinsIcon}
             label="빚 갚기"
             detail={`가진 만큼 (최대 ${Math.min(silver, debt)})`}
             disabled={silver <= 0}
@@ -121,17 +124,17 @@ function TownRow({ run }: { run: RunState }) {
   );
 }
 
-/** 행동 버튼의 두 번째 줄: 확률·비용·피로 */
-function actionDetail(run: RunState, def: DailyActionDef): string {
+/** 행동 버튼의 두 번째 줄: 비용·보상·피로 (항목 단위로 줄을 바꾼다) */
+function actionDetail(run: RunState, def: DailyActionDef): string[] {
   switch (def.id) {
     case "work": {
       const w = jobOf(CONTENT, run).work;
-      return `${percent(chance(run, w.check))} · 은화 ${w.baseSilver}~${w.baseSilver + w.bonusSilver * 2} · 피로 +${w.fatigue}`;
+      return [`은화 ${w.baseSilver}~${w.baseSilver + w.bonusSilver * 2}`, `피로 +${w.fatigue}`];
     }
-    case "trainSolo": return `숙련 고르기 · 피로 +${def.fatigue}`;
-    case "trainLesson": return `은화 ${def.silverCost} · 경험 +${LESSON_XP} · 피로 +${def.fatigue}`;
-    case "rest": return `피로 ${def.fatigue} · HP +${REST_HP}`;
-    default: return "";
+    case "trainSolo": return ["숙련 고르기", `피로 +${def.fatigue}`];
+    case "trainLesson": return [`은화 -${def.silverCost}`, `경험 +${LESSON_XP}`, `피로 +${def.fatigue}`];
+    case "rest": return [`피로 ${def.fatigue}`, `HP +${REST_HP}`];
+    default: return [];
   }
 }
 
@@ -157,17 +160,16 @@ function chance(run: RunState, spec: CheckSpec): number {
 const percent = (p: number) => `${Math.round(p * 100)}%`;
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
   panel: {
     paddingHorizontal: space.lg,
-    paddingTop: space.md,
+    paddingTop: space.lg,
     gap: space.sm,
     backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopLeftRadius: radius.md,
+    borderTopRightRadius: radius.md,
   },
-  picker: { gap: space.sm, paddingBottom: space.sm },
-  pickerTitle: { color: colors.textDim, fontSize: font.sm },
+  picker: { gap: space.md, paddingBottom: space.md },
+  pickerTitle: { ...type.label, color: colors.textDim },
   townRow: { flexDirection: "row", gap: space.sm },
   townCell: { flex: 1 },
 });

@@ -23,7 +23,8 @@
     },
     "scheme": "boriul30",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }

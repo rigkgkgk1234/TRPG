@@ -17,19 +17,13 @@ import {
 } from "@/core/types";
 import { Chip, ChipRow, Section, Stepper } from "@/ui/components/Controls";
 import { DEV_CONTENT, devSubject, type DevCheckInput } from "@/ui/dev/devSubject";
-import { colors, font, radius, space, TOUCH_MIN } from "@/ui/theme";
+import { colors, fonts, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { OUTCOME_COLOR } from "@/ui/turnSummary";
 
 const DCS = [8, 10, 12, 14, 16, 20];
 const WOUNDS: WoundLevel[] = ["none", "light", "serious"];
 const HISTORY_MAX = 8;
 
-const OUTCOME_COLOR: Record<CheckOutcome, string> = {
-  critSuccess: colors.crit,
-  success: colors.success,
-  partial: colors.partial,
-  fail: colors.fail,
-  critFail: colors.fumble,
-};
 
 /** 1주차 결과물: 능력치·숙련·DC·상태를 바꿔 가며 D20 판정과 성공 확률을 확인하는 개발용 화면 */
 export default function DiceTestScreen() {
@@ -169,26 +163,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: space.lg,
     gap: space.xs,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
-  dice: { fontSize: font.dice, fontWeight: "800", fontVariant: ["tabular-nums"] },
-  breakdown: { color: colors.text, fontSize: font.md, fontVariant: ["tabular-nums"] },
-  outcome: { fontSize: font.lg, fontWeight: "700" },
-  dim: { color: colors.textDim, fontSize: font.sm },
-  history: { color: colors.textDim, fontSize: font.sm, marginTop: space.sm },
+  dice: { fontFamily: fonts.bold, fontSize: 64, lineHeight: 72, fontVariant: ["tabular-nums"] },
+  breakdown: { ...type.body, color: colors.text, fontVariant: ["tabular-nums"] },
+  outcome: { ...type.heading },
+  dim: { ...type.caption, color: colors.textDim },
+  history: { ...type.caption, color: colors.textDim, marginTop: space.sm },
   scroll: { flex: 1 },
   scrollContent: { padding: space.lg, gap: space.xl },
-  seed: { color: colors.textDim, fontSize: font.sm, textAlign: "center" },
+  seed: { ...type.caption, color: colors.textFaint, textAlign: "center" },
   footer: {
     paddingHorizontal: space.lg,
     paddingTop: space.md,
     gap: space.xs,
     backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopLeftRadius: radius.md,
+    borderTopRightRadius: radius.md,
   },
-  summary: { color: colors.textDim, fontSize: font.sm },
+  summary: { ...type.caption, color: colors.textDim },
   rollButton: {
     minHeight: TOUCH_MIN + 8,
     marginTop: space.sm,
@@ -197,6 +191,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  pressed: { opacity: 0.8 },
-  rollText: { color: colors.accentText, fontSize: font.lg, fontWeight: "700" },
+  pressed: { transform: [{ scale: motion.press }] },
+  rollText: { ...type.bodyStrong, color: colors.accentText },
 });

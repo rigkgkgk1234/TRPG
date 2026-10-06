@@ -1,14 +1,15 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatSigned } from "@/core/labels";
-import { colors, font, radius, space } from "@/ui/theme";
+import { colors, motion, radius, space, type } from "@/ui/theme";
 
-export function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+export function Chip({ label, selected, disabled, onPress }: { label: string; selected: boolean; disabled?: boolean; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ selected }}
-      style={[styles.chip, selected && styles.chipSelected]}
+      accessibilityState={{ selected, disabled }}
+      style={({ pressed }) => [styles.chip, selected && styles.chipSelected, disabled && styles.disabled, pressed && styles.pressed]}
     >
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>
@@ -38,17 +39,20 @@ function StepButton({ text, disabled, onPress }: { text: string; disabled: boole
       disabled={disabled}
       accessibilityRole="button"
       hitSlop={8}
-      style={[styles.stepButton, disabled && styles.disabled]}
+      style={({ pressed }) => [styles.stepButton, disabled && styles.disabled, pressed && styles.pressed]}
     >
       <Text style={styles.stepButtonText}>{text}</Text>
     </Pressable>
   );
 }
 
-export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+export function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHead}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {hint ? <Text style={styles.sectionHint}>{hint}</Text> : null}
+      </View>
       {children}
     </View>
   );
@@ -60,31 +64,35 @@ export function ChipRow({ children }: { children: React.ReactNode }) {
 
 const styles = StyleSheet.create({
   chip: {
-    paddingHorizontal: space.md,
-    paddingVertical: space.sm,
-    borderRadius: radius.lg,
+    minHeight: 36,
+    justifyContent: "center",
+    paddingHorizontal: space.md + 2,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceRaised,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: colors.surfaceRaised,
   },
   chipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
-  chipText: { color: colors.text, fontSize: font.sm },
-  chipTextSelected: { color: colors.accentText, fontWeight: "700" },
+  chipText: { ...type.label, color: colors.text, fontVariant: ["tabular-nums"] },
+  chipTextSelected: { color: colors.accentText },
   chipRow: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
+  pressed: { transform: [{ scale: motion.press }] },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  label: { color: colors.text, fontSize: font.md },
+  label: { ...type.body, color: colors.text },
   stepper: { flexDirection: "row", alignItems: "center", gap: space.md },
   stepButton: {
     width: 36,
     height: 36,
-    borderRadius: radius.sm,
+    borderRadius: radius.pill,
     backgroundColor: colors.surfaceRaised,
     alignItems: "center",
     justifyContent: "center",
   },
-  stepButtonText: { color: colors.text, fontSize: font.lg },
-  stepValue: { color: colors.text, fontSize: font.lg, minWidth: 32, textAlign: "center", fontVariant: ["tabular-nums"] },
-  disabled: { opacity: 0.3 },
-  section: { gap: space.sm },
-  sectionTitle: { color: colors.textDim, fontSize: font.sm },
+  stepButtonText: { ...type.heading, color: colors.text },
+  stepValue: { ...type.number, color: colors.text, minWidth: 32, textAlign: "center" },
+  disabled: { opacity: 0.35 },
+  section: { gap: space.md },
+  sectionHead: { gap: 2 },
+  sectionTitle: { ...type.heading, color: colors.text },
+  sectionHint: { ...type.caption, color: colors.textFaint },
 });

@@ -83,6 +83,7 @@ function eat(ctx: Ctx, order: FeedOrder): void {
 
   r.hunger = selfAte ? 0 : r.hunger + 1;
   r.familyHunger = familyAte ? 0 : r.familyHunger + 1;
+  if (selfAte && familyAte) ctx.feed.push({ kind: "text", text: "동생과 둘러앉아 저녁을 먹었다." });
   if (!selfAte) ctx.feed.push({ kind: "text", text: `빈속으로 잠자리에 든다. (굶주림 ${r.hunger})` });
   if (!familyAte) ctx.feed.push({ kind: "text", text: `동생이 배고프다며 칭얼거린다. (가족 굶주림 ${r.familyHunger})` });
   // 「동생이 앓아눕다」 스토리 이벤트는 3주차 이벤트 엔진에서 이 수치를 조건으로 띄운다
