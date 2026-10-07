@@ -125,6 +125,8 @@ export interface CombatActionView {
   type: CombatAction["type"];
   label: string;
   chance?: number;
+  /** 성공에 필요한 D20 눈 */
+  need?: number;
   mode?: RollMode;
   detail: string[];
   lockedReason: string | null;
@@ -156,7 +158,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
     if (!target) return {};
     const spec = attackSpec(run, content, target, power);
     const p = previewCheck(spec, buildCheckContext(run, spec, content, { advantage: firstStrikeSources(c) }));
-    return { chance: p.chance, mode: p.mode };
+    return { chance: p.chance, need: p.need, mode: p.mode };
   };
   const items = Object.values(content.items)
     .filter((def) => canUseItem(run, content, def.id, true))
@@ -182,7 +184,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
       lockedReason: items.length ? null : "쓸 만한 것이 없다",
     },
     {
-      type: "flee", label: "도주", chance: flee.chance, mode: flee.mode, detail: [`목표 ${fleeSpec.dc}`],
+      type: "flee", label: "도주", chance: flee.chance, need: flee.need, mode: flee.mode, detail: [`목표 ${fleeSpec.dc}`],
       lockedReason: c.setup.canFlee ? null : c.setup.noFleeReason ?? "물러설 곳이 없다",
     },
   ];

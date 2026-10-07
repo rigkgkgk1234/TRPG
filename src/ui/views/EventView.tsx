@@ -9,6 +9,7 @@ import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
+import { chanceBadge } from "@/ui/rollText";
 import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, TreeIcon, type Icon } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
@@ -150,7 +151,7 @@ function ChoiceButton({ choice: c, onPress }: { choice: ChoiceView; onPress: () 
       label={c.label}
       icon={locked ? LockSimpleIcon : c.danger ? SkullIcon : undefined}
       iconColor={!locked && c.danger ? colors.fail : undefined}
-      badge={!locked && c.chance !== undefined ? `${Math.round(c.chance * 100)}%` : undefined}
+      badge={!locked && c.chance !== undefined ? chanceBadge(c.chance, c.need) : undefined}
       detail={detail.length > 0 ? detail : undefined}
       disabled={locked}
       onPress={onPress}

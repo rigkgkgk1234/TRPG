@@ -4,15 +4,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
-import { DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
-import { NPC_IDS, NPC_LABEL, REGION_LABEL, SKILL_IDS, SKILL_LABEL, type NpcId } from "@/core/labels";
+import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
+import { possibleEvents } from "@/core/events/selector";
+import { josa, NPC_IDS, NPC_LABEL, REGION_LABEL, SKILL_IDS, SKILL_LABEL, type NpcId } from "@/core/labels";
 import { SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
+import { InfoDialog } from "@/ui/components/InfoDialog";
 import { TownRow } from "@/ui/components/TownRow";
 import { Chip, ChipRow } from "@/ui/components/Controls";
-import { ACTION_ICON, JOB_ICON } from "@/ui/gameIcons";
+import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
+import { ChatCircleDotsIcon } from "@/ui/icons";
+import { NPC_INFO, REGION_INFO } from "@/ui/placeInfo";
+import { chanceBadge } from "@/ui/rollText";
 import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
@@ -21,11 +26,15 @@ type Picking = Training | "explore" | "village";
 
 const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore" || id === "village";
 
+/** 갈 곳·찾아갈 사람을 고르면 바로 가지 않고 가운데 창에서 한 번 더 확인한다 */
+type Confirm = { kind: "explore"; region: RegionId } | { kind: "village"; npc: NpcId };
+
 /** 오전·오후 행동을 고르는 아래 패널. 버튼은 엄지가 닿는 아래쪽에 모은다. */
 export function HubPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
   const [picking, setPicking] = useState<Picking | null>(null);
+  const [confirm, setConfirm] = useState<Confirm | null>(null);
 
   const choose = (def: DailyActionDef) => {
     if (isPicking(def.id)) {
@@ -42,22 +51,21 @@ export function HubPanel({ run }: { run: RunState }) {
     setPicking(null);
   };
 
-  const explore = (region: RegionId) => {
-    send({ type: "chooseAction", action: "explore", region });
-    setPicking(null);
-  };
-
-  const visit = (npc: NpcId) => {
-    send({ type: "chooseAction", action: "village", npc });
+  const go = () => {
+    if (!confirm) return;
+    send(confirm.kind === "explore"
+      ? { type: "chooseAction", action: "explore", region: confirm.region }
+      : { type: "chooseAction", action: "village", npc: confirm.npc });
+    setConfirm(null);
     setPicking(null);
   };
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
       {picking === "explore" ? (
-        <RegionPicker run={run} onPick={explore} />
+        <RegionPicker run={run} onPick={(region) => setConfirm({ kind: "explore", region })} />
       ) : picking === "village" ? (
-        <NpcPicker run={run} onPick={visit} />
+        <NpcPicker run={run} onPick={(npc) => setConfirm({ kind: "village", npc })} />
       ) : picking ? (
         <TrainingPicker run={run} kind={picking} onPick={train} />
       ) : null}
@@ -69,7 +77,7 @@ export function HubPanel({ run }: { run: RunState }) {
               <ActionButton
                 icon={def.id === "work" ? JOB_ICON[run.player.job] : ACTION_ICON[def.id]}
                 label={def.id === "work" ? jobOf(CONTENT, run).work.label : def.label}
-                badge={status.available && def.id === "work" ? percent(chance(run, jobOf(CONTENT, run).work.check)) : undefined}
+                badge={status.available && def.id === "work" ? rollBadge(run, jobOf(CONTENT, run).work.check) : undefined}
                 detail={status.available ? actionDetail(run, def) : status.reason}
                 disabled={!status.available}
                 selected={picking === def.id}
@@ -80,7 +88,53 @@ export function HubPanel({ run }: { run: RunState }) {
         })}
       </ButtonGrid>
       <TownRow run={run} />
+      {confirm && <ConfirmDialog run={run} confirm={confirm} onConfirm={go} onClose={() => setConfirm(null)} />}
     </View>
+  );
+}
+
+/** 갈 곳·찾아갈 사람 안내 창: 어떤 곳(사람)인지, 무엇을 얻고 무엇을 조심할지, 지금 나올 수 있는 일이 몇 가지인지 */
+function ConfirmDialog({ run, confirm, onConfirm, onClose }: { run: RunState; confirm: Confirm; onConfirm: () => void; onClose: () => void }) {
+  if (confirm.kind === "explore") {
+    const { region } = confirm;
+    const info = REGION_INFO[region];
+    const status = actionStatus(run, CONTENT, "explore", { region });
+    const tier = dangerTierForDay(run.time.day);
+    const def = MVP_ACTIONS.find((a) => a.id === "explore")!;
+    return (
+      <InfoDialog
+        visible
+        icon={REGION_ICON[region]}
+        title={REGION_LABEL[region]}
+        subtitle={`위험 등급 ${tier}/3 · 더 깊이 들어가면 ${Math.min(3, tier + 1)}`}
+        body={info?.summary ?? ""}
+        facts={[`카드 ${EXPLORE_CARDS}장, 원하면 1장 더`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`, `지금 나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`]}
+        sections={info ? [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }] : []}
+        confirmLabel={`${josa(REGION_LABEL[region], "으로/로")} 간다`}
+        lockedReason={status.available ? null : status.reason}
+        onConfirm={onConfirm}
+        onClose={onClose}
+      />
+    );
+  }
+  const { npc } = confirm;
+  const info = NPC_INFO[npc];
+  const status = actionStatus(run, CONTENT, "village", { npc });
+  const talks = possibleEvents(run, CONTENT, "npc", undefined, npc).length;
+  return (
+    <InfoDialog
+      visible
+      icon={ChatCircleDotsIcon}
+      title={NPC_LABEL[npc]}
+      subtitle={info.role}
+      body={info.summary}
+      facts={["행동 1칸", "피로 없음", talks > 0 ? `오늘 나눌 이야기 ${talks}가지` : "오늘은 바빠 보인다"]}
+      sections={[{ title: "이야기하면", items: info.gains }, { title: "조심할 것", items: info.risks }]}
+      confirmLabel="찾아간다"
+      lockedReason={status.available ? null : status.reason}
+      onConfirm={onConfirm}
+      onClose={onClose}
+    />
   );
 }
 
@@ -95,7 +149,7 @@ function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; 
         {skills.map((skill) => {
           const ok = actionStatus(run, CONTENT, kind, { skill }).available;
           const p = run.player.skills[skill];
-          const extra = ok && kind === "trainSolo" ? `  ${percent(soloChance(run, skill))}` : "";
+          const extra = ok && kind === "trainSolo" ? `  ${rollBadge(run, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC })}` : "";
           return (
             <Chip
               key={skill}
@@ -123,7 +177,6 @@ function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) =>
               key={region}
               label={status.available ? REGION_LABEL[region] : `${REGION_LABEL[region]} (${status.reason})`}
               selected={false}
-              disabled={!status.available}
               onPress={() => onPick(region)}
             />
           );
@@ -145,7 +198,6 @@ function NpcPicker({ run, onPick }: { run: RunState; onPick: (n: NpcId) => void 
               key={npc}
               label={status.available ? NPC_LABEL[npc] : `${NPC_LABEL[npc]} (${status.reason})`}
               selected={false}
-              disabled={!status.available}
               onPress={() => onPick(npc)}
             />
           );
@@ -190,15 +242,12 @@ function pickingStatus(run: RunState, kind: Picking): ActionStatus {
   return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없다" };
 }
 
-function soloChance(run: RunState, skill: SkillId): number {
-  return chance(run, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC });
+/** "60% · D20 9+" */
+function rollBadge(run: RunState, spec: CheckSpec): string {
+  const p = previewCheck(spec, buildCheckContext(run, spec, CONTENT));
+  return chanceBadge(p.chance, p.need);
 }
 
-function chance(run: RunState, spec: CheckSpec): number {
-  return previewCheck(spec, buildCheckContext(run, spec, CONTENT)).chance;
-}
-
-const percent = (p: number) => `${Math.round(p * 100)}%`;
 
 const styles = StyleSheet.create({
   panel: {

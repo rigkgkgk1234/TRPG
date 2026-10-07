@@ -1,3 +1,4 @@
+import { neededRoll } from "@/core/check/modifiers";
 import { describe, expect, it } from "vitest";
 import { createRng, resolveMode, rollCheck, successChance, type CheckContext, type CheckSpec } from "@/core/types";
 import { d20Sequence } from "./fixtures";
@@ -120,5 +121,14 @@ describe("successChance — SYSTEM_SPEC 2-5 표", () => {
       if (r.outcome === "success" || r.outcome === "critSuccess") wins++;
     }
     expect(wins / N).toBeCloseTo(successChance(3, 14, "advantage"), 1);
+  });
+});
+
+describe("필요 굴림", () => {
+  it("D20 + 보정 ≥ DC가 되는 최소 눈, 2~20으로 자른다 (1은 늘 실패, 20은 늘 성공)", () => {
+    expect(neededRoll(3, 12)).toBe(9);
+    expect(neededRoll(0, 10)).toBe(10);
+    expect(neededRoll(15, 10)).toBe(2);
+    expect(neededRoll(-5, 20)).toBe(20);
   });
 });

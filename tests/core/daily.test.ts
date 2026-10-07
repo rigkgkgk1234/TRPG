@@ -5,7 +5,7 @@ import { checkContent } from "@/core/contentCheck";
 import { actionStatus } from "@/core/day/actions";
 import { dispatch } from "@/core/engine";
 import { sceneView } from "@/core/events/runner";
-import { eventPool } from "@/core/events/selector";
+import { eventPool, possibleEvents } from "@/core/events/selector";
 import { NPC_IDS } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import type { EventCategory, EventDef, RunState } from "@/core/types";
@@ -223,5 +223,17 @@ describe("리뷰 회귀", () => {
     expect(morning.time.phase).toBe("pm");
     const after = send(morning, { type: "chooseChoice", choiceId: "help" }, content).state;
     expect(after.time).toMatchObject({ phase: "evening", skipNextAm: false });
+  });
+});
+
+describe("고르기 전 안내", () => {
+  it("지금 나올 수 있는 이벤트: 반복 규칙·조건·위험 등급을 거르고, 확률 조건은 나올 수 있는 것으로 친다", () => {
+    const run = start();
+    const forest = possibleEvents(run, CONTENT, "explore", "forest");
+    expect(forest.length).toBeGreaterThan(0);
+    expect(forest.every((ev) => (ev.dangerTier ?? 1) === 1)).toBe(true);
+    const seen = edit(run, (s) => { s.eventHistory[forest[0].id] = { count: 1, lastDay: 1 }; });
+    expect(possibleEvents(seen, CONTENT, "explore", "forest").map((e) => e.id)).not.toContain(forest[0].id);
+    expect(possibleEvents(run, CONTENT, "npc", undefined, "toby").every((ev) => ev.npc === "toby")).toBe(true);
   });
 });

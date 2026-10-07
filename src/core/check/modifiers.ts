@@ -103,13 +103,20 @@ export interface CheckPreview {
   modifierTotal: number;
   /** 0~1, 부분 성공 제외 */
   chance: number;
+  /** 성공하려면 D20에서 나와야 하는 최소 눈 (2~20: 1은 늘 실패, 20은 늘 성공) */
+  need: number;
 }
 
 /** 선택지 버튼용 미리보기. rollCheck와 같은 규칙(forceMode 포함)으로 계산하므로 표시와 실제 굴림이 어긋나지 않는다. */
 export function previewCheck(spec: CheckSpec, ctx: CheckContext): CheckPreview {
   const mode = resolveMode(ctx, spec.forceMode);
   const modifierTotal = sumModifiers(ctx);
-  return { mode, modifierTotal, chance: successChance(modifierTotal, spec.dc, mode) };
+  return { mode, modifierTotal, chance: successChance(modifierTotal, spec.dc, mode), need: neededRoll(modifierTotal, spec.dc) };
+}
+
+/** D20 + 보정 ≥ DC가 되는 최소 눈. 자연 1은 늘 실패, 자연 20은 늘 성공이라 2~20으로 자른다. (SYSTEM_SPEC 2-4) */
+export function neededRoll(modifierTotal: number, dc: number): number {
+  return clamp(dc - modifierTotal, 2, 20);
 }
 
 function clamp(n: number, min: number, max: number): number {

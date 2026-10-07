@@ -62,6 +62,18 @@ export function eventPool(content: Pick<ContentDB, "events">, category: EventCat
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 
+/**
+ * 지금 나올 수 있는 이벤트 (화면 안내용: "오늘 나눌 이야기 3가지").
+ * selectEvent와 같은 걸러내기를 하되 rng를 쓰지 않는다: 확률 조건(chance)은 나올 수 있는 것으로 친다.
+ */
+export function possibleEvents(run: RunState, content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId, npc?: string): EventDef[] {
+  const tier = dangerTierForDay(run.time.day);
+  return eventPool(content, category, region, npc).filter((ev) =>
+    (ev.dangerTier ?? 1) <= tier &&
+    repeatAllowed(ev, run.eventHistory[ev.id], run.time.day) &&
+    ev.conditions.every((c) => c.type === "chance" || evalAll([c], run)));
+}
+
 export function repeatAllowed(ev: EventDef, h: EventHistoryEntry | undefined, day: number): boolean {
   if (!h) return true;
   switch (ev.repeat.mode) {

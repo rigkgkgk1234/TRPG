@@ -32,6 +32,8 @@ export interface ChoiceView {
   lockedReason: string | null;
   /** 판정이 있으면 성공 확률 (부분 성공 제외) */
   chance?: number;
+  /** 판정이 있으면 성공에 필요한 D20 눈 */
+  need?: number;
   mode?: RollMode;
   /** 판정 선택지: 실패하면 다치거나 싸우게 된다. 판정 없는 선택지: 고르면 싸움이 벌어진다 */
   danger: boolean;
@@ -76,6 +78,7 @@ function choiceView(run: RunState, content: ContentDB, ev: EventDef, c: ChoiceDe
   if (c.check) {
     const p = previewCheck(c.check, buildCheckContext(run, c.check, content));
     view.chance = p.chance;
+    view.need = p.need;
     view.mode = p.mode;
   }
   return view;

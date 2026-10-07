@@ -16,6 +16,7 @@ export const BreadIcon: Icon = require("phosphor-react-native/src/icons/Bread").
 export const CaretDownIcon: Icon = require("phosphor-react-native/src/icons/CaretDown").CaretDownIcon;
 export const CaretRightIcon: Icon = require("phosphor-react-native/src/icons/CaretRight").CaretRightIcon;
 export const CaretUpIcon: Icon = require("phosphor-react-native/src/icons/CaretUp").CaretUpIcon;
+export const CastleTurretIcon: Icon = require("phosphor-react-native/src/icons/CastleTurret").CastleTurretIcon;
 export const ChalkboardTeacherIcon: Icon = require("phosphor-react-native/src/icons/ChalkboardTeacher").ChalkboardTeacherIcon;
 export const ChatCircleDotsIcon: Icon = require("phosphor-react-native/src/icons/ChatCircleDots").ChatCircleDotsIcon;
 export const CoinsIcon: Icon = require("phosphor-react-native/src/icons/Coins").CoinsIcon;
