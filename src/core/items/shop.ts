@@ -41,16 +41,19 @@ export interface ShopDef {
 export const SHOPS: Record<ShopId, ShopDef> = {
   smithy: {
     id: "smithy", name: "대장간", owner: "브록",
-    stock: ["hunting_knife", "rusty_sword", "soldier_sword", "hunting_bow", "longbow", "padded_coat", "leather_armor", "chain_shirt", "wooden_shield"]
-      .map((itemId) => ({ itemId, qty: 1 })),
+    stock: [
+      "club", "pitchfork", "old_hammer", "hunting_knife", "hand_axe", "rusty_sword", "short_spear", "war_hammer", "soldier_sword",
+      "hunting_bow", "longbow",
+      "padded_coat", "patched_leather", "leather_armor", "chain_shirt", "wooden_shield", "round_shield",
+    ].map((itemId) => ({ itemId, qty: 1 })),
   },
   healer: {
     id: "healer", name: "약초방", owner: "마그다 할멈",
-    stock: ["herb", "bandage", "bitter_tea", "healing_potion"].map((itemId) => ({ itemId, qty: 1 })),
+    stock: ["herb", "bandage", "salve", "vigor_pill", "bitter_tea", "sleep_herb", "splint", "healing_potion"].map((itemId) => ({ itemId, qty: 1 })),
   },
   inn: {
     id: "inn", name: "여관", owner: "토비",
-    stock: [{ itemId: "arrow", qty: 10, price: 3 }],
+    stock: [{ itemId: "arrow", qty: 10, price: 3 }, { itemId: "hot_stew", qty: 1 }, { itemId: "barley_ale", qty: 1 }],
   },
 };
 

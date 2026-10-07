@@ -876,27 +876,36 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 ### 5-5. MVP 아이템 목록
 
+가게: 대장간(무기·방어구·방패 17종), 약초방(약 8종), 여관(화살 10개 3닢, 스튜, 보리술, 식량). 가격은 은화 1~45. 30일 동안 버는 돈이 50닢 안팎이라 45를 넘는 물건은 두지 않는다.
+
 **무기**
 
 | ID | 이름 | 숙련 | 피해 | 가격 | 비고 |
 |----|------|------|------|----:|------|
 | `fist` | 맨주먹 | blunt | 1d2 | — | 무기 없을 때 자동 |
+| `club` | 몽둥이 | blunt | 1d4 | 3 | 내구도 12 |
 | `hunting_knife` | 사냥칼 | blade | 1d4 | 5 | |
 | `pitchfork` | 쇠스랑 | blunt | 1d6 | 6 | 양손 |
 | `old_hammer` | 낡은 망치 | blunt | 1d6 | 8 | |
+| `hand_axe` | 손도끼 | blade | 1d6 | 11 | 내구도 16 |
 | `rusty_sword` | 녹슨 검 | blade | 1d6 | 15 | |
-| `soldier_sword` | 병사의 검 | blade | 1d8 | 40 | 감시탑 보상으로도 획득 |
+| `short_spear` | 짧은 창 | blunt | 1d8 | 18 | 양손 |
+| `war_hammer` | 전투 망치 | blunt | 1d8 | 30 | 근력 +2 이상 필요, 내구도 25 |
+| `soldier_sword` | 병사의 검 | blade | 1d8 | 32 | 감시탑 보상으로도 획득 |
+| `goblin_axe` | 고블린 도끼 | blade | 1d8 | — | 고블린 전사 전리품(50%), 판매 8, 내구도 12 |
 | `hunting_bow` | 사냥활 | bow | 1d6 | 12 | 양손, 화살 소모 |
-| `longbow` | 장궁 | bow | 1d8 | 35 | 양손, 근력 +1 이상 필요 |
+| `longbow` | 장궁 | bow | 1d8 | 28 | 양손, 근력 +1 이상 필요 |
 
 **방어구 · 방패**
 
 | ID | 이름 | 방어도 | 가격 | 비고 |
 |----|------|------:|----:|------|
 | `padded_coat` | 누빔 옷 | +1 | 10 | |
+| `patched_leather` | 기운 가죽 조끼 | +2 | 16 | 내구도 12 (가죽 갑옷의 절반) |
 | `leather_armor` | 가죽 갑옷 | +2 | 25 | |
-| `chain_shirt` | 사슬 셔츠 | +3 | 60 | 민첩 판정 -1 |
+| `chain_shirt` | 사슬 셔츠 | +3 | 45 | 민첩 판정 -1 |
 | `wooden_shield` | 나무 방패 | +1 | 12 | 한손 무기 전용 |
+| `round_shield` | 쇠 방패 | +2 | 28 | 한손 무기 전용, 내구도 20 |
 
 **소모품 · 재료**
 
@@ -906,8 +915,15 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `herb` | 약초 | HP +2, 경상이면 50% 확률 치료 | 2 | O |
 | `bandage` | 붕대 | 경상 → 없음 | 3 | X |
 | `bitter_tea` | 쓴 약차 | 피로 -2 | 3 | X |
-| `healing_potion` | 치유 물약 | HP +6, 치명상 → 중상 | 25 | O |
+| `salve` | 상처 연고 | HP +4 | 4 | X |
+| `vigor_pill` | 기운 환 | HP +3, 피로 -1 | 6 | O |
+| `sleep_herb` | 숙면초 | 피로 -3 | 5 | X |
+| `splint` | 부목 | 중상 → 경상 (부상이 맞지 않으면 쓸 수 없다) | 10 | X |
+| `hot_stew` | 고기 스튜 (여관) | HP +2, 피로 -1 | 2 | X |
+| `barley_ale` | 보리술 (여관) | 피로 -2, HP -1 | 2 | X |
+| `healing_potion` | 치유 물약 | HP +6, 치명상 → 중상 | 20 | O |
 | `wolf_pelt` | 늑대 가죽 | 판매용 | (판매 4) | — |
+| `boar_tusk` | 멧돼지 엄니 | 판매용, 멧돼지 전리품(70%) | (판매 3) | — |
 | `rare_herb` | 늪 약초 | 판매용 / 물약 재료(확장) | (판매 8) | — |
 | `goblin_token` | 고블린 부적 | 스토리 증거물 | — | — |
 

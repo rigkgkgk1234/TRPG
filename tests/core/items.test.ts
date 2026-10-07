@@ -3,7 +3,8 @@ import type { Ctx } from "@/core/commands";
 import { combatStep, finishCombat, playerDefense, startCombat } from "@/core/combat/combat";
 import { dispatch } from "@/core/engine";
 import { discard, equip, equipBlock, unequip } from "@/core/items/equipment";
-import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, treat } from "@/core/items/shop";
+import { canUseItem, consumeItem } from "@/core/items/inventory";
+import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, SHOPS, treat } from "@/core/items/shop";
 import { newRun } from "@/core/newRun";
 import type { ItemStack, JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -182,5 +183,42 @@ describe("내구도", () => {
     const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2), 0.99));
     combatStep(hit, { type: "attack", targetId: "boar_1" });
     expect(hit.draft.combat!.enemies[0].hp).toBe(9 - 5);
+  });
+});
+
+describe("가게 물건 목록", () => {
+  it("가게마다 파는 물건이 모두 콘텐츠에 있고, 값은 은화 1~45 사이", () => {
+    for (const shop of Object.values(SHOPS)) {
+      for (const e of shop.stock) {
+        const def = CONTENT.items[e.itemId];
+        expect(def, `${shop.id}: ${e.itemId}`).toBeDefined();
+        const price = e.price ?? def!.price * e.qty;
+        expect(price, e.itemId).toBeGreaterThanOrEqual(1);
+        expect(price, e.itemId).toBeLessThanOrEqual(45);
+      }
+    }
+    // 같은 물건을 한 가게에 두 줄로 두면 buy가 어느 줄인지 모른다
+    for (const shop of Object.values(SHOPS)) expect(new Set(shop.stock.map((e) => e.itemId)).size).toBe(shop.stock.length);
+  });
+
+  it("되팔아 남는 물건은 없다: 판매가 ≤ 구매가", () => {
+    for (const def of Object.values(CONTENT.items)) if (def.price > 0) expect(sellPrice(def), def.id).toBeLessThanOrEqual(def.price);
+  });
+
+  it("부목은 중상만 경상으로, 고칠 부상이 없으면 쓰지 않는다", () => {
+    const healthy = withBag(start(), { itemId: "splint", qty: 1 });
+    expect(canUseItem(healthy, CONTENT, "splint", false)).toBe(false);
+    const hurt = ctxOf(edit(healthy, (s) => { s.player.wound.level = "serious"; }));
+    expect(consumeItem(hurt, "splint", false)).toBe(true);
+    expect(hurt.draft.player.wound.level).toBe("light");
+    const critical = edit(healthy, (s) => { s.player.wound.level = "critical"; });
+    expect(canUseItem(critical, CONTENT, "splint", false)).toBe(false);
+  });
+
+  it("전투 망치는 근력 2가 있어야 든다, 농부는 못 든다", () => {
+    const ctx = ctxOf(withBag(start("farmer"), gear("war_hammer")));
+    expect(equip(ctx, 0)).toBe("근력 2 필요");
+    const smith = ctxOf(withBag(start("smith"), gear("war_hammer")));
+    expect(equip(smith, 0)).toBeNull();
   });
 });

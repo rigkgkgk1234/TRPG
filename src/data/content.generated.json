@@ -1,5 +1,18 @@
 {
  "items": {
+  "club": {
+   "id": "club",
+   "name": "몽둥이",
+   "category": "weapon",
+   "description": "참나무 가지를 깎아 만들었다. 싸지만 금방 상한다.",
+   "price": 3,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d4",
+   "twoHanded": false,
+   "durabilityMax": 12
+  },
   "hunting_knife": {
    "id": "hunting_knife",
    "name": "사냥칼",
@@ -39,6 +52,19 @@
    "twoHanded": false,
    "durabilityMax": 20
   },
+  "hand_axe": {
+   "id": "hand_axe",
+   "name": "손도끼",
+   "category": "weapon",
+   "description": "장작 패던 손도끼. 날을 세우면 제법 무섭다.",
+   "price": 11,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d6",
+   "twoHanded": false,
+   "durabilityMax": 16
+  },
   "rusty_sword": {
    "id": "rusty_sword",
    "name": "녹슨 검",
@@ -52,18 +78,61 @@
    "twoHanded": false,
    "durabilityMax": 20
   },
+  "short_spear": {
+   "id": "short_spear",
+   "name": "짧은 창",
+   "category": "weapon",
+   "description": "자루가 짧은 사냥용 창. 두 손으로 깊게 찌른다.",
+   "price": 18,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d8",
+   "twoHanded": true,
+   "durabilityMax": 20
+  },
+  "war_hammer": {
+   "id": "war_hammer",
+   "name": "전투 망치",
+   "category": "weapon",
+   "description": "브록이 벼린 쇠머리 망치. 한 손으로 휘두르려면 힘이 필요하다.",
+   "price": 30,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d8",
+   "twoHanded": false,
+   "requires": {
+    "str": 2
+   },
+   "durabilityMax": 25
+  },
   "soldier_sword": {
    "id": "soldier_sword",
    "name": "병사의 검",
    "category": "weapon",
    "description": "왕국 병사에게 지급되던 곧은 검.",
-   "price": 40,
+   "price": 32,
    "sellable": true,
    "stackMax": 1,
    "skill": "blade",
    "damage": "1d8",
    "twoHanded": false,
    "durabilityMax": 20
+  },
+  "goblin_axe": {
+   "id": "goblin_axe",
+   "name": "고블린 도끼",
+   "category": "weapon",
+   "description": "날이 들쭉날쭉한 고블린 전사의 도끼. 무겁고 거칠다.",
+   "price": 0,
+   "sellPrice": 8,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d8",
+   "twoHanded": false,
+   "durabilityMax": 12
   },
   "hunting_bow": {
    "id": "hunting_bow",
@@ -84,7 +153,7 @@
    "name": "장궁",
    "category": "weapon",
    "description": "키만 한 활. 당기려면 힘이 필요하다.",
-   "price": 35,
+   "price": 28,
    "sellable": true,
    "stackMax": 1,
    "skill": "bow",
@@ -107,6 +176,17 @@
    "defense": 1,
    "durabilityMax": 25
   },
+  "patched_leather": {
+   "id": "patched_leather",
+   "name": "기운 가죽 조끼",
+   "category": "armor",
+   "description": "여러 번 기워 입은 가죽 조끼. 쓸 만하지만 오래가지 못한다.",
+   "price": 16,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 2,
+   "durabilityMax": 12
+  },
   "leather_armor": {
    "id": "leather_armor",
    "name": "가죽 갑옷",
@@ -123,7 +203,7 @@
    "name": "사슬 셔츠",
    "category": "armor",
    "description": "무겁지만 든든하다.",
-   "price": 60,
+   "price": 45,
    "sellable": true,
    "stackMax": 1,
    "defense": 3,
@@ -143,6 +223,17 @@
    "stackMax": 1,
    "defense": 1,
    "durabilityMax": 15
+  },
+  "round_shield": {
+   "id": "round_shield",
+   "name": "쇠 방패",
+   "category": "shield",
+   "description": "쇠판을 덧댄 둥근 방패. 무겁지만 도끼도 막아 낸다.",
+   "price": 28,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 2,
+   "durabilityMax": 20
   },
   "arrow": {
    "id": "arrow",
@@ -214,12 +305,120 @@
    ],
    "usableInCombat": false
   },
+  "salve": {
+   "id": "salve",
+   "name": "상처 연고",
+   "category": "consumable",
+   "description": "돼지기름에 약초를 갠 연고. 바르면 상처가 금세 아문다.",
+   "price": 4,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "hp",
+     "delta": 4
+    }
+   ],
+   "usableInCombat": false
+  },
+  "vigor_pill": {
+   "id": "vigor_pill",
+   "name": "기운 환",
+   "category": "consumable",
+   "description": "꿀에 갠 약초 환. 싸우는 중에도 삼킬 수 있다.",
+   "price": 6,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "hp",
+     "delta": 3
+    },
+    {
+     "type": "fatigue",
+     "delta": -1
+    }
+   ],
+   "usableInCombat": true
+  },
+  "sleep_herb": {
+   "id": "sleep_herb",
+   "name": "숙면초",
+   "category": "consumable",
+   "description": "달여 마시고 한숨 자고 나면 몸이 가볍다.",
+   "price": 5,
+   "sellable": true,
+   "stackMax": 5,
+   "use": [
+    {
+     "type": "fatigue",
+     "delta": -3
+    }
+   ],
+   "usableInCombat": false
+  },
+  "splint": {
+   "id": "splint",
+   "name": "부목",
+   "category": "consumable",
+   "description": "다친 팔다리를 고정하는 나무 덧대. 중상을 경상으로 가라앉힌다.",
+   "price": 10,
+   "sellable": true,
+   "stackMax": 3,
+   "use": [
+    {
+     "type": "healWound",
+     "to": "light"
+    }
+   ],
+   "usableInCombat": false
+  },
+  "hot_stew": {
+   "id": "hot_stew",
+   "name": "고기 스튜",
+   "category": "consumable",
+   "description": "토비네 부엌의 진한 스튜. 먹고 나면 속이 든든하다.",
+   "price": 2,
+   "sellable": false,
+   "stackMax": 3,
+   "use": [
+    {
+     "type": "hp",
+     "delta": 2
+    },
+    {
+     "type": "fatigue",
+     "delta": -1
+    }
+   ],
+   "usableInCombat": false
+  },
+  "barley_ale": {
+   "id": "barley_ale",
+   "name": "보리술",
+   "category": "consumable",
+   "description": "한 잔 들이켜면 피로를 잊는다. 머리는 좀 아프다.",
+   "price": 2,
+   "sellable": false,
+   "stackMax": 3,
+   "use": [
+    {
+     "type": "fatigue",
+     "delta": -2
+    },
+    {
+     "type": "hp",
+     "delta": -1
+    }
+   ],
+   "usableInCombat": false
+  },
   "healing_potion": {
    "id": "healing_potion",
    "name": "치유 물약",
    "category": "consumable",
    "description": "신전에서 축성한 붉은 물약.",
-   "price": 25,
+   "price": 20,
    "sellable": true,
    "stackMax": 3,
    "use": [
@@ -241,6 +440,16 @@
    "description": "여관에서 값을 쳐준다.",
    "price": 0,
    "sellPrice": 4,
+   "sellable": true,
+   "stackMax": 5
+  },
+  "boar_tusk": {
+   "id": "boar_tusk",
+   "name": "멧돼지 엄니",
+   "category": "material",
+   "description": "장신구를 만드는 사람들이 값을 쳐준다.",
+   "price": 0,
+   "sellPrice": 3,
    "sellable": true,
    "stackMax": 5
   },
@@ -338,7 +547,13 @@
    "tags": [
     "beast"
    ],
-   "loot": [],
+   "loot": [
+    {
+     "itemId": "boar_tusk",
+     "qty": 1,
+     "chance": 0.7
+    }
+   ],
    "food": 3
   },
   "bandit": {
@@ -397,7 +612,13 @@
    "tags": [
     "goblin"
    ],
-   "loot": []
+   "loot": [
+    {
+     "itemId": "goblin_axe",
+     "qty": 1,
+     "chance": 0.5
+    }
+   ]
   },
   "raid_leader": {
    "id": "raid_leader",
@@ -9866,7 +10087,7 @@
        "id": "potion",
        "label": "치유 물약을 산다",
        "cost": {
-        "silver": 18
+        "silver": 15
        },
        "outcome": {
         "text": "사내가 붉은 물약 한 병을 내밀었다. 신전 봉인이 그대로다.",
@@ -9884,7 +10105,7 @@
        "id": "chain",
        "label": "사슬 셔츠를 산다",
        "cost": {
-        "silver": 40
+        "silver": 34
        },
        "outcome": {
         "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",

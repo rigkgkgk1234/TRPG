@@ -82,6 +82,12 @@ const USE_TEXT: Record<string, string> = {
   bandage: "붕대를 단단히 감았다.",
   bitter_tea: "쓴 약차를 마셨다. 정신이 번쩍 든다.",
   healing_potion: "치유 물약을 들이켰다. 몸이 후끈 달아오른다.",
+  salve: "상처에 연고를 발랐다. 화끈거리더니 이내 시원해진다.",
+  vigor_pill: "기운 환을 삼켰다. 단맛 뒤로 쓴맛이 올라온다.",
+  sleep_herb: "숙면초를 달여 마시고 잠깐 눈을 붙였다.",
+  splint: "부목을 대고 단단히 묶었다. 한결 움직일 만하다.",
+  hot_stew: "뜨끈한 스튜를 비웠다. 속이 든든하다.",
+  barley_ale: "보리술을 한 잔 들이켰다. 피로가 가시고 머리가 조금 띵하다.",
 };
 
 /** 지금 쓸 수 있는 소모품인지: 가방에 있고, 효과가 있고, 전투 중이면 전투용이어야 한다 */
@@ -89,6 +95,9 @@ export function canUseItem(run: RunState, content: Pick<ContentDB, "items">, ite
   const def = content.items[itemId];
   if (def?.category !== "consumable" || def.use.length === 0) return false;
   if (inCombat && !def.usableInCombat) return false;
+  // 부상 치료만 하는 물건(붕대·부목)은 고칠 부상이 없으면 쓰지 않는다 (헛되이 사라지지 않게)
+  const now = WOUND_STEPS.indexOf(run.player.wound.level);
+  if (def.use.every((e) => e.type === "healWound" && now !== WOUND_STEPS.indexOf(e.to) + 1)) return false;
   return countInBag(run.inventory, itemId) > 0;
 }
 

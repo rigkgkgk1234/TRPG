@@ -25,7 +25,7 @@
           "id": "potion",
           "label": "치유 물약을 산다",
           "cost": {
-            "silver": 18
+            "silver": 15
           },
           "outcome": {
             "text": "사내가 붉은 물약 한 병을 내밀었다. 신전 봉인이 그대로다.",
@@ -43,7 +43,7 @@
           "id": "chain",
           "label": "사슬 셔츠를 산다",
           "cost": {
-            "silver": 40
+            "silver": 34
           },
           "outcome": {
             "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",

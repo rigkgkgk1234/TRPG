@@ -206,7 +206,7 @@ function Inn({ run }: { run: RunState }) {
           )}
         </View>
       </Section>
-      <Section title="팔기" hint="토비가 사들인다. 구매가의 절반, 가죽·약초는 정해진 값.">
+      <Section title="팔기" hint="토비가 사들인다. 구매가의 절반, 가죽·엄니 같은 전리품은 정해진 값.">
         {sellable.length === 0 ? (
           <Text style={styles.note}>팔 만한 물건이 없다.</Text>
         ) : (
