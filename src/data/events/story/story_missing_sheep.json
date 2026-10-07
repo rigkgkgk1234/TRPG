@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_missing_sheep",
+  "category": "story",
+  "title": "사라진 양",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 3
+    }
+  ],
+  "weight": 1,
+  "priority": 10,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "옆집 베른 영감이 울타리 앞에서 서성인다. 어젯밤 양 두 마리가 없어졌다고 한다. 늑대 짓이라기엔 울타리가 너무 멀쩡하다.",
+      "choices": [
+        {
+          "id": "help",
+          "label": "숲에 가면 살펴보겠다고 한다",
+          "outcome": {
+            "text": "영감이 고맙다며 어깨를 두드렸다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "sheep_quest"
+              },
+              {
+                "type": "reputation",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "sorry",
+          "label": "안됐다고만 말한다",
+          "outcome": {
+            "text": "영감은 한숨을 쉬고 울타리를 고치러 갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

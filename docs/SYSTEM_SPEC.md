@@ -455,7 +455,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 도적 | 9 | 12 | +3 | 1d6 | 2 | 30% | robbed | humanoid |
 | 고블린 정찰병 | 6 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
 | 고블린 전사 | 12 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
-| 약탈대장 | 24 | 15 | +6 | 1d10+2 | 2 | — | scripted | goblin, boss |
+| 약탈대장 | 18 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
 
 - **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(전리품 절반).
 
@@ -668,7 +668,9 @@ export type Effect =
   /** 남은 행동 슬롯을 소모하고 저녁으로 */
   | { type: "endDay" }
   | { type: "loseNextSlot" }
-  | { type: "ending"; ending: EndingId };
+  | { type: "ending"; ending: EndingId }
+  /** 최종 습격 뒤: 플래그·수치로 엔딩을 판정해 회차를 끝낸다 (story/ending.ts의 표) */
+  | { type: "resolveEnding" };
 
 export type TextBlock =
   | string

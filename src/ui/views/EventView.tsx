@@ -7,7 +7,7 @@ import type { RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
-import { ArrowRightIcon, CaretRightIcon, LockSimpleIcon, SignOutIcon, SkullIcon, TreeIcon } from "@/ui/icons";
+import { ArrowRightIcon, CaretRightIcon, LockSimpleIcon, ScrollIcon, SignOutIcon, SkullIcon, TreeIcon } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
 /**
@@ -57,10 +57,12 @@ export function EventPanel({ run }: { run: RunState }) {
   );
 }
 
+/** 탐험 중이면 숲 아이콘, 마을 일(스토리)이면 두루마리 */
 function Header({ title, progress }: { title: string; progress?: ExploreProgress }) {
+  const HeaderIcon = progress ? TreeIcon : ScrollIcon;
   return (
     <View style={styles.header}>
-      <TreeIcon size={icon.md} weight={icon.weight} color={colors.accent} />
+      <HeaderIcon size={icon.md} weight={icon.weight} color={colors.accent} />
       <Text style={styles.title} numberOfLines={1}>{title}</Text>
       {progress && <Text style={styles.progress}>{progressText(progress)}</Text>}
     </View>

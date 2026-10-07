@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_rowen_departure",
+  "category": "story",
+  "title": "로웬으로 가는 날",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_rowen"
+    },
+    {
+      "type": "dayRange",
+      "min": 27
+    }
+  ],
+  "weight": 1,
+  "priority": 50,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "모집관과 약속한 날이 다가온다. 로웬으로 떠나면 습격이 오는 밤에 마을에 없을 것이다.",
+      "choices": [
+        {
+          "id": "go",
+          "label": "로웬으로 떠난다",
+          "outcome": {
+            "next": "leave"
+          }
+        },
+        {
+          "id": "stay",
+          "label": "마을에 남는다",
+          "outcome": {
+            "text": "창은 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_rowen",
+                "value": false
+              },
+              {
+                "type": "setFlag",
+                "flag": "route_defend"
+              },
+              {
+                "type": "reputation",
+                "delta": 5
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "leave": {
+      "text": "어머니가 말없이 보따리를 싸 주었다. 동생은 마을 어귀까지 따라 나왔다.",
+      "onEnter": [
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

@@ -4,6 +4,8 @@ import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
 import type { JobId, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
+import { makeRecord } from "@/core/story/ending";
+import { useMeta } from "./metaStore";
 import { clearRun, loadRun, saveCheckpoint, saveRun } from "./storage";
 
 /** 화면에 남겨 둘 최근 명령 수 */
@@ -78,7 +80,14 @@ export const useGame = create<GameStore>()((set, get) => ({
       playing: animate ? { id: group.id, before: run } : null,
     });
     const next = result.state;
-    if (next.ending) persist(clearRun);
+    if (next.ending) {
+      // 기록을 먼저 남기고, 저장이 끝난 뒤에 진행 저장을 지운다 (순서가 바뀌면 기록이 사라질 수 있다)
+      const record = makeRecord(next, CONTENT, new Date().toISOString(), run);
+      persist(async () => {
+        await useMeta.getState().record(record);
+        await clearRun();
+      });
+    }
     else if (result.checkpoint) persist(() => saveCheckpoint(next));
     else if (result.save) persist(() => saveRun(next));
   },
@@ -88,10 +97,12 @@ export const useGame = create<GameStore>()((set, get) => ({
   startNew: (job, name) => {
     const now = new Date();
     const seed = (now.getTime() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0;
+    const previous = get().run;
     const run = newRun(CONTENT, job, name, { seed, now: now.toISOString() });
     set({ run, log: [], playing: null });
-    // 이전 회차의 백업이 새 회차로 되살아나지 않게 먼저 지운다
+    // 끝나지 않은 회차를 버리면 포기 기록을 남기고, 이전 회차의 백업이 새 회차로 되살아나지 않게 지운다
     persist(async () => {
+      if (previous && !previous.ending) await useMeta.getState().record(makeRecord(previous, CONTENT, now.toISOString(), undefined, true));
       await clearRun();
       await saveCheckpoint(run);
     });

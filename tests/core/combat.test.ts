@@ -83,10 +83,14 @@ describe("전투 수치", () => {
     expect(farmer.actions.find((a) => a.type === "flee")!.chance).toBeCloseTo(0.35);
   });
 
-  it("화살이 없으면 활 공격을 못 하고, 도주 불가 전투는 사유를 보여 준다", () => {
+  it("화살이 떨어지면 맨주먹으로 싸우고, 도주 불가 전투는 사유를 보여 준다", () => {
     const noArrows = edit(start("hunter"), (s) => { s.inventory.slots = s.inventory.slots.map((x) => (x?.itemId === "arrow" ? null : x)); });
-    const v = combatView(inCombat(noArrows, ["wolf"], { canFlee: false, noFleeReason: "등 뒤에 가족이 있다" }), CONTENT)!;
-    expect(v.actions.find((a) => a.type === "attack")!.lockedReason).toBe("화살이 없다");
+    const run = inCombat(noArrows, ["wolf"], { canFlee: false, noFleeReason: "등 뒤에 가족이 있다" });
+    const v = combatView(run, CONTENT)!;
+    const attack = v.actions.find((a) => a.type === "attack")!;
+    expect(attack).toMatchObject({ label: "공격", lockedReason: null });
+    expect(attack.detail).toEqual(["피해 1d2", "화살이 없어 맨주먹"]);
+    expect(attackSpec(run, CONTENT, run.combat!.enemies[0], false)).toMatchObject({ stat: "str", skill: "blunt" });
     expect(v.actions.find((a) => a.type === "flee")!.lockedReason).toBe("등 뒤에 가족이 있다");
   });
 });

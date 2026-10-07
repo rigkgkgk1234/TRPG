@@ -144,6 +144,9 @@ export function checkContent(content: ContentDB): ContentIssues {
     if (enemy.onRoutFlag) flagsSet.add(enemy.onRoutFlag);
   }
 
+  // 코드가 직접 세우는 플래그 (evening.ts)
+  for (const flag of ["raid_night", "sister_sick"]) flagsSet.add(flag);
+
   // 아무도 세우지 않는 플래그를 읽으면 오타일 가능성이 높다 (스토리 플래그는 6주차 코드가 세울 수도 있으니 경고만)
   for (const { flag, where } of flagsRead) {
     if (!flagsSet.has(flag)) warnings.push(`${where}: 어떤 이벤트도 세우지 않는 플래그 "${flag}"`);

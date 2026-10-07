@@ -43,6 +43,18 @@ export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId
   return weightedPick(weighted, rng) ?? content.events[fallbackId(category, region)] ?? null;
 }
 
+/**
+ * 강제로 일어날 스토리 이벤트: 조건·반복 규칙을 만족하는 것 중 priority가 가장 높은 것 (같으면 ID 순). (SYSTEM_SPEC 4-3)
+ * region이 있는 스토리는 그 지역을 탐험할 때만, 없는 스토리는 마을에서 행동을 고르기 전에 일어난다.
+ */
+export function selectStory(ctx: Ctx, region?: RegionId): EventDef | null {
+  const s = ctx.draft;
+  const pool = Object.values(ctx.content.events)
+    .filter((ev) => ev.category === "story" && ev.region === region && repeatAllowed(ev, s.eventHistory[ev.id], s.time.day))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return pool.find((ev) => evalAll(ev.conditions, s, ctx.rng)) ?? null;
+}
+
 /** 해당 종류·지역의 이벤트 (대체 이벤트 제외), ID 순 */
 export function eventPool(content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId): EventDef[] {
   return Object.values(content.events)

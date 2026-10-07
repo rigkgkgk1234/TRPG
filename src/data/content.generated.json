@@ -381,10 +381,10 @@
   "raid_leader": {
    "id": "raid_leader",
    "name": "약탈대장",
-   "hp": 24,
-   "defense": 15,
-   "attackBonus": 6,
-   "damage": "1d10+2",
+   "hp": 18,
+   "defense": 13,
+   "attackBonus": 4,
+   "damage": "1d8+1",
    "speed": 2,
    "onDefeat": "scripted",
    "tags": [
@@ -1959,6 +1959,1511 @@
          }
         ],
         "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_decision": {
+   "id": "story_decision",
+   "category": "story",
+   "title": "광장의 회의",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 21
+    }
+   ],
+   "weight": 1,
+   "priority": 40,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "reported"
+         }
+        ],
+        "text": "하몬 촌장이 마을 사람들을 광장에 불러 모았다. 고블린 약탈대가 수확이 끝나는 날 밤에 올 거라고 한다. 사람들의 눈이 하나둘 이쪽으로 쏠린다."
+       }
+      ],
+      "fallback": "광장이 웅성거린다. 숲에서 고블린 무리를 봤다는 나무꾼이 나타났다. 수확이 끝나는 날 밤, 놈들이 마을로 올 거라고 한다."
+     },
+     "choices": [
+      {
+       "id": "defend",
+       "label": "마을에 남아 함께 막자고 한다",
+       "outcome": {
+        "text": "몇몇이 고개를 끄덕였다. 목책을 세우고 창을 다듬자는 이야기가 오갔다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_defend"
+         },
+         {
+          "type": "reputation",
+          "delta": 5
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "flee",
+       "label": "다 같이 떠나자고 한다",
+       "outcome": {
+        "text": "노인들은 땅을 버릴 수 없다며 고개를 저었다. 그래도 귀를 기울이는 사람이 있었다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_flee"
+         },
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "rowen",
+       "label": "로웬으로 가겠다고 한다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "recruit_passed"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "웅성거림이 잦아들었다. 아무도 붙잡지 않았다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_rowen"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "self",
+       "label": "우리 식구만 챙기겠다고 한다",
+       "outcome": {
+        "text": "누군가 혀를 찼다. 그래도 식구가 먼저다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_self"
+         },
+         {
+          "type": "reputation",
+          "delta": -5
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_flee_plan": {
+   "id": "story_flee_plan",
+   "category": "story",
+   "title": "집집마다 찾아가",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_flee"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    },
+    {
+     "type": "notFlag",
+     "flag": "flee_organized"
+    }
+   ],
+   "weight": 1,
+   "priority": 20,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 2
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "떠나려면 이웃들을 설득해야 한다. 집집마다 찾아가 이야기하려면 한나절은 걸릴 것이다.",
+     "choices": [
+      {
+       "id": "persuade",
+       "label": "집집마다 찾아가 설득한다",
+       "check": {
+        "stat": "cha",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "하나둘 짐을 꾸리기 시작했다. 떠날 날까지 수레를 모으기로 했다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "flee_organized"
+          },
+          {
+           "type": "reputation",
+           "delta": 8
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "목이 쉬도록 이야기한 끝에 몇 집이 함께 가겠다고 했다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "flee_organized"
+          },
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "다들 땅을 버릴 수 없다며 문을 닫았다. 며칠 뒤 다시 찾아가 봐야겠다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "later",
+       "label": "다음에 하기로 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_flee_wagons": {
+   "id": "story_flee_wagons",
+   "category": "story",
+   "title": "여관 수레",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "flee_organized"
+    },
+    {
+     "type": "dayRange",
+     "min": 25
+    }
+   ],
+   "weight": 1,
+   "priority": 15,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "토비가 여관 수레를 내주겠다고 한다. 바퀴를 손보고 먹을 것을 실어 두려면 보탤 것이 필요하다.",
+     "choices": [
+      {
+       "id": "silver",
+       "label": "은화를 보탠다",
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "수레에 곡식 자루가 실렸다. 이제 떠날 날만 남았다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "flee_ready"
+         },
+         {
+          "type": "reputation",
+          "delta": 4
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "food",
+       "label": "우리 집 식량을 싣는다",
+       "cost": {
+        "food": 3
+       },
+       "outcome": {
+        "text": "우리 집 곡식 자루가 수레에 올랐다. 토비가 말없이 고개를 숙였다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "flee_ready"
+         },
+         {
+          "type": "reputation",
+          "delta": 6
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "none",
+       "label": "보탤 것이 없다고 한다",
+       "outcome": {
+        "text": "토비는 괜찮다며 웃었지만, 수레는 아직 비어 있다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_goblin_camp": {
+   "id": "story_goblin_camp",
+   "category": "story",
+   "region": "forest",
+   "title": "숲 동쪽의 연기",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 23
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_plan_known"
+    }
+   ],
+   "weight": 1,
+   "priority": 20,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 2
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "숲 동쪽 끝에서 연기가 피어오른다. 고블린 야영지다. 가까이 가면 놈들이 언제 어디로 올지 알아낼 수 있을지도 모른다.",
+     "choices": [
+      {
+       "id": "spy",
+       "label": "숨어들어 엿듣는다",
+       "check": {
+        "stat": "agi",
+        "dc": 14,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들은 개울을 따라 마을 남쪽으로 올 작정이다. 이걸 알면 먼저 칠 수 있다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "보초에게 들켰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "멀리서 수만 세고 돌아간다",
+       "outcome": {
+        "text": "모닥불이 열 개가 넘는다. 생각보다 수가 많다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "보초가 소리를 지르기 전에 막아야 한다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "enemy",
+        "onVictory": "win",
+        "onFled": "fled",
+        "canFlee": true
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "보초를 쓰러뜨렸지만 야영지가 술렁이기 시작했다. 더 머물 수는 없다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "숲을 빠져나올 때까지 뒤에서 고블린들의 고함이 들렸다.",
+     "choices": []
+    }
+   }
+  },
+  "story_goblin_scout": {
+   "id": "story_goblin_scout",
+   "category": "story",
+   "region": "forest",
+   "title": "나무 위의 눈",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 11
+    },
+    {
+     "type": "flag",
+     "flag": "goblin_tracks_found"
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_scout_seen"
+    }
+   ],
+   "weight": 1,
+   "priority": 20,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 2
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "나무 위에서 무언가 뛰어내렸다. 잿빛 피부에 누런 눈, 아이만 한 키에 녹슨 단검을 쥐었다. 고블린이다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "hide",
+       "label": "덤불에 숨어 지켜본다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "고블린은 코를 킁킁대더니 동쪽으로 사라졌다. 놈들이 이 숲에 있는 건 분명하다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_scout_seen"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑에서 마른 가지가 부러졌다. 고블린이 이쪽을 돌아본다!",
+         "next": "fight_ambushed"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린이 이를 드러내며 단검을 고쳐 쥔다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "onVictory": "win",
+        "onFled": "fled",
+        "canFlee": true
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "고블린이 날카로운 소리를 지르며 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "enemy",
+        "onVictory": "win",
+        "onFled": "fled",
+        "canFlee": true
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "hasItem",
+          "itemId": "goblin_token"
+         }
+        ],
+        "text": "고블린의 목에 뼈와 깃털로 엮은 부적이 걸려 있었다. 촌장에게 보여야 한다."
+       }
+      ],
+      "fallback": "고블린은 숲 깊이 달아났다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다."
+     },
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲을 빠져나왔다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "story_goblin_tracks": {
+   "id": "story_goblin_tracks",
+   "category": "story",
+   "region": "forest",
+   "title": "나무에 새긴 표시",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 7
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_tracks_found"
+    }
+   ],
+   "weight": 1,
+   "priority": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "쓰러진 나무 둥치에 칼로 그은 듯한 표시가 나 있다. 누가 일부러 길을 표시해 둔 것 같다.",
+     "choices": [
+      {
+       "id": "follow",
+       "label": "표시를 따라가 본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "표시는 숲 동쪽으로 이어진다. 그 끝에서 작은 맨발 자국 여럿을 찾았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "한참을 헤맨 끝에야 작은 맨발 자국 여럿을 찾았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "표시가 중간에 끊겼다. 괜한 걸 쫓았나 싶다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "ignore",
+       "label": "모른 척 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_lord_reply": {
+   "id": "story_lord_reply",
+   "category": "story",
+   "title": "로웬에서 온 전령",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "reported"
+    },
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 1,
+   "priority": 25,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "로웬에 갔던 전령이 돌아왔다. 기사단은 북쪽 전선에 묶여 올 수 없다고 한다. 광장에 무거운 침묵이 내려앉았다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "no_knights"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "story_militia": {
+   "id": "story_militia",
+   "category": "story",
+   "title": "광장의 창 연습",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 24
+    }
+   ],
+   "weight": 1,
+   "priority": 20,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "레나가 광장에서 마을 사람들에게 창 쥐는 법을 가르친다. 혼자서는 손이 모자라 보인다.",
+     "choices": [
+      {
+       "id": "teach",
+       "label": "레나를 도와 함께 가르친다",
+       "check": {
+        "stat": "cha",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "어설프던 창끝이 조금씩 가지런해졌다. 사람들이 이름을 부르며 고맙다고 했다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "militia_trained"
+          },
+          {
+           "type": "reputation",
+           "delta": 8
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "마음만 앞섰다. 그래도 사람들은 함께해 줘서 고맙다고 했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "learn",
+       "label": "나도 한자리 끼어 배운다",
+       "outcome": {
+        "text": "레나의 창에 몇 번이고 넘어졌지만, 막는 요령은 조금 알 것 같다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 3
+         },
+         {
+          "type": "loseNextSlot"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "skip",
+       "label": "지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_missing_sheep": {
+   "id": "story_missing_sheep",
+   "category": "story",
+   "title": "사라진 양",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 3
+    }
+   ],
+   "weight": 1,
+   "priority": 10,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "옆집 베른 영감이 울타리 앞에서 서성인다. 어젯밤 양 두 마리가 없어졌다고 한다. 늑대 짓이라기엔 울타리가 너무 멀쩡하다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "숲에 가면 살펴보겠다고 한다",
+       "outcome": {
+        "text": "영감이 고맙다며 어깨를 두드렸다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "sheep_quest"
+         },
+         {
+          "type": "reputation",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "sorry",
+       "label": "안됐다고만 말한다",
+       "outcome": {
+        "text": "영감은 한숨을 쉬고 울타리를 고치러 갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_palisade": {
+   "id": "story_palisade",
+   "category": "story",
+   "title": "마을 어귀의 목책",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 1,
+   "priority": 20,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 어귀에 목책을 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
+     "choices": [
+      {
+       "id": "work",
+       "label": "한나절 품을 들여 돕는다",
+       "cost": {
+        "fatigue": 3
+       },
+       "outcome": {
+        "text": "해 질 무렵, 마을 어귀에 끝을 뾰족하게 깎은 통나무 울타리가 섰다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "palisade_built"
+         },
+         {
+          "type": "reputation",
+          "delta": 8
+         },
+         {
+          "type": "loseNextSlot"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pay",
+       "label": "은화로 보탠다",
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "브록이 은화를 받아 들고 통나무를 더 사 오겠다고 했다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "palisade_built"
+         },
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "skip",
+       "label": "지금은 일이 바쁘다고 한다",
+       "outcome": {
+        "text": "브록은 말없이 통나무를 어깨에 졌다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": -2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_raid": {
+   "id": "story_raid",
+   "category": "story",
+   "title": "서른 번째 밤",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "raid_night"
+    }
+   ],
+   "weight": 1,
+   "priority": 100,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "route_defend"
+         }
+        ],
+        "text": "해가 지자 숲에서 횃불이 줄지어 나왔다. 목책 너머로 고블린들의 함성이 들린다. 창을 쥔 이웃들이 이쪽을 본다."
+       },
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "flee_organized"
+         }
+        ],
+        "text": "떠날 채비를 마치기도 전에 숲에서 횃불이 줄지어 나왔다. 수레 앞에서 이웃들이 발을 동동 구른다."
+       }
+      ],
+      "fallback": "해가 지자 숲에서 횃불이 줄지어 나왔다. 고블린 약탈대다. 마을 여기저기서 비명이 터진다."
+     },
+     "choices": [
+      {
+       "id": "fight",
+       "label": "앞에 나서 약탈대장과 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "flee",
+       "label": "이웃들과 수레를 몰고 떠난다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "flee_organized"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "next": "fled"
+       }
+      },
+      {
+       "id": "hide",
+       "label": "식구들과 지하 창고에 숨는다",
+       "outcome": {
+        "next": "hid"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "약탈대장이 철퇴를 휘두르며 다가온다. 뒤에는 식구들이 있다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "raid_leader"
+        ],
+        "initiative": "roll",
+        "canFlee": false,
+        "noFleeReason": "등 뒤에 식구들이 있다",
+        "onVictory": "won",
+        "onDefeat": "lost"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "won": {
+     "text": "우두머리를 잃은 고블린들이 숲으로 흩어졌다. 동이 틀 때까지 아무도 창을 내려놓지 않았다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "raid_won"
+      },
+      {
+       "type": "reputation",
+       "delta": 15
+      },
+      {
+       "type": "resolveEnding"
+      }
+     ],
+     "choices": []
+    },
+    "lost": {
+     "text": "철퇴에 맞고 쓰러졌다. 다시 눈을 떴을 때는 모든 것이 끝나 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "raid_lost"
+      },
+      {
+       "type": "resolveEnding"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "flee_ready"
+         }
+        ],
+        "text": "곡식을 실은 수레 행렬이 어둠 속으로 떠났다. 뒤에서 보리울이 타오르는 불빛이 보였다."
+       }
+      ],
+      "fallback": "빈 수레 행렬이 어둠 속으로 떠났다. 뒤에서 보리울이 타오르는 불빛이 보였다."
+     },
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "fled_together"
+      },
+      {
+       "type": "resolveEnding"
+      }
+     ],
+     "choices": []
+    },
+    "hid": {
+     "text": "어둠 속에서 동생의 입을 막고 숨을 죽였다. 머리 위로 발소리가 몇 번이나 오갔다.",
+     "onEnter": [
+      {
+       "type": "resolveEnding"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "story_recruiter": {
+   "id": "story_recruiter",
+   "category": "story",
+   "title": "모집관의 깃발",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 1,
+   "priority": 15,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광장에 로웬 기사단의 모집관이 깃발을 세웠다. 창을 쓸 줄 아는 젊은이를 찾는다며, 그 자리에서 시험을 보겠다고 한다.",
+     "choices": [
+      {
+       "id": "trial",
+       "label": "시험을 본다",
+       "conditions": [
+        {
+         "type": "any",
+         "of": [
+          {
+           "type": "skill",
+           "skill": "blade",
+           "min": 3
+          },
+          {
+           "type": "skill",
+           "skill": "blunt",
+           "min": 3
+          },
+          {
+           "type": "skill",
+           "skill": "bow",
+           "min": 3
+          }
+         ]
+        }
+       ],
+       "lockedReason": "무기 숙련 3 필요",
+       "check": {
+        "stat": "str",
+        "skill": "guard",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "모집관이 고개를 끄덕였다. \"달이 바뀌기 전에 로웬으로 오게.\"",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "recruit_passed"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "창끝이 흔들렸다. 모집관은 열흘쯤 뒤에 다시 들르겠다고 했다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "watch",
+       "label": "구경만 한다",
+       "outcome": {
+        "text": "젊은이 몇이 창을 들었다가 하나같이 고개를 저으며 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_recruiter_return": {
+   "id": "story_recruiter_return",
+   "category": "story",
+   "title": "다시 온 모집관",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 25
+    },
+    {
+     "type": "notFlag",
+     "flag": "recruit_passed"
+    }
+   ],
+   "weight": 1,
+   "priority": 15,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "모집관이 다시 마을에 들렀다. 로웬으로 돌아가기 전 마지막 시험이라고 한다.",
+     "choices": [
+      {
+       "id": "trial",
+       "label": "시험을 본다",
+       "conditions": [
+        {
+         "type": "any",
+         "of": [
+          {
+           "type": "skill",
+           "skill": "blade",
+           "min": 3
+          },
+          {
+           "type": "skill",
+           "skill": "blunt",
+           "min": 3
+          },
+          {
+           "type": "skill",
+           "skill": "bow",
+           "min": 3
+          }
+         ]
+        }
+       ],
+       "lockedReason": "무기 숙련 3 필요",
+       "check": {
+        "stat": "str",
+        "skill": "guard",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "\"이번엔 됐군.\" 모집관이 짧게 웃었다. 달이 바뀌기 전에 로웬으로 오라고 한다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "recruit_passed"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "이번에도 모집관은 고개를 저었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "watch",
+       "label": "그냥 보낸다",
+       "outcome": {
+        "text": "모집관의 깃발이 로웬 쪽으로 멀어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_report": {
+   "id": "story_report",
+   "category": "story",
+   "title": "촌장의 집",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "goblin_scout_seen"
+    }
+   ],
+   "weight": 1,
+   "priority": 30,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "hasItem",
+          "itemId": "goblin_token"
+         }
+        ],
+        "text": "하몬 촌장을 찾아가 숲에서 본 것을 털어놓았다. 품속의 고블린 부적이 묵직하다."
+       }
+      ],
+      "fallback": "하몬 촌장을 찾아가 숲에서 본 것을 털어놓았다. 촌장은 한참 말이 없었다."
+     },
+     "choices": [
+      {
+       "id": "token",
+       "label": "고블린 부적을 내민다",
+       "conditions": [
+        {
+         "type": "hasItem",
+         "itemId": "goblin_token"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "부적을 본 촌장의 얼굴이 하얗게 질렸다.",
+        "effects": [
+         {
+          "type": "removeItem",
+          "itemId": "goblin_token",
+          "qty": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 15
+         },
+         {
+          "type": "setFlag",
+          "flag": "reported"
+         }
+        ],
+        "next": "plan"
+       }
+      },
+      {
+       "id": "tell",
+       "label": "본 것을 그대로 말한다",
+       "outcome": {
+        "text": "촌장은 고개를 끄덕이며 이야기를 끝까지 들었다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 8
+         },
+         {
+          "type": "setFlag",
+          "flag": "reported"
+         }
+        ],
+        "next": "plan"
+       }
+      }
+     ]
+    },
+    "plan": {
+     "text": "\"영주님께 사람을 보내겠네. 답이 올 때까지는 우리끼리 버텨야 해.\" 촌장이 낮게 말했다.",
+     "choices": []
+    }
+   }
+  },
+  "story_rowen_departure": {
+   "id": "story_rowen_departure",
+   "category": "story",
+   "title": "로웬으로 가는 날",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_rowen"
+    },
+    {
+     "type": "dayRange",
+     "min": 27
+    }
+   ],
+   "weight": 1,
+   "priority": 50,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "모집관과 약속한 날이 다가온다. 로웬으로 떠나면 습격이 오는 밤에 마을에 없을 것이다.",
+     "choices": [
+      {
+       "id": "go",
+       "label": "로웬으로 떠난다",
+       "outcome": {
+        "next": "leave"
+       }
+      },
+      {
+       "id": "stay",
+       "label": "마을에 남는다",
+       "outcome": {
+        "text": "창은 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_rowen",
+          "value": false
+         },
+         {
+          "type": "setFlag",
+          "flag": "route_defend"
+         },
+         {
+          "type": "reputation",
+          "delta": 5
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "leave": {
+     "text": "어머니가 말없이 보따리를 싸 주었다. 동생은 마을 어귀까지 따라 나왔다.",
+     "onEnter": [
+      {
+       "type": "resolveEnding"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "story_sheep_remains": {
+   "id": "story_sheep_remains",
+   "category": "story",
+   "region": "forest",
+   "title": "덤불 아래 양털",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "sheep_quest"
+    },
+    {
+     "type": "dayRange",
+     "min": 4
+    }
+   ],
+   "weight": 1,
+   "priority": 10,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "덤불 아래에서 흰 양털이 엉겨 붙은 뼈를 찾았다. 베른 영감의 양이다. 주변 진흙에 작은 발자국이 어지럽게 찍혀 있다.",
+     "choices": [
+      {
+       "id": "inspect",
+       "label": "발자국을 자세히 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "맨발 자국이다. 발가락이 길고 아이 발만 하다. 짐승 발자국이 아니다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "빗물에 뭉개져 무슨 발자국인지 알아볼 수 없다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "wool",
+       "label": "양털만 챙겨 돌아간다",
+       "outcome": {
+        "text": "영감에게 이거라도 전해 줘야겠다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "story_sister_sick": {
+   "id": "story_sister_sick",
+   "category": "story",
+   "title": "동생이 앓아눕다",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "sister_sick"
+    },
+    {
+     "type": "notFlag",
+     "flag": "sister_treated"
+    }
+   ],
+   "weight": 1,
+   "priority": 35,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "동생이 열이 올라 일어나지 못한다. 며칠을 제대로 먹지 못한 탓이다. 마그다 할멈을 불러야 할 것 같다.",
+     "choices": [
+      {
+       "id": "healer",
+       "label": "마그다 할멈을 모셔 온다",
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "할멈이 약초를 달여 먹였다. 저녁 무렵 열이 조금 내렸다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "sister_treated"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "nurse",
+       "label": "밤새 곁을 지킨다",
+       "check": {
+        "stat": "con",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "찬 수건을 몇 번이고 갈아 주었다. 새벽녘에야 열이 내렸다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "sister_treated"
+          },
+          {
+           "type": "fatigue",
+           "delta": 3
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "밤새 곁을 지켰지만 열이 쉽게 내리지 않는다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "sister_weak"
+          },
+          {
+           "type": "fatigue",
+           "delta": 3
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        }
        }
       }
      ]

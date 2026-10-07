@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_goblin_tracks",
+  "category": "story",
+  "region": "forest",
+  "title": "나무에 새긴 표시",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 7
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_tracks_found"
+    }
+  ],
+  "weight": 1,
+  "priority": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "쓰러진 나무 둥치에 칼로 그은 듯한 표시가 나 있다. 누가 일부러 길을 표시해 둔 것 같다.",
+      "choices": [
+        {
+          "id": "follow",
+          "label": "표시를 따라가 본다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "표시는 숲 동쪽으로 이어진다. 그 끝에서 작은 맨발 자국 여럿을 찾았다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "한참을 헤맨 끝에야 작은 맨발 자국 여럿을 찾았다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "표시가 중간에 끊겼다. 괜한 걸 쫓았나 싶다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "모른 척 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

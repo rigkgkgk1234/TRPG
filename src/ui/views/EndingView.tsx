@@ -2,11 +2,17 @@ import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ENDING_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
+import { endingText, epitaph } from "@/core/story/ending";
 import type { RunState } from "@/core/types";
+import { CONTENT } from "@/data";
+import { useMeta } from "@/store/metaStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { colors, radius, space, type } from "@/ui/theme";
 
-/** 임시 엔딩 머리. 6주차에 /ending 화면(묘비문·흔적·기록 저장)으로 옮긴다. */
+/**
+ * 엔딩 머리. 엔딩도 라우터로 옮기지 않고 게임 화면 안에서 보여 준다:
+ * 위쪽 결과 카드에 마지막 장면(습격·죽음)이 남아 있어 무엇 때문에 끝났는지 이어서 읽힌다.
+ */
 export function EndingHeader({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   return (
@@ -21,12 +27,18 @@ export function EndingPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const best = [...SKILL_IDS].sort((a, b) => run.player.skills[b].rank - run.player.skills[a].rank)[0];
   const st = run.stats;
+  // 묘비문은 사망 원인을 아는 기록(마지막 명령 직전 상태로 만든 것)에서 읽는다
+  const record = useMeta((s) => s.meta.history.find((h) => h.runId === run.runId));
+  const grave = record ? epitaph(record, run.player.name) : "";
+  const traits = run.player.traits.map((t) => CONTENT.traits[t]?.name ?? t);
 
   // 끝난 회차는 스토어에 남겨 둔다 (타이틀의 "이어하기"는 끝나지 않은 회차만 보인다). 새 게임이 덮어쓴다.
   const toTitle = () => router.dismissTo("/");
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
+      <Text lineBreakStrategyIOS="hangul-word" style={styles.story}>{endingText(run)}</Text>
+      {grave ? <Text lineBreakStrategyIOS="hangul-word" style={styles.grave}>{grave}</Text> : null}
       <View style={styles.stats}>
         <Figure label="판정" value={`${st.checksRolled}회`} />
         <Figure label="대성공" value={String(st.crits)} />
@@ -37,8 +49,15 @@ export function EndingPanel({ run }: { run: RunState }) {
         <Figure label="남은 은화" value={String(run.resources.silver)} />
         <Figure label="빚" value={String(run.resources.debt)} />
       </View>
-      <Text style={styles.line}>가장 많이 익힌 숙련: {SKILL_LABEL[best]} {run.player.skills[best].rank}등급</Text>
-      <ActionButton primary label="처음 화면으로" onPress={toTitle} />
+      <View style={styles.lines}>
+        <Text style={styles.line}>가장 많이 익힌 숙련: {SKILL_LABEL[best]} {run.player.skills[best].rank}등급</Text>
+        {st.lowestHp && <Text style={styles.line}>가장 위험했던 순간: {st.lowestHp.day}일차, HP {st.lowestHp.hp}</Text>}
+        <Text style={styles.line}>남긴 흔적: {traits.length ? traits.map((t) => `「${t}」`).join(", ") : "없음"}</Text>
+      </View>
+      <View style={styles.buttons}>
+        <View style={styles.cell}><ActionButton label="기록 보기" onPress={() => router.push("/records")} /></View>
+        <View style={styles.cell}><ActionButton primary label="처음 화면으로" onPress={toTitle} /></View>
+      </View>
     </View>
   );
 }
@@ -75,4 +94,9 @@ const styles = StyleSheet.create({
   figureValue: { ...type.number, color: colors.text },
   figureLabel: { ...type.caption, color: colors.textFaint },
   line: { ...type.body, color: colors.textDim },
+  lines: { gap: 2 },
+  story: { ...type.body, color: colors.text },
+  grave: { ...type.bodyStrong, color: colors.textDim },
+  buttons: { flexDirection: "row", gap: space.sm },
+  cell: { flex: 1 },
 });

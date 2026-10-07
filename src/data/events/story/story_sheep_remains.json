@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_sheep_remains",
+  "category": "story",
+  "region": "forest",
+  "title": "덤불 아래 양털",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "sheep_quest"
+    },
+    {
+      "type": "dayRange",
+      "min": 4
+    }
+  ],
+  "weight": 1,
+  "priority": 10,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "덤불 아래에서 흰 양털이 엉겨 붙은 뼈를 찾았다. 베른 영감의 양이다. 주변 진흙에 작은 발자국이 어지럽게 찍혀 있다.",
+      "choices": [
+        {
+          "id": "inspect",
+          "label": "발자국을 자세히 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "맨발 자국이다. 발가락이 길고 아이 발만 하다. 짐승 발자국이 아니다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "빗물에 뭉개져 무슨 발자국인지 알아볼 수 없다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "wool",
+          "label": "양털만 챙겨 돌아간다",
+          "outcome": {
+            "text": "영감에게 이거라도 전해 줘야겠다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

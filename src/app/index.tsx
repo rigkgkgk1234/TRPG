@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
 import { colors, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 
-/** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 기록·설정은 6주차. */
+/** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 설정은 8주차. */
 export default function TitleScreen() {
   const insets = useSafeAreaInsets();
   const hydrated = useGame((s) => s.hydrated);
@@ -25,6 +25,7 @@ export default function TitleScreen() {
         )}
         {canResume && <TitleButton href="/game" label="이어하기" sub={resume} primary />}
         <TitleButton href="/new-game" label="새 게임" primary={!canResume} />
+        <TitleButton href="/records" label="기록" />
         <Pressable onPress={() => router.push("/dev/dice")} accessibilityRole="link" style={styles.devLink} hitSlop={8}>
           <Text style={styles.devText}>판정 테스트 (개발용)</Text>
         </Pressable>

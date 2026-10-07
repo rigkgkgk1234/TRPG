@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_militia",
+  "category": "story",
+  "title": "광장의 창 연습",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_defend"
+    },
+    {
+      "type": "dayRange",
+      "min": 24
+    }
+  ],
+  "weight": 1,
+  "priority": 20,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "레나가 광장에서 마을 사람들에게 창 쥐는 법을 가르친다. 혼자서는 손이 모자라 보인다.",
+      "choices": [
+        {
+          "id": "teach",
+          "label": "레나를 도와 함께 가르친다",
+          "check": {
+            "stat": "cha",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "어설프던 창끝이 조금씩 가지런해졌다. 사람들이 이름을 부르며 고맙다고 했다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "militia_trained"
+                },
+                {
+                  "type": "reputation",
+                  "delta": 8
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "마음만 앞섰다. 그래도 사람들은 함께해 줘서 고맙다고 했다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "learn",
+          "label": "나도 한자리 끼어 배운다",
+          "outcome": {
+            "text": "레나의 창에 몇 번이고 넘어졌지만, 막는 요령은 조금 알 것 같다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 3
+              },
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "skip",
+          "label": "지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

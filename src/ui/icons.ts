@@ -28,6 +28,7 @@ export const MedalIcon: Icon = require("phosphor-react-native/src/icons/Medal").
 export const MoonStarsIcon: Icon = require("phosphor-react-native/src/icons/MoonStars").MoonStarsIcon;
 export const PersonSimpleRunIcon: Icon = require("phosphor-react-native/src/icons/PersonSimpleRun").PersonSimpleRunIcon;
 export const PlantIcon: Icon = require("phosphor-react-native/src/icons/Plant").PlantIcon;
+export const ScrollIcon: Icon = require("phosphor-react-native/src/icons/Scroll").ScrollIcon;
 export const ShieldIcon: Icon = require("phosphor-react-native/src/icons/Shield").ShieldIcon;
 export const SignOutIcon: Icon = require("phosphor-react-native/src/icons/SignOut").SignOutIcon;
 export const SkullIcon: Icon = require("phosphor-react-native/src/icons/Skull").SkullIcon;

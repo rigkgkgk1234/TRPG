@@ -1,5 +1,6 @@
 import type { Ctx, FeedOrder } from "../commands";
 import { rollStatGrowth } from "../check/progress";
+import { startStoryEvent } from "../events/runner";
 import {
   CRITICAL_WOUND_MORNING_DC,
   d,
@@ -23,6 +24,12 @@ const FAMILY_HUNGER_WARNING_AT = 3;
 const TAX_REPUTATION_PENALTY = -5;
 const SERIOUS_TREATED_DAYS = 3;
 const SERIOUS_UNTREATED_DAYS = 5;
+
+/** 30일차 저녁의 최종 습격 */
+export const RAID_EVENT = "story_raid";
+export const RAID_FLAG = "raid_night";
+/** 가족 굶주림이 이만큼 쌓이면 「동생이 앓아눕다」 (SYSTEM_SPEC 6-4) */
+export const SISTER_SICK_FLAG = "sister_sick";
 
 export function isTaxDay(day: number): boolean {
   return day % TAX_INTERVAL_DAYS === 0 && day < LAST_DAY;
@@ -66,8 +73,13 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
     payTax(ctx);
   }
   rollStatGrowth(ctx);                                   // 6. 능력치 성장
-  // 7. 최종 습격(story_raid)은 6주차, 밤 이벤트(25%)는 밤 이벤트 콘텐츠와 함께 붙인다 (엔진은 3주차에 준비됨). 그 전까지 30일차 밤을 넘기면 생존 엔딩.
-  if (s.time.day >= LAST_DAY) return endRun(ctx, "survivor", "서른 번째 밤이 지났다. 아직 살아 있다.");
+  // 7. 30일차 밤은 최종 습격. 습격 이벤트가 엔딩을 정한다 (밤 이벤트 25%는 밤 이벤트 콘텐츠와 함께 붙인다).
+  if (s.time.day >= LAST_DAY) {
+    // 습격 이벤트는 이 플래그가 있어야 열린다 (아침·낮의 스토리 검사에서 미리 터지지 않게)
+    s.flags[RAID_FLAG] = true;
+    if (!s.eventHistory[RAID_EVENT] && startStoryEvent(ctx, RAID_EVENT)) return false;
+    return endRun(ctx, "survivor", "서른 번째 밤이 지났다. 아직 살아 있다.");
+  }
   startNextDay(ctx);                                     // 8. 다음 날
   if (!survivesCriticalWound(ctx)) return endRun(ctx, "death", "상처가 끝내 아물지 않았다. 다시는 일어나지 못했다.");
   return true;
@@ -89,8 +101,11 @@ function eat(ctx: Ctx, order: FeedOrder): void {
   if (selfAte && familyAte) ctx.feed.push({ kind: "text", text: "동생과 둘러앉아 저녁을 먹었다." });
   if (!selfAte) ctx.feed.push({ kind: "text", text: `빈속으로 잠자리에 든다. (굶주림 ${r.hunger})` });
   if (!familyAte) ctx.feed.push({ kind: "text", text: `동생이 배고프다며 칭얼거린다. (가족 굶주림 ${r.familyHunger})` });
-  // 「동생이 앓아눕다」 스토리 이벤트는 스토리 이벤트(6주차)가 이 수치를 조건으로 띄운다
-  if (r.familyHunger >= FAMILY_HUNGER_WARNING_AT) ctx.feed.push({ kind: "text", text: "동생의 얼굴이 핼쑥하다. 이대로는 안 된다." });
+  // 「동생이 앓아눕다」는 이 플래그를 조건으로 다음 날 일어난다 (조건 문법에 가족 굶주림이 없어서 플래그로 넘긴다)
+  if (r.familyHunger >= FAMILY_HUNGER_WARNING_AT) {
+    ctx.feed.push({ kind: "text", text: "동생의 얼굴이 핼쑥하다. 이대로는 안 된다." });
+    ctx.draft.flags[SISTER_SICK_FLAG] = true;
+  }
 }
 
 function sleep(ctx: Ctx): void {

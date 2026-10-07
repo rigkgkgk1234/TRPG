@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_report",
+  "category": "story",
+  "title": "촌장의 집",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "goblin_scout_seen"
+    }
+  ],
+  "weight": 1,
+  "priority": 30,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "hasItem",
+                "itemId": "goblin_token"
+              }
+            ],
+            "text": "하몬 촌장을 찾아가 숲에서 본 것을 털어놓았다. 품속의 고블린 부적이 묵직하다."
+          }
+        ],
+        "fallback": "하몬 촌장을 찾아가 숲에서 본 것을 털어놓았다. 촌장은 한참 말이 없었다."
+      },
+      "choices": [
+        {
+          "id": "token",
+          "label": "고블린 부적을 내민다",
+          "conditions": [
+            {
+              "type": "hasItem",
+              "itemId": "goblin_token"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "부적을 본 촌장의 얼굴이 하얗게 질렸다.",
+            "effects": [
+              {
+                "type": "removeItem",
+                "itemId": "goblin_token",
+                "qty": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 15
+              },
+              {
+                "type": "setFlag",
+                "flag": "reported"
+              }
+            ],
+            "next": "plan"
+          }
+        },
+        {
+          "id": "tell",
+          "label": "본 것을 그대로 말한다",
+          "outcome": {
+            "text": "촌장은 고개를 끄덕이며 이야기를 끝까지 들었다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 8
+              },
+              {
+                "type": "setFlag",
+                "flag": "reported"
+              }
+            ],
+            "next": "plan"
+          }
+        }
+      ]
+    },
+    "plan": {
+      "text": "\"영주님께 사람을 보내겠네. 답이 올 때까지는 우리끼리 버텨야 해.\" 촌장이 낮게 말했다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_decision",
+  "category": "story",
+  "title": "광장의 회의",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 21
+    }
+  ],
+  "weight": 1,
+  "priority": 40,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "reported"
+              }
+            ],
+            "text": "하몬 촌장이 마을 사람들을 광장에 불러 모았다. 고블린 약탈대가 수확이 끝나는 날 밤에 올 거라고 한다. 사람들의 눈이 하나둘 이쪽으로 쏠린다."
+          }
+        ],
+        "fallback": "광장이 웅성거린다. 숲에서 고블린 무리를 봤다는 나무꾼이 나타났다. 수확이 끝나는 날 밤, 놈들이 마을로 올 거라고 한다."
+      },
+      "choices": [
+        {
+          "id": "defend",
+          "label": "마을에 남아 함께 막자고 한다",
+          "outcome": {
+            "text": "몇몇이 고개를 끄덕였다. 목책을 세우고 창을 다듬자는 이야기가 오갔다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_defend"
+              },
+              {
+                "type": "reputation",
+                "delta": 5
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "flee",
+          "label": "다 같이 떠나자고 한다",
+          "outcome": {
+            "text": "노인들은 땅을 버릴 수 없다며 고개를 저었다. 그래도 귀를 기울이는 사람이 있었다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_flee"
+              },
+              {
+                "type": "reputation",
+                "delta": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "rowen",
+          "label": "로웬으로 가겠다고 한다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "recruit_passed"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "웅성거림이 잦아들었다. 아무도 붙잡지 않았다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_rowen"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "self",
+          "label": "우리 식구만 챙기겠다고 한다",
+          "outcome": {
+            "text": "누군가 혀를 찼다. 그래도 식구가 먼저다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_self"
+              },
+              {
+                "type": "reputation",
+                "delta": -5
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

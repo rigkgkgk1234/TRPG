@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_recruiter",
+  "category": "story",
+  "title": "모집관의 깃발",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 1,
+  "priority": 15,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광장에 로웬 기사단의 모집관이 깃발을 세웠다. 창을 쓸 줄 아는 젊은이를 찾는다며, 그 자리에서 시험을 보겠다고 한다.",
+      "choices": [
+        {
+          "id": "trial",
+          "label": "시험을 본다",
+          "conditions": [
+            {
+              "type": "any",
+              "of": [
+                {
+                  "type": "skill",
+                  "skill": "blade",
+                  "min": 3
+                },
+                {
+                  "type": "skill",
+                  "skill": "blunt",
+                  "min": 3
+                },
+                {
+                  "type": "skill",
+                  "skill": "bow",
+                  "min": 3
+                }
+              ]
+            }
+          ],
+          "lockedReason": "무기 숙련 3 필요",
+          "check": {
+            "stat": "str",
+            "skill": "guard",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "모집관이 고개를 끄덕였다. \"달이 바뀌기 전에 로웬으로 오게.\"",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "recruit_passed"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "창끝이 흔들렸다. 모집관은 열흘쯤 뒤에 다시 들르겠다고 했다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "watch",
+          "label": "구경만 한다",
+          "outcome": {
+            "text": "젊은이 몇이 창을 들었다가 하나같이 고개를 저으며 물러났다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

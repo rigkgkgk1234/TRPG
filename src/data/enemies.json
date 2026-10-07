@@ -12,6 +12,6 @@
     "loot": [{ "itemId": "goblin_token", "qty": 1, "chance": 1 }] },
   { "id": "goblin_warrior", "name": "고블린 전사", "hp": 12, "defense": 14, "attackBonus": 4, "damage": "1d8", "speed": 2,
     "onDefeat": "deathSave", "tags": ["goblin"], "loot": [] },
-  { "id": "raid_leader", "name": "약탈대장", "hp": 24, "defense": 15, "attackBonus": 6, "damage": "1d10+2", "speed": 2,
+  { "id": "raid_leader", "name": "약탈대장", "hp": 18, "defense": 13, "attackBonus": 4, "damage": "1d8+1", "speed": 2,
     "onDefeat": "scripted", "tags": ["goblin", "boss"], "loot": [] }
 ]

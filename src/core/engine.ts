@@ -7,7 +7,7 @@ import { buyFood, payDebt } from "./day/town";
 import { discard, equip, unequip } from "./items/equipment";
 import { consumeItem } from "./items/inventory";
 import { buy, repair, sell, treat, type RepairTarget } from "./items/shop";
-import { handleChoice, handleCombat, handleContinue, handleGoDeeper } from "./events/runner";
+import { handleChoice, handleCombat, handleContinue, handleGoDeeper, startPendingStory } from "./events/runner";
 import { createRng, type RunState } from "./types";
 
 /**
@@ -67,6 +67,8 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         save = ok(ctx, draft.combat ? "싸우는 중에는 전투 행동으로 쓴다" : consumeItem(ctx, cmd.itemId, false) ? null : "지금은 쓸 수 없다");
         break;
     }
+    // 명령이 받아들여져 행동을 고를 차례가 됐으면, 때가 된 스토리가 먼저 끼어든다 (SYSTEM_SPEC 4-3)
+    if (save && startPendingStory(ctx)) save = true;
   });
 
   return { state: next, feed, save: save || checkpoint, checkpoint };

@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_goblin_camp",
+  "category": "story",
+  "region": "forest",
+  "title": "숲 동쪽의 연기",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_defend"
+    },
+    {
+      "type": "dayRange",
+      "min": 23
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_plan_known"
+    }
+  ],
+  "weight": 1,
+  "priority": 20,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 2
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "숲 동쪽 끝에서 연기가 피어오른다. 고블린 야영지다. 가까이 가면 놈들이 언제 어디로 올지 알아낼 수 있을지도 모른다.",
+      "choices": [
+        {
+          "id": "spy",
+          "label": "숨어들어 엿듣는다",
+          "check": {
+            "stat": "agi",
+            "dc": 14,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈들은 개울을 따라 마을 남쪽으로 올 작정이다. 이걸 알면 먼저 칠 수 있다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "보초에게 들켰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "멀리서 수만 세고 돌아간다",
+          "outcome": {
+            "text": "모닥불이 열 개가 넘는다. 생각보다 수가 많다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "보초가 소리를 지르기 전에 막아야 한다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout"
+            ],
+            "initiative": "enemy",
+            "onVictory": "win",
+            "onFled": "fled",
+            "canFlee": true
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "보초를 쓰러뜨렸지만 야영지가 술렁이기 시작했다. 더 머물 수는 없다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "숲을 빠져나올 때까지 뒤에서 고블린들의 고함이 들렸다.",
+      "choices": []
+    }
+  }
+}

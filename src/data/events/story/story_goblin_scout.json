@@ -1,0 +1,138 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_goblin_scout",
+  "category": "story",
+  "region": "forest",
+  "title": "나무 위의 눈",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 11
+    },
+    {
+      "type": "flag",
+      "flag": "goblin_tracks_found"
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_scout_seen"
+    }
+  ],
+  "weight": 1,
+  "priority": 20,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 2
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "나무 위에서 무언가 뛰어내렸다. 잿빛 피부에 누런 눈, 아이만 한 키에 녹슨 단검을 쥐었다. 고블린이다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "hide",
+          "label": "덤불에 숨어 지켜본다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "고블린은 코를 킁킁대더니 동쪽으로 사라졌다. 놈들이 이 숲에 있는 건 분명하다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_scout_seen"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발밑에서 마른 가지가 부러졌다. 고블린이 이쪽을 돌아본다!",
+              "next": "fight_ambushed"
+            }
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린이 이를 드러내며 단검을 고쳐 쥔다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout"
+            ],
+            "initiative": "roll",
+            "onVictory": "win",
+            "onFled": "fled",
+            "canFlee": true
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "고블린이 날카로운 소리를 지르며 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout"
+            ],
+            "initiative": "enemy",
+            "onVictory": "win",
+            "onFled": "fled",
+            "canFlee": true
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "hasItem",
+                "itemId": "goblin_token"
+              }
+            ],
+            "text": "고블린의 목에 뼈와 깃털로 엮은 부적이 걸려 있었다. 촌장에게 보여야 한다."
+          }
+        ],
+        "fallback": "고블린은 숲 깊이 달아났다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다."
+      },
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲을 빠져나왔다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

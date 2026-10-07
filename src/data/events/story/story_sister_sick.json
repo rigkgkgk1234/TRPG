@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_sister_sick",
+  "category": "story",
+  "title": "동생이 앓아눕다",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "sister_sick"
+    },
+    {
+      "type": "notFlag",
+      "flag": "sister_treated"
+    }
+  ],
+  "weight": 1,
+  "priority": 35,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "동생이 열이 올라 일어나지 못한다. 며칠을 제대로 먹지 못한 탓이다. 마그다 할멈을 불러야 할 것 같다.",
+      "choices": [
+        {
+          "id": "healer",
+          "label": "마그다 할멈을 모셔 온다",
+          "cost": {
+            "silver": 5
+          },
+          "outcome": {
+            "text": "할멈이 약초를 달여 먹였다. 저녁 무렵 열이 조금 내렸다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "sister_treated"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "nurse",
+          "label": "밤새 곁을 지킨다",
+          "check": {
+            "stat": "con",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "찬 수건을 몇 번이고 갈아 주었다. 새벽녘에야 열이 내렸다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "sister_treated"
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "밤새 곁을 지켰지만 열이 쉽게 내리지 않는다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "sister_weak"
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

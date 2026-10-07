@@ -1,0 +1,103 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_flee_plan",
+  "category": "story",
+  "title": "집집마다 찾아가",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_flee"
+    },
+    {
+      "type": "dayRange",
+      "min": 22
+    },
+    {
+      "type": "notFlag",
+      "flag": "flee_organized"
+    }
+  ],
+  "weight": 1,
+  "priority": 20,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 2
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "떠나려면 이웃들을 설득해야 한다. 집집마다 찾아가 이야기하려면 한나절은 걸릴 것이다.",
+      "choices": [
+        {
+          "id": "persuade",
+          "label": "집집마다 찾아가 설득한다",
+          "check": {
+            "stat": "cha",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "하나둘 짐을 꾸리기 시작했다. 떠날 날까지 수레를 모으기로 했다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "flee_organized"
+                },
+                {
+                  "type": "reputation",
+                  "delta": 8
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "목이 쉬도록 이야기한 끝에 몇 집이 함께 가겠다고 했다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "flee_organized"
+                },
+                {
+                  "type": "reputation",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "다들 땅을 버릴 수 없다며 문을 닫았다. 며칠 뒤 다시 찾아가 봐야겠다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "later",
+          "label": "다음에 하기로 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

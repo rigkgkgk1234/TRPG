@@ -1,0 +1,85 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_recruiter_return",
+  "category": "story",
+  "title": "다시 온 모집관",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 25
+    },
+    {
+      "type": "notFlag",
+      "flag": "recruit_passed"
+    }
+  ],
+  "weight": 1,
+  "priority": 15,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "모집관이 다시 마을에 들렀다. 로웬으로 돌아가기 전 마지막 시험이라고 한다.",
+      "choices": [
+        {
+          "id": "trial",
+          "label": "시험을 본다",
+          "conditions": [
+            {
+              "type": "any",
+              "of": [
+                {
+                  "type": "skill",
+                  "skill": "blade",
+                  "min": 3
+                },
+                {
+                  "type": "skill",
+                  "skill": "blunt",
+                  "min": 3
+                },
+                {
+                  "type": "skill",
+                  "skill": "bow",
+                  "min": 3
+                }
+              ]
+            }
+          ],
+          "lockedReason": "무기 숙련 3 필요",
+          "check": {
+            "stat": "str",
+            "skill": "guard",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "\"이번엔 됐군.\" 모집관이 짧게 웃었다. 달이 바뀌기 전에 로웬으로 오라고 한다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "recruit_passed"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "이번에도 모집관은 고개를 저었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "watch",
+          "label": "그냥 보낸다",
+          "outcome": {
+            "text": "모집관의 깃발이 로웬 쪽으로 멀어졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

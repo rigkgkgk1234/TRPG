@@ -13,11 +13,12 @@ import type {
 import { conditionReason, evalAll, evalCondition, itemName } from "./conditions";
 import { applyEffects } from "./effects";
 import { DEEP_FATIGUE, EXPLORE_CARDS, isDeeperPrompt, stopExplore } from "./explore";
-import { recordEvent, selectEvent } from "./selector";
+import { recordEvent, selectEvent, selectStory } from "./selector";
 import { resolveText } from "./text";
 
 /** 대실패인데 이벤트에 critFail 분기가 없을 때의 추가 페널티 (SYSTEM_SPEC 2-4) */
 const CRIT_FAIL_FATIGUE = 1;
+const SCENE_TEXT_TO_FEED = new Set<Effect["type"]>(["startCombat", "ending", "resolveEnding"]);
 /** 실패했을 때 이것이 있으면 위험 표시 (SYSTEM_SPEC 4-2) */
 const DANGER_EFFECTS = new Set<Effect["type"]>(["startCombat", "wound", "ending"]);
 
@@ -176,6 +177,27 @@ export function handleCombat(ctx: Ctx, action: CombatAction): boolean {
   return true;
 }
 
+/**
+ * 마을에서 행동을 고르기 전(오전·오후, 하고 있는 일이 없을 때) 일어날 스토리가 있으면 시작한다.
+ * @returns 시작했으면 true
+ */
+export function startPendingStory(ctx: Ctx): boolean {
+  const s = ctx.draft;
+  if (s.ending || s.activeEvent || s.combat || (s.time.phase !== "am" && s.time.phase !== "pm")) return false;
+  const ev = selectStory(ctx);
+  if (!ev) return false;
+  startEvent(ctx, ev);
+  return true;
+}
+
+/** 스토리 이벤트 하나를 바로 시작한다 (30일차 습격처럼 정해진 때에) */
+export function startStoryEvent(ctx: Ctx, eventId: string): boolean {
+  const ev = ctx.content.events[eventId];
+  if (!ev) return false;
+  startEvent(ctx, ev);
+  return true;
+}
+
 /** 탐험 행동: 피로는 행동 쪽에서 이미 더했다. 첫 카드를 뽑는다. */
 export function startExplore(ctx: Ctx, region: RegionId): void {
   ctx.feed.push({ kind: "text", text: `${josa(REGION_LABEL[region], "으로/로")} 들어섰다.` });
@@ -237,8 +259,8 @@ function enterScene(ctx: Ctx, sceneId: SceneId): void {
   active.sceneId = sceneId;
   const scene = ctx.content.events[active.eventId]?.scenes[sceneId];
   if (!scene) throw new Error(`없는 장면: ${active.eventId}/${sceneId}`);
-  // 전투 장면은 화면이 바로 전투로 넘어가므로 장면 글을 결과 카드에 남긴다
-  if (scene.onEnter?.some((e) => e.type === "startCombat")) ctx.feed.push({ kind: "text", text: resolveText(scene.text, s) });
+  // 전투로 넘어가거나 엔딩으로 끝나는 장면은 패널에 그려질 틈이 없으므로 장면 글을 결과 카드에 남긴다
+  if (scene.onEnter?.some((e) => SCENE_TEXT_TO_FEED.has(e.type))) ctx.feed.push({ kind: "text", text: resolveText(scene.text, s) });
   applyEffects(ctx, scene.onEnter);
   if (s.ending) s.activeEvent = null;
   // 기습당해 전투가 시작하자마자 끝날 수도 있다
@@ -289,7 +311,8 @@ function endEvent(ctx: Ctx): void {
 }
 
 function drawCard(ctx: Ctx, region: RegionId, deep: boolean, drawn: number): void {
-  const ev = selectEvent(ctx, "explore", region, deep);
+  // 이 지역의 스토리가 일어날 때가 됐으면 카드 대신 먼저 나온다
+  const ev = selectStory(ctx, region) ?? selectEvent(ctx, "explore", region, deep);
   if (!ev) {
     ctx.feed.push({ kind: "text", text: "더는 눈에 띄는 것이 없었다." });
     finishExplore(ctx);

@@ -356,7 +356,9 @@ export type Effect =
   /** 남은 행동 슬롯을 소모하고 저녁으로 */
   | { type: "endDay" }
   | { type: "loseNextSlot" }
-  | { type: "ending"; ending: EndingId };
+  | { type: "ending"; ending: EndingId }
+  /** 최종 습격 뒤: 플래그·수치로 엔딩을 판정해 회차를 끝낸다 (story/ending.ts의 표) */
+  | { type: "resolveEnding" };
 
 export type TextBlock =
   | string

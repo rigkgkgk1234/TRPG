@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { AppState } from "react-native";
 import { useGame } from "@/store/gameStore";
+import { useMeta } from "@/store/metaStore";
 import { colors, FONT_FILES, fonts } from "@/ui/theme";
 
 export default function RootLayout() {
@@ -13,6 +14,7 @@ export default function RootLayout() {
   // 앱을 켜면 저장된 회차를 읽고, 앱이 뒤로 가면 저장한다 (OS가 예고 없이 앱을 끌 수 있다)
   useEffect(() => {
     void useGame.getState().hydrate();
+    void useMeta.getState().hydrate();
     const sub = AppState.addEventListener("change", (state) => {
       if (state !== "active") useGame.getState().flush();
     });
@@ -39,6 +41,7 @@ export default function RootLayout() {
         <Stack.Screen name="game/status" options={{ title: "상태", presentation: "modal" }} />
         <Stack.Screen name="game/inventory" options={{ title: "가방", presentation: "modal" }} />
         <Stack.Screen name="game/town" options={{ title: "마을", presentation: "modal" }} />
+        <Stack.Screen name="records" options={{ title: "기록" }} />
         <Stack.Screen name="dev/dice" options={{ title: "판정 테스트" }} />
       </Stack>
     </>

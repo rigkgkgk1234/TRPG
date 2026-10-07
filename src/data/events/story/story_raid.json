@@ -1,0 +1,159 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_raid",
+  "category": "story",
+  "title": "서른 번째 밤",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "raid_night"
+    }
+  ],
+  "weight": 1,
+  "priority": 100,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "route_defend"
+              }
+            ],
+            "text": "해가 지자 숲에서 횃불이 줄지어 나왔다. 목책 너머로 고블린들의 함성이 들린다. 창을 쥔 이웃들이 이쪽을 본다."
+          },
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "flee_organized"
+              }
+            ],
+            "text": "떠날 채비를 마치기도 전에 숲에서 횃불이 줄지어 나왔다. 수레 앞에서 이웃들이 발을 동동 구른다."
+          }
+        ],
+        "fallback": "해가 지자 숲에서 횃불이 줄지어 나왔다. 고블린 약탈대다. 마을 여기저기서 비명이 터진다."
+      },
+      "choices": [
+        {
+          "id": "fight",
+          "label": "앞에 나서 약탈대장과 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "flee",
+          "label": "이웃들과 수레를 몰고 떠난다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "flee_organized"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "next": "fled"
+          }
+        },
+        {
+          "id": "hide",
+          "label": "식구들과 지하 창고에 숨는다",
+          "outcome": {
+            "next": "hid"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "약탈대장이 철퇴를 휘두르며 다가온다. 뒤에는 식구들이 있다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "raid_leader"
+            ],
+            "initiative": "roll",
+            "canFlee": false,
+            "noFleeReason": "등 뒤에 식구들이 있다",
+            "onVictory": "won",
+            "onDefeat": "lost"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "won": {
+      "text": "우두머리를 잃은 고블린들이 숲으로 흩어졌다. 동이 틀 때까지 아무도 창을 내려놓지 않았다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "raid_won"
+        },
+        {
+          "type": "reputation",
+          "delta": 15
+        },
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    },
+    "lost": {
+      "text": "철퇴에 맞고 쓰러졌다. 다시 눈을 떴을 때는 모든 것이 끝나 있었다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "raid_lost"
+        },
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "flee_ready"
+              }
+            ],
+            "text": "곡식을 실은 수레 행렬이 어둠 속으로 떠났다. 뒤에서 보리울이 타오르는 불빛이 보였다."
+          }
+        ],
+        "fallback": "빈 수레 행렬이 어둠 속으로 떠났다. 뒤에서 보리울이 타오르는 불빛이 보였다."
+      },
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "fled_together"
+        },
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    },
+    "hid": {
+      "text": "어둠 속에서 동생의 입을 막고 숨을 죽였다. 머리 위로 발소리가 몇 번이나 오갔다.",
+      "onEnter": [
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

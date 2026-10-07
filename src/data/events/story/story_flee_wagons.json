@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_flee_wagons",
+  "category": "story",
+  "title": "여관 수레",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "flee_organized"
+    },
+    {
+      "type": "dayRange",
+      "min": 25
+    }
+  ],
+  "weight": 1,
+  "priority": 15,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "토비가 여관 수레를 내주겠다고 한다. 바퀴를 손보고 먹을 것을 실어 두려면 보탤 것이 필요하다.",
+      "choices": [
+        {
+          "id": "silver",
+          "label": "은화를 보탠다",
+          "cost": {
+            "silver": 5
+          },
+          "outcome": {
+            "text": "수레에 곡식 자루가 실렸다. 이제 떠날 날만 남았다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "flee_ready"
+              },
+              {
+                "type": "reputation",
+                "delta": 4
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "food",
+          "label": "우리 집 식량을 싣는다",
+          "cost": {
+            "food": 3
+          },
+          "outcome": {
+            "text": "우리 집 곡식 자루가 수레에 올랐다. 토비가 말없이 고개를 숙였다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "flee_ready"
+              },
+              {
+                "type": "reputation",
+                "delta": 6
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "none",
+          "label": "보탤 것이 없다고 한다",
+          "outcome": {
+            "text": "토비는 괜찮다며 웃었지만, 수레는 아직 비어 있다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { actionStatus, handleAction } from "@/core/day/actions";
 import { previewEvening, runEvening } from "@/core/day/evening";
 import { buyFood, payDebt } from "@/core/day/town";
 import { dispatch } from "@/core/engine";
+import { sceneView } from "@/core/events/runner";
 import { newRun } from "@/core/newRun";
 import type { JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -281,10 +282,11 @@ describe("저녁 정산", () => {
     expect(ctx.draft.ending).toBe("debtor");
   });
 
-  it("30일차 밤을 넘기면 생존 엔딩 (최종 습격은 6주차)", () => {
+  it("30일차 저녁 정산 뒤에는 날이 바뀌지 않고 최종 습격이 시작된다", () => {
     const ctx = withDice(evening((s) => { s.time.day = 30; }));
     expect(runEvening(ctx)).toBe(false);
-    expect(ctx.draft.ending).toBe("survivor");
+    expect(ctx.draft.activeEvent?.eventId).toBe("story_raid");
+    expect(ctx.draft.ending).toBeNull();
     expect(ctx.draft.time.day).toBe(30);
   });
 });
@@ -373,13 +375,20 @@ describe("dispatch", () => {
     expect(send(ended, { type: "chooseAction", action: "rest" }).state).toBe(ended);
   });
 
-  it("일하기+휴식만으로 30일을 보내면 엔딩에 도달한다", () => {
+  it("일하기+휴식만으로 30일을 보내면 엔딩에 도달한다 (스토리 이벤트는 첫 선택지로 넘긴다)", () => {
     for (const job of ["farmer", "smith", "hunter"] as const) {
       let run = start(job, 5);
       for (let guard = 0; !run.ending && guard < 500; guard++) {
         const { phase } = run.time;
         let cmd: GameCommand;
-        if (phase === "evening") {
+        const scene = sceneView(run, CONTENT);
+        if (run.combat) {
+          cmd = { type: "combat", action: { type: "defend" } };
+        } else if (scene?.kind === "choices") {
+          cmd = { type: "chooseChoice", choiceId: scene.choices.find((c) => c.lockedReason === null)!.id };
+        } else if (scene) {
+          cmd = scene.kind === "deeper" ? { type: "goDeeper", yes: false } : { type: "continue" };
+        } else if (phase === "evening") {
           const need = 2 - run.resources.food;
           if (need > 0 && run.resources.silver > 0) run = send(run, { type: "shop", op: "buyFood", qty: Math.min(need, run.resources.silver) }).state;
           cmd = { type: "endDay" };

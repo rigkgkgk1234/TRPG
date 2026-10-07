@@ -74,6 +74,12 @@ export function equippedWeapon(run: RunState, content: Pick<ContentDB, "items">)
 
 export const isBow = (w: WeaponDef) => w.skill === "bow";
 
+/** 공격에 실제로 쓰는 무기: 활인데 화살이 떨어졌으면 맨주먹으로 싸운다 (도주할 수 없는 전투에서도 손쓸 수 있게) */
+export function attackWeapon(run: RunState, content: Pick<ContentDB, "items">): WeaponDef {
+  const w = equippedWeapon(run, content);
+  return isBow(w) && countInBag(run.inventory, ARROW) === 0 ? FIST : w;
+}
+
 /** 아직 싸우는 적 (쓰러지지도 달아나지도 않은) */
 export function activeEnemies(c: CombatState): EnemyInstance[] {
   return c.enemies.filter((e) => e.hp > 0 && !e.routed);
@@ -93,7 +99,7 @@ export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, 
 
 /** 공격 판정 명세: 근접은 근력, 활은 민첩 + 무기 숙련 vs 적 방어도. 강타는 −2. */
 export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean): CheckSpec {
-  const w = equippedWeapon(run, content);
+  const w = attackWeapon(run, content);
   const def = enemyDef(content, target);
   return {
     stat: isBow(w) ? "agi" : "str",
@@ -140,10 +146,10 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   if (!c) return null;
   const alive = activeEnemies(c);
   const target = alive.find((e) => e.instanceId === targetId) ?? alive[0];
-  const w = equippedWeapon(run, content);
+  const w = attackWeapon(run, content);
   const bow = isBow(w);
-  const noArrow = bow && countInBag(run.inventory, ARROW) === 0 ? "화살이 없다" : null;
-  const brokenPenalty = isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
+  const outOfArrows = w === FIST && isBow(equippedWeapon(run, content));
+  const brokenPenalty = w !== FIST && isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
   const dmg = (bonus: number) => `피해 ${w.damage}${signedOrEmpty((bow ? 0 : run.player.stats.str) + bonus + brokenPenalty)}`;
 
   const chanceOf = (power: boolean) => {
@@ -163,11 +169,12 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const actions: CombatActionView[] = [
     {
       type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false),
-      detail: [dmg(0), ...(bow ? ["화살 -1"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])], lockedReason: noArrow,
+      detail: [dmg(0), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
+      lockedReason: null,
     },
     {
       type: "powerAttack", label: bow ? "조준 사격" : "강타", ...chanceOf(true),
-      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${POWER_ATTACK_HIT_PENALTY}`, "피로 +1"], lockedReason: noArrow,
+      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${POWER_ATTACK_HIT_PENALTY}`, "피로 +1"], lockedReason: null,
     },
     { type: "defend", label: "방어 자세", detail: [`방어도 +${defendBonus}`], lockedReason: null },
     {
@@ -197,9 +204,44 @@ const signedOrEmpty = (n: number) => (n > 0 ? `+${n}` : n < 0 ? String(n) : "");
 
 // ───────────────────────── 진행 ─────────────────────────
 
-/** 전투를 연다. 선공을 정하고, 적이 먼저면 바로 적 턴을 치른다. (SYSTEM_SPEC 3-2) */
-export function startCombat(ctx: Ctx, setup: CombatSetup): void {
+/** 민병대 한 명당 약탈대장 시작 HP −3, 최대 5명 (SYSTEM_SPEC 3-6) */
+const MILITIA_PER_REPUTATION = 20;
+const MILITIA_MAX = 5;
+const MILITIA_HP_CUT = 3;
+const PALISADE_DEFENSE = 2;
+
+/**
+ * 스토리 전투(패배 규칙이 scripted인 적이 있는 전투)에 마을의 준비를 보탠다. (SYSTEM_SPEC 3-6 최종 습격 보정)
+ * 민병대 = 평판 / 20 (최대 5), 목책 → 방어도 +2, 작전 정보 → 선공 + 첫 공격 유리함.
+ */
+function withVillagePreparation(ctx: Ctx, setup: CombatSetup): CombatSetup {
   const s = ctx.draft;
+  const scripted = setup.enemies.some((id) => ctx.content.enemies[id]?.onDefeat === "scripted");
+  if (!scripted) return setup;
+  const next = { ...setup };
+  const militia = Math.min(MILITIA_MAX, Math.floor(s.player.reputation / MILITIA_PER_REPUTATION));
+  if (militia > 0) {
+    next.enemyHpModifier = (next.enemyHpModifier ?? 0) - militia * MILITIA_HP_CUT;
+    ctx.feed.push({ kind: "text", text: `마을 사람 ${militia}명이 함께 버티며 약탈대장을 몰아붙였다. (약탈대장 HP −${militia * MILITIA_HP_CUT})` });
+  } else {
+    ctx.feed.push({ kind: "text", text: "곁에 선 사람이 아무도 없다. 혼자 맞서야 한다." });
+  }
+  if (s.flags.palisade_built) {
+    next.playerDefenseBonus = (next.playerDefenseBonus ?? 0) + PALISADE_DEFENSE;
+    ctx.feed.push({ kind: "text", text: `세워 둔 목책이 고블린들의 발을 묶었다. (방어도 +${PALISADE_DEFENSE})` });
+  }
+  if (s.flags.goblin_plan_known) {
+    next.initiative = "player";
+    next.firstAttackAdvantage = true;
+    ctx.feed.push({ kind: "text", text: "놈들이 어디로 올지 알고 있었다. 먼저 움직인다. (첫 공격 유리함)" });
+  }
+  return next;
+}
+
+/** 전투를 연다. 선공을 정하고, 적이 먼저면 바로 적 턴을 치른다. (SYSTEM_SPEC 3-2) */
+export function startCombat(ctx: Ctx, rawSetup: CombatSetup): void {
+  const s = ctx.draft;
+  const setup = withVillagePreparation(ctx, rawSetup);
   const enemies: EnemyInstance[] = setup.enemies.map((defId, i) => {
     const def = ctx.content.enemies[defId];
     if (!def) throw new Error(`없는 적: ${defId}`);
@@ -254,7 +296,6 @@ function actionBlock(ctx: Ctx, c: CombatState, a: CombatAction): string | null {
     case "powerAttack": {
       const target = activeEnemies(c).find((e) => e.instanceId === a.targetId);
       if (!target) return "그 상대는 이미 싸울 수 없다";
-      if (isBow(equippedWeapon(s, ctx.content)) && countInBag(s.inventory, ARROW) === 0) return "화살이 없다";
       return null;
     }
     case "defend": return null;
@@ -294,7 +335,7 @@ function playerAct(ctx: Ctx, c: CombatState, a: CombatAction): void {
 
 function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean): void {
   const s = ctx.draft;
-  const w = equippedWeapon(s, ctx.content);
+  const w = attackWeapon(s, ctx.content);
   const bow = isBow(w);
   const def = enemyDef(ctx.content, target);
   if (bow) {
@@ -310,7 +351,7 @@ function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean)
 
   if (r.outcome === "success" || r.outcome === "critSuccess") {
     const crit = r.outcome === "critSuccess";
-    const broken = isBroken(s.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
+    const broken = w !== FIST && isBroken(s.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
     const bonus = (bow ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
     const dmg = Math.max(1, rollDice(w.damage, ctx.rng, crit) + bonus);
     target.hp -= dmg;
