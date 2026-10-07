@@ -13,10 +13,11 @@ export function TownRow({ run }: { run: RunState }) {
   return (
     <View style={styles.row}>
       <View style={styles.cell}>
-        <ActionButton icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => router.push("/game/inventory")} />
+        <ActionButton fill icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => router.push("/game/inventory")} />
       </View>
       <View style={styles.cell}>
         <ActionButton
+          fill
           icon={StorefrontIcon}
           label="마을"
           detail={trade ? ["대장간", "약초방", "여관"] : "지금은 갈 수 없다"}
@@ -30,5 +31,5 @@ export function TownRow({ run }: { run: RunState }) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: "row", gap: space.sm },
-  cell: { flex: 1 },
+  cell: { flex: 1, flexDirection: "column" },
 });

@@ -1,4 +1,5 @@
 import { neededRoll } from "@/core/check/modifiers";
+import { chanceBadge, chanceBadgeProps, rollFormula, rollModeNote } from "@/ui/rollText";
 import { describe, expect, it } from "vitest";
 import { createRng, resolveMode, rollCheck, successChance, type CheckContext, type CheckSpec } from "@/core/types";
 import { d20Sequence } from "./fixtures";
@@ -130,5 +131,19 @@ describe("필요 굴림", () => {
     expect(neededRoll(0, 10)).toBe(10);
     expect(neededRoll(15, 10)).toBe(2);
     expect(neededRoll(-5, 20)).toBe(20);
+  });
+});
+
+describe("굴림 표시", () => {
+  const spec: CheckSpec = { stat: "agi", skill: "bow", dc: 12 };
+  const r = rollCheck(spec, { modifiers: [{ label: "민첩", value: 2 }, { label: "활", value: 2 }, { label: "가죽", value: 0 }, { label: "경상", value: -2 }], advantageSources: ["사전 정보"], disadvantageSources: [] }, d20Sequence(14, 6));
+  it("확률 배지는 45%(D20 / 12↑), 버튼에서는 괄호 안을 따로 (작게 그린다)", () => {
+    expect(chanceBadge(0.45, 12)).toBe("45%(D20 / 12↑)");
+    expect(chanceBadge(0.45)).toBe("45%");
+    expect(chanceBadgeProps(0.45, 12)).toEqual({ badge: "45%", badgeNote: "D20 / 12↑" });
+  });
+  it("계산식은 숫자(무엇) 차례로, 0인 보정은 뺀다. 유리함이면 어느 눈을 썼는지", () => {
+    expect(rollFormula(r)).toBe("14(D20) + 2(민첩) + 2(활) − 2(경상) = 16");
+    expect(rollModeNote(r)).toBe("유리함: 14와 6 중 높은 눈");
   });
 });

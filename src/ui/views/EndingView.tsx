@@ -17,7 +17,7 @@ export function EndingHeader({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.header, { paddingTop: insets.top + space.xxl }]}>
-      <Text style={styles.kicker}>{run.time.day}일차 · {run.player.name}</Text>
+      <Text style={styles.kicker}>{run.player.name}의 {run.time.day}일</Text>
       <Text style={styles.title}>{ENDING_LABEL[run.ending!]}</Text>
     </View>
   );
@@ -55,8 +55,8 @@ export function EndingPanel({ run }: { run: RunState }) {
         <Text style={styles.line}>남긴 흔적: {traits.length ? traits.map((t) => `「${t}」`).join(", ") : "없음"}</Text>
       </View>
       <View style={styles.buttons}>
-        <View style={styles.cell}><ActionButton label="기록 보기" onPress={() => router.push("/records")} /></View>
-        <View style={styles.cell}><ActionButton primary label="처음 화면으로" onPress={toTitle} /></View>
+        <View style={styles.cell}><ActionButton fill center label="기록 보기" onPress={() => router.push("/records")} /></View>
+        <View style={styles.cell}><ActionButton fill primary label="처음 화면으로" onPress={toTitle} /></View>
       </View>
     </View>
   );
@@ -98,5 +98,5 @@ const styles = StyleSheet.create({
   story: { ...type.body, color: colors.text },
   grave: { ...type.bodyStrong, color: colors.textDim },
   buttons: { flexDirection: "row", gap: space.sm },
-  cell: { flex: 1 },
+  cell: { flex: 1, flexDirection: "column" },
 });

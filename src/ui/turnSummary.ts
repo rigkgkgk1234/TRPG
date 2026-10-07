@@ -56,7 +56,7 @@ export interface Line { text: string; tone: Tone; mark?: "levelUp" | "wound" | "
 export interface TurnSummary {
   /** "3일차 오전" */
   when: string;
-  /** "밭일", "혼자 훈련 · 활", "하루 정산" */
+  /** "밭일", "혼자 훈련(활)", "하루 정산" */
   title: string;
   roll?: CheckResult;
   /** 자원별로 합친 변화 (0은 뺀다) */
@@ -115,18 +115,13 @@ export function changesLine(s: TurnSummary): string {
   return s.events[0]?.text ?? s.notices[0] ?? "";
 }
 
-/** 판정에 더해진 값들: "근력 +1 · 농사 +2" */
-export function modifierText(r: CheckResult): string {
-  return r.modifiers.filter((m) => m.value !== 0).map((m) => `${m.label} ${signed(m.value)}`).join(", ");
-}
-
 export const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
 function commandTitle(cmd: GameCommand, run: RunState): string {
   switch (cmd.type) {
     case "chooseAction": {
       if (cmd.action === "work") return jobOf(CONTENT, run).work.label;
-      const skill = cmd.skill ? ` · ${SKILL_LABEL[cmd.skill]}` : "";
+      const skill = cmd.skill ? `(${SKILL_LABEL[cmd.skill]})` : "";
       if (cmd.action === "trainSolo") return `혼자 훈련${skill}`;
       if (cmd.action === "trainLesson") return `레나의 교습${skill}`;
       if (cmd.action === "rest") return "휴식";

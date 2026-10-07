@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   content: { padding: space.lg, gap: space.xl },
   figures: { flexDirection: "row", padding: space.lg, borderRadius: radius.md, backgroundColor: colors.surface },
-  figure: { flex: 1, gap: 2 },
+  figure: { flex: 1, gap: 2, alignItems: "center" },
   figureValue: { ...type.number, color: colors.text },
   figureLabel: { ...type.caption, color: colors.textFaint },
   note: { ...type.caption, color: colors.textDim },

@@ -13,11 +13,11 @@ import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { InfoDialog } from "@/ui/components/InfoDialog";
 import { TownRow } from "@/ui/components/TownRow";
-import { Chip, ChipRow } from "@/ui/components/Controls";
+import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
 import { ChatCircleDotsIcon } from "@/ui/icons";
 import { NPC_INFO, REGION_INFO } from "@/ui/placeInfo";
-import { chanceBadge } from "@/ui/rollText";
+import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
@@ -75,9 +75,11 @@ export function HubPanel({ run }: { run: RunState }) {
           return (
             <GridCell key={def.id}>
               <ActionButton
+                fill
                 icon={def.id === "work" ? JOB_ICON[run.player.job] : ACTION_ICON[def.id]}
                 label={def.id === "work" ? jobOf(CONTENT, run).work.label : def.label}
-                badge={status.available && def.id === "work" ? rollBadge(run, jobOf(CONTENT, run).work.check) : undefined}
+                {...(status.available && def.id === "work" ? workBadge(run, jobOf(CONTENT, run).work.check) : {})}
+                badgeBelow
                 detail={status.available ? actionDetail(run, def) : status.reason}
                 disabled={!status.available}
                 selected={picking === def.id}
@@ -106,7 +108,7 @@ function ConfirmDialog({ run, confirm, onConfirm, onClose }: { run: RunState; co
         visible
         icon={REGION_ICON[region]}
         title={REGION_LABEL[region]}
-        subtitle={`위험 등급 ${tier}/3 · 더 깊이 들어가면 ${Math.min(3, tier + 1)}`}
+        subtitle={`위험 등급 ${tier}/3, 더 깊이 들어가면 ${Math.min(3, tier + 1)}`}
         body={info?.summary ?? ""}
         facts={[`카드 ${EXPLORE_CARDS}장, 원하면 1장 더`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`, `지금 나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`]}
         sections={info ? [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }] : []}
@@ -145,43 +147,44 @@ function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; 
       <Text style={styles.pickerTitle}>
         {kind === "trainLesson" ? `레나에게 무엇을 배울까? 경험 +${LESSON_XP}` : `무엇을 연습할까? 목표 ${SOLO_TRAINING_DC}`}
       </Text>
-      <ChipRow>
+      <PickGrid>
         {skills.map((skill) => {
-          const ok = actionStatus(run, CONTENT, kind, { skill }).available;
-          const p = run.player.skills[skill];
-          const extra = ok && kind === "trainSolo" ? `  ${rollBadge(run, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC })}` : "";
+          const status = actionStatus(run, CONTENT, kind, { skill });
+          const badge = status.available && kind === "trainSolo" ? workBadge(run, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC }) : {};
           return (
-            <Chip
+            <PickCell
               key={skill}
-              label={`${SKILL_LABEL[skill]} ${p.rank}${extra}`}
-              selected={false}
-              disabled={!ok}
+              label={`${SKILL_LABEL[skill]} ${run.player.skills[skill].rank}`}
+              {...badge}
+              reason={status.available ? undefined : status.reason}
+              disabled={!status.available}
               onPress={() => onPick(skill)}
             />
           );
         })}
-      </ChipRow>
+      </PickGrid>
     </View>
   );
 }
 
+/** 갈 곳 고르기. 고를 수 없는 곳도 눌러서 안내는 볼 수 있다 (안내 창의 확인 버튼이 잠긴다) */
 function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void }) {
   return (
     <View style={styles.picker}>
-      <Text style={styles.pickerTitle}>어디로 갈까? 카드 {EXPLORE_CARDS}장을 보고, 원하면 더 깊이 들어간다</Text>
-      <ChipRow>
+      <Text style={styles.pickerTitle}>어디로 갈까?</Text>
+      <PickGrid>
         {EXPLORE_REGIONS.map((region) => {
           const status = actionStatus(run, CONTENT, "explore", { region });
           return (
-            <Chip
+            <PickCell
               key={region}
-              label={status.available ? REGION_LABEL[region] : `${REGION_LABEL[region]} (${status.reason})`}
-              selected={false}
+              label={REGION_LABEL[region]}
+              reason={status.available ? undefined : status.reason}
               onPress={() => onPick(region)}
             />
           );
         })}
-      </ChipRow>
+      </PickGrid>
     </View>
   );
 }
@@ -190,19 +193,19 @@ function NpcPicker({ run, onPick }: { run: RunState; onPick: (n: NpcId) => void 
   return (
     <View style={styles.picker}>
       <Text style={styles.pickerTitle}>누구를 찾아갈까?</Text>
-      <ChipRow>
+      <PickGrid>
         {NPC_IDS.map((npc) => {
           const status = actionStatus(run, CONTENT, "village", { npc });
           return (
-            <Chip
+            <PickCell
               key={npc}
-              label={status.available ? NPC_LABEL[npc] : `${NPC_LABEL[npc]} (${status.reason})`}
-              selected={false}
+              label={NPC_LABEL[npc]}
+              reason={status.available ? undefined : status.reason}
               onPress={() => onPick(npc)}
             />
           );
         })}
-      </ChipRow>
+      </PickGrid>
     </View>
   );
 }
@@ -242,10 +245,10 @@ function pickingStatus(run: RunState, kind: Picking): ActionStatus {
   return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없다" };
 }
 
-/** "60% · D20 9+" */
-function rollBadge(run: RunState, spec: CheckSpec): string {
+/** 버튼 배지: "60%" 뒤에 작게 "(D20 / 9↑)" */
+function workBadge(run: RunState, spec: CheckSpec) {
   const p = previewCheck(spec, buildCheckContext(run, spec, CONTENT));
-  return chanceBadge(p.chance, p.need);
+  return chanceBadgeProps(p.chance, p.need);
 }
 
 

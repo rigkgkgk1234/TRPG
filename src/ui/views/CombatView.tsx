@@ -9,7 +9,7 @@ import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
-import { chanceBadge } from "@/ui/rollText";
+import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
 const ACTION_ICON: Record<CombatActionView["type"], Icon> = {
@@ -78,9 +78,11 @@ export function CombatPanel({ run }: { run: RunState }) {
         {view.actions.map((a) => (
           <GridCell key={a.type}>
             <ActionButton
+              fill
+              badgeBelow
               icon={ACTION_ICON[a.type]}
               label={a.label}
-              badge={!a.lockedReason && a.chance !== undefined ? chanceBadge(a.chance, a.need) : undefined}
+              {...(!a.lockedReason && a.chance !== undefined ? chanceBadgeProps(a.chance, a.need) : {})}
               detail={a.lockedReason ?? [...a.detail, ...(a.mode && a.mode !== "normal" ? [MODE_LABEL[a.mode]] : [])]}
               disabled={a.lockedReason !== null}
               selected={a.type === "useItem" && pickingItem}

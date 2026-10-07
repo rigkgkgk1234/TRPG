@@ -15,7 +15,7 @@ interface InfoDialogProps {
   /** 제목 아래 한 줄 (직업·역할) */
   subtitle?: string;
   body: string;
-  /** "비용 · 피로 +2"처럼 짧은 사실들 */
+  /** "피로 +2"처럼 짧은 사실들 */
   facts?: string[];
   sections?: InfoSection[];
   confirmLabel: string;
@@ -66,7 +66,7 @@ export function InfoDialog({ visible, icon: IconC, title, subtitle, body, facts,
               disabled={!!lockedReason}
               onPress={onConfirm}
             />
-            <ActionButton label="그만둔다" onPress={onClose} />
+            <ActionButton center label="그만둔다" onPress={onClose} />
           </View>
         </Pressable>
       </Pressable>

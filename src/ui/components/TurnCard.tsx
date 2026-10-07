@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
-import { MODE_LABEL, OUTCOME_LABEL } from "@/core/labels";
+import { OUTCOME_LABEL } from "@/core/labels";
 import type { CheckResult } from "@/core/types";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { BandaidsIcon, TrendUpIcon, WarningIcon, type Icon } from "@/ui/icons";
-import { modifierText, OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line, type Tone, type TurnSummary } from "@/ui/turnSummary";
+import { OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line, type Tone, type TurnSummary } from "@/ui/turnSummary";
+import { RollFormula } from "@/ui/components/RollFormula";
+import { rollModeNote } from "@/ui/rollText";
 import { colors, icon, motion, radius, space, type } from "@/ui/theme";
 
 const TONE_BG: Record<Tone, string> = { good: colors.goodBg, bad: colors.badBg, crit: colors.critBg, neutral: colors.neutralBg };
@@ -88,8 +90,9 @@ export function TurnCard({ summary, animate, onDone }: { summary: TurnSummary; a
   );
 }
 
+/** 판정 결과: 성패, 계산식(9(D20) + 1(근력) = 합계), 목표, 유리·불리면 어느 주사위를 썼는지 */
 function RollResult({ r }: { r: CheckResult }) {
-  const mods = modifierText(r);
+  const note = rollModeNote(r);
   const color = OUTCOME_COLOR[r.outcome];
   return (
     <View style={styles.rollResult}>
@@ -99,13 +102,9 @@ function RollResult({ r }: { r: CheckResult }) {
         </View>
         {r.xpGained > 0 && <Text style={styles.xp}>경험 +{r.xpGained}</Text>}
       </View>
-      <Text style={styles.math}>
-        {r.kept}{plusMinus(r.modifierTotal)} = <Text style={styles.mathTotal}>{r.total}</Text>
-        <Text style={styles.dc}>{"   "}목표 {r.spec.dc}</Text>
-      </Text>
-      {(mods || r.mode !== "normal") && (
-        <Text style={styles.small}>{[r.mode !== "normal" && MODE_LABEL[r.mode], mods].filter(Boolean).join(", ")}</Text>
-      )}
+      <RollFormula r={r} style={styles.math} noteStyle={styles.mathNote} totalStyle={styles.mathTotal} />
+      <Text style={styles.dc}>목표 {r.spec.dc}</Text>
+      {note && <Text style={styles.small}>{note}</Text>}
     </View>
   );
 }
@@ -120,9 +119,6 @@ function EventLine({ line }: { line: Line }) {
     </View>
   );
 }
-
-/** 계산식용: " + 3", " − 1", 0이면 생략 */
-const plusMinus = (n: number) => (n > 0 ? ` + ${n}` : n < 0 ? ` − ${-n}` : "");
 
 function ChangeChip({ change: c }: { change: Change }) {
   return (
@@ -164,6 +160,8 @@ const styles = StyleSheet.create({
   xp: { ...type.label, color: colors.textDim },
   math: { ...type.body, color: colors.text, fontVariant: ["tabular-nums"] },
   mathTotal: { ...type.bodyStrong },
+  /** 괄호 안 설명: 숫자보다 작고 흐리게 */
+  mathNote: { fontSize: 12, color: colors.textDim },
   dc: { ...type.body, color: colors.textFaint },
   small: { ...type.caption, color: colors.textFaint },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },

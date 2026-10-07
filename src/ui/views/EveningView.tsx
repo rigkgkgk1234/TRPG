@@ -51,25 +51,23 @@ export function EveningPanel({ run }: { run: RunState }) {
       )}
 
       {p.foodShort && (
-        <View style={styles.row}>
+        <>
           {canBuy > 0 && (
-            <View style={styles.cell}>
-              <ActionButton
-                icon={BasketIcon}
-                label={`식량 ${canBuy} 사기`}
-                detail={[`은화 -${canBuy * FOOD_PRICE}`, `가진 은화 ${silver}`]}
-                onPress={() => send({ type: "shop", op: "buyFood", qty: canBuy })}
-              />
-            </View>
+            <ActionButton
+              icon={BasketIcon}
+              label={`식량 ${canBuy} 사기`}
+              detail={[`은화 -${canBuy * FOOD_PRICE}`, `가진 은화 ${silver}`]}
+              onPress={() => send({ type: "shop", op: "buyFood", qty: canBuy })}
+            />
           )}
-          <View style={styles.cell}>
+          <View style={styles.row}>
             <Text style={styles.small}>누구부터 먹일까?</Text>
             <ChipRow>
               <Chip label="나" selected={order === "selfFirst"} onPress={() => setOrder("selfFirst")} />
               <Chip label="가족" selected={order === "familyFirst"} onPress={() => setOrder("familyFirst")} />
             </ChipRow>
           </View>
-        </View>
+        </>
       )}
 
       {run.resources.debt > 0 && silver > 0 && (
@@ -105,7 +103,6 @@ const styles = StyleSheet.create({
   noteRow: { flexDirection: "row", gap: space.sm },
   noteIcon: { marginTop: 4 },
   note: { ...type.body, flex: 1 },
-  row: { flexDirection: "row", gap: space.sm, alignItems: "center" },
-  cell: { flex: 1, gap: space.xs },
+  row: { flexDirection: "row", gap: space.md, alignItems: "center", justifyContent: "space-between" },
   small: { ...type.caption, color: colors.textDim },
 });

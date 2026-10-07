@@ -53,9 +53,10 @@ export default function StatusScreen() {
         {p.traits.length === 0
           ? <Text style={styles.dim}>아직 없다.</Text>
           : p.traits.map((t) => (
-            <Text key={t} style={styles.trait}>
-              {CONTENT.traits[t]?.name ?? t}{"  "}<Text style={styles.dim}>{CONTENT.traits[t]?.description}</Text>
-            </Text>
+            <View key={t} style={styles.traitRow}>
+              <Text style={styles.trait}>「{CONTENT.traits[t]?.name ?? t}」</Text>
+              <Text lineBreakStrategyIOS="hangul-word" style={styles.dim}>{CONTENT.traits[t]?.description}</Text>
+            </View>
           ))}
       </Section>
     </ScrollView>
@@ -89,8 +90,9 @@ const styles = StyleSheet.create({
   title: { ...type.title, color: colors.text },
   dim: { ...type.caption, color: colors.textDim },
   figures: { flexDirection: "row", padding: space.lg, borderRadius: radius.md, backgroundColor: colors.surface },
-  figure: { flex: 1, gap: 2 },
+  figure: { flex: 1, gap: 2, alignItems: "center" },
   figureValue: { ...type.number, color: colors.text },
+  traitRow: { gap: 2 },
   figureLabel: { ...type.caption, color: colors.textFaint },
   row: { flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 32 },
   label: { ...type.body, color: colors.text, width: 56 },

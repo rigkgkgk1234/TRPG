@@ -5,6 +5,7 @@ import { useGame, type LogGroup } from "@/store/gameStore";
 import { TurnCard } from "@/ui/components/TurnCard";
 import { changesLine, OUTCOME_COLOR, summarizeTurn } from "@/ui/turnSummary";
 import { useReducedMotion } from "@/ui/useReducedMotion";
+import { RollFormula } from "@/ui/components/RollFormula";
 import { colors, space, type } from "@/ui/theme";
 
 /**
@@ -65,6 +66,12 @@ const HistoryRow = memo(function HistoryRow({ group }: { group: LogGroup }) {
         )}
         <Text style={styles.rowWhen}>{s.when}</Text>
       </View>
+      {s.roll && (
+        <Text style={styles.rowRoll}>
+          <RollFormula r={s.roll} style={styles.rowRoll} noteStyle={styles.rowRollNote} />
+          {" / "}목표 {s.roll.spec.dc}
+        </Text>
+      )}
       <Text lineBreakStrategyIOS="hangul-word" style={styles.rowText}>{changesLine(s)}</Text>
     </View>
   );
@@ -84,4 +91,6 @@ const styles = StyleSheet.create({
   rowOutcome: { ...type.label },
   rowWhen: { ...type.caption, color: colors.textFaint, marginLeft: "auto" },
   rowText: { ...type.caption, color: colors.textFaint },
+  rowRoll: { ...type.caption, color: colors.textDim, fontVariant: ["tabular-nums"] },
+  rowRollNote: { fontSize: 11, color: colors.textFaint },
 });

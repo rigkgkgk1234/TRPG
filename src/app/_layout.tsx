@@ -2,10 +2,20 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import { useGame } from "@/store/gameStore";
 import { useMeta } from "@/store/metaStore";
 import { colors, FONT_FILES, fonts } from "@/ui/theme";
+
+/**
+ * 웹 브라우저는 한국어를 글자 단위로 줄바꿈해 "모으\n고"처럼 낱말이 쪼개진다.
+ * 낱말 단위로 바꾸고(keep-all), 한 낱말이 칸보다 길 때만 쪼갠다. (iOS는 Text의 lineBreakStrategyIOS="hangul-word")
+ */
+if (Platform.OS === "web" && typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = "div, span { word-break: keep-all; overflow-wrap: break-word; }";
+  document.head.appendChild(style);
+}
 
 export default function RootLayout() {
   // 글꼴이 오기 전에 그리면 시스템 글꼴로 한 번 깜빡인다. 실패해도 시스템 글꼴로 진행한다.

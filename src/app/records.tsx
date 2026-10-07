@@ -35,10 +35,10 @@ export default function RecordsScreen() {
         {traits.map((t) => {
           const seen = meta.traitsSeen.includes(t.id);
           return (
-            <Text key={t.id} style={styles.line}>
-              {seen ? `「${t.name}」` : "「?」"}
-              <Text style={styles.dim}>{seen ? `  ${t.description}` : "  아직 얻지 못했다"}</Text>
-            </Text>
+            <View key={t.id} style={styles.traitRow}>
+              <Text style={[styles.line, !seen && styles.unseenText]}>{seen ? `「${t.name}」` : "「?」"}</Text>
+              <Text lineBreakStrategyIOS="hangul-word" style={styles.dim}>{seen ? t.description : "아직 얻지 못했다"}</Text>
+            </View>
           );
         })}
       </Section>
@@ -71,6 +71,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
   tile: { width: "48.5%", minHeight: 56, justifyContent: "center", padding: space.md, borderRadius: radius.md, backgroundColor: colors.surface },
   unseen: { opacity: 0.5 },
+  unseenText: { color: colors.textDim },
+  traitRow: { gap: 2 },
   tileText: { ...type.bodyStrong, color: colors.textDim },
   line: { ...type.body, color: colors.text },
   dim: { ...type.caption, color: colors.textDim },

@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatSigned } from "@/core/labels";
+import { WithNote } from "@/ui/components/RollFormula";
 import { colors, motion, radius, space, type } from "@/ui/theme";
 
 export function Chip({ label, selected, disabled, onPress }: { label: string; selected: boolean; disabled?: boolean; onPress: () => void }) {
@@ -14,6 +15,35 @@ export function Chip({ label, selected, disabled, onPress }: { label: string; se
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>
   );
+}
+
+/**
+ * 고르기 줄의 한 칸 (숙련·지역·사람). 2열로 너비를 맞춰 줄이 들쭉날쭉하지 않게 한다.
+ * 오른쪽에 확률(괄호 안은 작게), 고를 수 없으면 둘째 줄에 사유.
+ */
+export function PickCell({ label, badge, badgeNote, reason, disabled, onPress }: {
+  label: string; badge?: string; badgeNote?: string; reason?: string; disabled?: boolean; onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={reason ? `${label}, ${reason}` : label}
+      accessibilityState={{ disabled }}
+      style={({ pressed }) => [styles.pick, (disabled || reason) && styles.pickMuted, pressed && styles.pressed]}
+    >
+      <View style={styles.pickRow}>
+        <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
+        {badge ? <WithNote main={badge} note={badgeNote} style={styles.pickBadge} noteStyle={styles.pickNote} /> : null}
+      </View>
+      {reason ? <Text style={styles.pickReason} numberOfLines={1}>{reason}</Text> : null}
+    </Pressable>
+  );
+}
+
+export function PickGrid({ children }: { children: React.ReactNode }) {
+  return <View style={styles.pickGrid}>{children}</View>;
 }
 
 export function Stepper({
@@ -76,6 +106,22 @@ const styles = StyleSheet.create({
   chipText: { ...type.label, color: colors.text, fontVariant: ["tabular-nums"] },
   chipTextSelected: { color: colors.accentText },
   chipRow: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
+  pickGrid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
+  pick: {
+    width: "48.5%",
+    minHeight: 40,
+    justifyContent: "center",
+    gap: 2,
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceRaised,
+  },
+  pickMuted: { opacity: 0.45 },
+  pickRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.xs },
+  pickBadge: { ...type.label, color: colors.accent, fontVariant: ["tabular-nums"] },
+  pickNote: { fontSize: 11 },
+  pickReason: { ...type.caption, color: colors.textDim },
   pressed: { transform: [{ scale: motion.press }] },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   label: { ...type.body, color: colors.text },
