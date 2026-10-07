@@ -29,7 +29,8 @@ export default function GameScreen() {
     <View style={styles.root}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
       <TurnLog intro={introFor(run)} />
-      <View style={busy && styles.busy}>
+      {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다 (나머지 패널은 내용 높이 그대로) */}
+      <View style={[view === "event" && styles.shrink, busy && styles.busy]}>
         <Panel view={view} run={shown} />
       </View>
     </View>
@@ -62,5 +63,6 @@ function Panel({ view, run }: { view: GameView; run: RunState }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+  shrink: { flexShrink: 1 },
   busy: { opacity: 0.55, pointerEvents: "none" },
 });

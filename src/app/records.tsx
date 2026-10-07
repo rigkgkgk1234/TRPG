@@ -8,7 +8,7 @@ import { useMeta } from "@/store/metaStore";
 import { Section } from "@/ui/components/Controls";
 import { colors, radius, space, type } from "@/ui/theme";
 
-const ENDINGS: EndingId[] = ["shield_of_village", "flee_together", "rowen_spearman", "survivor", "debtor", "death"];
+const ENDINGS: EndingId[] = ["shield_of_village", "flee_together", "rowen_spearman", "hero_party", "survivor", "debtor", "death"];
 
 /** 기록: 본 엔딩, 모은 흔적, 지난 회차(묘비문). 다음 회차를 강하게 만들지는 않는다. (SYSTEM_SPEC 7-3) */
 export default function RecordsScreen() {

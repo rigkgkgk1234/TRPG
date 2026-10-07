@@ -8,9 +8,11 @@ export const FLEE_REPUTATION = 40;
 
 /**
  * 엔딩 판정 표: 위에서부터 처음 맞는 것. 기본값(살아남은 자)은 항상 마지막. (ARCHITECTURE 6주차)
- * 플래그는 스토리 이벤트가 세운다: route_* (21일차 결정), raid_won (습격을 막아 냄), fled_together (이웃과 함께 떠남) 등.
+ * 플래그는 스토리 이벤트가 세운다: route_* (21일차 결정, route_hero는 용사 일행 합류), raid_won (습격을 막아 냄), fled_together (이웃과 함께 떠남) 등.
  */
 const ENDING_RULES: { id: EndingId; when: (s: RunState) => boolean }[] = [
+  // 용사 일행은 26일차에 떠나 로웬 출발(27일차)보다 먼저다. 합류하면 로웬행은 접는다
+  { id: "hero_party", when: (s) => s.flags.route_hero === true },
   { id: "rowen_spearman", when: (s) => s.flags.route_rowen === true && s.flags.recruit_passed === true },
   { id: "shield_of_village", when: (s) => s.flags.raid_won === true && s.player.reputation >= SHIELD_REPUTATION },
   { id: "flee_together", when: (s) => s.flags.fled_together === true && s.player.reputation >= FLEE_REPUTATION },
@@ -32,6 +34,8 @@ export function endingText(s: RunState): string {
       return "보리울은 불탔다. 그래도 수레마다 사람이 타고 있었다. 마을은 잃었지만 이웃은 잃지 않았다.";
     case "rowen_spearman":
       return "로웬으로 가는 길에 마지막으로 고개를 돌렸다. 기사는 되지 못하겠지만, 창을 쥔 손은 이제 떨리지 않는다.";
+    case "hero_party":
+      return "용사 일행의 짐을 나눠 지고 북쪽 길에 올랐다. 노래는 아델의 이름을 부르겠지만, 밤마다 불침번을 선 것은 보리울에서 온 평범한 사람이었다.";
     case "survivor":
       if (s.flags.raid_won) return "습격은 막아 냈지만 마을 사람들은 그 밤의 이야기를 하지 않는다. 살아남았다. 그것으로 됐다.";
       if (s.flags.fled_together) return "수레는 떠났지만 따라나선 이웃은 몇 되지 않았다. 남은 사람들의 소식은 끝내 듣지 못했다.";

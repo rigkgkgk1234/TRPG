@@ -54,7 +54,8 @@ export function checkContent(content: ContentDB): ContentIssues {
     for (const [sceneId, scene] of Object.entries(ev.scenes)) {
       checkText(scene.text, sceneId, "장면");
       checkEffects(scene.onEnter, `${sceneId} onEnter`);
-      if (scene.choices.length > CHOICES_MAX) warn(sceneId, `선택지가 ${scene.choices.length}개 (최대 ${CHOICES_MAX})`);
+      const shown = maxShownChoices(scene);
+      if (shown > CHOICES_MAX) warn(sceneId, `선택지가 ${shown}개 (최대 ${CHOICES_MAX})`);
       if (scene.choices.length > 0 && scene.autoNext) warn(sceneId, "선택지가 있으면 autoNext는 쓰이지 않는다");
       if (scene.autoNext) checkNext(scene.autoNext, `${sceneId} autoNext`);
 
@@ -165,6 +166,21 @@ export function checkContent(content: ContentDB): ContentIssues {
   }
 
   return { errors, warnings };
+}
+
+/**
+ * 한 화면에 한꺼번에 보일 수 있는 선택지 수. 직업 조건으로 숨긴 선택지는 그 직업에게만 보이므로
+ * 직업마다 따로 세어 가장 많은 쪽을 더한다 (용사 일행처럼 직업별 선택지가 여럿인 장면).
+ */
+function maxShownChoices(scene: SceneDef): number {
+  const perJob = new Map<string, number>();
+  let common = 0;
+  for (const c of scene.choices) {
+    const job = c.hideIfLocked ? c.conditions?.find((x) => x.type === "job") : undefined;
+    if (job?.type === "job") perJob.set(job.job, (perJob.get(job.job) ?? 0) + 1);
+    else common++;
+  }
+  return common + Math.max(0, ...perJob.values());
 }
 
 function outcomesOf(c: ChoiceDef): [string, Outcome][] {

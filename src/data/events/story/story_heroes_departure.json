@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_heroes_departure",
+  "category": "story",
+  "title": "용사 일행의 출발",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_hero"
+    },
+    {
+      "type": "dayRange",
+      "min": 26
+    }
+  ],
+  "weight": 1,
+  "priority": 50,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "용사 일행이 약속대로 마을 어귀에 말을 세웠다. 떠나면 습격이 오는 밤에 마을에 없을 것이다.",
+      "choices": [
+        {
+          "id": "go",
+          "label": "일행을 따라나선다",
+          "outcome": {
+            "next": "leave"
+          }
+        },
+        {
+          "id": "stay",
+          "label": "마을에 남는다",
+          "outcome": {
+            "text": "아델이 어깨를 두드렸다. \"여기도 지킬 사람이 필요하겠지.\" 촌장에게 함께 막겠다고 말했다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_hero",
+                "value": false
+              },
+              {
+                "type": "setFlag",
+                "flag": "route_defend"
+              },
+              {
+                "type": "reputation",
+                "delta": 5
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "leave": {
+      "text": "어머니가 말없이 보따리를 싸 주었다. 동생은 아델의 반짝이는 갑옷만 바라보다가, 마을 어귀까지 따라 나왔다.",
+      "onEnter": [
+        {
+          "type": "resolveEnding"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

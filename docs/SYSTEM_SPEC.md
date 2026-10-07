@@ -626,6 +626,9 @@ EventDef
 | `story_scout` | 11일차 이상, 감시탑 탐험 | 고블린 정찰병 조우 (전투) |
 | `story_report` | 플래그 `goblin_scout_seen` | 촌장에게 보고 → 평판 +10, 대응 방향 선택 시작 |
 | `story_recruiter` | 15일차 | 로웬 모집관 방문 → 「로웬의 창병」 루트 |
+| `story_heroes_arrive` | 9일차 | 용사 일행 방문. 직업별 일거리(농부: 곡식 팔기 / 대장장이 견습: 검 수리 / 사냥꾼: 숲길 안내) → `heroes_met`, 도우면 `heroes_helped` |
+| `story_heroes_return` | 19일차, `heroes_met` | 궁수가 빠진 일행. 무기 숙련 3이면 시험(DC 13) → 합류 제안 → `route_hero` |
+| `story_heroes_departure` | 26일차, `route_hero` | 따라나서면 「용사 일행」 엔딩, 남으면 `route_defend` |
 | `story_decision` | 21일차 아침 | 방어 / 피난 / 개인의 길 선택 → 플래그 `route_*` |
 | `story_raid` | 30일차 저녁 | 최종 습격 → 엔딩 판정 |
 
@@ -1273,6 +1276,7 @@ export type EndingId =
   | "shield_of_village"
   | "flee_together"
   | "rowen_spearman"
+  | "hero_party"
   | "survivor"
   | "debtor"
   | "death";

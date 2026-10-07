@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "story_heroes_arrive",
+  "category": "story",
+  "title": "용사 일행",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 9
+    }
+  ],
+  "weight": 1,
+  "priority": 12,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 앞이 시끌벅적하다. 반짝이는 갑옷의 젊은 검사와 지팡이를 든 마법사, 커다란 방패를 멘 성기사, 활을 멘 궁수가 말에서 내린다. 북쪽의 마룡을 잡으러 간다는 용사 일행이다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "heroes_met"
+        }
+      ],
+      "choices": [
+        {
+          "id": "sell_food",
+          "label": "원정길에 먹을 곡식을 판다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "farmer"
+            }
+          ],
+          "hideIfLocked": true,
+          "cost": {
+            "food": 2
+          },
+          "outcome": {
+            "text": "성기사 고드윈이 곡식 자루를 받아 들고 시세보다 넉넉히 셈해 주었다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 6
+              },
+              {
+                "type": "setFlag",
+                "flag": "heroes_helped"
+              }
+            ],
+            "next": "leave"
+          }
+        },
+        {
+          "id": "repair",
+          "label": "용사의 검을 손봐 준다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "smith"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "str",
+            "skill": "smithing",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "이 빠진 날을 한나절 내내 두드렸다. 용사 아델이 검을 휘둘러 보더니 감탄했다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 8
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "heroes_helped"
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "날은 세웠지만 균형이 조금 틀어졌다. 아델은 웃으며 값을 치렀다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            }
+          }
+        },
+        {
+          "id": "escort",
+          "label": "숲길 안내를 맡는다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "hunter"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "next": "escort"
+          }
+        },
+        {
+          "id": "talk",
+          "label": "말을 건넨다",
+          "check": {
+            "stat": "cha",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "성기사 고드윈이 방패 드는 법을 몇 가지 일러 주었다. 마을 사람치고는 배짱이 좋다며 웃었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "guard",
+                  "amount": 2
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "일행은 먼 길에 지쳐 보였다. 짧게 인사만 나누었다.",
+              "next": "leave"
+            }
+          }
+        },
+        {
+          "id": "watch",
+          "label": "멀찍이서 구경한다",
+          "outcome": {
+            "next": "leave"
+          }
+        }
+      ]
+    },
+    "escort": {
+      "text": "일행을 이끌고 숲 동쪽 길로 들어섰다. 덤불 너머에서 늑대 떼의 기척이 느껴진다.",
+      "choices": [
+        {
+          "id": "detour",
+          "label": "늑대가 다니는 길을 피해 돌아간다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "한 번도 칼을 뽑지 않고 숲을 빠져나왔다. 마법사 세린이 길잡이 값을 두둑이 쳐 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 8
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "heroes_helped"
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "늑대 떼가 덮쳤다. 일행이 순식간에 쓸어 버렸지만 길잡이 체면은 말이 아니다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            }
+          }
+        }
+      ]
+    },
+    "leave": {
+      "text": "이튿날 새벽, 일행은 북쪽으로 떠났다. 돌아오는 길에 다시 들르겠다고 한다.",
+      "choices": []
+    }
+  }
+}

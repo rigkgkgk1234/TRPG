@@ -760,6 +760,7 @@ export type EndingId =
   | "shield_of_village"
   | "flee_together"
   | "rowen_spearman"
+  | "hero_party"
   | "survivor"
   | "debtor"
   | "death";

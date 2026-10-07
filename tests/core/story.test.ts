@@ -3,7 +3,7 @@ import type { Ctx } from "@/core/commands";
 import { startCombat } from "@/core/combat/combat";
 import { runEvening } from "@/core/day/evening";
 import { dispatch } from "@/core/engine";
-import { sceneView } from "@/core/events/runner";
+import { handleChoice, sceneView } from "@/core/events/runner";
 import { newRun } from "@/core/newRun";
 import { addRecord, emptyMeta, loadMeta, saveMeta } from "@/core/save/meta";
 import type { KeyValueStore } from "@/core/save/serialize";
@@ -163,5 +163,64 @@ describe("기록", () => {
     expect(await loadMeta(kv)).toEqual(meta);
     data.set(SAVE_KEYS.meta, data.get(SAVE_KEYS.meta)!.replace("debtor", "survivor"));
     expect(await loadMeta(kv)).toEqual(emptyMeta());
+  });
+});
+
+describe("용사 일행", () => {
+  /** 9일차 오전: 행동 하나를 하면 용사 일행이 끼어든다 */
+  const arrive = (job: JobId) => {
+    const day9 = edit(start(job), (s) => { s.time.day = 9; s.eventHistory.story_missing_sheep = { count: 1, lastDay: 3 }; });
+    return send(day9, { type: "chooseAction", action: "rest" });
+  };
+  const choiceIds = (run: RunState) => {
+    const v = sceneView(run, CONTENT);
+    return v?.kind === "choices" ? v.choices.map((c) => c.id) : [];
+  };
+
+  it("9일차에 찾아오고, 직업마다 할 수 있는 일이 다르다", () => {
+    const farmer = arrive("farmer");
+    expect(farmer.activeEvent?.eventId).toBe("story_heroes_arrive");
+    expect(farmer.flags.heroes_met).toBe(true);
+    expect(choiceIds(farmer)).toEqual(["sell_food", "talk", "watch"]);
+    expect(choiceIds(arrive("smith"))).toEqual(["repair", "talk", "watch"]);
+    expect(choiceIds(arrive("hunter"))).toEqual(["escort", "talk", "watch"]);
+
+    const sold = send(farmer, { type: "chooseChoice", choiceId: "sell_food" });
+    expect(sold.resources).toMatchObject({ food: 4, silver: 16 });
+    expect(sold.flags.heroes_helped).toBe(true);
+    expect(send(sold, { type: "continue" }).activeEvent).toBeNull();
+  });
+
+  it("돌아온 일행의 시험은 무기 숙련 3이 있어야 보고, 붙으면 합류를 제안받는다", () => {
+    const back = edit(start("hunter"), (s) => {
+      s.time.day = 19;
+      s.flags.heroes_met = true;
+      s.flags.route_rowen = true;
+      s.activeEvent = { eventId: "story_heroes_return", sceneId: "ask" };
+    });
+    const locked = sceneView(back, CONTENT);
+    expect(locked?.kind === "choices" && locked.choices.find((c) => c.id === "bow")?.lockedReason).toBe("활 3 필요");
+
+    const skilled = edit(back, (s) => { s.player.skills.bow.rank = 3; });
+    const ctx = ctxOf(skilled, d20Sequence(15)); // 15 + 민첩 2 + 활 3 = 20 ≥ 13
+    handleChoice(ctx, "bow");
+    expect(ctx.draft.activeEvent?.sceneId).toBe("offer");
+    handleChoice(ctx, "accept");
+    expect(ctx.draft.flags).toMatchObject({ route_hero: true, route_rowen: false });
+  });
+
+  it("26일차에 따라나서면 「용사 일행」, 남으면 방어에 힘을 보탠다", () => {
+    const ready = edit(start(), (s) => { s.time.day = 26; s.flags.route_hero = true; });
+    const departing = send(ready, { type: "chooseAction", action: "rest" });
+    expect(departing.activeEvent?.eventId).toBe("story_heroes_departure");
+    expect(send(departing, { type: "chooseChoice", choiceId: "go" }).ending).toBe("hero_party");
+    const stayed = send(departing, { type: "chooseChoice", choiceId: "stay" });
+    expect(stayed.ending).toBeNull();
+    expect(stayed.flags).toMatchObject({ route_hero: false, route_defend: true });
+  });
+
+  it("용사 일행에 합류했으면 로웬보다 먼저 판정한다", () => {
+    const both = edit(start(), (s) => { s.flags.route_hero = true; s.flags.route_rowen = true; s.flags.recruit_passed = true; });
+    expect(resolveEnding(both)).toBe("hero_party");
   });
 });

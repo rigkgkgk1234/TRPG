@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DEEP_FATIGUE, EXPLORE_CARDS } from "@/core/events/explore";
 import { sceneView, type ChoiceView, type ExploreProgress } from "@/core/events/runner";
@@ -13,46 +13,58 @@ import { colors, icon, radius, space, type } from "@/ui/theme";
 /**
  * 이벤트 패널: 장면 글 → 선택지. 선택지마다 성공 확률·비용·잠김 사유·위험 표시를 붙인다. (SYSTEM_SPEC 4-2)
  * 고른 결과(굴림·결과 문장·변화)는 위쪽 결과 카드가 보여 주고, 이 패널은 다음 장면으로 바뀐다.
+ * 글과 선택지가 화면에 다 들어가지 않으면 제목 아래를 스크롤한다. 높이는 내용만큼이고, 결과 기록 칸을 다 밀어낼 만큼까지 커진다.
  */
 export function EventPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
   const view = sceneView(run, CONTENT);
   if (!view) return null;
+  // 장면이 바뀌면 스크롤을 맨 위로 (새 ScrollView로 갈아 끼운다)
+  const sceneKey = `${run.activeEvent?.eventId}/${run.activeEvent?.sceneId}/${view.kind}`;
 
   return (
-    <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
+    <View style={styles.panel}>
       {view.kind === "deeper" ? (
-        <>
-          <Header title={`${REGION_LABEL[view.region]} 깊은 곳`} progress={view.progress} />
-          <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>
-            안쪽은 더 어둡고 조용하다. 더 들어가면 위험하지만, 남들이 못 본 것을 찾을지도 모른다.
-          </Text>
-          <View style={styles.choices}>
-            <ActionButton
-              icon={CaretRightIcon}
-              label="더 깊이 들어간다"
-              detail={["카드 1장 더", "위험 등급 +1", `피로 +${DEEP_FATIGUE}`]}
-              onPress={() => send({ type: "goDeeper", yes: true })}
-            />
-            <ActionButton icon={SignOutIcon} label="마을로 돌아간다" onPress={() => send({ type: "goDeeper", yes: false })} />
-          </View>
-        </>
+        <Header title={`${REGION_LABEL[view.region]} 깊은 곳`} progress={view.progress} />
       ) : (
-        <>
-          <Header title={view.title} progress={view.progress} category={view.category} />
-          <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>{view.text}</Text>
-          <View style={styles.choices}>
-            {view.kind === "continue" ? (
-              <ActionButton primary icon={ArrowRightIcon} label="계속" onPress={() => send({ type: "continue" })} />
-            ) : (
-              view.choices.map((c) => (
-                <ChoiceButton key={c.id} choice={c} onPress={() => send({ type: "chooseChoice", choiceId: c.id })} />
-              ))
-            )}
-          </View>
-        </>
+        <Header title={view.title} progress={view.progress} category={view.category} />
       )}
+      <ScrollView
+        key={sceneKey}
+        style={styles.scroll}
+        contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + space.md }]}
+      >
+        {view.kind === "deeper" ? (
+          <>
+            <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>
+              안쪽은 더 어둡고 조용하다. 더 들어가면 위험하지만, 남들이 못 본 것을 찾을지도 모른다.
+            </Text>
+            <View style={styles.choices}>
+              <ActionButton
+                icon={CaretRightIcon}
+                label="더 깊이 들어간다"
+                detail={["카드 1장 더", "위험 등급 +1", `피로 +${DEEP_FATIGUE}`]}
+                onPress={() => send({ type: "goDeeper", yes: true })}
+              />
+              <ActionButton icon={SignOutIcon} label="마을로 돌아간다" onPress={() => send({ type: "goDeeper", yes: false })} />
+            </View>
+          </>
+        ) : (
+          <>
+            <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>{view.text}</Text>
+            <View style={styles.choices}>
+              {view.kind === "continue" ? (
+                <ActionButton primary icon={ArrowRightIcon} label="계속" onPress={() => send({ type: "continue" })} />
+              ) : (
+                view.choices.map((c) => (
+                  <ChoiceButton key={c.id} choice={c} onPress={() => send({ type: "chooseChoice", choiceId: c.id })} />
+                ))
+              )}
+            </View>
+          </>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -97,14 +109,17 @@ function ChoiceButton({ choice: c, onPress }: { choice: ChoiceView; onPress: () 
 
 const styles = StyleSheet.create({
   panel: {
-    paddingHorizontal: space.lg,
+    flexShrink: 1,
     paddingTop: space.lg + 4,
     gap: space.md,
     backgroundColor: colors.surface,
     borderTopLeftRadius: radius.md,
     borderTopRightRadius: radius.md,
   },
-  header: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  // 내용이 짧으면 내용만큼, 길면 남은 자리까지만 차지하고 스크롤한다
+  scroll: { flexGrow: 0, flexShrink: 1 },
+  body: { paddingHorizontal: space.lg, gap: space.md },
+  header: { flexDirection: "row", alignItems: "center", gap: space.sm, paddingHorizontal: space.lg },
   title: { ...type.heading, color: colors.text, flexShrink: 1 },
   progress: { ...type.label, color: colors.textFaint, marginLeft: "auto", fontVariant: ["tabular-nums"] },
   text: { ...type.body, color: colors.text },

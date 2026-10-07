@@ -26,8 +26,11 @@ const HURT_RATIO = 0.5;
 /** 몸이 성하고(HP 80% 이상, 피로 4 이하) 반반의 확률이면 더 깊이 들어간다 */
 const DEEP_HP_RATIO = 0.8;
 const DEEP_FATIGUE_MAX = 4;
-/** 사람마다 다를 갈림길: 무작위로 고른다 (21일차 결정, 모집관의 증표, 로웬으로 떠나는 날) */
-const RANDOM_SCENES = new Set(["story_decision/start", "story_recruiter_return/offer", "story_rowen_departure/start"]);
+/** 사람마다 다를 갈림길: 무작위로 고른다 (21일차 결정, 모집관의 증표, 로웬으로 떠나는 날, 용사 일행의 제안과 출발) */
+const RANDOM_SCENES = new Set([
+  "story_decision/start", "story_recruiter_return/offer", "story_rowen_departure/start",
+  "story_heroes_return/offer", "story_heroes_departure/start",
+]);
 /** 스토리에서 이보다 낮은 확률의 판정은 건너뛴다 */
 const STORY_RISK_FLOOR = 0.4;
 const CURVE_DAYS = [1, 5, 10, 15, 20, 25, 30];
@@ -162,7 +165,7 @@ function autoPlay(job: JobId, seed: number): Result {
 const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN);
 const fmt = (n: number) => (Number.isNaN(n) ? "-" : n.toFixed(1));
 const pct = (n: number, total: number) => `${((n / total) * 100).toFixed(1)}%`;
-const ENDINGS: EndingId[] = ["survivor", "death", "shield_of_village", "flee_together", "rowen_spearman", "debtor"];
+const ENDINGS: EndingId[] = ["survivor", "death", "shield_of_village", "flee_together", "rowen_spearman", "hero_party", "debtor"];
 
 const all: Result[] = [];
 const endingRows: Record<string, Record<string, string>> = {};
@@ -186,7 +189,7 @@ console.log(`\n사망 ${deaths.length}판 · 평균 사망일 ${fmt(avg(deaths.m
 console.table(countBy(deaths, (r) => `${r.deathCause} @ ${r.deathRegion}`));
 console.log("\n스토리 도달률 (전체)");
 console.table(Object.fromEntries(
-  ["goblin_tracks_found", "goblin_scout_seen", "reported", "route_defend", "route_flee", "route_rowen", "route_self", "recruit_passed", "palisade_built", "goblin_plan_known", "raid_won"]
+  ["goblin_tracks_found", "goblin_scout_seen", "reported", "route_defend", "route_flee", "route_rowen", "route_self", "recruit_passed", "heroes_helped", "route_hero", "palisade_built", "goblin_plan_known", "raid_won"]
     .map((f) => [f, pct(all.filter((r) => !!r.run.flags[f]).length, all.length)]),
 ));
 console.log(`평균 평판 ${fmt(avg(all.map((r) => r.run.player.reputation)))}, 평균 흔적 ${fmt(avg(all.map((r) => r.run.player.traits.length)))}개, 벌어들인 은화 ${fmt(avg(all.map((r) => r.run.stats.silverEarned)))}`);

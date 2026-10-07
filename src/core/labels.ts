@@ -59,6 +59,7 @@ export const ENDING_LABEL: Record<EndingId, string> = {
   shield_of_village: "마을의 방패",
   flee_together: "이웃과 함께 떠나다",
   rowen_spearman: "로웬의 창병",
+  hero_party: "용사 일행",
   survivor: "살아남은 자",
   debtor: "빚진 자",
   death: "사망",

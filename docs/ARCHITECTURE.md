@@ -729,6 +729,7 @@ useEffect(() => {
 ```ts
 // src/core/story/ending.ts
 const ENDING_RULES: { id: EndingId; when: (s: RunState) => boolean }[] = [
+  { id: "hero_party",        when: (s) => s.flags.route_hero === true },
   { id: "rowen_spearman",    when: (s) => s.flags.route_rowen === true && s.flags.recruit_passed === true },
   { id: "shield_of_village", when: (s) => s.flags.raid_result === "won" && s.player.reputation >= 60 },
   { id: "flee_together",     when: (s) => s.flags.route_flee === true && s.player.reputation >= 40 },
