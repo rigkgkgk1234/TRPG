@@ -11,7 +11,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "바위 틈에 잎이 톱니 모양인 풀이 자라 있다. 약초일까, 독초일까.",
+      "text": "바위틈에 잎이 톱니 모양인 풀이 자라 있다. 약초일까, 독초일까.",
       "choices": [
         {
           "id": "inspect",

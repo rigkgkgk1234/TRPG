@@ -21,7 +21,7 @@
             "critSuccess": { "text": "덤불 안쪽까지 손이 닿았다. 두 손 가득이다.", "effects": [{ "type": "food", "delta": 2 }], "next": "END" },
             "success": { "text": "주머니가 불룩하도록 땄다. 동생이 좋아하겠다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
             "partial": { "text": "가시에 손등이 긁혔지만 꽤 땄다.", "effects": [{ "type": "food", "delta": 1 }, { "type": "hp", "delta": -1 }], "next": "END" },
-            "fail": { "text": "가시에 찔려 몇 알 줍지 못했다.", "effects": [{ "type": "hp", "delta": -1 }], "next": "END" },
+            "fail": { "text": "가시에 찔려 몇 알 따지 못했다.", "effects": [{ "type": "hp", "delta": -1 }], "next": "END" },
             "critFail": { "text": "덤불 속 벌집을 건드렸다! 정신없이 달아났다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" }
           }
         },

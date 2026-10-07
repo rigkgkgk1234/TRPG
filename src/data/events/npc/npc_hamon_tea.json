@@ -62,7 +62,7 @@
           "id": "chat",
           "label": "안부만 묻고 나온다",
           "outcome": {
-            "text": "촌장은 아버지 이야기를 꺼내며 한참 웃었다.",
+            "text": "촌장은 옛날이야기를 꺼내며 한참 웃었다.",
             "effects": [
               {
                 "type": "reputation",

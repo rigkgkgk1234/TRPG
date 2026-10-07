@@ -69,8 +69,8 @@ export default function TownScreen() {
 function reputationNote(run: RunState): string {
   const rep = run.player.reputation;
   if (rep >= REP_DISCOUNT_THRESHOLD) return `평판 ${rep}: 물건값 10% 할인`;
-  if (rep < REP_HEAVY_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 20% 더 받는다`;
-  if (rep < REP_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 10% 더 받는다`;
+  if (rep < REP_HEAVY_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 20% 웃돈`;
+  if (rep < REP_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 10% 웃돈`;
   return `평판 ${rep}`;
 }
 
