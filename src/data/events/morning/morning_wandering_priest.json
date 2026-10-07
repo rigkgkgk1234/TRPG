@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_wandering_priest",
+  "category": "morning",
+  "title": "떠돌이 사제",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 4
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "우물가에서 낡은 법복을 입은 떠돌이 사제가 지나가는 사람마다 축복을 빌어 준다.",
+      "choices": [
+        {
+          "id": "offer",
+          "label": "은화 한 닢을 바친다",
+          "cost": {
+            "silver": 1
+          },
+          "outcome": {
+            "text": "사제가 이마에 손을 얹고 낮게 기도했다. 묘하게 마음이 놓인다.",
+            "effects": [
+              {
+                "type": "hp",
+                "delta": 2
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "bow",
+          "label": "고개만 숙이고 지나간다",
+          "outcome": {
+            "text": "사제는 빈손인 사람에게도 똑같이 축복을 빌어 주었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

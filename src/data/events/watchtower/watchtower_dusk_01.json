@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_dusk_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "저무는 해",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑을 뒤지다 보니 해가 기울었다. 어둠이 내리면 길을 잃기 쉽다.",
+      "choices": [
+        {
+          "id": "path",
+          "label": "기억을 더듬어 지름길로 내려간다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "마지막 빛이 사라지기 전에 숲을 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "길을 잃고 한참을 헤맸다. 밤늦게야 마을에 닿았다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                },
+                {
+                  "type": "endDay"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "now",
+          "label": "서둘러 왔던 길로 돌아간다",
+          "outcome": {
+            "text": "서두른 덕에 해 지기 전에 마을에 닿았다.",
+            "effects": [
+              {
+                "type": "endDay"
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

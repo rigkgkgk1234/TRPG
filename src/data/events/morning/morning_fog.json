@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_fog",
+  "category": "morning",
+  "title": "짙은 안개",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 9
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "밤새 내려앉은 안개가 마을을 덮었다. 옆집 지붕 끝도 잘 보이지 않는다.",
+      "choices": [
+        {
+          "id": "wait",
+          "label": "안개가 걷힐 때까지 집안일을 돕는다",
+          "outcome": {
+            "text": "어머니가 고맙다며 보리죽을 한 그릇 더 퍼 주었다. 몸이 한결 가볍다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "go",
+          "label": "개의치 않고 집을 나선다",
+          "outcome": {
+            "text": "축축한 공기를 헤치며 길을 나섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_rare_herb_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "그늘 속의 붉은 풀",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "숲 가장 깊은 곳, 해가 들지 않는 바위틈에 붉은 줄기의 풀이 자란다. 늪에서나 난다는 그 풀이다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "뿌리가 다치지 않게 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "뿌리째 온전히 캐냈다. 마그다 할멈이 반길 것이다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "줄기가 뚝 끊어졌다. 이래서는 약으로 못 쓴다.",
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

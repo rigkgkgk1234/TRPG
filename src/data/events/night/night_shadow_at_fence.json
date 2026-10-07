@@ -1,0 +1,103 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_shadow_at_fence",
+  "category": "night",
+  "title": "울타리 너머의 그림자",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 13
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_scout_seen"
+    }
+  ],
+  "weight": 10,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "개들이 일제히 짖는다. 울타리 너머 어둠 속에서 아이만 한 그림자가 재빠르게 움직였다.",
+      "choices": [
+        {
+          "id": "chase",
+          "label": "횃불을 들고 뒤쫓는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "wake",
+          "label": "이웃들을 깨워 알린다",
+          "outcome": {
+            "text": "횃불을 든 사람들이 모였을 때는 그림자가 사라진 뒤였다. 진흙 위에 맨발 자국이 찍혀 있었다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "setFlag",
+                "flag": "goblin_tracks_found"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "들짐승이겠거니 하고 문을 닫는다",
+          "outcome": {
+            "text": "개들은 한참 뒤에야 조용해졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "횃불 빛에 잿빛 얼굴이 드러났다. 고블린이 단검을 빼 들고 이를 드러낸다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린이 쓰러지자 이웃들이 하나둘 모여들었다. 놈들이 마을까지 넘보고 있다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        },
+        {
+          "type": "reputation",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "어둠 속에서 날아든 돌에 횃불을 떨어뜨렸다. 서둘러 집으로 돌아와 문을 걸었다. 저건 분명 고블린이었다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

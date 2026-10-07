@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_dry_well_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "마른 우물",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 마당 한쪽에 마른 우물이 있다. 바닥에 천 꾸러미 같은 것이 보인다.",
+      "choices": [
+        {
+          "id": "descend",
+          "label": "벽을 짚고 내려간다",
+          "check": {
+            "stat": "str",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "꾸러미 안에 깨끗한 붕대 두 롤이 들어 있었다. 누군가 숨겨 둔 비상용품이다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "bandage",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "올라오다 손이 미끄러졌다. 무릎을 세게 찧었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "내려가지 않는다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_raid_leader_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "약탈대장",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 21
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 꼭대기에서 덩치 큰 고블린이 보리울 쪽을 내려다본다. 철퇴를 든 손목에 사람 이빨로 엮은 팔찌가 걸렸다.",
+      "choices": [
+        {
+          "id": "steady",
+          "label": "숨을 고르고 놈을 똑똑히 본다",
+          "check": {
+            "stat": "con",
+            "dc": 13,
+            "tags": [
+              "fear"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈이 왼쪽 다리를 끈다. 철퇴를 휘두를 때 옆구리가 빈다. 기억해 두었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "guard",
+                  "amount": 2
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "raid_leader_seen"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "놈과 눈이 마주친 것 같았다. 정신없이 달려 내려왔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "조용히 내려간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_wounded_hunter_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "다친 사냥꾼",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 9
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "나무 밑에 낯선 사냥꾼이 다리를 감싸 쥐고 앉아 있다. 멧돼지에게 받혔다고 한다.",
+      "choices": [
+        {
+          "id": "bandage",
+          "label": "붕대로 싸매 준다",
+          "cost": {
+            "item": {
+              "itemId": "bandage",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "사냥꾼이 고맙다며 화살 다섯 개를 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 3
+              },
+              {
+                "type": "addItem",
+                "itemId": "arrow",
+                "qty": 5
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "herb",
+          "label": "약초를 붙여 준다",
+          "cost": {
+            "item": {
+              "itemId": "herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "사냥꾼이 이를 악물고 고맙다고 했다. 화살 다섯 개를 건넸다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "addItem",
+                "itemId": "arrow",
+                "qty": 5
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "carry",
+          "label": "어깨를 빌려 숲 밖까지 데려다준다",
+          "check": {
+            "stat": "con",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "숲 어귀에서 사냥꾼의 동료들을 만났다. 다들 고개를 숙였다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "반쯤 가다 둘 다 주저앉았다. 결국 지나가던 나무꾼의 수레를 얻어 탔다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "도울 여유가 없다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

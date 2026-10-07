@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_piglets_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "새끼 멧돼지들",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "줄무늬 새끼 멧돼지 네 마리가 도토리를 뒤진다. 어미는 보이지 않는다.",
+      "choices": [
+        {
+          "id": "sneak",
+          "label": "조용히 뒷걸음질 친다",
+          "check": {
+            "stat": "agi",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "어미가 나타나기 전에 그 자리를 벗어났다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "어미 멧돼지가 수풀을 박차고 나왔다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "grab",
+          "label": "새끼 한 마리를 잡는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "away",
+          "label": "왔던 길로 돌아간다",
+          "outcome": {
+            "text": "새끼들 곁에는 어미가 있기 마련이다. 미련 없이 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "어미 멧돼지가 콧김을 뿜으며 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "boar"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "어미 멧돼지가 쓰러졌다. 새끼들은 사방으로 흩어졌다. 고기를 넉넉히 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

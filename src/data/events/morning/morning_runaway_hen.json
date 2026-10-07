@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_runaway_hen",
+  "category": "morning",
+  "title": "도망친 닭",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "옆집 암탉이 우리를 빠져나와 골목을 휘젓고 다닌다. 아낙이 치마를 걷어 올리고 쫓아다닌다.",
+      "choices": [
+        {
+          "id": "catch",
+          "label": "같이 쫓아가 붙잡는다",
+          "check": {
+            "stat": "agi",
+            "dc": 10,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "닭을 품에 안겨 주자 아낙이 달걀 두 알을 쥐여 주었다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "진흙탕에 넘어지면서 겨우 붙잡았다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "닭은 울타리 너머로 사라졌다. 아낙이 그래도 고맙다며 웃었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "웃으며 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

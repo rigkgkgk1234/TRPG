@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_magda_bundles",
+  "category": "npc",
+  "npc": "magda",
+  "title": "약초 다발",
+  "conditions": [],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마그다 할멈이 처마에 말린 약초를 다발로 묶을 손이 필요하다고 한다.",
+      "choices": [
+        {
+          "id": "bundle",
+          "label": "약초를 가려 묶는다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "할멈이 손놀림을 보더니 품삯에 약초 한 다발을 얹어 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "독초 한 줄기를 섞어 묶었다가 할멈에게 잔소리를 한 바가지 들었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 오겠다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

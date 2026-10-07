@@ -1,0 +1,86 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_carvings_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "벽의 낙서",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "tower_rumor"
+              }
+            ],
+            "text": "탑 안쪽 벽에 병사들이 새긴 글씨가 빼곡하다. 그 사이에 봉화대를 가리키는 화살표가 있다. 퇴역병의 이야기가 떠오른다."
+          }
+        ],
+        "fallback": "탑 안쪽 벽에 병사들이 칼끝으로 새긴 글씨가 빼곡하다. 이름과 날짜, 고향 생각이 적혀 있다."
+      },
+      "choices": [
+        {
+          "id": "cache",
+          "label": "봉화대 아래 돌을 들춘다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "tower_rumor"
+            },
+            {
+              "type": "notFlag",
+              "flag": "tower_cache_found"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "느슨한 돌 밑에 기름 먹인 가죽 주머니가 있었다. 오래된 은화가 들어 있다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 6
+              },
+              {
+                "type": "setFlag",
+                "flag": "tower_cache_found"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "read",
+          "label": "천천히 읽어 본다",
+          "outcome": {
+            "text": "누군가 마지막 줄에 '집에 가고 싶다'고 적어 두었다. 이 탑을 지키던 사람들도 평범한 사람이었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "tracking",
+                "amount": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "발길을 돌린다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

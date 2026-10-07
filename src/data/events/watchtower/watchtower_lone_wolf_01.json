@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_lone_wolf_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "굶주린 늑대",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 아래 그늘에서 늑대 한 마리가 이빨을 드러낸다. 무리에서 쫓겨났는지 갈비뼈가 앙상하다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "scare",
+          "label": "돌을 던지며 크게 소리친다",
+          "check": {
+            "stat": "cha",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "늑대가 꼬리를 내리고 덤불로 사라졌다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "늑대가 오히려 달려든다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "food",
+          "label": "고기를 던져 준다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "늑대가 고기를 물고 사라졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늑대가 낮게 으르렁거리며 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늑대가 쓰러졌다. 떨리는 숨을 고르고 다시 탑을 올려다보았다.",
+      "onEnter": [
+        {
+          "type": "incFlag",
+          "flag": "wolves_killed",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

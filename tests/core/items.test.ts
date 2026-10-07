@@ -154,7 +154,7 @@ describe("내구도", () => {
 
   it("전투 한 번에 공격한 무기 −1, 맞았으면 방어구 −1", () => {
     const run = edit(start("farmer"), (s) => { s.inventory.equipment.armor = gear("leather_armor"); });
-    // 빗나감 → 멧돼지 15 + 3 ≥ 12 명중(피해 1d6+1) → 도주 성공
+    // 빗나감 → 멧돼지 15 + 3 ≥ 12 명중(피해 1d6) → 도주 성공
     const ctx = fight(run, seq(f20(5), f20(15), 0.1, f20(19)));
     combatStep(ctx, { type: "attack", targetId: "boar_1" });
     combatStep(ctx, { type: "flee" });
@@ -178,8 +178,9 @@ describe("내구도", () => {
     expect(ctx.feed).toContainEqual({ kind: "text", text: "쇠스랑이 망가졌다. 대장간에서 고쳐야 한다." });
 
     // 망가진 쇠스랑: 1d6(=6) + 근력 1 − 2 = 5
-    const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2)));
+    // 멧돼지 HP 9 → 4로 절반 이하: 라운드 끝 사기 굴림(0.99: 버팀)
+    const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2), 0.99));
     combatStep(hit, { type: "attack", targetId: "boar_1" });
-    expect(hit.draft.combat!.enemies[0].hp).toBe(10 - 5);
+    expect(hit.draft.combat!.enemies[0].hp).toBe(9 - 5);
   });
 });

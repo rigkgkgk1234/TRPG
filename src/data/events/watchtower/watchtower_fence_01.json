@@ -1,0 +1,88 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_fence_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "장물아비",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 8
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 그늘에 수상한 사내가 보따리를 펼쳐 놓았다. 출처는 묻지 말라며 싸게 넘기겠다고 한다.",
+      "choices": [
+        {
+          "id": "potion",
+          "label": "치유 물약을 산다",
+          "cost": {
+            "silver": 18
+          },
+          "outcome": {
+            "text": "사내가 붉은 물약 한 병을 내밀었다. 신전 봉인이 그대로다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "healing_potion",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "chain",
+          "label": "사슬 셔츠를 산다",
+          "cost": {
+            "silver": 40
+          },
+          "outcome": {
+            "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "chain_shirt",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "tea",
+          "label": "쓴 약차를 산다",
+          "cost": {
+            "silver": 3
+          },
+          "outcome": {
+            "text": "약차 두 봉지를 챙겼다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bitter_tea",
+                "qty": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "훔친 물건은 사지 않는다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

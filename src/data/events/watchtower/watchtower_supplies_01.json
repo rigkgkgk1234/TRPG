@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_supplies_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "고블린 보급품",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 20
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 창고에 고블린들이 약탈한 곡식 자루가 산처럼 쌓여 있다. 지키는 놈은 보이지 않는다.",
+      "choices": [
+        {
+          "id": "burn",
+          "label": "불을 지른다",
+          "outcome": {
+            "text": "불길이 자루를 삼켰다. 연기 기둥이 하늘로 솟았다. 마을 사람들도 이 연기를 볼 것이다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 4
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "take",
+          "label": "자루 하나를 지고 간다",
+          "outcome": {
+            "text": "무거운 자루를 지고 숲길을 내달렸다. 식구들이 며칠은 배불리 먹겠다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 4
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "함정일지 몰라 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

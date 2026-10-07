@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_crows",
+  "category": "morning",
+  "title": "까마귀 떼",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 9,
+      "max": 20
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_tracks_found"
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "까마귀 떼가 숲 쪽 하늘을 빙빙 돈다. 노인들이 불길하다며 수군거린다.",
+      "choices": [
+        {
+          "id": "watch",
+          "label": "까마귀가 맴도는 자리를 눈여겨본다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "숲 동쪽에서 가는 연기가 올라온다. 사람이 사는 곳이 아닌데, 누군가 불을 피웠다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "까마귀는 한참을 맴돌다 흩어졌다. 무엇을 보고 모였는지는 알 수 없었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "불길한 소리라며 고개를 돌린다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

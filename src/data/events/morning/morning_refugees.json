@@ -1,0 +1,62 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_refugees",
+  "category": "morning",
+  "title": "동쪽에서 온 사람들",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "짐수레를 끄는 사람들이 마을을 지나간다. 동쪽 마을에서 왔는데, 밤에 작은 것들이 떼로 덮쳤다고 한다.",
+      "choices": [
+        {
+          "id": "share",
+          "label": "식량을 나눠 준다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "아이를 업은 여인이 몇 번이나 고개를 숙였다. 지켜보던 이웃들의 눈빛이 달라졌다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "water",
+          "label": "물 한 바가지를 떠 준다",
+          "outcome": {
+            "text": "사람들이 목을 축이고 다시 길을 떠났다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "못 본 척한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

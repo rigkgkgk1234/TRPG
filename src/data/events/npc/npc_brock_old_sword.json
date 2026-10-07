@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_brock_old_sword",
+  "category": "npc",
+  "npc": "brock",
+  "title": "구석의 녹슨 검",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 5
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "대장간 구석에 녹슨 검 한 자루가 세워져 있다. 브록이 주인이 찾으러 오지 않는다며 싸게 넘기겠다고 한다.",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "은화 열 닢에 산다",
+          "cost": {
+            "silver": 10
+          },
+          "outcome": {
+            "text": "브록이 날을 한 번 갈아서 건네주었다. 녹은 슬었어도 손에 감기는 맛이 있다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "rusty_sword",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "돈이 없다며 사양한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_pinned_bandit_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "들보에 깔린 도적",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 10
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 들보 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
+      "choices": [
+        {
+          "id": "free",
+          "label": "들보를 들어 올려 꺼내 준다",
+          "check": {
+            "stat": "str",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "도적이 비틀거리며 일어나더니 정말로 은화 주머니를 던져 주고 사라졌다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "들보가 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "bargain",
+          "label": "돈부터 내놓으라고 한다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 들보를 들어 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 6
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "도적이 침을 뱉었다. 말이 통하지 않는다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "내버려 두고 간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

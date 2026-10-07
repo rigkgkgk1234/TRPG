@@ -280,6 +280,26 @@
    "advantageTags": [
     "fear"
    ]
+  },
+  "wolf_hunter": {
+   "id": "wolf_hunter",
+   "name": "늑대 사냥꾼",
+   "description": "늑대를 셋이나 잡았다. 짐승의 움직임이 눈에 들어온다.",
+   "checkBonus": {
+    "tags": [
+     "beast"
+    ],
+    "value": 1
+   }
+  },
+  "neighbor_helper": {
+   "id": "neighbor_helper",
+   "name": "동네 일꾼",
+   "description": "궂은일마다 먼저 나섰다. 이웃들은 이 사람 말이라면 귀를 기울인다.",
+   "checkBonus": {
+    "stat": "cha",
+    "value": 1
+   }
   }
  },
  "enemies": {
@@ -308,11 +328,12 @@
   "boar": {
    "id": "boar",
    "name": "멧돼지",
-   "hp": 10,
+   "hp": 9,
    "defense": 10,
    "attackBonus": 3,
-   "damage": "1d6+1",
+   "damage": "1d6",
    "speed": 2,
+   "morale": 0.3,
    "onDefeat": "deathSave",
    "tags": [
     "beast"
@@ -501,6 +522,196 @@
     "fled": {
      "text": "숲길을 벗어날 때까지 뒤도 돌아보지 않았다.",
      "choices": []
+    }
+   }
+  },
+  "forest_bandit_camp_01": {
+   "id": "forest_bandit_camp_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "식은 모닥불",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "나무 사이에 식은 모닥불 자리가 있다. 뼈다귀와 빈 술병이 흩어져 있다. 도적들이 쉬어 간 자리다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "주변을 뒤진다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "돌 밑에서 동전 주머니를 찾았다. 누군가 숨겨 두고 잊은 모양이다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "쓸 만한 것은 없었다. 대신 멀리서 사람 목소리가 들렸다.",
+         "next": "voices"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "서둘러 자리를 뜬다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "voices": {
+     "text": "목소리가 가까워진다. 칼을 찬 사내 하나가 덤불을 헤치고 나왔다.",
+     "choices": [
+      {
+       "id": "hide",
+       "label": "덤불에 엎드린다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내는 모닥불 자리를 한 번 둘러보고 돌아갔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "사내와 눈이 마주쳤다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "먼저 덤빈다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 칼을 뽑아 들었다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "사내가 피를 흘리며 달아났다. 떨어뜨린 주머니를 주웠다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "forest_beehive_01": {
+   "id": "forest_beehive_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "나무 구멍의 벌집",
+   "conditions": [],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "늙은 참나무 구멍에서 벌들이 붕붕 드나든다. 달콤한 냄새가 난다.",
+     "choices": [
+      {
+       "id": "smoke",
+       "label": "젖은 풀로 연기를 피워 꿀을 딴다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "벌들이 연기에 취한 틈에 꿀 한 덩이를 떼어 냈다. 조금은 맛보고, 나머지는 돌아오는 길에 여관에 넘겼다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "꿀을 조금 떼어 냈지만 몇 방 쏘였다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "벌 떼가 와락 달려들었다. 얼굴과 손이 퉁퉁 부었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "벌집은 건드리지 않는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
     }
    }
   },
@@ -737,6 +948,17 @@
        }
       },
       {
+       "id": "food",
+       "label": "먹을 것을 던져 주의를 돌린다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "멧돼지가 던진 보리떡에 코를 박은 사이 덤불 뒤로 빠져나왔다.",
+        "next": "END"
+       }
+      },
+      {
        "id": "fight",
        "label": "무기를 들고 맞선다",
        "outcome": {
@@ -921,6 +1143,168 @@
     }
    }
   },
+  "forest_charcoal_01": {
+   "id": "forest_charcoal_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "숯쟁이의 가마",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "연기가 피어오르는 숯가마 옆에서 숯쟁이가 혼자 땀을 흘린다. 가마를 덮을 흙을 나를 사람이 필요하다고 한다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "흙을 나른다",
+       "check": {
+        "stat": "str",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "숯쟁이가 고맙다며 은화 두 닢을 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "흙짐을 지다 비틀거렸다. 숯쟁이가 은화 한 닢을 주며 그만 쉬라고 했다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길이 바쁘다며 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_deer_01": {
+   "id": "forest_deer_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "물 마시는 사슴",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "개울가에서 사슴 한 마리가 물을 마신다. 아직 이쪽을 눈치채지 못했다.",
+     "choices": [
+      {
+       "id": "shoot",
+       "label": "활을 쏜다",
+       "conditions": [
+        {
+         "type": "equipped",
+         "itemId": "hunting_bow"
+        }
+       ],
+       "cost": {
+        "item": {
+         "itemId": "arrow",
+         "qty": 1
+        }
+       },
+       "check": {
+        "stat": "agi",
+        "skill": "bow",
+        "dc": 13,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "화살이 목덜미에 꽂혔다. 고기를 넉넉히 챙겼다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "화살이 빗나가자 사슴이 껑충 뛰어 사라졌다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "stalk",
+       "label": "바람을 등지고 살금살금 다가간다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "한 걸음 거리까지 다가갔다. 사슴은 달아났지만, 그 자리에서 빠진 뿔 한 쌍을 주웠다. 여관에 넘기고 은화 두 닢을 받았다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "마른 가지를 밟았다. 사슴이 순식간에 사라졌다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "가만히 지켜보다 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "forest_fallback": {
    "id": "forest_fallback",
    "category": "explore",
@@ -936,6 +1320,350 @@
     "start": {
      "text": "새소리와 바람 소리뿐이다. 별다른 일 없이 숲길을 걸었다.",
      "choices": []
+    }
+   }
+  },
+  "forest_goblin_cache_01": {
+   "id": "forest_goblin_cache_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "고블린의 은닉처",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 화살 묶음과 거칠게 그린 지도가 보인다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "지도를 살핀다",
+       "check": {
+        "stat": "per",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "숲에서 보리울로 이어지는 길 세 갈래가 그려져 있다. 놈들이 어디로 올지 알 것 같다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          },
+          {
+           "type": "addItem",
+           "itemId": "arrow",
+           "qty": 5
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "알아볼 수 없는 표시뿐이다. 그때 뒤에서 무거운 발소리가 들렸다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "burn",
+       "label": "짐에 불을 지른다",
+       "outcome": {
+        "text": "불길이 짐을 삼켰다. 연기를 보고 놈들이 오기 전에 자리를 떴다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "건드리지 않고 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "덩치 큰 고블린이 도끼를 들고 나타났다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린 전사가 쓰러졌다. 짐을 뒤져 지도를 챙겼다. 놈들이 어디로 올지 알 것 같다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "forest_goblin_pair_01": {
+   "id": "forest_goblin_pair_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "숲길의 고블린들",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "고블린 둘이 낄낄거리며 숲길을 걸어온다. 하나는 활을, 하나는 녹슨 칼을 들었다.",
+     "choices": [
+      {
+       "id": "ambush",
+       "label": "덤불에 숨어 기습한다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들이 바로 앞을 지날 때 뛰쳐나갔다!",
+         "next": "fight_ambush"
+        },
+        "fail": {
+         "text": "숨기도 전에 들켰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "hide",
+       "label": "숨어서 지나가길 기다린다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들은 수다를 떨며 마을 쪽으로 가는 길을 확인하고 돌아갔다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "한 놈이 코를 킁킁대더니 이쪽을 가리켰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "retreat",
+       "label": "놈들이 오기 전에 멀리 돌아간다",
+       "outcome": {
+        "text": "숲길을 버리고 덤불 속으로 한참을 돌아갔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린들이 괴성을 지르며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout",
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambush": {
+     "text": "앞선 고블린이 비틀거린다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout",
+         "goblin_scout"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled",
+        "firstAttackAdvantage": true
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "두 놈 다 쓰러지거나 달아났다. 마을까지 길을 알아 두려던 것이 분명하다.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "forest_goblin_snare_01": {
+   "id": "forest_goblin_snare_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "이상한 올무",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 10
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "나뭇가지에 풀줄기를 꼬아 만든 올무가 걸려 있다. 사람이 만든 것치고는 매듭이 낯설다.",
+     "choices": [
+      {
+       "id": "inspect",
+       "label": "가까이 가서 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ],
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "올무 옆에 작은 맨발 자국이 찍혀 있다. 아이 발이라기엔 발가락이 너무 길다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "두 번째 올무에 발이 걸렸지만 칼로 끊고 빠져나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑의 두 번째 올무를 보지 못했다. 발목이 낚아채여 거꾸로 매달렸다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "멀찍이 돌아간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
     }
    }
   },
@@ -1008,6 +1736,188 @@
        "label": "그냥 지나간다",
        "outcome": {
         "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_hermit_01": {
+   "id": "forest_hermit_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "숲속의 은자",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에 사는 은자라고 한다.",
+     "choices": [
+      {
+       "id": "trade",
+       "label": "약초를 건네고 이야기를 청한다",
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "노인이 약초마다 쓰임새를 하나하나 일러 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "herbalism",
+          "amount": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "숲에 관해 묻는다",
+       "outcome": {
+        "text": "노인은 짐승이 다니는 길과 사람이 다니면 안 되는 길을 알려 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "tracking",
+          "amount": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_log_bridge_01": {
+   "id": "forest_log_bridge_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "통나무 다리",
+   "conditions": [],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "개울 위에 이끼 낀 통나무 하나가 걸쳐 있다. 건너편 그늘에 버섯이 소복하다.",
+     "choices": [
+      {
+       "id": "cross",
+       "label": "통나무를 건넌다",
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "균형을 잡고 건너가 버섯을 한 아름 땄다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발이 미끄러져 개울에 빠졌다. 온몸이 흠뻑 젖었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "돌아서 간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_lost_child_01": {
+   "id": "forest_lost_child_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "우는 아이",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 12
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "덤불 너머에서 아이 우는 소리가 들린다. 방앗간 집 막내가 길을 잃고 주저앉아 있다.",
+     "choices": [
+      {
+       "id": "guide",
+       "label": "아이 손을 잡고 마을로 가는 길을 찾는다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "해가 지기 전에 방앗간에 닿았다. 아이 어머니가 울면서 몇 번이고 고개를 숙였다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "한참을 헤매다 겨우 마을 불빛을 찾았다. 그래도 아이는 무사하다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
        }
       }
      ]
@@ -1331,6 +2241,89 @@
     }
    }
   },
+  "forest_piglets_01": {
+   "id": "forest_piglets_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "새끼 멧돼지들",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "줄무늬 새끼 멧돼지 네 마리가 도토리를 뒤진다. 어미는 보이지 않는다.",
+     "choices": [
+      {
+       "id": "sneak",
+       "label": "조용히 뒷걸음질 친다",
+       "check": {
+        "stat": "agi",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "어미가 나타나기 전에 그 자리를 벗어났다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "어미 멧돼지가 수풀을 박차고 나왔다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "grab",
+       "label": "새끼 한 마리를 잡는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "away",
+       "label": "왔던 길로 돌아간다",
+       "outcome": {
+        "text": "새끼들 곁에는 어미가 있기 마련이다. 미련 없이 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "어미 멧돼지가 콧김을 뿜으며 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "boar"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "어미 멧돼지가 쓰러졌다. 새끼들은 사방으로 흩어졌다. 고기를 넉넉히 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
   "forest_rabbit_01": {
    "id": "forest_rabbit_01",
    "category": "explore",
@@ -1453,6 +2446,216 @@
        "outcome": {
         "text": "토끼는 제 갈 길을 갔다.",
         "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_rare_herb_01": {
+   "id": "forest_rare_herb_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "그늘 속의 붉은 풀",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "숲 가장 깊은 곳, 해가 들지 않는 바위틈에 붉은 줄기의 풀이 자란다. 늪에서나 난다는 그 풀이다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "뿌리가 다치지 않게 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "뿌리째 온전히 캐냈다. 마그다 할멈이 반길 것이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "줄기가 뚝 끊어졌다. 이래서는 약으로 못 쓴다.",
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_shrine_01": {
+   "id": "forest_shrine_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "이끼 덮인 돌무덤",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "숲 한가운데 돌을 쌓은 무덤이 있다. 꼭대기에 누군가 놓고 간 동전이 녹슬어 있다.",
+     "choices": [
+      {
+       "id": "offer",
+       "label": "은화 한 닢을 얹고 잠시 쉰다",
+       "cost": {
+        "silver": 1
+       },
+       "outcome": {
+        "text": "서늘한 그늘에 앉아 있자니 마음이 가라앉았다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -2
+         },
+         {
+          "type": "hp",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "rest",
+       "label": "그늘에 앉아 쉬어 간다",
+       "outcome": {
+        "text": "잠시 숨을 돌렸다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "take",
+       "label": "녹슨 동전을 챙긴다",
+       "outcome": {
+        "text": "주머니에 넣자 등 뒤가 서늘했다. 돌아오는 길 내내 발을 헛디뎠다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_snake_01": {
+   "id": "forest_snake_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "풀숲의 독사",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "발밑 풀숲에서 무언가 스르륵 움직였다.",
+     "choices": [
+      {
+       "id": "freeze",
+       "label": "그 자리에 멈춰 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 11,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "독사였다. 녀석이 지나갈 때까지 숨을 죽이고 기다렸다.",
+         "next": "END"
+        },
+        "partial": {
+         "text": "독사를 밟기 직전에 몸을 비틀었다. 넘어지며 팔꿈치가 까졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "한 발 늦었다. 발목이 따끔하더니 금세 부어오른다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "jump",
+       "label": "재빨리 뛰어 물러난다",
+       "check": {
+        "stat": "agi",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "한 걸음 차이로 독니를 피했다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "뛰다가 발을 헛디뎠다. 발목이 따끔하다. 물렸다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
        }
       }
      ]
@@ -1742,6 +2945,111 @@
     }
    }
   },
+  "forest_wolf_pair_01": {
+   "id": "forest_wolf_pair_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "늑대 두 마리",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "늑대 두 마리가 양쪽에서 천천히 거리를 좁혀 온다. 사냥하는 법을 아는 놈들이다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "나무를 등지고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "climb",
+       "label": "나무 위로 올라간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "가지 위에서 한참을 버텼다. 늑대들은 해가 기울자 포기하고 떠났다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "가지가 부러졌다. 늑대들이 달려든다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "food",
+       "label": "고기를 던지고 물러난다",
+       "cost": {
+        "food": 2
+       },
+       "outcome": {
+        "text": "늑대들이 고기를 두고 다투는 사이 빠져나왔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늑대들이 동시에 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf",
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 무기를 내렸다.",
+     "onEnter": [
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
   "forest_wolf_tracks_01": {
    "id": "forest_wolf_tracks_01",
    "category": "explore",
@@ -1958,6 +3266,3636 @@
           "delta": -1
          }
         ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "forest_wounded_hunter_01": {
+   "id": "forest_wounded_hunter_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "다친 사냥꾼",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 9
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "나무 밑에 낯선 사냥꾼이 다리를 감싸 쥐고 앉아 있다. 멧돼지에게 받혔다고 한다.",
+     "choices": [
+      {
+       "id": "bandage",
+       "label": "붕대로 싸매 준다",
+       "cost": {
+        "item": {
+         "itemId": "bandage",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "사냥꾼이 고맙다며 화살 다섯 개를 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         },
+         {
+          "type": "addItem",
+          "itemId": "arrow",
+          "qty": 5
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "herb",
+       "label": "약초를 붙여 준다",
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "사냥꾼이 이를 악물고 고맙다고 했다. 화살 다섯 개를 건넸다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "addItem",
+          "itemId": "arrow",
+          "qty": 5
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "carry",
+       "label": "어깨를 빌려 숲 밖까지 데려다준다",
+       "check": {
+        "stat": "con",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "숲 어귀에서 사냥꾼의 동료들을 만났다. 다들 고개를 숙였다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "반쯤 가다 둘 다 주저앉았다. 결국 지나가던 나무꾼의 수레를 얻어 탔다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "도울 여유가 없다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_bandit_rumor": {
+   "id": "morning_bandit_rumor",
+   "category": "morning",
+   "title": "털린 행상",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 6
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "로웬 가는 길에서 행상이 털렸다는 소문이 돈다. 감시탑 쪽에 도적이 산다고들 한다.",
+     "choices": [
+      {
+       "id": "ask",
+       "label": "털린 행상을 찾아가 묻는다",
+       "check": {
+        "stat": "cha",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "도적들이 감시탑 뒤편 무너진 담 쪽으로 드나든다는 이야기를 들었다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "bandit_hideout_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "행상은 겁에 질려 같은 말만 되풀이했다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그런 일도 있구나 하고 넘긴다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_broken_wheel": {
+   "id": "morning_broken_wheel",
+   "category": "morning",
+   "title": "빠진 수레바퀴",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_flee"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "피난길에 쓸 수레 바퀴가 빠져 버렸다. 수레 주인이 난감한 얼굴로 서 있다.",
+     "choices": [
+      {
+       "id": "lift",
+       "label": "수레를 들어 올려 바퀴를 끼운다",
+       "check": {
+        "stat": "str",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "이를 악물고 수레를 들어 올렸다. 바퀴가 제자리에 들어갔다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "허리만 삐끗했다. 결국 장정 셋이 붙어서야 바퀴를 끼웠다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다른 사람이 하겠지 하고 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_cheap_porridge": {
+   "id": "morning_cheap_porridge",
+   "category": "morning",
+   "title": "여관의 아침 죽",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 굴뚝에서 연기가 피어오른다. 토비가 보리죽을 넉넉히 쑤었다며 싸게 가져가라고 한다.",
+     "choices": [
+      {
+       "id": "buy",
+       "label": "은화 한 닢어치를 산다",
+       "cost": {
+        "silver": 1
+       },
+       "outcome": {
+        "text": "죽 두 그릇을 단지에 담아 왔다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "배가 불러 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_crows": {
+   "id": "morning_crows",
+   "category": "morning",
+   "title": "까마귀 떼",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 9,
+     "max": 20
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_tracks_found"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "까마귀 떼가 숲 쪽 하늘을 빙빙 돈다. 노인들이 불길하다며 수군거린다.",
+     "choices": [
+      {
+       "id": "watch",
+       "label": "까마귀가 맴도는 자리를 눈여겨본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "숲 동쪽에서 가는 연기가 올라온다. 사람이 사는 곳이 아닌데, 누군가 불을 피웠다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "까마귀는 한참을 맴돌다 흩어졌다. 무엇을 보고 모였는지는 알 수 없었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "불길한 소리라며 고개를 돌린다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_dew_herbs": {
+   "id": "morning_dew_herbs",
+   "category": "morning",
+   "title": "이슬 맺힌 텃밭",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "어머니의 텃밭 가장자리에 처음 보는 풀이 돋았다. 잎에 이슬이 맺혀 반짝인다.",
+     "choices": [
+      {
+       "id": "pick",
+       "label": "약초인지 살펴보고 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "상처에 붙이는 약초다. 뿌리째 조심스럽게 캤다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "잡초였다. 어머니가 웃으시며 뽑아 버리셨다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그대로 둔다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_dice_game": {
+   "id": "morning_dice_game",
+   "category": "morning",
+   "title": "여관 뒤의 노름판",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 3
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 뒤뜰에서 일꾼들이 주사위 노름판을 벌였다. 한 판 끼라며 손짓한다.",
+     "choices": [
+      {
+       "id": "play",
+       "label": "한 판 낀다",
+       "cost": {
+        "silver": 2
+       },
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "운이 따랐다. 판돈을 쓸어 담았다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "은화 두 닢이 순식간에 사라졌다.",
+         "next": "END"
+        },
+        "critFail": {
+         "text": "판돈을 잃은 것도 모자라 속임수를 썼다는 오해까지 샀다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "구경만 하다 자리를 뜬다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_distant_fires": {
+   "id": "morning_distant_fires",
+   "category": "morning",
+   "title": "숲 너머의 불빛",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "route_defend"
+         }
+        ],
+        "text": "밤새 숲 너머로 불빛이 깜박였다. 목책에서 보초를 선 이웃이 하품을 하며 손을 흔든다."
+       },
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "route_flee"
+         }
+        ],
+        "text": "밤새 숲 너머로 불빛이 깜박였다. 짐을 꾸리는 집이 하나둘 늘어난다."
+       }
+      ],
+      "fallback": "밤새 숲 너머로 불빛이 깜박였다고 한다. 아무도 그 이야기를 입 밖에 내지 않는다."
+     },
+     "choices": []
+    }
+   }
+  },
+  "morning_first_frost": {
+   "id": "morning_first_frost",
+   "category": "morning",
+   "title": "첫서리",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "job",
+          "job": "farmer"
+         }
+        ],
+        "text": "첫서리가 내렸다. 밭고랑이 하얗다. 보리를 서둘러 거두길 잘했다. 어머니가 묵은 솜옷을 꺼내 주셨다."
+       }
+      ],
+      "fallback": "첫서리가 내렸다. 밭고랑이 하얗고, 입김이 뿌옇게 피어오른다. 어머니가 묵은 솜옷을 꺼내 주셨다."
+     },
+     "choices": []
+    }
+   }
+  },
+  "morning_fog": {
+   "id": "morning_fog",
+   "category": "morning",
+   "title": "짙은 안개",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 9
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "밤새 내려앉은 안개가 마을을 덮었다. 옆집 지붕 끝도 잘 보이지 않는다.",
+     "choices": [
+      {
+       "id": "wait",
+       "label": "안개가 걷힐 때까지 집안일을 돕는다",
+       "outcome": {
+        "text": "어머니가 고맙다며 보리죽을 한 그릇 더 퍼 주었다. 몸이 한결 가볍다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "go",
+       "label": "개의치 않고 집을 나선다",
+       "outcome": {
+        "text": "축축한 공기를 헤치며 길을 나섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_good_neighbor": {
+   "id": "morning_good_neighbor",
+   "category": "morning",
+   "title": "동네 일꾼",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "favors_done",
+     "value": 5
+    }
+   ],
+   "weight": 60,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "아침부터 문을 두드리는 사람이 셋이나 된다. 다들 손이 필요할 때 제일 먼저 이 집을 떠올리는 모양이다.",
+     "onEnter": [
+      {
+       "type": "gainTrait",
+       "trait": "neighbor_helper"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "morning_harvest_help": {
+   "id": "morning_harvest_help",
+   "category": "morning",
+   "title": "이웃 밭의 일손",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8,
+     "max": 25
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 9
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "이웃 밭의 보리가 누렇게 익었다. 노부부 둘이서 거두기엔 일손이 턱없이 모자라 보인다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "오전 동안 거든다",
+       "outcome": {
+        "text": "해가 중천에 뜰 때까지 낫을 휘둘렀다. 노부부가 품삯과 보리 한 자루를 챙겨 주었다.",
+        "effects": [
+         {
+          "type": "loseNextSlot"
+         },
+         {
+          "type": "silver",
+          "delta": 2
+         },
+         {
+          "type": "food",
+          "delta": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_leaky_roof": {
+   "id": "morning_leaky_roof",
+   "category": "morning",
+   "title": "새는 지붕",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 12
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "밤새 비가 내렸다. 부엌 지붕에서 빗물이 똑똑 떨어진다.",
+     "choices": [
+      {
+       "id": "fix",
+       "label": "지붕에 올라가 짚을 새로 얹는다",
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "젖은 짚을 걷어 내고 새 짚을 단단히 얹었다. 어머니가 한시름 놓으셨다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "미끄러운 지붕에서 엉덩방아를 찧었다. 빗물은 여전히 샌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "bucket",
+       "label": "양동이를 받쳐 두고 나간다",
+       "outcome": {
+        "text": "양동이에 떨어지는 물소리를 뒤로하고 집을 나섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_lord_messenger": {
+   "id": "morning_lord_messenger",
+   "category": "morning",
+   "title": "지나가는 전령",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "reported"
+    },
+    {
+     "type": "dayRange",
+     "min": 14
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "영주의 깃발을 단 전령이 말을 달려 마을을 지나갔다. 촌장이 손을 흔들었지만 멈추지도 않았다.",
+     "choices": []
+    }
+   }
+  },
+  "morning_market_day": {
+   "id": "morning_market_day",
+   "category": "morning",
+   "title": "장날",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 3
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "로웬에서 장꾼들이 왔다. 광장에 좌판이 늘어서고 흥정하는 소리가 요란하다.",
+     "choices": [
+      {
+       "id": "sell_herb",
+       "label": "약초를 판다",
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "장꾼이 로웬 시세라며 은화 세 닢을 쳐주었다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "buy_bandage",
+       "label": "붕대를 싸게 산다",
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "깨끗한 천을 둘둘 말아 챙겼다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bandage",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "buy_arrows",
+       "label": "화살 한 묶음을 산다",
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "깃이 고른 화살 다섯 개를 샀다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "arrow",
+          "qty": 5
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "구경만 하고 지나간다",
+       "outcome": {
+        "text": "사람 구경만 실컷 했다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_mother_bread": {
+   "id": "morning_mother_bread",
+   "category": "morning",
+   "title": "어머니의 빵",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 14
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "어머니가 아껴 둔 밀가루로 빵을 구우셨다. 한 덩이를 보자기에 싸서 건네주신다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "morning_mother_errand": {
+   "id": "morning_mother_errand",
+   "category": "morning",
+   "title": "어머니의 심부름",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "어머니가 밤새 자은 실타래를 여관에 갖다 달라고 하신다. 토비가 값을 쳐주기로 했다고 한다.",
+     "choices": [
+      {
+       "id": "go",
+       "label": "실타래를 갖다 드린다",
+       "outcome": {
+        "text": "토비가 은화 두 닢을 주었다. 어머니는 그 돈을 네가 쓰라고 하신다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_nightmare": {
+   "id": "morning_nightmare",
+   "category": "morning",
+   "title": "다시 꾼 꿈",
+   "conditions": [
+    {
+     "type": "trait",
+     "trait": "survivor"
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "꿈에서 또 그 자리에 쓰러져 있었다. 식은땀에 젖은 채로 눈을 떴다.",
+     "onEnter": [
+      {
+       "type": "fatigue",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "morning_old_veteran": {
+   "id": "morning_old_veteran",
+   "category": "morning",
+   "title": "늙은 퇴역병",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 처마 밑에서 늙은 퇴역병이 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
+     "choices": [
+      {
+       "id": "listen",
+       "label": "옆에 앉아 귀를 기울인다",
+       "outcome": {
+        "text": "봉화대 아래 돌 틈에 병사들이 비상금을 숨겨 두곤 했다는 이야기를 들었다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "tower_rumor"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_pelt_price": {
+   "id": "morning_pelt_price",
+   "category": "morning",
+   "title": "가죽 값",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 4
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "토비가 여관 문을 열며 소리친다. 로웬 상인이 와 있어서 오늘은 늑대 가죽을 후하게 쳐준다고 한다.",
+     "choices": [
+      {
+       "id": "sell",
+       "label": "늑대 가죽을 판다",
+       "cost": {
+        "item": {
+         "itemId": "wolf_pelt",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "평소보다 두 닢이나 더 받았다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 6
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 팔기로 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_refugees": {
+   "id": "morning_refugees",
+   "category": "morning",
+   "title": "동쪽에서 온 사람들",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "짐수레를 끄는 사람들이 마을을 지나간다. 동쪽 마을에서 왔는데, 밤에 작은 것들이 떼로 덮쳤다고 한다.",
+     "choices": [
+      {
+       "id": "share",
+       "label": "식량을 나눠 준다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "아이를 업은 여인이 몇 번이나 고개를 숙였다. 지켜보던 이웃들의 눈빛이 달라졌다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "water",
+       "label": "물 한 바가지를 떠 준다",
+       "outcome": {
+        "text": "사람들이 목을 축이고 다시 길을 떠났다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "못 본 척한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_runaway_hen": {
+   "id": "morning_runaway_hen",
+   "category": "morning",
+   "title": "도망친 닭",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "옆집 암탉이 우리를 빠져나와 골목을 휘젓고 다닌다. 아낙이 치마를 걷어 올리고 쫓아다닌다.",
+     "choices": [
+      {
+       "id": "catch",
+       "label": "같이 쫓아가 붙잡는다",
+       "check": {
+        "stat": "agi",
+        "dc": 10,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "닭을 품에 안겨 주자 아낙이 달걀 두 알을 쥐여 주었다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "진흙탕에 넘어지면서 겨우 붙잡았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "닭은 울타리 너머로 사라졌다. 아낙이 그래도 고맙다며 웃었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "웃으며 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_sister_flowers": {
+   "id": "morning_sister_flowers",
+   "category": "morning",
+   "title": "머리맡의 들꽃",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "눈을 뜨니 머리맡에 들꽃 한 줌이 놓여 있다. 동생이 새벽같이 꺾어 왔다며 배시시 웃는다.",
+     "onEnter": [
+      {
+       "type": "fatigue",
+       "delta": -1
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "morning_stick_swords": {
+   "id": "morning_stick_swords",
+   "category": "morning",
+   "title": "막대기 칼싸움",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "동네 아이들이 막대기를 들고 칼싸움을 한다. 한 녀석이 이쪽을 보더니 한 수 가르쳐 달라고 조른다.",
+     "choices": [
+      {
+       "id": "teach",
+       "label": "자세를 잡아 준다",
+       "outcome": {
+        "text": "발을 어떻게 딛는지 보여 주다 보니 스스로도 배운 것이 있었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "blade",
+          "amount": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 하자며 웃어넘긴다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_stray_dog": {
+   "id": "morning_stray_dog",
+   "category": "morning",
+   "title": "절뚝이는 들개",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "뒷다리를 저는 누렁이 한 마리가 문간에 와서 낑낑댄다. 갈비뼈가 앙상하다.",
+     "choices": [
+      {
+       "id": "bread",
+       "label": "먹다 남은 빵을 준다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "누렁이가 허겁지겁 먹더니 꼬리를 흔들며 담장 밑에 자리를 잡았다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "stray_dog_fed"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "herb",
+       "label": "다친 다리에 약초를 감아 준다",
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "누렁이가 얌전히 다리를 내맡겼다. 그날부터 집 앞을 떠나지 않는다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "stray_dog_fed"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "shoo",
+       "label": "쫓아 보낸다",
+       "outcome": {
+        "text": "누렁이가 고개를 숙이고 골목으로 사라졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_tax_notice": {
+   "id": "morning_tax_notice",
+   "category": "morning",
+   "title": "납세일 알림",
+   "conditions": [
+    {
+     "type": "any",
+     "of": [
+      {
+       "type": "dayRange",
+       "min": 5,
+       "max": 5
+      },
+      {
+       "type": "dayRange",
+       "min": 12,
+       "max": 12
+      },
+      {
+       "type": "dayRange",
+       "min": 19,
+       "max": 19
+      },
+      {
+       "type": "dayRange",
+       "min": 26,
+       "max": 26
+      }
+     ]
+    }
+   ],
+   "weight": 20,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "silver",
+          "min": 5
+         }
+        ],
+        "text": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 은화 다섯 닢은 챙겨 두었다."
+       }
+      ],
+      "fallback": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 주머니를 뒤져 봐도 은화 다섯 닢이 안 된다."
+     },
+     "choices": []
+    }
+   }
+  },
+  "morning_wandering_priest": {
+   "id": "morning_wandering_priest",
+   "category": "morning",
+   "title": "떠돌이 사제",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 4
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "우물가에서 낡은 법복을 입은 떠돌이 사제가 지나가는 사람마다 축복을 빌어 준다.",
+     "choices": [
+      {
+       "id": "offer",
+       "label": "은화 한 닢을 바친다",
+       "cost": {
+        "silver": 1
+       },
+       "outcome": {
+        "text": "사제가 이마에 손을 얹고 낮게 기도했다. 묘하게 마음이 놓인다.",
+        "effects": [
+         {
+          "type": "hp",
+          "delta": 2
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "bow",
+       "label": "고개만 숙이고 지나간다",
+       "outcome": {
+        "text": "사제는 빈손인 사람에게도 똑같이 축복을 빌어 주었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_well_bucket": {
+   "id": "morning_well_bucket",
+   "category": "morning",
+   "title": "우물에 빠진 두레박",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "두레박 줄이 끊어져 우물 바닥에 가라앉았다. 물 길으러 나온 아낙들이 발을 동동 구른다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "밧줄을 매고 우물에 내려간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "차가운 물에 팔을 넣어 두레박을 건져 올렸다. 아낙들이 손뼉을 쳤다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "젖은 돌벽에 미끄러져 무릎이 까졌다. 두레박은 결국 다른 사람이 건졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길이 바빠 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_wolf_hunter": {
+   "id": "morning_wolf_hunter",
+   "category": "morning",
+   "title": "늑대 사냥꾼",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "wolves_killed",
+     "value": 3
+    }
+   ],
+   "weight": 60,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 앞을 지나는데 누군가 늑대 이야기를 꺼내더니 모두가 이쪽을 돌아본다. 어느새 늑대라면 이 사람에게 물어보라는 말이 돌고 있다.",
+     "onEnter": [
+      {
+       "type": "gainTrait",
+       "trait": "wolf_hunter"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "morning_wolf_rumor": {
+   "id": "morning_wolf_rumor",
+   "category": "morning",
+   "title": "나무꾼들의 수다",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 2,
+     "max": 14
+    }
+   ],
+   "weight": 7,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 앞에서 나무꾼들이 늑대 무리가 숲 어귀까지 내려왔다며 떠든다.",
+     "choices": [
+      {
+       "id": "ask",
+       "label": "어디서 봤는지 자세히 묻는다",
+       "check": {
+        "stat": "cha",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "개울을 따라 내려오는 길목이라고 한다. 늑대가 다니는 길을 머릿속에 그려 두었다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "다들 술기운에 한 말이라 앞뒤가 맞지 않는다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "흘려듣고 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "morning_wooden_spears": {
+   "id": "morning_wooden_spears",
+   "category": "morning",
+   "title": "나무 창을 깎는 아이들",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 23
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "목책 아래서 아이들까지 나무 창을 깎고 있다. 한 아이가 창을 어떻게 쥐는지 묻는다.",
+     "choices": [
+      {
+       "id": "show",
+       "label": "창 쥐는 법을 보여 준다",
+       "outcome": {
+        "text": "아이들이 따라 하며 진지하게 고개를 끄덕였다. 지켜보던 어른들도 하나둘 모여들었다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "위험하다며 창을 거둬 간다",
+       "outcome": {
+        "text": "아이들이 입을 삐죽이며 흩어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_barn_fire": {
+   "id": "night_barn_fire",
+   "category": "night",
+   "title": "헛간의 불",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 끝 헛간에서 불길이 솟았다! 사람들이 물동이를 들고 뛰어간다.",
+     "choices": [
+      {
+       "id": "run",
+       "label": "물동이를 들고 달려간다",
+       "check": {
+        "stat": "con",
+        "dc": 11,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "밤새 물을 날랐다. 불길은 옆집으로 번지지 않았다. 헛간 주인이 손을 꼭 잡았다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "팔에 불똥이 튀었지만 끝까지 물을 날랐다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "연기를 들이마셔 쓰러질 뻔했다. 누군가 끌어내 주었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "guard",
+       "label": "식구들을 깨우고 집을 지킨다",
+       "outcome": {
+        "text": "불길은 새벽녘에야 잡혔다. 다행히 집까지 번지지는 않았다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_drunk_neighbor": {
+   "id": "night_drunk_neighbor",
+   "category": "night",
+   "title": "술 취한 이웃",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "누군가 문을 쾅쾅 두드린다. 술에 취한 이웃 오스가 집을 못 찾겠다며 주저앉아 있다.",
+     "choices": [
+      {
+       "id": "walk",
+       "label": "집까지 부축해 데려다준다",
+       "outcome": {
+        "text": "오스의 아내가 연신 고개를 숙였다. 이웃들이 창문 너머로 그 모습을 지켜보았다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "lock",
+       "label": "문을 걸어 잠근다",
+       "outcome": {
+        "text": "한참 노래를 부르던 오스는 제 발로 돌아갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_lena_patrol": {
+   "id": "night_lena_patrol",
+   "category": "night",
+   "title": "레나의 순찰",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 12
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "등불을 든 레나가 혼자 마을을 돌고 있다. 잠이 안 오면 같이 걷겠느냐고 묻는다.",
+     "choices": [
+      {
+       "id": "join",
+       "label": "따라나선다",
+       "outcome": {
+        "text": "레나는 걸으며 보초 서는 법, 어둠 속에서 등을 지키는 법을 일러 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "decline",
+       "label": "사양하고 잠자리에 든다",
+       "outcome": {
+        "text": "레나가 고개를 끄덕이고 등불을 흔들며 멀어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_old_wound_ache": {
+   "id": "night_old_wound_ache",
+   "category": "night",
+   "title": "쑤시는 옛 상처",
+   "conditions": [
+    {
+     "type": "trait",
+     "trait": "old_wound"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "눅눅한 밤공기에 오래된 상처가 욱신거린다. 이리저리 몸을 뒤척이다 날이 샜다.",
+     "onEnter": [
+      {
+       "type": "fatigue",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "night_shadow_at_fence": {
+   "id": "night_shadow_at_fence",
+   "category": "night",
+   "title": "울타리 너머의 그림자",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 13
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_scout_seen"
+    }
+   ],
+   "weight": 10,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "개들이 일제히 짖는다. 울타리 너머 어둠 속에서 아이만 한 그림자가 재빠르게 움직였다.",
+     "choices": [
+      {
+       "id": "chase",
+       "label": "횃불을 들고 뒤쫓는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "wake",
+       "label": "이웃들을 깨워 알린다",
+       "outcome": {
+        "text": "횃불을 든 사람들이 모였을 때는 그림자가 사라진 뒤였다. 진흙 위에 맨발 자국이 찍혀 있었다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "setFlag",
+          "flag": "goblin_tracks_found"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "ignore",
+       "label": "들짐승이겠거니 하고 문을 닫는다",
+       "outcome": {
+        "text": "개들은 한참 뒤에야 조용해졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "횃불 빛에 잿빛 얼굴이 드러났다. 고블린이 단검을 빼 들고 이를 드러낸다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린이 쓰러지자 이웃들이 하나둘 모여들었다. 놈들이 마을까지 넘보고 있다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      },
+      {
+       "type": "reputation",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "어둠 속에서 날아든 돌에 횃불을 떨어뜨렸다. 서둘러 집으로 돌아와 문을 걸었다. 저건 분명 고블린이었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "night_sister_fever": {
+   "id": "night_sister_fever",
+   "category": "night",
+   "title": "동생의 열",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 4
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 12
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "동생이 열이 올라 끙끙 앓는다. 이마가 불덩이 같다.",
+     "choices": [
+      {
+       "id": "herb",
+       "label": "약초를 달여 먹인다",
+       "cost": {
+        "item": {
+         "itemId": "herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "쓴 약을 억지로 삼킨 동생이 새벽녘에야 곤히 잠들었다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "magda",
+       "label": "마그다 할멈을 깨워 온다",
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "할멈이 투덜대며 와서 탕약을 지어 주었다. 동생의 숨소리가 고르게 돌아왔다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "cloth",
+       "label": "밤새 찬 물수건을 갈아 준다",
+       "outcome": {
+        "text": "동이 틀 무렵 열이 내렸다. 눈꺼풀이 천근만근이다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_stars": {
+   "id": "night_stars",
+   "category": "night",
+   "title": "쏟아지는 별",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "잠이 오지 않아 마당에 나왔다. 구름 한 점 없는 하늘에 별이 쏟아질 듯하다.",
+     "choices": [
+      {
+       "id": "sister",
+       "label": "동생을 깨워 함께 본다",
+       "outcome": {
+        "text": "동생이 별자리 이름을 묻다가 무릎을 베고 잠들었다. 마음이 차분해졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "back",
+       "label": "다시 들어가 눕는다",
+       "outcome": {
+        "text": "별빛을 떠올리며 눈을 감았다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_storm": {
+   "id": "night_storm",
+   "category": "night",
+   "title": "폭풍",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "거센 바람에 지붕이 들썩인다. 덧문이 떨어져 나갈 듯 덜컹거린다.",
+     "choices": [
+      {
+       "id": "roof",
+       "label": "지붕에 올라가 이엉을 붙잡아 맨다",
+       "check": {
+        "stat": "str",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "비에 흠뻑 젖었지만 지붕은 지켜 냈다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "미끄러져 마당으로 떨어졌다. 지붕 한쪽이 바람에 날아갔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "loseNextSlot"
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "huddle",
+       "label": "식구들과 구석에 모여 버틴다",
+       "outcome": {
+        "text": "아침에 보니 지붕 한쪽이 날아가고 없었다. 오전 내내 고쳐야 한다.",
+        "effects": [
+         {
+          "type": "loseNextSlot"
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "night_thief": {
+   "id": "night_thief",
+   "category": "night",
+   "title": "밤손님",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 5
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "한밤중, 부엌 쪽에서 덜그럭 소리가 난다. 누군가 보리 자루를 뒤지고 있다.",
+     "choices": [
+      {
+       "id": "dog",
+       "label": "누렁이가 먼저 짖는다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "stray_dog_fed"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "누렁이가 맹렬히 짖어 대자 그림자가 울타리를 넘어 허겁지겁 달아났다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "shout",
+       "label": "소리를 질러 쫓는다",
+       "check": {
+        "stat": "cha",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "고함 소리에 이웃집 불이 켜졌다. 그림자가 울타리를 넘어 달아났다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "도둑은 보리 자루를 들쳐 메고 어둠 속으로 사라졌다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "club",
+       "label": "몽둥이를 들고 나간다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "부엌문을 박차고 나가자 복면을 쓴 사내가 칼을 뽑았다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "lost"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "사내가 비틀거리며 달아났다. 이웃들이 횃불을 들고 나와 혀를 내둘렀다.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "lost": {
+     "text": "문을 걸어 잠그고 숨을 죽였다. 아침에 보니 보리 자루가 통째로 없어졌다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": -2
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
+  "night_wolf_howl": {
+   "id": "night_wolf_howl",
+   "category": "night",
+   "title": "늑대 울음",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "멀리서 늑대 울음이 길게 이어진다. 마을 개들이 따라 짖고, 양 우리 쪽이 소란하다.",
+     "choices": [
+      {
+       "id": "check_pen",
+       "label": "양 우리를 살피러 나간다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "우리 문 걸쇠가 풀려 있었다. 단단히 걸어 두고 돌아오는 길에 양 주인과 마주쳤다. 주인이 연신 고맙다고 했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "어둠 속을 한참 헤맸지만 아무것도 찾지 못했다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "sleep",
+       "label": "창문을 닫고 다시 눕는다",
+       "outcome": {
+        "text": "울음소리는 새벽까지 이어졌다. 잠을 설쳤다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_brock_bellows": {
+   "id": "npc_brock_bellows",
+   "category": "npc",
+   "npc": "brock",
+   "title": "풀무질",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "job",
+          "job": "smith"
+         }
+        ],
+        "text": "브록이 오늘은 네가 망치를 잡으라며 자리를 내준다. 쇠가 벌겋게 달아 있다."
+       }
+      ],
+      "fallback": "브록이 풀무질할 사람을 찾는다. 오늘은 쇠를 많이 녹여야 한다고 한다."
+     },
+     "choices": [
+      {
+       "id": "hammer",
+       "label": "망치를 잡는다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "smith"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "str",
+        "skill": "smithing",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "브록이 두드린 자국을 보더니 말없이 은화 다섯 닢을 건넸다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "날이 비뚤어졌다. 브록이 혀를 차며 은화 두 닢만 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "bellows",
+       "label": "풀무를 맡는다",
+       "check": {
+        "stat": "con",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "숨이 턱에 닿도록 풀무를 밟았다. 브록이 품삯을 넉넉히 쳐주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "skillXp",
+           "skill": "smithing",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "금세 지쳐 버렸다. 브록이 반나절 품삯만 쥐여 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 오겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_brock_old_sword": {
+   "id": "npc_brock_old_sword",
+   "category": "npc",
+   "npc": "brock",
+   "title": "구석의 녹슨 검",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 5
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "대장간 구석에 녹슨 검 한 자루가 세워져 있다. 브록이 주인이 찾으러 오지 않는다며 싸게 넘기겠다고 한다.",
+     "choices": [
+      {
+       "id": "buy",
+       "label": "은화 열 닢에 산다",
+       "cost": {
+        "silver": 10
+       },
+       "outcome": {
+        "text": "브록이 날을 한 번 갈아서 건네주었다. 녹은 슬었어도 손에 감기는 맛이 있다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "rusty_sword",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "돈이 없다며 사양한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_brock_spearheads": {
+   "id": "npc_brock_spearheads",
+   "category": "npc",
+   "npc": "brock",
+   "title": "창날 벼리기",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 10,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "브록이 마을 사람들 몫의 창날을 벼리고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
+     "choices": [
+      {
+       "id": "work",
+       "label": "밤늦게까지 거든다",
+       "outcome": {
+        "text": "창날 열두 개가 줄지어 식어 간다. 브록이 처음으로 고맙다는 말을 했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         },
+         {
+          "type": "skillXp",
+          "skill": "smithing",
+          "amount": 1
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pay",
+       "label": "쇠 살 돈을 보탠다",
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "브록이 은화를 받아 들고 고개를 끄덕였다. 소문은 금세 마을에 퍼졌다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 4
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "내 무기나 챙기겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_brock_whetstone": {
+   "id": "npc_brock_whetstone",
+   "category": "npc",
+   "npc": "brock",
+   "title": "날 세우기",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "브록이 숫돌 앞에 앉아 칼날을 세운다. 날을 어떻게 세우는지 보여 주겠다고 한다.",
+     "choices": [
+      {
+       "id": "learn",
+       "label": "옆에 앉아 배운다",
+       "outcome": {
+        "text": "각도와 힘을 고르게 주는 법을 배웠다. 손끝이 쇳가루로 새까매졌다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "smithing",
+          "amount": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "구경만 하다 나온다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_fallback": {
+   "id": "npc_fallback",
+   "category": "npc",
+   "title": "바쁜 하루",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "찾아갔지만 일손이 바빠 보여 몇 마디만 나누고 돌아왔다.",
+     "choices": []
+    }
+   }
+  },
+  "npc_hamon_dispute": {
+   "id": "npc_hamon_dispute",
+   "category": "npc",
+   "npc": "hamon",
+   "title": "밭 경계 다툼",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "촌장 댁 마당에서 두 이웃이 밭 경계를 두고 언성을 높인다. 촌장이 이쪽을 보더니 한마디 거들어 달라고 한다.",
+     "choices": [
+      {
+       "id": "mediate",
+       "label": "양쪽 이야기를 듣고 중재한다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "경계석을 반씩 옮기자는 말에 둘 다 마지못해 고개를 끄덕였다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "한쪽 편을 드는 것처럼 들렸는지 양쪽 모두 얼굴을 붉혔다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "끼어들지 않는다",
+       "outcome": {
+        "text": "다툼은 해가 질 때까지 이어졌다고 한다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_hamon_fence": {
+   "id": "npc_hamon_fence",
+   "category": "npc",
+   "npc": "hamon",
+   "title": "무너진 울타리",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "하몬 촌장이 마을 공동 울타리가 밤사이 무너졌다며 손을 빌려 달라고 한다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "말뚝을 박고 울타리를 세운다",
+       "check": {
+        "stat": "str",
+        "dc": 10,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "해 질 녘까지 말뚝을 박았다. 촌장이 어깨를 두드려 주었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "허리가 끊어질 것 같았지만 끝까지 버텼다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "손에 물집만 잡혔다. 남은 일은 다른 사람들이 마무리했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "decline",
+       "label": "오늘은 바쁘다고 한다",
+       "outcome": {
+        "text": "촌장이 아쉬운 얼굴로 고개를 끄덕였다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_hamon_tea": {
+   "id": "npc_hamon_tea",
+   "category": "npc",
+   "npc": "hamon",
+   "title": "촌장의 찻상",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "하몬 촌장이 보리차를 내오며 요즘 형편이 어떠냐고 묻는다.",
+     "choices": [
+      {
+       "id": "tell_tracks",
+       "label": "숲에서 본 발자국 이야기를 한다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "goblin_tracks_found"
+        },
+        {
+         "type": "notFlag",
+         "flag": "reported"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "촌장의 얼굴이 굳었다. 확실한 증거가 있으면 꼭 가져오라고 한다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "hardship",
+       "label": "살림이 어렵다고 털어놓는다",
+       "outcome": {
+        "text": "촌장이 은화 세 닢을 내밀었다. 갚을 필요 없다고 했지만 마음이 무겁다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 3
+         },
+         {
+          "type": "reputation",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "chat",
+       "label": "안부만 묻고 나온다",
+       "outcome": {
+        "text": "촌장은 아버지 이야기를 꺼내며 한참 웃었다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_hamon_watch": {
+   "id": "npc_hamon_watch",
+   "category": "npc",
+   "npc": "hamon",
+   "title": "보초 순번",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 10,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "촌장이 목책 보초 순번을 짜고 있다. 다들 밤잠을 설쳐 지쳤다고 한다.",
+     "choices": [
+      {
+       "id": "night_watch",
+       "label": "오늘 밤 첫 순번을 맡는다",
+       "outcome": {
+        "text": "밤바람을 맞으며 목책을 지켰다. 아침에 교대한 이웃이 고맙다고 했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "rally",
+       "label": "보초 서는 사람들을 북돋는다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "농담 몇 마디에 굳은 얼굴들이 풀렸다. 순번을 자청하는 사람이 늘었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "다들 지쳐서 웃을 기운도 없었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "집안일이 바쁘다며 나온다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_lena_militia": {
+   "id": "npc_lena_militia",
+   "category": "npc",
+   "npc": "lena",
+   "title": "민병 모으기",
+   "conditions": [
+    {
+     "type": "flag",
+     "flag": "route_defend"
+    },
+    {
+     "type": "dayRange",
+     "min": 22
+    }
+   ],
+   "weight": 10,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "레나가 민병을 모으고 있다. 겁먹은 이웃들을 설득하는 데 힘을 보태 달라고 한다.",
+     "choices": [
+      {
+       "id": "persuade",
+       "label": "집집마다 돌며 설득한다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "문을 닫았던 집에서도 하나둘 창을 들고 나왔다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "다들 식구 걱정에 고개를 저었다. 그래도 발품을 판 것은 다들 알았다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "남의 집 일에 나서지 않는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_lena_sparring": {
+   "id": "npc_lena_sparring",
+   "category": "npc",
+   "npc": "lena",
+   "title": "목검 대련",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "레나가 목검 한 자루를 던져 준다. 몸이 굳었으니 한 판 붙어 보자고 한다.",
+     "choices": [
+      {
+       "id": "spar",
+       "label": "목검을 쥐고 맞선다",
+       "check": {
+        "stat": "str",
+        "skill": "blade",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "레나의 목검을 두 번 막아 냈다. 레나가 처음으로 웃었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "숨이 턱까지 차도록 버텼다. 레나가 나쁘지 않다고 했다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "목검이 정강이를 때렸다. 레나가 다시 해 보라며 턱짓을 한다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "block",
+       "label": "목검으로 막기만 한다",
+       "check": {
+        "stat": "con",
+        "skill": "guard",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "레나의 연타를 끝까지 받아 냈다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "팔이 저려 목검을 떨어뜨렸다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_lena_stories": {
+   "id": "npc_lena_stories",
+   "category": "npc",
+   "npc": "lena",
+   "title": "국경의 이야기",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "레나가 칼을 손질하며 젊은 시절 국경에서 싸운 이야기를 들려준다. 고블린은 불과 함성을 싫어한다고 한다.",
+     "choices": [
+      {
+       "id": "listen",
+       "label": "끝까지 듣는다",
+       "outcome": {
+        "text": "방패를 어떻게 세워야 등 뒤의 동료가 사는지, 레나는 몇 번이고 손짓으로 보여 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_lena_target": {
+   "id": "npc_lena_target",
+   "category": "npc",
+   "npc": "lena",
+   "title": "과녁 내기",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "경비대 마당에 짚 과녁이 세워져 있다. 레나가 세 발 중 두 발을 맞히면 은화 두 닢을 주겠다고 한다.",
+     "choices": [
+      {
+       "id": "shoot",
+       "label": "활을 빌려 쏜다",
+       "check": {
+        "stat": "agi",
+        "skill": "bow",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "두 발이 과녁 한가운데 꽂혔다. 레나가 약속대로 은화를 던져 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "화살이 과녁 옆 짚단에 박혔다. 레나가 어깨를 으쓱했다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "활은 영 자신이 없다며 사양한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_magda_bundles": {
+   "id": "npc_magda_bundles",
+   "category": "npc",
+   "npc": "magda",
+   "title": "약초 다발",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마그다 할멈이 처마에 말린 약초를 다발로 묶을 손이 필요하다고 한다.",
+     "choices": [
+      {
+       "id": "bundle",
+       "label": "약초를 가려 묶는다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "할멈이 손놀림을 보더니 품삯에 약초 한 다발을 얹어 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "독초 한 줄기를 섞어 묶었다가 할멈에게 잔소리를 한 바가지 들었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 오겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_magda_checkup": {
+   "id": "npc_magda_checkup",
+   "category": "npc",
+   "npc": "magda",
+   "title": "할멈의 진맥",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "할멈이 얼굴을 보자마자 손목을 낚아챈다. 안색이 나쁘다며 혀를 찬다.",
+     "choices": [
+      {
+       "id": "treat",
+       "label": "제대로 봐 달라고 한다",
+       "conditions": [
+        {
+         "type": "wound",
+         "max": "light"
+        }
+       ],
+       "lockedReason": "큰 상처는 제대로 치료를 받아야 한다",
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "할멈이 쓴 고약을 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
+        "effects": [
+         {
+          "type": "healWound",
+          "to": "none"
+         },
+         {
+          "type": "hp",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "tea",
+       "label": "쓴 약차를 얻어 간다",
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "할멈이 피로가 쌓였다며 약차 한 봉지를 싸 주었다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bitter_tea",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "괜찮다며 손을 뺀다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_magda_lesson": {
+   "id": "npc_magda_lesson",
+   "category": "npc",
+   "npc": "magda",
+   "title": "독초와 약초",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "할멈이 두 풀을 나란히 내민다. 하나는 상처를 아물게 하고, 하나는 사람을 잡는다고 한다.",
+     "choices": [
+      {
+       "id": "learn",
+       "label": "차이를 배운다",
+       "outcome": {
+        "text": "잎맥과 뿌리 냄새로 구분하는 법을 배웠다. 할멈은 틀릴 때마다 손등을 때렸다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "herbalism",
+          "amount": 2
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_magda_rare_herb": {
+   "id": "npc_magda_rare_herb",
+   "category": "npc",
+   "npc": "magda",
+   "title": "귀한 풀의 쓰임",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "할멈이 늪 약초가 있으면 치유 물약을 지어 주겠다고 한다. 숲 깊은 곳에도 가끔 자란다고 한다.",
+     "choices": [
+      {
+       "id": "brew",
+       "label": "늪 약초를 건넨다",
+       "cost": {
+        "silver": 5,
+        "item": {
+         "itemId": "rare_herb",
+         "qty": 1
+        }
+       },
+       "outcome": {
+        "text": "할멈이 밤새 약을 달였다. 붉은 물약 한 병이 손에 쥐어졌다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "healing_potion",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 구해 오겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_brawl": {
+   "id": "npc_toby_brawl",
+   "category": "npc",
+   "npc": "toby",
+   "title": "주정뱅이 싸움",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 안에서 술 취한 장정 둘이 멱살을 잡았다. 토비가 의자가 부서지겠다며 발을 구른다.",
+     "choices": [
+      {
+       "id": "separate",
+       "label": "둘 사이에 끼어들어 떼어 놓는다",
+       "check": {
+        "stat": "str",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "두 사람을 양쪽으로 밀어냈다. 토비가 고맙다며 술값을 받지 않았다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "휘두른 주먹에 얻어맞았다. 결국 토비가 몽둥이를 들고서야 끝났다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "talk",
+       "label": "말로 달랜다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "우스갯소리 하나에 둘 다 웃음을 터뜨렸다. 싸움은 그걸로 끝났다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "누구 편이냐며 오히려 둘 다 이쪽을 노려보았다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "휘말리기 싫어 나온다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_firewood": {
+   "id": "npc_toby_firewood",
+   "category": "npc",
+   "npc": "toby",
+   "title": "장작 패기",
+   "conditions": [],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "토비가 여관 뒤에 쌓인 통나무를 가리킨다. 장작을 패 주면 품삯에 밥까지 주겠다고 한다.",
+     "choices": [
+      {
+       "id": "chop",
+       "label": "도끼를 든다",
+       "check": {
+        "stat": "str",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "장작이 처마 밑까지 쌓였다. 토비가 품삯과 함께 남은 음식을 싸 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "food",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "도끼질이 영 서툴러 반도 못 팼다. 그래도 토비는 품삯을 쳐주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 하겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_gossip": {
+   "id": "npc_toby_gossip",
+   "category": "npc",
+   "npc": "toby",
+   "title": "여관의 소문",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "토비가 술잔을 닦으며 손님들에게 들은 이야기를 풀어놓는다.",
+     "choices": [
+      {
+       "id": "ask",
+       "label": "솔깃한 이야기를 캐묻는다",
+       "check": {
+        "stat": "cha",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": {
+          "variants": [
+           {
+            "when": [
+             {
+              "type": "dayRange",
+              "min": 15
+             }
+            ],
+            "text": "숲 동쪽에서 고블린을 봤다는 사냥꾼이 셋이나 된다고 한다. 감시탑 쪽 길도 위험하다고 한다."
+           }
+          ],
+          "fallback": "로웬 상인들이 감시탑 쪽 길을 피해 다닌다고 한다. 무너진 담 쪽에 도적이 드나든다는 것이다."
+         },
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "bandit_hideout_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "오늘은 손님들도 날씨 이야기뿐이었다고 한다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "한 귀로 흘려듣는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_kitchen": {
+   "id": "npc_toby_kitchen",
+   "category": "npc",
+   "npc": "toby",
+   "title": "부엌일",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "토비가 오늘은 손님이 많다며 부엌일을 거들면 저녁거리를 싸 주겠다고 한다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "소매를 걷고 거든다",
+       "outcome": {
+        "text": "감자를 산더미처럼 깎았다. 토비가 빵과 고기를 넉넉히 싸 주었다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 하겠다고 한다",
+       "outcome": {
         "next": "END"
        }
       }
@@ -2381,6 +7319,12 @@
    "scenes": {
     "start": {
      "text": "나무 위에서 무언가 뛰어내렸다. 잿빛 피부에 누런 눈, 아이만 한 키에 녹슨 단검을 쥐었다. 고블린이다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
      "choices": [
       {
        "id": "fight",
@@ -2402,12 +7346,6 @@
        "outcomes": {
         "success": {
          "text": "고블린은 코를 킁킁대더니 동쪽으로 사라졌다. 놈들이 이 숲에 있는 건 분명하다.",
-         "effects": [
-          {
-           "type": "setFlag",
-           "flag": "goblin_scout_seen"
-          }
-         ],
          "next": "END"
         },
         "fail": {
@@ -2469,22 +7407,10 @@
       ],
       "fallback": "고블린은 숲 깊이 달아났다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다."
      },
-     "onEnter": [
-      {
-       "type": "setFlag",
-       "flag": "goblin_scout_seen"
-      }
-     ],
      "choices": []
     },
     "fled": {
      "text": "정신없이 달려 숲을 빠져나왔다. 놈들이 이 숲에 있다는 걸 촌장에게 알려야 한다.",
-     "onEnter": [
-      {
-       "type": "setFlag",
-       "flag": "goblin_scout_seen"
-      }
-     ],
      "choices": []
     }
    }
@@ -3137,7 +8063,7 @@
            "flag": "recruit_passed"
           }
          ],
-         "next": "END"
+         "next": "offer"
         },
         "fail": {
          "text": "이번에도 모집관은 고개를 저었다.",
@@ -3150,6 +8076,33 @@
        "label": "그냥 보낸다",
        "outcome": {
         "text": "모집관의 깃발이 로웬 쪽으로 멀어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "offer": {
+     "text": "모집관이 로웬에서 기다리겠다며 증표를 내민다. 받으면 습격이 오는 밤에 마을에 없을 것이다.",
+     "choices": [
+      {
+       "id": "accept",
+       "label": "증표를 받는다",
+       "outcome": {
+        "text": "증표를 품에 넣었다. 어머니에게 어떻게 말을 꺼내야 할지 모르겠다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_rowen"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "decline",
+       "label": "마을에 남겠다고 한다",
+       "outcome": {
+        "text": "모집관이 어깨를 으쓱하고 말에 올랐다.",
         "next": "END"
        }
       }
@@ -3467,6 +8420,2411 @@
        }
       }
      ]
+    }
+   }
+  },
+  "watchtower_archers_01": {
+   "id": "watchtower_archers_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "날아드는 화살",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 19
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 창문마다 고블린 궁수가 보인다. 화살이 발밑에 꽂혔다!",
+     "choices": [
+      {
+       "id": "dodge",
+       "label": "몸을 숙이고 바위 뒤로 뛴다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ],
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "화살 비를 뚫고 숲으로 빠져나왔다. 놈들이 탑을 거점으로 삼았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "화살이 어깨를 스쳤다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "허벅지에 화살이 박혔다. 절뚝이며 겨우 빠져나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_armor_cache_01": {
+   "id": "watchtower_armor_cache_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "봉인된 궤짝",
+   "conditions": [
+    {
+     "type": "notFlag",
+     "flag": "tower_armor_taken"
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "지휘실 바닥 밑에 쇠 띠를 두른 궤짝이 숨겨져 있다. 자물쇠는 녹이 슬었다.",
+     "choices": [
+      {
+       "id": "force",
+       "label": "자물쇠를 부순다",
+       "check": {
+        "stat": "str",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "궤짝 안에 기름 먹인 가죽 갑옷이 고이 개켜져 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "leather_armor",
+           "qty": 1
+          },
+          {
+           "type": "setFlag",
+           "flag": "tower_armor_taken"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "손만 다쳤다. 자물쇠는 꿈쩍도 하지 않는다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "포기한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_armory_01": {
+   "id": "watchtower_armory_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "무기고 잔해",
+   "conditions": [
+    {
+     "type": "notFlag",
+     "flag": "tower_shield_taken"
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "반쯤 무너진 무기고에 썩은 창 자루들이 뒹군다. 쓸 만한 것이 남아 있을까.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "잔해를 뒤진다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "무너진 선반 밑에서 쇠테를 두른 나무 방패를 찾았다. 아직 튼튼하다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "wooden_shield",
+           "qty": 1
+          },
+          {
+           "type": "setFlag",
+           "flag": "tower_shield_taken"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "썩은 나무와 녹슨 쇳조각뿐이다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "돌아선다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_bandit_den_01": {
+   "id": "watchtower_bandit_den_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "도적 소굴",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 9
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 지하 창고에서 불빛이 새어 나온다. 도적 하나가 노획물을 세며 콧노래를 부른다.",
+     "choices": [
+      {
+       "id": "sneak",
+       "label": "몰래 다가가 기습한다",
+       "check": {
+        "stat": "agi",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "등 뒤까지 소리 없이 다가갔다.",
+         "next": "fight_ambush"
+        },
+        "fail": {
+         "text": "돌부리에 걸려 넘어졌다. 도적이 벌떡 일어선다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "정면으로 들어간다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "조용히 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "도적이 칼을 뽑아 들었다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambush": {
+     "text": "도적이 돌아서기도 전에 무기를 휘둘렀다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled",
+        "enemyHpModifier": -3
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적이 달아났다. 창고에는 털린 행상들의 물건이 쌓여 있다. 은화를 챙기고 나머지는 촌장에게 알리기로 했다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 6
+      },
+      {
+       "type": "reputation",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_bandit_sentry_01": {
+   "id": "watchtower_bandit_sentry_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "도적 보초",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 6
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 담 위에 도적 하나가 앉아 하품을 한다. 망을 보는 모양이다.",
+     "choices": [
+      {
+       "id": "back_way",
+       "label": "뒤편 무너진 담 쪽으로 돌아간다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "bandit_hideout_known"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "소문대로 뒤편에 샛길이 있었다. 보초 몰래 창고 쪽에 닿아 은화 주머니를 슬쩍했다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 6
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "bluff",
+       "label": "길 잃은 나그네인 척한다",
+       "check": {
+        "stat": "cha",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "도적이 귀찮다는 듯 손을 휘저었다. 무사히 지나갔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "도적이 칼자루에 손을 얹었다. 거짓말이 들통났다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "도적이 소리를 지르며 칼을 뽑았다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적이 담을 넘어 달아났다. 남은 짐을 뒤졌다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_beacon_01": {
+   "id": "watchtower_beacon_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "봉화대",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 12
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 꼭대기 봉화대에 그을린 돌이 둘러져 있다. 장작을 쌓으면 아직 불을 올릴 수 있을 것 같다.",
+     "choices": [
+      {
+       "id": "stack",
+       "label": "장작을 다시 쌓아 둔다",
+       "outcome": {
+        "text": "마른 가지를 날라 봉화대를 채웠다. 내려와 촌장에게 알리자 다들 든든해했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "내려간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_captive_01": {
+   "id": "watchtower_captive_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "묶인 나무꾼",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 16
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 기둥에 나무꾼 하나가 묶여 있다. 입에 재갈이 물렸다. 근처에서 고블린 코 고는 소리가 들린다.",
+     "choices": [
+      {
+       "id": "free",
+       "label": "몰래 다가가 밧줄을 끊는다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "나무꾼을 업다시피 데리고 빠져나왔다. 마을에 닿자 사람들이 몰려나왔다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 6
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "밧줄을 끊는 순간 고블린이 눈을 떴다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "고블린부터 처리한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "혼자서는 무리다. 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "잠에서 깬 고블린 전사가 도끼를 집어 든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "나무꾼을 풀어 주고 함께 마을로 돌아왔다. 소문은 그날 밤 마을 전체에 퍼졌다.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 6
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_carvings_01": {
+   "id": "watchtower_carvings_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "벽의 낙서",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "flag",
+          "flag": "tower_rumor"
+         }
+        ],
+        "text": "탑 안쪽 벽에 병사들이 새긴 글씨가 빼곡하다. 그 사이에 봉화대를 가리키는 화살표가 있다. 퇴역병의 이야기가 떠오른다."
+       }
+      ],
+      "fallback": "탑 안쪽 벽에 병사들이 칼끝으로 새긴 글씨가 빼곡하다. 이름과 날짜, 고향 생각이 적혀 있다."
+     },
+     "choices": [
+      {
+       "id": "cache",
+       "label": "봉화대 아래 돌을 들춘다",
+       "conditions": [
+        {
+         "type": "flag",
+         "flag": "tower_rumor"
+        },
+        {
+         "type": "notFlag",
+         "flag": "tower_cache_found"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "느슨한 돌 밑에 기름 먹인 가죽 주머니가 있었다. 오래된 은화가 들어 있다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 6
+         },
+         {
+          "type": "setFlag",
+          "flag": "tower_cache_found"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "read",
+       "label": "천천히 읽어 본다",
+       "outcome": {
+        "text": "누군가 마지막 줄에 '집에 가고 싶다'고 적어 두었다. 이 탑을 지키던 사람들도 평범한 사람이었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "tracking",
+          "amount": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "발길을 돌린다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_courtyard_boar_01": {
+   "id": "watchtower_courtyard_boar_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "마당의 멧돼지",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 엄니에 흙이 잔뜩 묻었다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "wait",
+       "label": "멧돼지가 떠날 때까지 숨어 기다린다",
+       "check": {
+        "stat": "agi",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "한참 뒤 멧돼지가 숲으로 돌아갔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "멧돼지가 코를 들더니 이쪽으로 돌진한다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "around",
+       "label": "담을 따라 멀찍이 돌아간다",
+       "outcome": {
+        "text": "가시덤불을 헤치며 한참을 돌아갔다. 옷이 엉망이 됐다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "멧돼지가 땅을 긁더니 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "boar"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "멧돼지가 쓰러졌다. 고기를 넉넉히 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_crow_nest_01": {
+   "id": "watchtower_crow_nest_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "까마귀 둥지",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "허물어진 성가퀴에 까마귀가 둥지를 틀었다. 둥지 사이로 반짝이는 것이 보인다.",
+     "choices": [
+      {
+       "id": "reach",
+       "label": "팔을 뻗어 둥지를 뒤진다",
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "까마귀가 모아 둔 동전 몇 닢과 놋쇠 단추가 나왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "성난 까마귀가 손등을 쪼았다. 얻은 건 상처뿐이다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "둥지는 그냥 둔다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_dry_well_01": {
+   "id": "watchtower_dry_well_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "마른 우물",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 마당 한쪽에 마른 우물이 있다. 바닥에 천 꾸러미 같은 것이 보인다.",
+     "choices": [
+      {
+       "id": "descend",
+       "label": "벽을 짚고 내려간다",
+       "check": {
+        "stat": "str",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "꾸러미 안에 깨끗한 붕대 두 롤이 들어 있었다. 누군가 숨겨 둔 비상용품이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "bandage",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "올라오다 손이 미끄러졌다. 무릎을 세게 찧었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "내려가지 않는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_dusk_01": {
+   "id": "watchtower_dusk_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "저무는 해",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑을 뒤지다 보니 해가 기울었다. 어둠이 내리면 길을 잃기 쉽다.",
+     "choices": [
+      {
+       "id": "path",
+       "label": "기억을 더듬어 지름길로 내려간다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "마지막 빛이 사라지기 전에 숲을 빠져나왔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "길을 잃고 한참을 헤맸다. 밤늦게야 마을에 닿았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          },
+          {
+           "type": "endDay"
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "now",
+       "label": "서둘러 왔던 길로 돌아간다",
+       "outcome": {
+        "text": "서두른 덕에 해 지기 전에 마을에 닿았다.",
+        "effects": [
+         {
+          "type": "endDay"
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_fallback": {
+   "id": "watchtower_fallback",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "고요한 감시탑",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "바람이 무너진 성가퀴 사이로 휘파람 소리를 낸다. 별다른 것은 보이지 않았다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_fence_01": {
+   "id": "watchtower_fence_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "장물아비",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 그늘에 수상한 사내가 보따리를 펼쳐 놓았다. 출처는 묻지 말라며 싸게 넘기겠다고 한다.",
+     "choices": [
+      {
+       "id": "potion",
+       "label": "치유 물약을 산다",
+       "cost": {
+        "silver": 18
+       },
+       "outcome": {
+        "text": "사내가 붉은 물약 한 병을 내밀었다. 신전 봉인이 그대로다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "healing_potion",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "chain",
+       "label": "사슬 셔츠를 산다",
+       "cost": {
+        "silver": 40
+       },
+       "outcome": {
+        "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "chain_shirt",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "tea",
+       "label": "쓴 약차를 산다",
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "약차 두 봉지를 챙겼다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bitter_tea",
+          "qty": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "훔친 물건은 사지 않는다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_goblin_sign_01": {
+   "id": "watchtower_goblin_sign_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "벽의 표식",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 10
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 입구 벽에 숯과 피로 그린 표식이 있다. 손바닥 자국과 이빨 모양이 잔뜩 그려져 있다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "표식을 살핀다",
+       "check": {
+        "stat": "per",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "표식 아래 작은 맨발 자국이 어지럽다. 고블린이 이 탑을 드나들고 있다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "무슨 뜻인지 알 수 없다. 등골이 서늘해 서둘러 자리를 떴다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "못 본 척 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_goblin_warrior_01": {
+   "id": "watchtower_goblin_warrior_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "탑을 차지한 고블린",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 14
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 입구에 고블린 전사가 버티고 섰다. 사람 키만 한 도끼를 어깨에 걸쳤다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "sneak",
+       "label": "놈의 눈을 피해 물러난다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "바위 뒤로 몸을 숨기며 빠져나왔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "놈이 코를 킁킁대더니 도끼를 치켜들었다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "retreat",
+       "label": "오늘은 탑을 포기하고 돌아간다",
+       "outcome": {
+        "text": "멀찍이 돌아 숲길로 빠져나왔다. 헛걸음이지만 목숨이 먼저다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "endDay"
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 전사가 포효하며 도끼를 휘두른다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린 전사가 무릎을 꿇고 쓰러졌다. 이런 놈이 몇이나 더 있을까.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_lone_wolf_01": {
+   "id": "watchtower_lone_wolf_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "굶주린 늑대",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 아래 그늘에서 늑대 한 마리가 이빨을 드러낸다. 무리에서 쫓겨났는지 갈비뼈가 앙상하다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "scare",
+       "label": "돌을 던지며 크게 소리친다",
+       "check": {
+        "stat": "cha",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "늑대가 꼬리를 내리고 덤불로 사라졌다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "늑대가 오히려 달려든다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "food",
+       "label": "고기를 던져 준다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "늑대가 고기를 물고 사라졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늑대가 낮게 으르렁거리며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늑대가 쓰러졌다. 떨리는 숨을 고르고 다시 탑을 올려다보았다.",
+     "onEnter": [
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_lookout_01": {
+   "id": "watchtower_lookout_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "탑 꼭대기",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 꼭대기에 오르니 숲이 발아래 펼쳐진다. 멀리 보리울의 지붕도 보인다.",
+     "choices": [
+      {
+       "id": "scan",
+       "label": "숲을 찬찬히 내려다본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": {
+          "variants": [
+           {
+            "when": [
+             {
+              "type": "flag",
+              "flag": "goblin_tracks_found"
+             }
+            ],
+            "text": "숲 동쪽의 연기가 지난번보다 늘었다. 놈들의 수가 불어나고 있다."
+           }
+          ],
+          "fallback": "숲 동쪽에서 가는 연기 몇 줄이 피어오른다. 사람이 살 곳이 아니다."
+         },
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "바람이 거세 눈을 제대로 뜰 수 없었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "rest",
+       "label": "바람을 맞으며 숨을 돌린다",
+       "outcome": {
+        "text": "땀이 식고 머리가 맑아졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_old_map_01": {
+   "id": "watchtower_old_map_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "낡은 순찰 지도",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 지휘실 책상에 곰팡이 핀 지도가 펼쳐져 있다. 옛 순찰로가 꼼꼼히 그려져 있다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "지도를 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "숲과 탑, 마을을 잇는 샛길을 머릿속에 새겨 두었다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "글씨가 번져 알아볼 수 없다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_pinned_bandit_01": {
+   "id": "watchtower_pinned_bandit_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "들보에 깔린 도적",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 10
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 들보 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
+     "choices": [
+      {
+       "id": "free",
+       "label": "들보를 들어 올려 꺼내 준다",
+       "check": {
+        "stat": "str",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "도적이 비틀거리며 일어나더니 정말로 은화 주머니를 던져 주고 사라졌다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "들보가 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "bargain",
+       "label": "돈부터 내놓으라고 한다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 들보를 들어 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 6
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "도적이 침을 뱉었다. 말이 통하지 않는다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "내버려 두고 간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_raid_leader_01": {
+   "id": "watchtower_raid_leader_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "약탈대장",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 21
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 꼭대기에서 덩치 큰 고블린이 보리울 쪽을 내려다본다. 철퇴를 든 손목에 사람 이빨로 엮은 팔찌가 걸렸다.",
+     "choices": [
+      {
+       "id": "steady",
+       "label": "숨을 고르고 놈을 똑똑히 본다",
+       "check": {
+        "stat": "con",
+        "dc": 13,
+        "tags": [
+         "fear"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈이 왼쪽 다리를 끈다. 철퇴를 휘두를 때 옆구리가 빈다. 기억해 두었다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "guard",
+           "amount": 2
+          },
+          {
+           "type": "setFlag",
+           "flag": "raid_leader_seen"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "놈과 눈이 마주친 것 같았다. 정신없이 달려 내려왔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "조용히 내려간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_rotten_floor_01": {
+   "id": "watchtower_rotten_floor_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "썩은 마루",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 이 층 마루가 발밑에서 삐걱거린다. 건너편 방에 상자 하나가 보인다.",
+     "choices": [
+      {
+       "id": "cross",
+       "label": "들보만 골라 디디며 건넌다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "상자 안에는 은화 몇 닢과 깨끗한 천이 들어 있었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          },
+          {
+           "type": "addItem",
+           "itemId": "bandage",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "한쪽 발이 빠졌지만 겨우 건너갔다. 상자에는 은화 몇 닢뿐이었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "마루가 무너졌다. 아래층으로 떨어지며 팔을 크게 다쳤다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "돌아선다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_scout_camp_01": {
+   "id": "watchtower_scout_camp_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "식지 않은 재",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 12
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_scout_seen"
+    }
+   ],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 뒤편 바위 그늘에 모닥불 재가 아직 따뜻하다. 주변에 뼈다귀와 깃털이 흩어져 있다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "주변을 샅샅이 뒤진다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "재 속에서 뼈와 깃털을 엮은 부적을 찾았다. 고블린 정찰병들이 여기서 밤을 보냈다. 촌장에게 알려야 한다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "goblin_token",
+           "qty": 1
+          },
+          {
+           "type": "setFlag",
+           "flag": "goblin_scout_seen"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발자국을 쫓다 놓쳤다. 무언가 이 근처에 있었던 것만은 분명하다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "서둘러 자리를 뜬다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_shelter_01": {
+   "id": "watchtower_shelter_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "비 피할 곳",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갑자기 소나기가 쏟아진다. 탑 아래 아치 밑으로 몸을 피했다.",
+     "choices": [
+      {
+       "id": "rest",
+       "label": "비가 그칠 때까지 쉰다",
+       "outcome": {
+        "text": "빗소리를 들으며 깜박 졸았다. 몸이 조금 가벼워졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         },
+         {
+          "type": "hp",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "search",
+       "label": "그 틈에 아치 안쪽을 살핀다",
+       "outcome": {
+        "text": "벽 틈에 누군가 남긴 쓴 약차 봉지가 끼워져 있었다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bitter_tea",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_shepherd_01": {
+   "id": "watchtower_shepherd_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "양치기 소년",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 아래 비탈에서 양치기 소년이 울상이다. 양 한 마리가 무너진 담 너머로 사라졌다고 한다.",
+     "choices": [
+      {
+       "id": "track",
+       "label": "발자국을 따라간다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "가시덤불에 털이 걸린 양을 찾아 소년에게 돌려주었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발자국을 놓쳤다. 소년은 결국 혼자 양을 찾으러 갔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길을 재촉한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_soldier_bones_01": {
+   "id": "watchtower_soldier_bones_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "병사의 유골",
+   "conditions": [
+    {
+     "type": "notFlag",
+     "flag": "tower_sword_taken"
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 아래 무너진 방에서 녹슨 사슬 갑옷을 입은 유골을 발견했다. 손에 아직 검집을 쥐고 있다.",
+     "choices": [
+      {
+       "id": "take",
+       "label": "검집을 조심스럽게 빼낸다",
+       "check": {
+        "stat": "per",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "검집 속의 검은 녹 하나 없이 멀쩡하다. 왕국 병사의 검이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "soldier_sword",
+           "qty": 1
+          },
+          {
+           "type": "setFlag",
+           "flag": "tower_sword_taken"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "손이 미끄러져 유골이 무너졌다. 검은 썩은 들보 밑으로 굴러 들어갔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "bury",
+       "label": "돌을 덮어 묻어 준다",
+       "outcome": {
+        "text": "돌무덤을 쌓고 잠시 고개를 숙였다. 마음 한구석이 묘하게 든든하다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_stairs_01": {
+   "id": "watchtower_stairs_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "무너진 돌계단",
+   "conditions": [],
+   "weight": 7,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "감시탑으로 오르는 돌계단이 중간에서 무너져 있다. 위쪽 창문 틈으로 무언가 반짝인다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "벽 틈을 디디고 올라간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "창턱에 걸린 낡은 화살통을 찾았다. 쓸 만한 화살이 몇 개 남아 있다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "arrow",
+           "qty": 6
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "손끝이 찢어졌지만 화살 몇 개를 건졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "arrow",
+           "qty": 3
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발 디딘 돌이 빠졌다. 바닥으로 떨어져 한참을 끙끙댔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "위험해 보여 돌아선다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_supplies_01": {
+   "id": "watchtower_supplies_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "고블린 보급품",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 20
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 창고에 고블린들이 약탈한 곡식 자루가 산처럼 쌓여 있다. 지키는 놈은 보이지 않는다.",
+     "choices": [
+      {
+       "id": "burn",
+       "label": "불을 지른다",
+       "outcome": {
+        "text": "불길이 자루를 삼켰다. 연기 기둥이 하늘로 솟았다. 마을 사람들도 이 연기를 볼 것이다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 4
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "take",
+       "label": "자루 하나를 지고 간다",
+       "outcome": {
+        "text": "무거운 자루를 지고 숲길을 내달렸다. 식구들이 며칠은 배불리 먹겠다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 4
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "함정일지 몰라 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_wall_herbs_01": {
+   "id": "watchtower_wall_herbs_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "돌담 틈의 약초",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "햇볕 잘 드는 돌담 틈에 약초가 무더기로 자랐다. 사람 손이 닿지 않은 곳이다.",
+     "choices": [
+      {
+       "id": "pick",
+       "label": "골라서 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "잎이 실한 것으로 두 줌을 캤다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "비슷한 잡풀만 잔뜩 뜯었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "watchtower_war_council_01": {
+   "id": "watchtower_war_council_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "고블린들의 회의",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    },
+    {
+     "type": "notFlag",
+     "flag": "goblin_plan_known"
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 안에서 고블린들이 지도를 가운데 두고 떠든다. 보리울 쪽을 가리키는 손가락이 몇 번이나 보인다.",
+     "choices": [
+      {
+       "id": "listen",
+       "label": "벽에 붙어 엿듣는다",
+       "check": {
+        "stat": "agi",
+        "dc": 14,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들이 어느 길로, 언제 올지 알아냈다. 숨을 죽인 채 빠져나왔다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑의 돌이 굴렀다. 고블린들이 일제히 돌아본다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 둘이 괴성을 지르며 달려 나온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout",
+         "goblin_scout"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "쓰러진 고블린의 품에서 숯으로 그린 지도를 찾았다. 놈들의 길이 보인다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "watchtower_wolves_01": {
+   "id": "watchtower_wolves_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "탑을 둘러싼 늑대",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑에서 내려오는데 아래에서 늑대 두 마리가 기다리고 있다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "계단 입구를 막고 싸운다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "wait",
+       "label": "탑 위에서 버틴다",
+       "check": {
+        "stat": "con",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "해 질 녘이 되자 늑대들이 포기하고 떠났다. 다리가 후들거린다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "기다리다 지쳐 내려가는 수밖에 없었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "window",
+       "label": "뒤편 창문으로 빠져나가 무너진 담을 타고 내려간다",
+       "outcome": {
+        "text": "손바닥이 다 까졌지만 늑대들 몰래 빠져나왔다.",
+        "effects": [
+         {
+          "type": "hp",
+          "delta": -1
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         },
+         {
+          "type": "endDay"
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늑대들이 좁은 계단으로 한 마리씩 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf",
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늑대 두 마리가 계단 아래 쓰러졌다.",
+     "onEnter": [
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+     "choices": []
     }
    }
   }

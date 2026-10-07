@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_nightmare",
+  "category": "morning",
+  "title": "다시 꾼 꿈",
+  "conditions": [
+    {
+      "type": "trait",
+      "trait": "survivor"
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 10
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "꿈에서 또 그 자리에 쓰러져 있었다. 식은땀에 젖은 채로 눈을 떴다.",
+      "onEnter": [
+        {
+          "type": "fatigue",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    }
+  }
+}

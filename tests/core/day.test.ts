@@ -9,14 +9,17 @@ import { sceneView } from "@/core/events/runner";
 import { newRun } from "@/core/newRun";
 import type { JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
-import { d20Sequence } from "./fixtures";
+import { d20Sequence, withoutDailyEvents } from "./fixtures";
 
 const NOW = "2026-10-07T00:00:00.000Z";
 const start = (job: JobId = "farmer", seed = 1) => newRun(CONTENT, job, "하람", { seed, now: NOW });
 
+/** 아침·밤 이벤트 없이 하루 규칙만 본다 */
+const QUIET = withoutDailyEvents(CONTENT);
+
 /** 정해 둔 주사위로 코어 함수를 직접 부른다. draft 대신 깊은 복사본을 고친다. */
 function withDice(run: RunState, rng: Rng = d20Sequence()): Ctx {
-  return { draft: structuredClone(run), content: CONTENT, rng, feed: [] };
+  return { draft: structuredClone(run), content: QUIET, rng, feed: [] };
 }
 
 function edit(run: RunState, fn: (s: RunState) => void): RunState {
@@ -161,8 +164,10 @@ describe("훈련·휴식", () => {
     expect(res.feed).toEqual([{ kind: "toast", text: "그런 기술은 없다" }]);
   });
 
-  it("마을 볼일은 아직 잠겨 있고, 탐험은 지역을 골라야 한다", () => {
-    expect(actionStatus(start(), CONTENT, "village")).toEqual({ available: false, reason: "준비 중" });
+  it("마을 볼일은 찾아갈 사람을, 탐험은 지역을 골라야 한다", () => {
+    expect(actionStatus(start(), CONTENT, "village")).toEqual({ available: false, reason: "찾아갈 사람을 고른다" });
+    expect(actionStatus(start(), CONTENT, "village", { npc: "nobody" })).toEqual({ available: false, reason: "그런 사람은 없다" });
+    expect(actionStatus(start(), CONTENT, "village", { npc: "toby" })).toEqual({ available: true });
     expect(actionStatus(start(), CONTENT, "explore")).toEqual({ available: false, reason: "갈 곳을 고른다" });
   });
 });
@@ -349,10 +354,11 @@ describe("dispatch", () => {
   });
 
   it("하루를 넘기면 체크포인트", () => {
+    const quiet = (r: RunState, cmd: GameCommand) => dispatch(r, cmd, QUIET);
     let run = start();
-    run = send(run, { type: "chooseAction", action: "rest" }).state;
-    run = send(run, { type: "chooseAction", action: "rest" }).state;
-    const res = send(run, { type: "endDay" });
+    run = quiet(run, { type: "chooseAction", action: "rest" }).state;
+    run = quiet(run, { type: "chooseAction", action: "rest" }).state;
+    const res = quiet(run, { type: "endDay" });
     expect(res.checkpoint).toBe(true);
     expect(res.state.time.day).toBe(2);
   });

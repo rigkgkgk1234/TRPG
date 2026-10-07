@@ -1,0 +1,116 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_goblin_cache_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "고블린의 은닉처",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 화살 묶음과 거칠게 그린 지도가 보인다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "지도를 살핀다",
+          "check": {
+            "stat": "per",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "숲에서 보리울로 이어지는 길 세 갈래가 그려져 있다. 놈들이 어디로 올지 알 것 같다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "arrow",
+                  "qty": 5
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "알아볼 수 없는 표시뿐이다. 그때 뒤에서 무거운 발소리가 들렸다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "burn",
+          "label": "짐에 불을 지른다",
+          "outcome": {
+            "text": "불길이 짐을 삼켰다. 연기를 보고 놈들이 오기 전에 자리를 떴다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "건드리지 않고 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "덩치 큰 고블린이 도끼를 들고 나타났다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린 전사가 쓰러졌다. 짐을 뒤져 지도를 챙겼다. 놈들이 어디로 올지 알 것 같다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_plan_known"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

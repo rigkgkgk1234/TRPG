@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_good_neighbor",
+  "category": "morning",
+  "title": "동네 일꾼",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "favors_done",
+      "value": 5
+    }
+  ],
+  "weight": 60,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "아침부터 문을 두드리는 사람이 셋이나 된다. 다들 손이 필요할 때 제일 먼저 이 집을 떠올리는 모양이다.",
+      "onEnter": [
+        {
+          "type": "gainTrait",
+          "trait": "neighbor_helper"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

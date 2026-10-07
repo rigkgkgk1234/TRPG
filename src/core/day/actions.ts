@@ -4,9 +4,9 @@ import { performCheck } from "../check/perform";
 import { gainSkillXp, skillXpRoomToday } from "../check/progress";
 import { conditionReason, evalCondition } from "../events/conditions";
 import { EXPLORE_REGIONS } from "../events/explore";
-import { startExplore } from "../events/runner";
+import { startExplore, startVillageVisit } from "../events/runner";
 import { eventPool } from "../events/selector";
-import { josa, SKILL_LABEL } from "../labels";
+import { isNpcId, josa, SKILL_LABEL, type NpcId } from "../labels";
 import {
   DAILY_ACTIONS,
   SKILL_MAX_RANK,
@@ -30,13 +30,13 @@ export const LIGHT_WOUND_RESTS = 2;
 /** 대실패에 별도 분기가 없을 때의 추가 페널티 (SYSTEM_SPEC 2-4) */
 const CRIT_FAIL_FATIGUE = 1;
 
-/** 구현된 행동. 마을 볼일은 NPC 이벤트가 생기면 연다. */
-const IMPLEMENTED: ReadonlySet<DailyActionId> = new Set(["work", "trainSolo", "trainLesson", "explore", "rest"]);
+/** 구현된 행동. 로웬 다녀오기는 확장. */
+const IMPLEMENTED: ReadonlySet<DailyActionId> = new Set(["work", "trainSolo", "trainLesson", "explore", "rest", "village"]);
 
 export const MVP_ACTIONS: readonly DailyActionDef[] = DAILY_ACTIONS.filter((a) => a.mvp);
 
-/** 훈련할 숙련 / 탐험할 지역 */
-export interface ActionTarget { skill?: SkillId; region?: RegionId }
+/** 훈련할 숙련 / 탐험할 지역 / 찾아갈 사람 */
+export interface ActionTarget { skill?: SkillId; region?: RegionId; npc?: string }
 
 export type ActionStatus = { available: true } | { available: false; reason: string };
 
@@ -45,7 +45,7 @@ export function actionStatus(
   run: RunState,
   content: Pick<ContentDB, "events" | "items" | "traits">,
   id: DailyActionId,
-  { skill, region }: ActionTarget = {},
+  { skill, region, npc }: ActionTarget = {},
 ): ActionStatus {
   const def = DAILY_ACTIONS.find((a) => a.id === id);
   if (!def || !def.mvp) return locked("아직 갈 수 없다");
@@ -63,6 +63,12 @@ export function actionStatus(
     if (eventPool(content, "explore", region).length === 0) return locked("준비 중");
   }
 
+  if (id === "village") {
+    if (!npc) return locked("찾아갈 사람을 고른다");
+    if (!isNpcId(npc)) return locked("그런 사람은 없다");
+    if (eventPool(content, "npc", undefined, npc).length === 0) return locked("준비 중");
+  }
+
   if (id === "trainSolo" || id === "trainLesson") {
     if (!skill) return locked("훈련할 숙련을 고른다");
     if (!Object.hasOwn(run.player.skills, skill)) return locked("그런 기술은 없다");
@@ -78,8 +84,8 @@ export function actionStatus(
  * 판정은 행동 전 피로로 굴리고, 피로는 행동 뒤에 쌓인다 (일을 마치고 지친다).
  * @returns 처리했으면 true. 불가능한 행동이면 피드에 사유만 남기고 false.
  */
-export function handleAction(ctx: Ctx, id: DailyActionId, { skill, region }: ActionTarget = {}): boolean {
-  const status = actionStatus(ctx.draft, ctx.content, id, { skill, region });
+export function handleAction(ctx: Ctx, id: DailyActionId, { skill, region, npc }: ActionTarget = {}): boolean {
+  const status = actionStatus(ctx.draft, ctx.content, id, { skill, region, npc });
   if (!status.available) {
     ctx.feed.push({ kind: "toast", text: status.reason });
     return false;
@@ -95,8 +101,9 @@ export function handleAction(ctx: Ctx, id: DailyActionId, { skill, region }: Act
   // 일하기는 직업마다 피로가 달라 work()가 직접 더한다
   if (id !== "work") changeFatigue(ctx, def.fatigue);
 
-  // 탐험은 카드를 다 본 뒤 runner가 슬롯을 넘긴다
+  // 탐험·마을 볼일은 이벤트가 끝난 뒤 runner가 슬롯을 넘긴다
   if (id === "explore") startExplore(ctx, region!);
+  else if (id === "village") startVillageVisit(ctx, npc as NpcId);
   else advanceSlot(ctx.draft);
   return true;
 }

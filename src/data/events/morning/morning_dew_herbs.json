@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_dew_herbs",
+  "category": "morning",
+  "title": "이슬 맺힌 텃밭",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 10
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "어머니의 텃밭 가장자리에 처음 보는 풀이 돋았다. 잎에 이슬이 맺혀 반짝인다.",
+      "choices": [
+        {
+          "id": "pick",
+          "label": "약초인지 살펴보고 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "상처에 붙이는 약초다. 뿌리째 조심스럽게 캤다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "잡초였다. 어머니가 웃으시며 뽑아 버리셨다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그대로 둔다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_storm",
+  "category": "night",
+  "title": "폭풍",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 10
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "거센 바람에 지붕이 들썩인다. 덧문이 떨어져 나갈 듯 덜컹거린다.",
+      "choices": [
+        {
+          "id": "roof",
+          "label": "지붕에 올라가 이엉을 붙잡아 맨다",
+          "check": {
+            "stat": "str",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "비에 흠뻑 젖었지만 지붕은 지켜 냈다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "미끄러져 마당으로 떨어졌다. 지붕 한쪽이 바람에 날아갔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "huddle",
+          "label": "식구들과 구석에 모여 버틴다",
+          "outcome": {
+            "text": "아침에 보니 지붕 한쪽이 날아가고 없었다. 오전 내내 고쳐야 한다.",
+            "effects": [
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_goblin_pair_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "숲길의 고블린들",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "고블린 둘이 낄낄거리며 숲길을 걸어온다. 하나는 활을, 하나는 녹슨 칼을 들었다.",
+      "choices": [
+        {
+          "id": "ambush",
+          "label": "덤불에 숨어 기습한다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈들이 바로 앞을 지날 때 뛰쳐나갔다!",
+              "next": "fight_ambush"
+            },
+            "fail": {
+              "text": "숨기도 전에 들켰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "hide",
+          "label": "숨어서 지나가길 기다린다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈들은 수다를 떨며 마을 쪽으로 가는 길을 확인하고 돌아갔다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "한 놈이 코를 킁킁대더니 이쪽을 가리켰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "retreat",
+          "label": "놈들이 오기 전에 멀리 돌아간다",
+          "outcome": {
+            "text": "숲길을 버리고 덤불 속으로 한참을 돌아갔다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린들이 괴성을 지르며 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout",
+              "goblin_scout"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambush": {
+      "text": "앞선 고블린이 비틀거린다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout",
+              "goblin_scout"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled",
+            "firstAttackAdvantage": true
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "두 놈 다 쓰러지거나 달아났다. 마을까지 길을 알아 두려던 것이 분명하다.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

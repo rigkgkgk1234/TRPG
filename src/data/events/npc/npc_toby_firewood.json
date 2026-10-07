@@ -1,0 +1,62 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_firewood",
+  "category": "npc",
+  "npc": "toby",
+  "title": "장작 패기",
+  "conditions": [],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "토비가 여관 뒤에 쌓인 통나무를 가리킨다. 장작을 패 주면 품삯에 밥까지 주겠다고 한다.",
+      "choices": [
+        {
+          "id": "chop",
+          "label": "도끼를 든다",
+          "check": {
+            "stat": "str",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "장작이 처마 밑까지 쌓였다. 토비가 품삯과 함께 남은 음식을 싸 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "food",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "도끼질이 영 서툴러 반도 못 팼다. 그래도 토비는 품삯을 쳐주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 하겠다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

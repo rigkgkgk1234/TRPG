@@ -1,0 +1,106 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_wolf_pair_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "늑대 두 마리",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "늑대 두 마리가 양쪽에서 천천히 거리를 좁혀 온다. 사냥하는 법을 아는 놈들이다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "나무를 등지고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "climb",
+          "label": "나무 위로 올라간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "가지 위에서 한참을 버텼다. 늑대들은 해가 기울자 포기하고 떠났다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "가지가 부러졌다. 늑대들이 달려든다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "food",
+          "label": "고기를 던지고 물러난다",
+          "cost": {
+            "food": 2
+          },
+          "outcome": {
+            "text": "늑대들이 고기를 두고 다투는 사이 빠져나왔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늑대들이 동시에 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf",
+              "wolf"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 무기를 내렸다.",
+      "onEnter": [
+        {
+          "type": "incFlag",
+          "flag": "wolves_killed",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

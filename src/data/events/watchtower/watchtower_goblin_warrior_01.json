@@ -1,0 +1,104 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_goblin_warrior_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "탑을 차지한 고블린",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 14
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 입구에 고블린 전사가 버티고 섰다. 사람 키만 한 도끼를 어깨에 걸쳤다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "sneak",
+          "label": "놈의 눈을 피해 물러난다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "바위 뒤로 몸을 숨기며 빠져나왔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "놈이 코를 킁킁대더니 도끼를 치켜들었다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "retreat",
+          "label": "오늘은 탑을 포기하고 돌아간다",
+          "outcome": {
+            "text": "멀찍이 돌아 숲길로 빠져나왔다. 헛걸음이지만 목숨이 먼저다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "endDay"
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 전사가 포효하며 도끼를 휘두른다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린 전사가 무릎을 꿇고 쓰러졌다. 이런 놈이 몇이나 더 있을까.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

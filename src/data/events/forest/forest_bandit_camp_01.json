@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_bandit_camp_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "식은 모닥불",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 8
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "나무 사이에 식은 모닥불 자리가 있다. 뼈다귀와 빈 술병이 흩어져 있다. 도적들이 쉬어 간 자리다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "주변을 뒤진다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "돌 밑에서 동전 주머니를 찾았다. 누군가 숨겨 두고 잊은 모양이다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "쓸 만한 것은 없었다. 대신 멀리서 사람 목소리가 들렸다.",
+              "next": "voices"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "서둘러 자리를 뜬다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "voices": {
+      "text": "목소리가 가까워진다. 칼을 찬 사내 하나가 덤불을 헤치고 나왔다.",
+      "choices": [
+        {
+          "id": "hide",
+          "label": "덤불에 엎드린다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "사내는 모닥불 자리를 한 번 둘러보고 돌아갔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "사내와 눈이 마주쳤다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "먼저 덤빈다",
+          "outcome": {
+            "next": "fight"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "사내가 칼을 뽑아 들었다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "사내가 피를 흘리며 달아났다. 떨어뜨린 주머니를 주웠다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "정신없이 달려 숲 어귀까지 나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

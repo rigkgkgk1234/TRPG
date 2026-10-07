@@ -10,7 +10,7 @@ import { consumeItem } from "@/core/items/inventory";
 import { newRun } from "@/core/newRun";
 import type { CombatSetup, EnemyId, EventDef, JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
-import { d20Sequence } from "./fixtures";
+import { d20Sequence, withoutDailyEvents } from "./fixtures";
 
 const NOW = "2026-10-07T00:00:00.000Z";
 const start = (job: JobId = "farmer", seed = 1) => newRun(CONTENT, job, "하람", { seed, now: NOW });
@@ -119,22 +119,23 @@ describe("전투 진행", () => {
   });
 
   it("강타는 피로 +1, 맞히면 피해 +3", () => {
-    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(18), fd(1, 6), f20(1)));
+    // 멧돼지 HP 9 → 4로 절반 이하가 되어 라운드 끝에 사기 굴림(0.99: 버팀)
+    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(18), fd(1, 6), f20(1), 0.99));
     combatStep(ctx, { type: "powerAttack", targetId: "boar_1" });
-    expect(ctx.draft.combat!.enemies[0].hp).toBe(10 - (1 + 1 + 3));
+    expect(ctx.draft.combat!.enemies[0].hp).toBe(9 - (1 + 1 + 3));
     expect(ctx.draft.resources.fatigue).toBe(1);
   });
 
   it("대성공은 피해 주사위 2배, 근접 대실패는 그 라운드 방어도 −2", () => {
-    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), fd(3, 6), fd(4, 6), f20(1)));
+    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), fd(3, 6), fd(4, 6), f20(1), 0.99));
     combatStep(crit, { type: "attack", targetId: "boar_1" });
-    expect(crit.draft.combat!.enemies[0].hp).toBe(10 - (3 + 4 + 1));
+    expect(crit.draft.combat!.enemies[0].hp).toBe(9 - (3 + 4 + 1));
 
     // 대실패 뒤 멧돼지 굴림 7 + 3 = 10: 평소 방어도 10이면 맞지만, −2라 8 → 역시 명중. 6 + 3 = 9는 −2일 때만 명중
     const fumble = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(1), f20(6), fd(2, 6)));
     combatStep(fumble, { type: "attack", targetId: "boar_1" });
     expect(texts(fumble)).toContain("중심을 잃고 비틀거렸다. (이번 라운드 방어도 −2)");
-    expect(fumble.draft.player.hp).toBe(12 - 3);
+    expect(fumble.draft.player.hp).toBe(12 - 2);
     expect(fumble.draft.combat!.defensePenalty).toBe(0); // 라운드가 끝나면 풀린다
   });
 
@@ -259,9 +260,10 @@ describe("전투 끝", () => {
   it("치명상을 방치하면 아침마다 사망 굴림 (D20 + 체력 ≥ 8)", () => {
     const run = edit(start("hunter"), (s) => { s.time.phase = "evening"; s.player.wound.level = "critical"; s.resources.food = 2; });
     // 사냥꾼 체력 +1: 7 + 1 = 8 버팀, 6 + 1 = 7 사망
-    const live = ctxOf(run, d20Sequence(7));
+    const quiet = withoutDailyEvents(CONTENT);
+    const live = { ...ctxOf(run, d20Sequence(7)), content: quiet };
     expect(runEvening(live)).toBe(true);
-    const die = ctxOf(run, d20Sequence(6));
+    const die = { ...ctxOf(run, d20Sequence(6)), content: quiet };
     expect(runEvening(die)).toBe(false);
     expect(die.draft.ending).toBe("death");
   });

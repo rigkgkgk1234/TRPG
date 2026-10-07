@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_cheap_porridge",
+  "category": "morning",
+  "title": "여관의 아침 죽",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 굴뚝에서 연기가 피어오른다. 토비가 보리죽을 넉넉히 쑤었다며 싸게 가져가라고 한다.",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "은화 한 닢어치를 산다",
+          "cost": {
+            "silver": 1
+          },
+          "outcome": {
+            "text": "죽 두 그릇을 단지에 담아 왔다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "배가 불러 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

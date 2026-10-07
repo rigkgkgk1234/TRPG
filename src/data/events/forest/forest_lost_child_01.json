@@ -1,0 +1,57 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_lost_child_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "우는 아이",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 12
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "덤불 너머에서 아이 우는 소리가 들린다. 방앗간 집 막내가 길을 잃고 주저앉아 있다.",
+      "choices": [
+        {
+          "id": "guide",
+          "label": "아이 손을 잡고 마을로 가는 길을 찾는다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "해가 지기 전에 방앗간에 닿았다. 아이 어머니가 울면서 몇 번이고 고개를 숙였다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 4
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "한참을 헤매다 겨우 마을 불빛을 찾았다. 그래도 아이는 무사하다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_armor_cache_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "봉인된 궤짝",
+  "conditions": [
+    {
+      "type": "notFlag",
+      "flag": "tower_armor_taken"
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "지휘실 바닥 밑에 쇠 띠를 두른 궤짝이 숨겨져 있다. 자물쇠는 녹이 슬었다.",
+      "choices": [
+        {
+          "id": "force",
+          "label": "자물쇠를 부순다",
+          "check": {
+            "stat": "str",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "궤짝 안에 기름 먹인 가죽 갑옷이 고이 개켜져 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "leather_armor",
+                  "qty": 1
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "tower_armor_taken"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "손만 다쳤다. 자물쇠는 꿈쩍도 하지 않는다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "포기한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

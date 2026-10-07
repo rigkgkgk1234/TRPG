@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_magda_lesson",
+  "category": "npc",
+  "npc": "magda",
+  "title": "독초와 약초",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "할멈이 두 풀을 나란히 내민다. 하나는 상처를 아물게 하고, 하나는 사람을 잡는다고 한다.",
+      "choices": [
+        {
+          "id": "learn",
+          "label": "차이를 배운다",
+          "outcome": {
+            "text": "잎맥과 뿌리 냄새로 구분하는 법을 배웠다. 할멈은 틀릴 때마다 손등을 때렸다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "herbalism",
+                "amount": 2
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

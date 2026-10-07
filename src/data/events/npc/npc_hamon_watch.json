@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_hamon_watch",
+  "category": "npc",
+  "npc": "hamon",
+  "title": "보초 순번",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_defend"
+    },
+    {
+      "type": "dayRange",
+      "min": 22
+    }
+  ],
+  "weight": 10,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "촌장이 목책 보초 순번을 짜고 있다. 다들 밤잠을 설쳐 지쳤다고 한다.",
+      "choices": [
+        {
+          "id": "night_watch",
+          "label": "오늘 밤 첫 순번을 맡는다",
+          "outcome": {
+            "text": "밤바람을 맞으며 목책을 지켰다. 아침에 교대한 이웃이 고맙다고 했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 3
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "rally",
+          "label": "보초 서는 사람들을 북돋는다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "농담 몇 마디에 굳은 얼굴들이 풀렸다. 순번을 자청하는 사람이 늘었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "다들 지쳐서 웃을 기운도 없었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "집안일이 바쁘다며 나온다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

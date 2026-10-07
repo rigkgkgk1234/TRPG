@@ -421,7 +421,7 @@ export interface EventDef {
   id: EventId;
   category: EventCategory;
   region?: RegionId;
-  /** npc 이벤트의 대상 NPC */
+  /** npc 이벤트의 대상 NPC: hamon · brock · lena · magda · toby (labels.ts의 NPC_IDS) */
   npc?: string;
   title: string;
   conditions: Condition[];

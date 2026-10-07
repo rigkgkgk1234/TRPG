@@ -4,13 +4,14 @@ import { buildCheckContext, previewCheck } from "../check/modifiers";
 import { performCheck } from "../check/perform";
 import { combatStep, finishCombat } from "../combat/combat";
 import { changeFatigue, changeFood, changeSilver } from "../day/resources";
+import { beginDay } from "../day/evening";
 import { advanceSlot } from "../day/time";
 import { countInBag, removeItem } from "../items/inventory";
-import { josa, REGION_LABEL } from "../labels";
+import { josa, NPC_LABEL, REGION_LABEL, type NpcId } from "../labels";
 import type {
-  ActiveEventState, CheckOutcome, ChoiceCost, CombatAction, ChoiceDef, Effect, EventDef, Outcome, OutcomeMap, RegionId, RollMode, RunState, SceneDef, SceneId,
+  ActiveEventState, CheckOutcome, EventCategory, ChoiceCost, CombatAction, ChoiceDef, Effect, EventDef, Outcome, OutcomeMap, RegionId, RollMode, RunState, SceneDef, SceneId,
 } from "../types";
-import { conditionReason, evalAll, evalCondition, itemName } from "./conditions";
+import { conditionReason, evalAll, evalCondition, itemName, WOUND_RANK } from "./conditions";
 import { applyEffects } from "./effects";
 import { DEEP_FATIGUE, EXPLORE_CARDS, isDeeperPrompt, stopExplore } from "./explore";
 import { recordEvent, selectEvent, selectStory } from "./selector";
@@ -39,8 +40,8 @@ export interface ChoiceView {
 }
 
 export type SceneView =
-  | { kind: "choices"; title: string; text: string; choices: ChoiceView[]; progress?: ExploreProgress }
-  | { kind: "continue"; title: string; text: string; progress?: ExploreProgress }
+  | { kind: "choices"; title: string; text: string; choices: ChoiceView[]; progress?: ExploreProgress; category: EventCategory }
+  | { kind: "continue"; title: string; text: string; progress?: ExploreProgress; category: EventCategory }
   | { kind: "deeper"; region: RegionId; progress: ExploreProgress };
 
 export interface ExploreProgress { region: RegionId; card: number; deep: boolean }
@@ -56,12 +57,12 @@ export function sceneView(run: RunState, content: ContentDB): SceneView | null {
   const scene = ev?.scenes[active.sceneId];
   if (!ev || !scene) return null;
   const text = resolveText(scene.text, run);
-  if (scene.choices.length === 0) return { kind: "continue", title: ev.title, text, progress };
+  if (scene.choices.length === 0) return { kind: "continue", title: ev.title, text, progress, category: ev.category };
 
   const choices = scene.choices
     .filter((c) => !c.hideIfLocked || evalAll(c.conditions, run))
     .map((c) => choiceView(run, content, ev, c));
-  return { kind: "choices", title: ev.title, text, choices, progress };
+  return { kind: "choices", title: ev.title, text, choices, progress, category: ev.category };
 }
 
 function choiceView(run: RunState, content: ContentDB, ev: EventDef, c: ChoiceDef): ChoiceView {
@@ -208,6 +209,25 @@ export function startExplore(ctx: Ctx, region: RegionId): void {
   drawCard(ctx, region, false, 0);
 }
 
+/** 마을 볼일: 그 사람의 이벤트 하나. 행동 슬롯은 이벤트가 끝날 때 쓴다 (endEvent). */
+export function startVillageVisit(ctx: Ctx, npc: NpcId): void {
+  ctx.feed.push({ kind: "text", text: `${josa(NPC_LABEL[npc], "을/를")} 찾아갔다.` });
+  const ev = selectEvent(ctx, "npc", undefined, false, npc);
+  if (ev) startEvent(ctx, ev);
+  else advanceSlot(ctx.draft);
+}
+
+/**
+ * 아침·밤 이벤트를 가중치로 하나 골라 시작한다. 후보가 없으면 아무 일도 없다.
+ * @returns 시작했으면 true
+ */
+export function startRandomEvent(ctx: Ctx, category: "morning" | "night"): boolean {
+  const ev = selectEvent(ctx, category);
+  if (!ev) return false;
+  startEvent(ctx, ev);
+  return true;
+}
+
 // ───────────────────────── 장면 이동 ─────────────────────────
 
 function currentScene(ctx: Ctx): { ev: EventDef; scene: SceneDef } | null {
@@ -296,16 +316,30 @@ function startEvent(ctx: Ctx, ev: EventDef, explore?: ActiveEventState["explore"
   enterScene(ctx, ev.startScene);
 }
 
-/** 이벤트 하나가 끝났다. 탐험 중이면 다음 카드·"더 깊이" 질문·귀가 중 하나로 이어진다. */
+/**
+ * 이벤트 하나가 끝났다. 탐험 중이면 다음 카드·"더 깊이" 질문·귀가 중 하나로 이어진다.
+ * 마을 볼일(npc)이면 행동 슬롯을 쓰고, 밤 이벤트면 다음 날 아침을 연다.
+ */
 function endEvent(ctx: Ctx): void {
   const s = ctx.draft;
   const ex = s.activeEvent?.explore;
   if (!ex) {
+    const category = ctx.content.events[s.activeEvent!.eventId]?.category;
     s.activeEvent = null;
+    const acting = s.time.phase === "am" || s.time.phase === "pm";
+    // 이벤트 중에 탈진했으면 그날은 끝 (아침 이벤트·스토리도 마찬가지)
+    if (acting && s.time.collapsedToday) s.time.phase = "evening";
+    // 쓰러져 실려 왔으면 이미 저녁이다
+    else if (category === "npc" && acting) advanceSlot(s);
+    if (category === "night") beginDay(ctx);
     return;
   }
   if (s.time.collapsedToday) finishExplore(ctx);
-  else if (ex.cardsDrawn < EXPLORE_CARDS) drawCard(ctx, ex.region, ex.deep, ex.cardsDrawn);
+  else if (WOUND_RANK[s.player.wound.level] >= WOUND_RANK.serious) {
+    // 중상 이상이면 탐험할 수 없다 (SYSTEM_SPEC 3-5). 다친 채 다음 카드로 들어가지 않고 돌아온다
+    ctx.feed.push({ kind: "text", text: "상처가 깊다. 더 돌아다닐 몸이 아니다." });
+    finishExplore(ctx);
+  } else if (ex.cardsDrawn < EXPLORE_CARDS) drawCard(ctx, ex.region, ex.deep, ex.cardsDrawn);
   else if (!ex.deep) s.activeEvent!.sceneId = "END";
   else finishExplore(ctx);
 }

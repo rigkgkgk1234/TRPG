@@ -419,7 +419,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 |------|----------|------|------|
 | 없음 | — | — | — |
 | 경상 | `str`·`agi` 판정 -2 | — | 휴식 행동 2회, 또는 붕대·약초 사용 |
-| 중상 | 모든 판정 -4, 불리함 | 탐험·훈련 불가, 밤 HP 회복 없음 | 의원 치료(은화 5) 후 3일 → 경상. 방치 5일 → 경상 + 흔적 「오래된 상처」(민첩 -1 영구) |
+| 중상 | 모든 판정 -4, 불리함 | 탐험·훈련 불가(탐험 중 중상이 되면 남은 카드 없이 귀가), 밤 HP 회복 없음 | 의원 치료(은화 5) 후 3일 → 경상. 방치 5일 → 경상 + 흔적 「오래된 상처」(민첩 -1 영구) |
 | 치명상 | 모든 판정 -4, 불리함 | 마을 볼일·휴식만 가능 | 신전/치유 물약 → 중상. 방치 시 매일 아침 사망 굴림(DC 8) |
 
 **부상 발생 조건**
@@ -451,7 +451,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 적 | HP | 방어도 | 공격 | 피해 | 속도 | 사기 | 패배 규칙 | 태그 |
 |----|---:|------:|-----:|------|----:|----:|-----------|------|
 | 늑대 | 6 | 11 | +3 | 1d6 | 4 | 50% | deathSave | beast |
-| 멧돼지 | 10 | 10 | +3 | 1d6+1 | 2 | — | deathSave | beast |
+| 멧돼지 | 9 | 10 | +3 | 1d6 | 2 | 30% | deathSave | beast |
 | 도적 | 9 | 12 | +3 | 1d6 | 2 | 30% | robbed | humanoid |
 | 고블린 정찰병 | 6 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
 | 고블린 전사 | 12 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
@@ -601,10 +601,10 @@ EventDef
 | 종류 | 발생 시점 | 선택 방식 |
 |------|----------|-----------|
 | `story` | 매 슬롯 시작 전 검사 | 조건 충족 시 **강제 발생**, `priority` 높은 순 1개 |
-| `morning` | 매일 아침 1회 | 가중치 무작위 1개 (소문·날씨·가벼운 효과) |
+| `morning` | 매일 아침 1회 (2일차부터, 날이 바뀐 직후) | 가중치 무작위 1개 (소문·날씨·가벼운 효과). 후보가 없으면 없음 |
 | `explore` | 탐험 행동 | 지역 풀에서 카드 2장 연속, 2장 후 "더 깊이" 선택 시 1장 추가 |
-| `npc` | 마을 볼일 행동 | NPC 선택 → 그 NPC 풀에서 가중치 무작위 1개 |
-| `night` | 저녁 정산 후 | **25%** 확률로 1개 |
+| `npc` | 마을 볼일 행동 | NPC 선택(`hamon`·`brock`·`lena`·`magda`·`toby`) → 그 NPC 풀에서 가중치 무작위 1개. 이벤트가 끝나면 행동 슬롯을 쓴다. 후보가 없으면 `npc_fallback` |
+| `night` | 저녁 정산 후 | **25%** 확률로 1개. 밤 이벤트가 끝나야 날이 바뀐다 (다음 날 오전을 잃게 하려면 `loseNextSlot`) |
 
 **발생 알고리즘 (공통)**
 1. 해당 종류·지역의 이벤트 풀을 가져온다.
@@ -614,7 +614,8 @@ EventDef
 5. 가중치 보정: 현재 등급과 같은 등급의 카드 가중치 ×2. 최근 3일 안에 본 카드 ×0.3.
 6. 가중치 무작위 추첨. 후보가 없으면 지역별 `fallback` 이벤트("조용한 하루").
 
-**MVP 이벤트 수량 목표**: story 15 / morning 30 / explore 숲 30·감시탑 30 / npc 20 / night 10 → **약 135개**.
+**MVP 이벤트 수량 목표**: story 15 / morning 30 / explore 숲 30·감시탑 30 / npc 20 / night 10 → **약 135개**. (7주차 현재: story 17 / morning 30 / 숲 30·감시탑 30 / npc 20 / night 10 = 137개 + 대체 이벤트 3개)
+- 아침·밤 이벤트는 행동 슬롯 밖에서 일어나므로 `endDay`를 쓸 수 없다(빌드 오류). 마을 볼일 이벤트는 `npc`가 있어야 한다.
 
 ### 4-4. 주요 스토리 트리거 예시
 
@@ -733,7 +734,7 @@ export interface EventDef {
   id: EventId;
   category: EventCategory;
   region?: RegionId;
-  /** npc 이벤트의 대상 NPC */
+  /** npc 이벤트의 대상 NPC: hamon · brock · lena · magda · toby (labels.ts의 NPC_IDS) */
   npc?: string;
   title: string;
   conditions: Condition[];
@@ -1091,8 +1092,8 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 4. 부상 타이머 진행(치료 경과일, 방치일)
 5. 세금(7의 배수일)
 6. 능력치 성장 굴림(조건 충족한 것)
-7. 30일차면 최종 습격, 아니면 밤 이벤트 25% 판정
-8. 날짜 +1, `skillXpToday` 초기화 → **자동 저장** → 아침
+7. 30일차면 최종 습격, 아니면 밤 이벤트 25% 판정 (밤 이벤트 콘텐츠가 없으면 굴리지 않는다). 밤 이벤트가 나면 8은 그 이벤트가 끝난 뒤에
+8. 날짜 +1, `skillXpToday` 초기화 → 치명상 사망 굴림 → 아침 이벤트 → **자동 저장(체크포인트)**
 
 ```ts
 export type DayPhase = "morning" | "am" | "pm" | "evening";

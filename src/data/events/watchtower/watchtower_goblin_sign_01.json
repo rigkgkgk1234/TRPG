@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_goblin_sign_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "벽의 표식",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 10
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 입구 벽에 숯과 피로 그린 표식이 있다. 손바닥 자국과 이빨 모양이 잔뜩 그려져 있다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "표식을 살핀다",
+          "check": {
+            "stat": "per",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "표식 아래 작은 맨발 자국이 어지럽다. 고블린이 이 탑을 드나들고 있다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "무슨 뜻인지 알 수 없다. 등골이 서늘해 서둘러 자리를 떴다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "못 본 척 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

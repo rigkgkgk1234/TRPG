@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_lena_stories",
+  "category": "npc",
+  "npc": "lena",
+  "title": "국경의 이야기",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "레나가 칼을 손질하며 젊은 시절 국경에서 싸운 이야기를 들려준다. 고블린은 불과 함성을 싫어한다고 한다.",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "끝까지 듣는다",
+          "outcome": {
+            "text": "방패를 어떻게 세워야 등 뒤의 동료가 사는지, 레나는 몇 번이고 손짓으로 보여 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 2
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

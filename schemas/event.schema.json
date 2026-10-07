@@ -16,7 +16,7 @@
         },
         "npc": {
           "type": "string",
-          "description": "npc 이벤트의 대상 NPC"
+          "description": "npc 이벤트의 대상 NPC: hamon · brock · lena · magda · toby (labels.ts의 NPC_IDS)"
         },
         "title": {
           "type": "string"

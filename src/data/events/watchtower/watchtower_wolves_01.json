@@ -1,0 +1,119 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_wolves_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "탑을 둘러싼 늑대",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑에서 내려오는데 아래에서 늑대 두 마리가 기다리고 있다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "계단 입구를 막고 싸운다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "wait",
+          "label": "탑 위에서 버틴다",
+          "check": {
+            "stat": "con",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "해 질 녘이 되자 늑대들이 포기하고 떠났다. 다리가 후들거린다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "기다리다 지쳐 내려가는 수밖에 없었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "window",
+          "label": "뒤편 창문으로 빠져나가 무너진 담을 타고 내려간다",
+          "outcome": {
+            "text": "손바닥이 다 까졌지만 늑대들 몰래 빠져나왔다.",
+            "effects": [
+              {
+                "type": "hp",
+                "delta": -1
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              },
+              {
+                "type": "endDay"
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늑대들이 좁은 계단으로 한 마리씩 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf",
+              "wolf"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늑대 두 마리가 계단 아래 쓰러졌다.",
+      "onEnter": [
+        {
+          "type": "incFlag",
+          "flag": "wolves_killed",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_old_wound_ache",
+  "category": "night",
+  "title": "쑤시는 옛 상처",
+  "conditions": [
+    {
+      "type": "trait",
+      "trait": "old_wound"
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "눅눅한 밤공기에 오래된 상처가 욱신거린다. 이리저리 몸을 뒤척이다 날이 샜다.",
+      "onEnter": [
+        {
+          "type": "fatigue",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    }
+  }
+}

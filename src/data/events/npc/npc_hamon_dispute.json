@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_hamon_dispute",
+  "category": "npc",
+  "npc": "hamon",
+  "title": "밭 경계 다툼",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "촌장 댁 마당에서 두 이웃이 밭 경계를 두고 언성을 높인다. 촌장이 이쪽을 보더니 한마디 거들어 달라고 한다.",
+      "choices": [
+        {
+          "id": "mediate",
+          "label": "양쪽 이야기를 듣고 중재한다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "경계석을 반씩 옮기자는 말에 둘 다 마지못해 고개를 끄덕였다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 4
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "한쪽 편을 드는 것처럼 들렸는지 양쪽 모두 얼굴을 붉혔다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "끼어들지 않는다",
+          "outcome": {
+            "text": "다툼은 해가 질 때까지 이어졌다고 한다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

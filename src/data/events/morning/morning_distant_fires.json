@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_distant_fires",
+  "category": "morning",
+  "title": "숲 너머의 불빛",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 22
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "route_defend"
+              }
+            ],
+            "text": "밤새 숲 너머로 불빛이 깜박였다. 목책에서 보초를 선 이웃이 하품을 하며 손을 흔든다."
+          },
+          {
+            "when": [
+              {
+                "type": "flag",
+                "flag": "route_flee"
+              }
+            ],
+            "text": "밤새 숲 너머로 불빛이 깜박였다. 짐을 꾸리는 집이 하나둘 늘어난다."
+          }
+        ],
+        "fallback": "밤새 숲 너머로 불빛이 깜박였다고 한다. 아무도 그 이야기를 입 밖에 내지 않는다."
+      },
+      "choices": []
+    }
+  }
+}

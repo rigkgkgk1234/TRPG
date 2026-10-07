@@ -1,0 +1,98 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_brawl",
+  "category": "npc",
+  "npc": "toby",
+  "title": "주정뱅이 싸움",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 안에서 술 취한 장정 둘이 멱살을 잡았다. 토비가 의자가 부서지겠다며 발을 구른다.",
+      "choices": [
+        {
+          "id": "separate",
+          "label": "둘 사이에 끼어들어 떼어 놓는다",
+          "check": {
+            "stat": "str",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "두 사람을 양쪽으로 밀어냈다. 토비가 고맙다며 술값을 받지 않았다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "휘두른 주먹에 얻어맞았다. 결국 토비가 몽둥이를 들고서야 끝났다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "talk",
+          "label": "말로 달랜다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "우스갯소리 하나에 둘 다 웃음을 터뜨렸다. 싸움은 그걸로 끝났다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "누구 편이냐며 오히려 둘 다 이쪽을 노려보았다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "휘말리기 싫어 나온다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_shelter_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "비 피할 곳",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갑자기 소나기가 쏟아진다. 탑 아래 아치 밑으로 몸을 피했다.",
+      "choices": [
+        {
+          "id": "rest",
+          "label": "비가 그칠 때까지 쉰다",
+          "outcome": {
+            "text": "빗소리를 들으며 깜박 졸았다. 몸이 조금 가벼워졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              },
+              {
+                "type": "hp",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "search",
+          "label": "그 틈에 아치 안쪽을 살핀다",
+          "outcome": {
+            "text": "벽 틈에 누군가 남긴 쓴 약차 봉지가 끼워져 있었다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bitter_tea",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

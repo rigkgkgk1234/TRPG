@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_mother_bread",
+  "category": "morning",
+  "title": "어머니의 빵",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 14
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "어머니가 아껴 둔 밀가루로 빵을 구우셨다. 한 덩이를 보자기에 싸서 건네주신다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    }
+  }
+}

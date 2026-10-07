@@ -1,0 +1,89 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_market_day",
+  "category": "morning",
+  "title": "장날",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 3
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "로웬에서 장꾼들이 왔다. 광장에 좌판이 늘어서고 흥정하는 소리가 요란하다.",
+      "choices": [
+        {
+          "id": "sell_herb",
+          "label": "약초를 판다",
+          "cost": {
+            "item": {
+              "itemId": "herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "장꾼이 로웬 시세라며 은화 세 닢을 쳐주었다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "buy_bandage",
+          "label": "붕대를 싸게 산다",
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "깨끗한 천을 둘둘 말아 챙겼다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bandage",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "buy_arrows",
+          "label": "화살 한 묶음을 산다",
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "깃이 고른 화살 다섯 개를 샀다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "arrow",
+                "qty": 5
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "구경만 하고 지나간다",
+          "outcome": {
+            "text": "사람 구경만 실컷 했다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

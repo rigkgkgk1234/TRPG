@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_brock_spearheads",
+  "category": "npc",
+  "npc": "brock",
+  "title": "창날 벼리기",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_defend"
+    },
+    {
+      "type": "dayRange",
+      "min": 22
+    }
+  ],
+  "weight": 10,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "브록이 마을 사람들 몫의 창날을 벼리고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
+      "choices": [
+        {
+          "id": "work",
+          "label": "밤늦게까지 거든다",
+          "outcome": {
+            "text": "창날 열두 개가 줄지어 식어 간다. 브록이 처음으로 고맙다는 말을 했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 3
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              },
+              {
+                "type": "skillXp",
+                "skill": "smithing",
+                "amount": 1
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "pay",
+          "label": "쇠 살 돈을 보탠다",
+          "cost": {
+            "silver": 5
+          },
+          "outcome": {
+            "text": "브록이 은화를 받아 들고 고개를 끄덕였다. 소문은 금세 마을에 퍼졌다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 4
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "내 무기나 챙기겠다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

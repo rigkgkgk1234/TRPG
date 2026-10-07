@@ -10,7 +10,7 @@ const RECENT_WEIGHT = 0.3;
 const SAME_TIER_WEIGHT = 2;
 const FALLBACK_SUFFIX = "_fallback";
 
-/** 후보가 없을 때 대신 나오는 이벤트 ID: 지역이 있으면 "forest_fallback", 없으면 "night_fallback" */
+/** 후보가 없을 때 대신 나오는 이벤트 ID: 지역이 있으면 "forest_fallback", 없으면 "npc_fallback" */
 export function fallbackId(category: EventCategory, region?: RegionId): string {
   return `${region ?? category}${FALLBACK_SUFFIX}`;
 }
@@ -22,13 +22,13 @@ export function isFallback(ev: EventDef): boolean {
 /**
  * 이벤트 풀에서 하나를 가중치로 뽑는다. (SYSTEM_SPEC 4-3 발생 알고리즘)
  * `chance` 조건이 rng를 쓰므로 순회 순서가 바뀌면 결과가 바뀐다 → 항상 ID 순으로 돈다.
- * 후보가 없으면 대체 이벤트, 그것도 없으면 null.
+ * 후보가 없으면 대체 이벤트, 그것도 없으면 null. npc를 주면 그 사람의 이벤트만 (마을 볼일).
  */
-export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId, deep = false): EventDef | null {
+export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId, deep = false, npc?: string): EventDef | null {
   const { draft: s, content, rng } = ctx;
   const tier = Math.min(3, dangerTierForDay(s.time.day) + (deep ? 1 : 0));
 
-  const pool = eventPool(content, category, region).filter((ev) =>
+  const pool = eventPool(content, category, region, npc).filter((ev) =>
     (ev.dangerTier ?? 1) <= tier &&
     repeatAllowed(ev, s.eventHistory[ev.id], s.time.day) &&
     evalAll(ev.conditions, s, rng));
@@ -55,10 +55,10 @@ export function selectStory(ctx: Ctx, region?: RegionId): EventDef | null {
   return pool.find((ev) => evalAll(ev.conditions, s, ctx.rng)) ?? null;
 }
 
-/** 해당 종류·지역의 이벤트 (대체 이벤트 제외), ID 순 */
-export function eventPool(content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId): EventDef[] {
+/** 해당 종류·지역(·NPC)의 이벤트 (대체 이벤트 제외), ID 순 */
+export function eventPool(content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId, npc?: string): EventDef[] {
   return Object.values(content.events)
-    .filter((ev) => ev.category === category && !isFallback(ev) && (!region || ev.region === region))
+    .filter((ev) => ev.category === category && !isFallback(ev) && (!region || ev.region === region) && (!npc || ev.npc === npc))
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 

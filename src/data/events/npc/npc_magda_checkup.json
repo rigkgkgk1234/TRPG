@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_magda_checkup",
+  "category": "npc",
+  "npc": "magda",
+  "title": "할멈의 진맥",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "할멈이 얼굴을 보자마자 손목을 낚아챈다. 안색이 나쁘다며 혀를 찬다.",
+      "choices": [
+        {
+          "id": "treat",
+          "label": "제대로 봐 달라고 한다",
+          "conditions": [
+            {
+              "type": "wound",
+              "max": "light"
+            }
+          ],
+          "lockedReason": "큰 상처는 제대로 치료를 받아야 한다",
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "할멈이 쓴 고약을 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
+            "effects": [
+              {
+                "type": "healWound",
+                "to": "none"
+              },
+              {
+                "type": "hp",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "tea",
+          "label": "쓴 약차를 얻어 간다",
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "할멈이 피로가 쌓였다며 약차 한 봉지를 싸 주었다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bitter_tea",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "괜찮다며 손을 뺀다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

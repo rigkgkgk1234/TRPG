@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_wolf_howl",
+  "category": "night",
+  "title": "늑대 울음",
+  "conditions": [],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "멀리서 늑대 울음이 길게 이어진다. 마을 개들이 따라 짖고, 양 우리 쪽이 소란하다.",
+      "choices": [
+        {
+          "id": "check_pen",
+          "label": "양 우리를 살피러 나간다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "우리 문 걸쇠가 풀려 있었다. 단단히 걸어 두고 돌아오는 길에 양 주인과 마주쳤다. 주인이 연신 고맙다고 했다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "어둠 속을 한참 헤맸지만 아무것도 찾지 못했다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "sleep",
+          "label": "창문을 닫고 다시 눕는다",
+          "outcome": {
+            "text": "울음소리는 새벽까지 이어졌다. 잠을 설쳤다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

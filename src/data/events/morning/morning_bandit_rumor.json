@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_bandit_rumor",
+  "category": "morning",
+  "title": "털린 행상",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 6
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "로웬 가는 길에서 행상이 털렸다는 소문이 돈다. 감시탑 쪽에 도적이 산다고들 한다.",
+      "choices": [
+        {
+          "id": "ask",
+          "label": "털린 행상을 찾아가 묻는다",
+          "check": {
+            "stat": "cha",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "도적들이 감시탑 뒤편 무너진 담 쪽으로 드나든다는 이야기를 들었다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "bandit_hideout_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "행상은 겁에 질려 같은 말만 되풀이했다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그런 일도 있구나 하고 넘긴다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

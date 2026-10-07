@@ -1,6 +1,7 @@
 import type { Ctx, FeedOrder } from "../commands";
 import { rollStatGrowth } from "../check/progress";
-import { startStoryEvent } from "../events/runner";
+import { startRandomEvent, startStoryEvent } from "../events/runner";
+import { eventPool } from "../events/selector";
 import {
   CRITICAL_WOUND_MORNING_DC,
   d,
@@ -8,6 +9,7 @@ import {
   DEBT_INTEREST,
   FATIGUE_AFTER_COLLAPSE,
   LAST_DAY,
+  NIGHT_EVENT_CHANCE,
   SLEEP_RECOVERY,
   STAT_MIN,
   TAX_AMOUNT,
@@ -59,7 +61,8 @@ export function previewEvening(run: RunState): EveningPreview {
 
 /**
  * 저녁 정산. SYSTEM_SPEC 6-6의 순서를 바꾸지 않는다 (순서가 바뀌면 숫자가 미묘하게 어긋난다).
- * @returns 다음 날 아침이 시작됐으면 true (체크포인트 저장 지점). 엔딩이면 false.
+ * 밤 이벤트가 일어나면 날은 그 이벤트가 끝날 때 바뀐다 (runner.endEvent → beginDay).
+ * @returns 다음 날 아침이 시작됐으면 true. 밤 이벤트가 진행 중이거나 엔딩이면 false.
  */
 export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
   const s = ctx.draft;
@@ -73,15 +76,29 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
     payTax(ctx);
   }
   rollStatGrowth(ctx);                                   // 6. 능력치 성장
-  // 7. 30일차 밤은 최종 습격. 습격 이벤트가 엔딩을 정한다 (밤 이벤트 25%는 밤 이벤트 콘텐츠와 함께 붙인다).
+  // 7. 30일차 밤은 최종 습격. 습격 이벤트가 엔딩을 정한다. 그 밖의 밤은 25%로 밤 이벤트.
   if (s.time.day >= LAST_DAY) {
     // 습격 이벤트는 이 플래그가 있어야 열린다 (아침·낮의 스토리 검사에서 미리 터지지 않게)
     s.flags[RAID_FLAG] = true;
     if (!s.eventHistory[RAID_EVENT] && startStoryEvent(ctx, RAID_EVENT)) return false;
     return endRun(ctx, "survivor", "서른 번째 밤이 지났다. 아직 살아 있다.");
   }
-  startNextDay(ctx);                                     // 8. 다음 날
+  // 밤 이벤트 콘텐츠가 없으면 굴리지 않는다 (같은 시드에서 주사위가 한 칸씩 밀리지 않게)
+  if (eventPool(ctx.content, "night").length > 0 && ctx.rng() < NIGHT_EVENT_CHANCE && startRandomEvent(ctx, "night")) return false;
+  return beginDay(ctx);                                  // 8. 다음 날
+}
+
+/**
+ * 날짜를 넘기고 아침을 연다: 치명상 사망 굴림 → 아침 이벤트(소문·날씨) 하나.
+ * 저녁 정산이 끝났을 때, 또는 밤 이벤트가 끝났을 때 부른다.
+ * @returns 살아서 아침을 맞았으면 true
+ */
+export function beginDay(ctx: Ctx): boolean {
+  // 밤 이벤트에서 탈진했으면 수면 회복이 이미 지나갔으므로 여기서 피로를 맞춘다 (낮에 탈진했으면 sleep이 이미 6으로 맞췄다)
+  if (ctx.draft.time.collapsedToday) changeFatigue(ctx, FATIGUE_AFTER_COLLAPSE - ctx.draft.resources.fatigue);
+  startNextDay(ctx);
   if (!survivesCriticalWound(ctx)) return endRun(ctx, "death", "상처가 끝내 아물지 않았다. 다시는 일어나지 못했다.");
+  startRandomEvent(ctx, "morning");
   return true;
 }
 

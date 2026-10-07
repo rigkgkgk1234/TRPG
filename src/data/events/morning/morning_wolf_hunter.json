@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_wolf_hunter",
+  "category": "morning",
+  "title": "늑대 사냥꾼",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "wolves_killed",
+      "value": 3
+    }
+  ],
+  "weight": 60,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 앞을 지나는데 누군가 늑대 이야기를 꺼내더니 모두가 이쪽을 돌아본다. 어느새 늑대라면 이 사람에게 물어보라는 말이 돌고 있다.",
+      "onEnter": [
+        {
+          "type": "gainTrait",
+          "trait": "wolf_hunter"
+        }
+      ],
+      "choices": []
+    }
+  }
+}

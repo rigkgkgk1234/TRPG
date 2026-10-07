@@ -22,6 +22,12 @@
             "fail": { "text": "나무껍질에 발이 미끄러졌다!", "next": "fight_ambushed" }
           }
         },
+        {
+          "id": "food",
+          "label": "먹을 것을 던져 주의를 돌린다",
+          "cost": { "food": 1 },
+          "outcome": { "text": "멧돼지가 던진 보리떡에 코를 박은 사이 덤불 뒤로 빠져나왔다.", "next": "END" }
+        },
         { "id": "fight", "label": "무기를 들고 맞선다", "outcome": { "next": "fight" } }
       ]
     },

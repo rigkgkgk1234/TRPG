@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_log_bridge_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "통나무 다리",
+  "conditions": [],
+  "weight": 7,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "개울 위에 이끼 낀 통나무 하나가 걸쳐 있다. 건너편 그늘에 버섯이 소복하다.",
+      "choices": [
+        {
+          "id": "cross",
+          "label": "통나무를 건넌다",
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "균형을 잡고 건너가 버섯을 한 아름 땄다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발이 미끄러져 개울에 빠졌다. 온몸이 흠뻑 젖었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "돌아서 간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_old_veteran",
+  "category": "morning",
+  "title": "늙은 퇴역병",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 처마 밑에서 늙은 퇴역병이 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "옆에 앉아 귀를 기울인다",
+          "outcome": {
+            "text": "봉화대 아래 돌 틈에 병사들이 비상금을 숨겨 두곤 했다는 이야기를 들었다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "tower_rumor"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

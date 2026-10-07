@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_sister_flowers",
+  "category": "morning",
+  "title": "머리맡의 들꽃",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "눈을 뜨니 머리맡에 들꽃 한 줌이 놓여 있다. 동생이 새벽같이 꺾어 왔다며 배시시 웃는다.",
+      "onEnter": [
+        {
+          "type": "fatigue",
+          "delta": -1
+        }
+      ],
+      "choices": []
+    }
+  }
+}

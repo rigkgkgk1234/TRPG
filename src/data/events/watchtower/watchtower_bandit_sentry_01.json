@@ -1,0 +1,106 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_bandit_sentry_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "도적 보초",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 6
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 담 위에 도적 하나가 앉아 하품을 한다. 망을 보는 모양이다.",
+      "choices": [
+        {
+          "id": "back_way",
+          "label": "뒤편 무너진 담 쪽으로 돌아간다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "bandit_hideout_known"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "소문대로 뒤편에 샛길이 있었다. 보초 몰래 창고 쪽에 닿아 은화 주머니를 슬쩍했다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 6
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "bluff",
+          "label": "길 잃은 나그네인 척한다",
+          "check": {
+            "stat": "cha",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "도적이 귀찮다는 듯 손을 휘저었다. 무사히 지나갔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "도적이 칼자루에 손을 얹었다. 거짓말이 들통났다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "덮친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "도적이 소리를 지르며 칼을 뽑았다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "도적이 담을 넘어 달아났다. 남은 짐을 뒤졌다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

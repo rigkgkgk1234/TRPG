@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_stars",
+  "category": "night",
+  "title": "쏟아지는 별",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "잠이 오지 않아 마당에 나왔다. 구름 한 점 없는 하늘에 별이 쏟아질 듯하다.",
+      "choices": [
+        {
+          "id": "sister",
+          "label": "동생을 깨워 함께 본다",
+          "outcome": {
+            "text": "동생이 별자리 이름을 묻다가 무릎을 베고 잠들었다. 마음이 차분해졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "back",
+          "label": "다시 들어가 눕는다",
+          "outcome": {
+            "text": "별빛을 떠올리며 눈을 감았다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

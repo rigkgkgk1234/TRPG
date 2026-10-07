@@ -5,7 +5,7 @@ import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
-import { REGION_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
+import { NPC_IDS, NPC_LABEL, REGION_LABEL, SKILL_IDS, SKILL_LABEL, type NpcId } from "@/core/labels";
 import { SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
@@ -17,9 +17,9 @@ import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
 /** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
-type Picking = Training | "explore";
+type Picking = Training | "explore" | "village";
 
-const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore";
+const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore" || id === "village";
 
 /** 오전·오후 행동을 고르는 아래 패널. 버튼은 엄지가 닿는 아래쪽에 모은다. */
 export function HubPanel({ run }: { run: RunState }) {
@@ -47,10 +47,17 @@ export function HubPanel({ run }: { run: RunState }) {
     setPicking(null);
   };
 
+  const visit = (npc: NpcId) => {
+    send({ type: "chooseAction", action: "village", npc });
+    setPicking(null);
+  };
+
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
       {picking === "explore" ? (
         <RegionPicker run={run} onPick={explore} />
+      ) : picking === "village" ? (
+        <NpcPicker run={run} onPick={visit} />
       ) : picking ? (
         <TrainingPicker run={run} kind={picking} onPick={train} />
       ) : null}
@@ -126,6 +133,28 @@ function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) =>
   );
 }
 
+function NpcPicker({ run, onPick }: { run: RunState; onPick: (n: NpcId) => void }) {
+  return (
+    <View style={styles.picker}>
+      <Text style={styles.pickerTitle}>누구를 찾아갈까?</Text>
+      <ChipRow>
+        {NPC_IDS.map((npc) => {
+          const status = actionStatus(run, CONTENT, "village", { npc });
+          return (
+            <Chip
+              key={npc}
+              label={status.available ? NPC_LABEL[npc] : `${NPC_LABEL[npc]} (${status.reason})`}
+              selected={false}
+              disabled={!status.available}
+              onPress={() => onPick(npc)}
+            />
+          );
+        })}
+      </ChipRow>
+    </View>
+  );
+}
+
 /** 행동 버튼의 두 번째 줄: 비용·보상·피로 (항목 단위로 줄을 바꾼다) */
 function actionDetail(run: RunState, def: DailyActionDef): string[] {
   switch (def.id) {
@@ -137,6 +166,7 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
     case "explore": return [`카드 ${EXPLORE_CARDS}~${EXPLORE_CARDS + 1}장`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`];
     case "trainLesson": return [`은화 -${def.silverCost}`, `경험 +${LESSON_XP}`, `피로 +${def.fatigue}`];
     case "rest": return [`피로 ${def.fatigue}`, `HP +${REST_HP}`];
+    case "village": return ["사람 고르기", "피로 없음"];
     default: return [];
   }
 }
@@ -148,6 +178,10 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
 function pickingStatus(run: RunState, kind: Picking): ActionStatus {
   if (kind === "explore") {
     const statuses = EXPLORE_REGIONS.map((region) => actionStatus(run, CONTENT, "explore", { region }));
+    return statuses.find((s) => s.available) ?? statuses[0];
+  }
+  if (kind === "village") {
+    const statuses = NPC_IDS.map((npc) => actionStatus(run, CONTENT, "village", { npc }));
     return statuses.find((s) => s.available) ?? statuses[0];
   }
   const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;

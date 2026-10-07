@@ -1,0 +1,97 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_deer_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "물 마시는 사슴",
+  "conditions": [],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "개울가에서 사슴 한 마리가 물을 마신다. 아직 이쪽을 눈치채지 못했다.",
+      "choices": [
+        {
+          "id": "shoot",
+          "label": "활을 쏜다",
+          "conditions": [
+            {
+              "type": "equipped",
+              "itemId": "hunting_bow"
+            }
+          ],
+          "cost": {
+            "item": {
+              "itemId": "arrow",
+              "qty": 1
+            }
+          },
+          "check": {
+            "stat": "agi",
+            "skill": "bow",
+            "dc": 13,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "화살이 목덜미에 꽂혔다. 고기를 넉넉히 챙겼다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "화살이 빗나가자 사슴이 껑충 뛰어 사라졌다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "stalk",
+          "label": "바람을 등지고 살금살금 다가간다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 13,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "한 걸음 거리까지 다가갔다. 사슴은 달아났지만, 그 자리에서 빠진 뿔 한 쌍을 주웠다. 여관에 넘기고 은화 두 닢을 받았다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "마른 가지를 밟았다. 사슴이 순식간에 사라졌다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "가만히 지켜보다 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

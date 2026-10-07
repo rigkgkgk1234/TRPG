@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_stray_dog",
+  "category": "morning",
+  "title": "절뚝이는 들개",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "뒷다리를 저는 누렁이 한 마리가 문간에 와서 낑낑댄다. 갈비뼈가 앙상하다.",
+      "choices": [
+        {
+          "id": "bread",
+          "label": "먹다 남은 빵을 준다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "누렁이가 허겁지겁 먹더니 꼬리를 흔들며 담장 밑에 자리를 잡았다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "stray_dog_fed"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "herb",
+          "label": "다친 다리에 약초를 감아 준다",
+          "cost": {
+            "item": {
+              "itemId": "herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "누렁이가 얌전히 다리를 내맡겼다. 그날부터 집 앞을 떠나지 않는다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "stray_dog_fed"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "shoo",
+          "label": "쫓아 보낸다",
+          "outcome": {
+            "text": "누렁이가 고개를 숙이고 골목으로 사라졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_lookout_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "탑 꼭대기",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 8
+    }
+  ],
+  "weight": 7,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 꼭대기에 오르니 숲이 발아래 펼쳐진다. 멀리 보리울의 지붕도 보인다.",
+      "choices": [
+        {
+          "id": "scan",
+          "label": "숲을 찬찬히 내려다본다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": {
+                "variants": [
+                  {
+                    "when": [
+                      {
+                        "type": "flag",
+                        "flag": "goblin_tracks_found"
+                      }
+                    ],
+                    "text": "숲 동쪽의 연기가 지난번보다 늘었다. 놈들의 수가 불어나고 있다."
+                  }
+                ],
+                "fallback": "숲 동쪽에서 가는 연기 몇 줄이 피어오른다. 사람이 살 곳이 아니다."
+              },
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "바람이 거세 눈을 제대로 뜰 수 없었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "rest",
+          "label": "바람을 맞으며 숨을 돌린다",
+          "outcome": {
+            "text": "땀이 식고 머리가 맑아졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

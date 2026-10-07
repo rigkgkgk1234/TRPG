@@ -1,6 +1,7 @@
 import type { ContentDB } from "./content";
 import { EXPLORE_REGIONS } from "./events/explore";
 import { fallbackId, isFallback } from "./events/selector";
+import { isNpcId } from "./labels";
 import type { ChoiceDef, Condition, Effect, EventDef, Outcome, SceneDef, TextBlock } from "./types";
 
 /** 장면 텍스트가 이보다 길면 한 화면에 안 들어간다 (ARCHITECTURE 2-5) */
@@ -37,6 +38,8 @@ export function checkContent(content: ContentDB): ContentIssues {
       if (!ev.region) err("", "탐험 이벤트에 region이 없다");
       else if (!EXPLORE_REGIONS.includes(ev.region)) err("", `탐험할 수 없는 지역: ${ev.region}`);
     }
+    if (ev.category === "npc" && !isFallback(ev) && (!ev.npc || !isNpcId(ev.npc))) err("", `마을 볼일 이벤트의 npc가 올바르지 않다: ${ev.npc ?? "(없음)"}`);
+    if (ev.category !== "npc" && ev.npc) warn("", "마을 볼일 이벤트가 아닌데 npc가 있다 (쓰이지 않는다)");
     if (isFallback(ev)) {
       if (ev.conditions.length > 0) warn("", "대체 이벤트에 조건이 있으면 아무것도 안 나올 수 있다");
       if (ev.repeat.mode !== "always") warn("", "대체 이벤트는 repeat: always여야 한다");
@@ -117,6 +120,8 @@ export function checkContent(content: ContentDB): ContentIssues {
     }
     function checkEffects(effects: readonly Effect[] | undefined, where: string) {
       for (const e of effects ?? []) {
+        // 아침·밤 이벤트는 행동 슬롯 밖에서 일어나므로 남은 슬롯을 지우는 효과가 뜻대로 되지 않는다 (loseNextSlot을 쓴다)
+        if (e.type === "endDay" && (ev.category === "morning" || ev.category === "night")) err(where, "아침·밤 이벤트에는 endDay를 쓸 수 없다 (loseNextSlot을 쓴다)");
         switch (e.type) {
           case "addItem": case "removeItem": checkItem(e.itemId, where); break;
           case "gainTrait": checkTrait(e.trait, where); break;

@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_soldier_bones_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "병사의 유골",
+  "conditions": [
+    {
+      "type": "notFlag",
+      "flag": "tower_sword_taken"
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 아래 무너진 방에서 녹슨 사슬 갑옷을 입은 유골을 발견했다. 손에 아직 검집을 쥐고 있다.",
+      "choices": [
+        {
+          "id": "take",
+          "label": "검집을 조심스럽게 빼낸다",
+          "check": {
+            "stat": "per",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "검집 속의 검은 녹 하나 없이 멀쩡하다. 왕국 병사의 검이다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "soldier_sword",
+                  "qty": 1
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "tower_sword_taken"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "손이 미끄러져 유골이 무너졌다. 검은 썩은 들보 밑으로 굴러 들어갔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "bury",
+          "label": "돌을 덮어 묻어 준다",
+          "outcome": {
+            "text": "돌무덤을 쌓고 잠시 고개를 숙였다. 마음 한구석이 묘하게 든든하다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

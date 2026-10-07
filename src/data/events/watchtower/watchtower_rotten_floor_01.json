@@ -1,0 +1,83 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_rotten_floor_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "썩은 마루",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 이 층 마루가 발밑에서 삐걱거린다. 건너편 방에 상자 하나가 보인다.",
+      "choices": [
+        {
+          "id": "cross",
+          "label": "들보만 골라 디디며 건넌다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "상자 안에는 은화 몇 닢과 깨끗한 천이 들어 있었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "bandage",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "한쪽 발이 빠졌지만 겨우 건너갔다. 상자에는 은화 몇 닢뿐이었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "마루가 무너졌다. 아래층으로 떨어지며 팔을 크게 다쳤다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "돌아선다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

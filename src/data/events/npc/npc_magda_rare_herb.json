@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_magda_rare_herb",
+  "category": "npc",
+  "npc": "magda",
+  "title": "귀한 풀의 쓰임",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "할멈이 늪 약초가 있으면 치유 물약을 지어 주겠다고 한다. 숲 깊은 곳에도 가끔 자란다고 한다.",
+      "choices": [
+        {
+          "id": "brew",
+          "label": "늪 약초를 건넨다",
+          "cost": {
+            "silver": 5,
+            "item": {
+              "itemId": "rare_herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "할멈이 밤새 약을 달였다. 붉은 물약 한 병이 손에 쥐어졌다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "healing_potion",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 구해 오겠다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -29,7 +29,7 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
     const ctx: Ctx = { draft, content, rng: createRng(draft.rng), feed };
     switch (cmd.type) {
       case "chooseAction":
-        save = handleAction(ctx, cmd.action, { skill: cmd.skill, region: cmd.region });
+        save = handleAction(ctx, cmd.action, { skill: cmd.skill, region: cmd.region, npc: cmd.npc });
         break;
       case "chooseChoice":
         save = handleChoice(ctx, cmd.choiceId);
@@ -44,11 +44,11 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         save = handleCombat(ctx, cmd.action);
         break;
       case "endDay":
-        if (draft.time.phase !== "evening") {
+        if (draft.time.phase !== "evening" || draft.activeEvent || draft.combat) {
           feed.push({ kind: "toast", text: "아직 할 일이 남았다" });
           break;
         }
-        checkpoint = runEvening(ctx, cmd.order);
+        runEvening(ctx, cmd.order);
         save = true;
         break;
       case "shop":
@@ -69,6 +69,8 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
     }
     // 명령이 받아들여져 행동을 고를 차례가 됐으면, 때가 된 스토리가 먼저 끼어든다 (SYSTEM_SPEC 4-3)
     if (save && startPendingStory(ctx)) save = true;
+    // 날이 바뀌었으면 체크포인트 (저녁 정산 뒤, 또는 밤 이벤트가 끝난 뒤)
+    checkpoint = draft.time.day > state.time.day && !draft.ending;
   });
 
   return { state: next, feed, save: save || checkpoint, checkpoint };

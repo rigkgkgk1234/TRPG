@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_old_map_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "낡은 순찰 지도",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 지휘실 책상에 곰팡이 핀 지도가 펼쳐져 있다. 옛 순찰로가 꼼꼼히 그려져 있다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "지도를 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "숲과 탑, 마을을 잇는 샛길을 머릿속에 새겨 두었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "글씨가 번져 알아볼 수 없다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_crow_nest_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "까마귀 둥지",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "허물어진 성가퀴에 까마귀가 둥지를 틀었다. 둥지 사이로 반짝이는 것이 보인다.",
+      "choices": [
+        {
+          "id": "reach",
+          "label": "팔을 뻗어 둥지를 뒤진다",
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "까마귀가 모아 둔 동전 몇 닢과 놋쇠 단추가 나왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "성난 까마귀가 손등을 쪼았다. 얻은 건 상처뿐이다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "둥지는 그냥 둔다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

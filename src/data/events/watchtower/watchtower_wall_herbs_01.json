@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_wall_herbs_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "돌담 틈의 약초",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "햇볕 잘 드는 돌담 틈에 약초가 무더기로 자랐다. 사람 손이 닿지 않은 곳이다.",
+      "choices": [
+        {
+          "id": "pick",
+          "label": "골라서 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "잎이 실한 것으로 두 줌을 캤다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "비슷한 잡풀만 잔뜩 뜯었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

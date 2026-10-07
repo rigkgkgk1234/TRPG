@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_fallback",
+  "category": "npc",
+  "title": "바쁜 하루",
+  "conditions": [],
+  "weight": 0,
+  "repeat": {
+    "mode": "always"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "찾아갔지만 일손이 바빠 보여 몇 마디만 나누고 돌아왔다.",
+      "choices": []
+    }
+  }
+}

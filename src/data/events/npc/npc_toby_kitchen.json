@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_kitchen",
+  "category": "npc",
+  "npc": "toby",
+  "title": "부엌일",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "토비가 오늘은 손님이 많다며 부엌일을 거들면 저녁거리를 싸 주겠다고 한다.",
+      "choices": [
+        {
+          "id": "help",
+          "label": "소매를 걷고 거든다",
+          "outcome": {
+            "text": "감자를 산더미처럼 깎았다. 토비가 빵과 고기를 넉넉히 싸 주었다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 하겠다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

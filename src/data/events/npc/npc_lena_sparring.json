@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_lena_sparring",
+  "category": "npc",
+  "npc": "lena",
+  "title": "목검 대련",
+  "conditions": [],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "레나가 목검 한 자루를 던져 준다. 몸이 굳었으니 한 판 붙어 보자고 한다.",
+      "choices": [
+        {
+          "id": "spar",
+          "label": "목검을 쥐고 맞선다",
+          "check": {
+            "stat": "str",
+            "skill": "blade",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "레나의 목검을 두 번 막아 냈다. 레나가 처음으로 웃었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "숨이 턱까지 차도록 버텼다. 레나가 나쁘지 않다고 했다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "목검이 정강이를 때렸다. 레나가 다시 해 보라며 턱짓을 한다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "block",
+          "label": "목검으로 막기만 한다",
+          "check": {
+            "stat": "con",
+            "skill": "guard",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "레나의 연타를 끝까지 받아 냈다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "팔이 저려 목검을 떨어뜨렸다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

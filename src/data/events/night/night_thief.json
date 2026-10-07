@@ -1,0 +1,109 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_thief",
+  "category": "night",
+  "title": "밤손님",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 5
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "한밤중, 부엌 쪽에서 덜그럭 소리가 난다. 누군가 보리 자루를 뒤지고 있다.",
+      "choices": [
+        {
+          "id": "dog",
+          "label": "누렁이가 먼저 짖는다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "stray_dog_fed"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "누렁이가 맹렬히 짖어 대자 그림자가 울타리를 넘어 허겁지겁 달아났다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "shout",
+          "label": "소리를 질러 쫓는다",
+          "check": {
+            "stat": "cha",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "고함 소리에 이웃집 불이 켜졌다. 그림자가 울타리를 넘어 달아났다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "도둑은 보리 자루를 들쳐 메고 어둠 속으로 사라졌다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "club",
+          "label": "몽둥이를 들고 나간다",
+          "outcome": {
+            "next": "fight"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "부엌문을 박차고 나가자 복면을 쓴 사내가 칼을 뽑았다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "lost"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "사내가 비틀거리며 달아났다. 이웃들이 횃불을 들고 나와 혀를 내둘렀다.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "lost": {
+      "text": "문을 걸어 잠그고 숨을 죽였다. 아침에 보니 보리 자루가 통째로 없어졌다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": -2
+        }
+      ],
+      "choices": []
+    }
+  }
+}

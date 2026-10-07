@@ -1,0 +1,77 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_scout_camp_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "식지 않은 재",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 12
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_scout_seen"
+    }
+  ],
+  "weight": 7,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 뒤편 바위 그늘에 모닥불 재가 아직 따뜻하다. 주변에 뼈다귀와 깃털이 흩어져 있다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "주변을 샅샅이 뒤진다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "재 속에서 뼈와 깃털을 엮은 부적을 찾았다. 고블린 정찰병들이 여기서 밤을 보냈다. 촌장에게 알려야 한다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "goblin_token",
+                  "qty": 1
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_scout_seen"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발자국을 쫓다 놓쳤다. 무언가 이 근처에 있었던 것만은 분명하다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "서둘러 자리를 뜬다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

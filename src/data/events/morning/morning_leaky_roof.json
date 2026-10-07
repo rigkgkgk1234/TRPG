@@ -1,0 +1,62 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_leaky_roof",
+  "category": "morning",
+  "title": "새는 지붕",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 12
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "밤새 비가 내렸다. 부엌 지붕에서 빗물이 똑똑 떨어진다.",
+      "choices": [
+        {
+          "id": "fix",
+          "label": "지붕에 올라가 짚을 새로 얹는다",
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "젖은 짚을 걷어 내고 새 짚을 단단히 얹었다. 어머니가 한시름 놓으셨다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "미끄러운 지붕에서 엉덩방아를 찧었다. 빗물은 여전히 샌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "bucket",
+          "label": "양동이를 받쳐 두고 나간다",
+          "outcome": {
+            "text": "양동이에 떨어지는 물소리를 뒤로하고 집을 나섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

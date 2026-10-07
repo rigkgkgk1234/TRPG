@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_beehive_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "나무 구멍의 벌집",
+  "conditions": [],
+  "weight": 7,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "늙은 참나무 구멍에서 벌들이 붕붕 드나든다. 달콤한 냄새가 난다.",
+      "choices": [
+        {
+          "id": "smoke",
+          "label": "젖은 풀로 연기를 피워 꿀을 딴다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "벌들이 연기에 취한 틈에 꿀 한 덩이를 떼어 냈다. 조금은 맛보고, 나머지는 돌아오는 길에 여관에 넘겼다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "food",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "꿀을 조금 떼어 냈지만 몇 방 쏘였다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "벌 떼가 와락 달려들었다. 얼굴과 손이 퉁퉁 부었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "벌집은 건드리지 않는다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

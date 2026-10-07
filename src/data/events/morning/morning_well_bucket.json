@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_well_bucket",
+  "category": "morning",
+  "title": "우물에 빠진 두레박",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "두레박 줄이 끊어져 우물 바닥에 가라앉았다. 물 길으러 나온 아낙들이 발을 동동 구른다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "밧줄을 매고 우물에 내려간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "차가운 물에 팔을 넣어 두레박을 건져 올렸다. 아낙들이 손뼉을 쳤다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "젖은 돌벽에 미끄러져 무릎이 까졌다. 두레박은 결국 다른 사람이 건졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "갈 길이 바빠 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_captive_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "묶인 나무꾼",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 16
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 기둥에 나무꾼 하나가 묶여 있다. 입에 재갈이 물렸다. 근처에서 고블린 코 고는 소리가 들린다.",
+      "choices": [
+        {
+          "id": "free",
+          "label": "몰래 다가가 밧줄을 끊는다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "나무꾼을 업다시피 데리고 빠져나왔다. 마을에 닿자 사람들이 몰려나왔다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 6
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "밧줄을 끊는 순간 고블린이 눈을 떴다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "고블린부터 처리한다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "혼자서는 무리다. 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "잠에서 깬 고블린 전사가 도끼를 집어 든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "나무꾼을 풀어 주고 함께 마을로 돌아왔다. 소문은 그날 밤 마을 전체에 퍼졌다.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 6
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

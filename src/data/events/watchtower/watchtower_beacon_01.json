@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_beacon_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "봉화대",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 12
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 꼭대기 봉화대에 그을린 돌이 둘러져 있다. 장작을 쌓으면 아직 불을 올릴 수 있을 것 같다.",
+      "choices": [
+        {
+          "id": "stack",
+          "label": "장작을 다시 쌓아 둔다",
+          "outcome": {
+            "text": "마른 가지를 날라 봉화대를 채웠다. 내려와 촌장에게 알리자 다들 든든해했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "내려간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

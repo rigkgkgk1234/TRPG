@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_drunk_neighbor",
+  "category": "night",
+  "title": "술 취한 이웃",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 10
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "누군가 문을 쾅쾅 두드린다. 술에 취한 이웃 오스가 집을 못 찾겠다며 주저앉아 있다.",
+      "choices": [
+        {
+          "id": "walk",
+          "label": "집까지 부축해 데려다준다",
+          "outcome": {
+            "text": "오스의 아내가 연신 고개를 숙였다. 이웃들이 창문 너머로 그 모습을 지켜보았다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "lock",
+          "label": "문을 걸어 잠근다",
+          "outcome": {
+            "text": "한참 노래를 부르던 오스는 제 발로 돌아갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

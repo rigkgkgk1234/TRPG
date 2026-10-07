@@ -1,0 +1,93 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_barn_fire",
+  "category": "night",
+  "title": "헛간의 불",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 8
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 끝 헛간에서 불길이 솟았다! 사람들이 물동이를 들고 뛰어간다.",
+      "choices": [
+        {
+          "id": "run",
+          "label": "물동이를 들고 달려간다",
+          "check": {
+            "stat": "con",
+            "dc": 11,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "밤새 물을 날랐다. 불길은 옆집으로 번지지 않았다. 헛간 주인이 손을 꼭 잡았다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "팔에 불똥이 튀었지만 끝까지 물을 날랐다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                },
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "연기를 들이마셔 쓰러질 뻔했다. 누군가 끌어내 주었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "guard",
+          "label": "식구들을 깨우고 집을 지킨다",
+          "outcome": {
+            "text": "불길은 새벽녘에야 잡혔다. 다행히 집까지 번지지는 않았다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

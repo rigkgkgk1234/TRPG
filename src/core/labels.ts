@@ -95,3 +95,19 @@ export function josa(word: string, pair: JosaPair): string {
   const useWithout = final === 0 || (pair === "으로/로" && final === 8);
   return word + (useWithout ? withoutFinal : withFinal);
 }
+
+/** 마을 볼일로 찾아갈 수 있는 사람 (GAME_DESIGN 2장). NPC 이벤트의 npc 필드가 이 ID를 쓴다. */
+export const NPC_IDS = ["hamon", "brock", "lena", "magda", "toby"] as const;
+export type NpcId = (typeof NPC_IDS)[number];
+
+export const NPC_LABEL: Record<NpcId, string> = {
+  hamon: "하몬 촌장",
+  brock: "대장장이 브록",
+  lena: "경비대장 레나",
+  magda: "마그다 할멈",
+  toby: "여관 주인 토비",
+};
+
+export function isNpcId(id: string): id is NpcId {
+  return (NPC_IDS as readonly string[]).includes(id);
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_broken_wheel",
+  "category": "morning",
+  "title": "빠진 수레바퀴",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_flee"
+    },
+    {
+      "type": "dayRange",
+      "min": 22
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "피난길에 쓸 수레 바퀴가 빠져 버렸다. 수레 주인이 난감한 얼굴로 서 있다.",
+      "choices": [
+        {
+          "id": "lift",
+          "label": "수레를 들어 올려 바퀴를 끼운다",
+          "check": {
+            "stat": "str",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "이를 악물고 수레를 들어 올렸다. 바퀴가 제자리에 들어갔다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "허리만 삐끗했다. 결국 장정 셋이 붙어서야 바퀴를 끼웠다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다른 사람이 하겠지 하고 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

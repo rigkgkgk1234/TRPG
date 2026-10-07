@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_bandit_den_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "도적 소굴",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 9
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 지하 창고에서 불빛이 새어 나온다. 도적 하나가 노획물을 세며 콧노래를 부른다.",
+      "choices": [
+        {
+          "id": "sneak",
+          "label": "몰래 다가가 기습한다",
+          "check": {
+            "stat": "agi",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "등 뒤까지 소리 없이 다가갔다.",
+              "next": "fight_ambush"
+            },
+            "fail": {
+              "text": "돌부리에 걸려 넘어졌다. 도적이 벌떡 일어선다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "정면으로 들어간다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "조용히 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "도적이 칼을 뽑아 들었다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambush": {
+      "text": "도적이 돌아서기도 전에 무기를 휘둘렀다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled",
+            "enemyHpModifier": -3
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "도적이 달아났다. 창고에는 털린 행상들의 물건이 쌓여 있다. 은화를 챙기고 나머지는 촌장에게 알리기로 했다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 6
+        },
+        {
+          "type": "reputation",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

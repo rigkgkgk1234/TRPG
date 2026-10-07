@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_snake_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "풀숲의 독사",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "발밑 풀숲에서 무언가 스르륵 움직였다.",
+      "choices": [
+        {
+          "id": "freeze",
+          "label": "그 자리에 멈춰 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 11,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "독사였다. 녀석이 지나갈 때까지 숨을 죽이고 기다렸다.",
+              "next": "END"
+            },
+            "partial": {
+              "text": "독사를 밟기 직전에 몸을 비틀었다. 넘어지며 팔꿈치가 까졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "한 발 늦었다. 발목이 따끔하더니 금세 부어오른다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "jump",
+          "label": "재빨리 뛰어 물러난다",
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "한 걸음 차이로 독니를 피했다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "뛰다가 발을 헛디뎠다. 발목이 따끔하다. 물렸다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

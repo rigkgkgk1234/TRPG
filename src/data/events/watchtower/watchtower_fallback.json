@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_fallback",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "고요한 감시탑",
+  "conditions": [],
+  "weight": 0,
+  "repeat": {
+    "mode": "always"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "바람이 무너진 성가퀴 사이로 휘파람 소리를 낸다. 별다른 것은 보이지 않았다.",
+      "choices": []
+    }
+  }
+}

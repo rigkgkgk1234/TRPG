@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_wooden_spears",
+  "category": "morning",
+  "title": "나무 창을 깎는 아이들",
+  "conditions": [
+    {
+      "type": "flag",
+      "flag": "route_defend"
+    },
+    {
+      "type": "dayRange",
+      "min": 23
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "목책 아래서 아이들까지 나무 창을 깎고 있다. 한 아이가 창을 어떻게 쥐는지 묻는다.",
+      "choices": [
+        {
+          "id": "show",
+          "label": "창 쥐는 법을 보여 준다",
+          "outcome": {
+            "text": "아이들이 따라 하며 진지하게 고개를 끄덕였다. 지켜보던 어른들도 하나둘 모여들었다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "위험하다며 창을 거둬 간다",
+          "outcome": {
+            "text": "아이들이 입을 삐죽이며 흩어졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

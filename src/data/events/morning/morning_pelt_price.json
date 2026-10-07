@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_pelt_price",
+  "category": "morning",
+  "title": "가죽 값",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 4
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "토비가 여관 문을 열며 소리친다. 로웬 상인이 와 있어서 오늘은 늑대 가죽을 후하게 쳐준다고 한다.",
+      "choices": [
+        {
+          "id": "sell",
+          "label": "늑대 가죽을 판다",
+          "cost": {
+            "item": {
+              "itemId": "wolf_pelt",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "평소보다 두 닢이나 더 받았다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 6
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 팔기로 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

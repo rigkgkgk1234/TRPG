@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_sister_fever",
+  "category": "night",
+  "title": "동생의 열",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 4
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 12
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "동생이 열이 올라 끙끙 앓는다. 이마가 불덩이 같다.",
+      "choices": [
+        {
+          "id": "herb",
+          "label": "약초를 달여 먹인다",
+          "cost": {
+            "item": {
+              "itemId": "herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "쓴 약을 억지로 삼킨 동생이 새벽녘에야 곤히 잠들었다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "magda",
+          "label": "마그다 할멈을 깨워 온다",
+          "cost": {
+            "silver": 3
+          },
+          "outcome": {
+            "text": "할멈이 투덜대며 와서 탕약을 지어 주었다. 동생의 숨소리가 고르게 돌아왔다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "cloth",
+          "label": "밤새 찬 물수건을 갈아 준다",
+          "outcome": {
+            "text": "동이 틀 무렵 열이 내렸다. 눈꺼풀이 천근만근이다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

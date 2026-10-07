@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_gossip",
+  "category": "npc",
+  "npc": "toby",
+  "title": "여관의 소문",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "토비가 술잔을 닦으며 손님들에게 들은 이야기를 풀어놓는다.",
+      "choices": [
+        {
+          "id": "ask",
+          "label": "솔깃한 이야기를 캐묻는다",
+          "check": {
+            "stat": "cha",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": {
+                "variants": [
+                  {
+                    "when": [
+                      {
+                        "type": "dayRange",
+                        "min": 15
+                      }
+                    ],
+                    "text": "숲 동쪽에서 고블린을 봤다는 사냥꾼이 셋이나 된다고 한다. 감시탑 쪽 길도 위험하다고 한다."
+                  }
+                ],
+                "fallback": "로웬 상인들이 감시탑 쪽 길을 피해 다닌다고 한다. 무너진 담 쪽에 도적이 드나든다는 것이다."
+              },
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "bandit_hideout_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "오늘은 손님들도 날씨 이야기뿐이었다고 한다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "한 귀로 흘려듣는다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

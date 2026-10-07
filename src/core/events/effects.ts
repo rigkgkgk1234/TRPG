@@ -47,7 +47,9 @@ export function applyEffect(ctx: Ctx, e: Effect): void {
       if (s.activeEvent?.explore) stopExplore(s.activeEvent.explore);
       return;
     case "loseNextSlot":
+      // 아침 이벤트는 아직 슬롯을 쓰지 않았으므로 오후에 시작했으면 그 오후를 잃는다
       if (s.time.phase === "am") s.time.phase = "pm";
+      else if (s.time.phase === "pm" && s.activeEvent && ctx.content.events[s.activeEvent.eventId]?.category === "morning") s.time.phase = "evening";
       else s.time.skipNextAm = true;
       return;
     case "ending":

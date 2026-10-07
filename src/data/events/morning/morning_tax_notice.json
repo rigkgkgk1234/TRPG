@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_tax_notice",
+  "category": "morning",
+  "title": "납세일 알림",
+  "conditions": [
+    {
+      "type": "any",
+      "of": [
+        {
+          "type": "dayRange",
+          "min": 5,
+          "max": 5
+        },
+        {
+          "type": "dayRange",
+          "min": 12,
+          "max": 12
+        },
+        {
+          "type": "dayRange",
+          "min": 19,
+          "max": 19
+        },
+        {
+          "type": "dayRange",
+          "min": 26,
+          "max": 26
+        }
+      ]
+    }
+  ],
+  "weight": 20,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "silver",
+                "min": 5
+              }
+            ],
+            "text": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 은화 다섯 닢은 챙겨 두었다."
+          }
+        ],
+        "fallback": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 주머니를 뒤져 봐도 은화 다섯 닢이 안 된다."
+      },
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_war_council_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "고블린들의 회의",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    },
+    {
+      "type": "notFlag",
+      "flag": "goblin_plan_known"
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 안에서 고블린들이 지도를 가운데 두고 떠든다. 보리울 쪽을 가리키는 손가락이 몇 번이나 보인다.",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "벽에 붙어 엿듣는다",
+          "check": {
+            "stat": "agi",
+            "dc": 14,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈들이 어느 길로, 언제 올지 알아냈다. 숨을 죽인 채 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발밑의 돌이 굴렀다. 고블린들이 일제히 돌아본다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 둘이 괴성을 지르며 달려 나온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout",
+              "goblin_scout"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "쓰러진 고블린의 품에서 숯으로 그린 지도를 찾았다. 놈들의 길이 보인다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_plan_known"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

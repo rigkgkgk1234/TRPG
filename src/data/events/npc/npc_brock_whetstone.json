@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_brock_whetstone",
+  "category": "npc",
+  "npc": "brock",
+  "title": "날 세우기",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "브록이 숫돌 앞에 앉아 칼날을 세운다. 날을 어떻게 세우는지 보여 주겠다고 한다.",
+      "choices": [
+        {
+          "id": "learn",
+          "label": "옆에 앉아 배운다",
+          "outcome": {
+            "text": "각도와 힘을 고르게 주는 법을 배웠다. 손끝이 쇳가루로 새까매졌다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "smithing",
+                "amount": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "구경만 하다 나온다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "night_lena_patrol",
+  "category": "night",
+  "title": "레나의 순찰",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 12
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "등불을 든 레나가 혼자 마을을 돌고 있다. 잠이 안 오면 같이 걷겠느냐고 묻는다.",
+      "choices": [
+        {
+          "id": "join",
+          "label": "따라나선다",
+          "outcome": {
+            "text": "레나는 걸으며 보초 서는 법, 어둠 속에서 등을 지키는 법을 일러 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "decline",
+          "label": "사양하고 잠자리에 든다",
+          "outcome": {
+            "text": "레나가 고개를 끄덕이고 등불을 흔들며 멀어졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

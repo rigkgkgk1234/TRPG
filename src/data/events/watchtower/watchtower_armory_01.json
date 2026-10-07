@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_armory_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "무기고 잔해",
+  "conditions": [
+    {
+      "type": "notFlag",
+      "flag": "tower_shield_taken"
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "반쯤 무너진 무기고에 썩은 창 자루들이 뒹군다. 쓸 만한 것이 남아 있을까.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "잔해를 뒤진다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "무너진 선반 밑에서 쇠테를 두른 나무 방패를 찾았다. 아직 튼튼하다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "wooden_shield",
+                  "qty": 1
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "tower_shield_taken"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "썩은 나무와 녹슨 쇳조각뿐이다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "돌아선다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

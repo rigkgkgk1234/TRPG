@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_courtyard_boar_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "마당의 멧돼지",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 엄니에 흙이 잔뜩 묻었다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "wait",
+          "label": "멧돼지가 떠날 때까지 숨어 기다린다",
+          "check": {
+            "stat": "agi",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "한참 뒤 멧돼지가 숲으로 돌아갔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "멧돼지가 코를 들더니 이쪽으로 돌진한다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "around",
+          "label": "담을 따라 멀찍이 돌아간다",
+          "outcome": {
+            "text": "가시덤불을 헤치며 한참을 돌아갔다. 옷이 엉망이 됐다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "멧돼지가 땅을 긁더니 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "boar"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "멧돼지가 쓰러졌다. 고기를 넉넉히 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "돌계단을 구르듯 내려와 마을 쪽으로 내달렸다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

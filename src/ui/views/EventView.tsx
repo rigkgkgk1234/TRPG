@@ -3,11 +3,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DEEP_FATIGUE, EXPLORE_CARDS } from "@/core/events/explore";
 import { sceneView, type ChoiceView, type ExploreProgress } from "@/core/events/runner";
 import { MODE_LABEL, REGION_LABEL } from "@/core/labels";
-import type { RunState } from "@/core/types";
+import type { EventCategory, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
-import { ArrowRightIcon, CaretRightIcon, LockSimpleIcon, ScrollIcon, SignOutIcon, SkullIcon, TreeIcon } from "@/ui/icons";
+import { ArrowRightIcon, CaretRightIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, TreeIcon, type Icon } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
 /**
@@ -40,7 +40,7 @@ export function EventPanel({ run }: { run: RunState }) {
         </>
       ) : (
         <>
-          <Header title={view.title} progress={view.progress} />
+          <Header title={view.title} progress={view.progress} category={view.category} />
           <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>{view.text}</Text>
           <View style={styles.choices}>
             {view.kind === "continue" ? (
@@ -57,9 +57,11 @@ export function EventPanel({ run }: { run: RunState }) {
   );
 }
 
-/** 탐험 중이면 숲 아이콘, 마을 일(스토리)이면 두루마리 */
-function Header({ title, progress }: { title: string; progress?: ExploreProgress }) {
-  const HeaderIcon = progress ? TreeIcon : ScrollIcon;
+const CATEGORY_ICON: Partial<Record<EventCategory, Icon>> = { morning: SunHorizonIcon, night: MoonStarsIcon, npc: ChatCircleDotsIcon };
+
+/** 탐험 중이면 숲 아이콘, 아침·밤·마을 볼일은 그에 맞는 아이콘, 스토리는 두루마리 */
+function Header({ title, progress, category }: { title: string; progress?: ExploreProgress; category?: EventCategory }) {
+  const HeaderIcon = progress ? TreeIcon : (category && CATEGORY_ICON[category]) || ScrollIcon;
   return (
     <View style={styles.header}>
       <HeaderIcon size={icon.md} weight={icon.weight} color={colors.accent} />

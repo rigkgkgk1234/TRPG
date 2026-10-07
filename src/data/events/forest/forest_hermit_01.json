@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_hermit_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "숲속의 은자",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에 사는 은자라고 한다.",
+      "choices": [
+        {
+          "id": "trade",
+          "label": "약초를 건네고 이야기를 청한다",
+          "cost": {
+            "item": {
+              "itemId": "herb",
+              "qty": 1
+            }
+          },
+          "outcome": {
+            "text": "노인이 약초마다 쓰임새를 하나하나 일러 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "herbalism",
+                "amount": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "talk",
+          "label": "숲에 관해 묻는다",
+          "outcome": {
+            "text": "노인은 짐승이 다니는 길과 사람이 다니면 안 되는 길을 알려 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "tracking",
+                "amount": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

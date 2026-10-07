@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_hamon_tea",
+  "category": "npc",
+  "npc": "hamon",
+  "title": "촌장의 찻상",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "하몬 촌장이 보리차를 내오며 요즘 형편이 어떠냐고 묻는다.",
+      "choices": [
+        {
+          "id": "tell_tracks",
+          "label": "숲에서 본 발자국 이야기를 한다",
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "goblin_tracks_found"
+            },
+            {
+              "type": "notFlag",
+              "flag": "reported"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "촌장의 얼굴이 굳었다. 확실한 증거가 있으면 꼭 가져오라고 한다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "hardship",
+          "label": "살림이 어렵다고 털어놓는다",
+          "outcome": {
+            "text": "촌장이 은화 세 닢을 내밀었다. 갚을 필요 없다고 했지만 마음이 무겁다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 3
+              },
+              {
+                "type": "reputation",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "chat",
+          "label": "안부만 묻고 나온다",
+          "outcome": {
+            "text": "촌장은 아버지 이야기를 꺼내며 한참 웃었다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

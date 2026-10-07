@@ -1,6 +1,6 @@
 import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
-import { josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
+import { isNpcId, josa, NPC_LABEL, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { equippedWeapon, isBow } from "@/core/combat/combat";
 import type { CheckOutcome, CheckResult, CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -131,6 +131,7 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
       if (cmd.action === "trainLesson") return `레나의 교습${skill}`;
       if (cmd.action === "rest") return "휴식";
       if (cmd.action === "explore" && cmd.region) return `${REGION_LABEL[cmd.region]} 탐험`;
+      if (cmd.action === "village" && cmd.npc && isNpcId(cmd.npc)) return `${NPC_LABEL[cmd.npc]} 찾아가기`;
       return cmd.action;
     }
     case "chooseChoice": {

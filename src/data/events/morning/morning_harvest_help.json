@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_harvest_help",
+  "category": "morning",
+  "title": "이웃 밭의 일손",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 8,
+      "max": 25
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 9
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "이웃 밭의 보리가 누렇게 익었다. 노부부 둘이서 거두기엔 일손이 턱없이 모자라 보인다.",
+      "choices": [
+        {
+          "id": "help",
+          "label": "오전 동안 거든다",
+          "outcome": {
+            "text": "해가 중천에 뜰 때까지 낫을 휘둘렀다. 노부부가 품삯과 보리 한 자루를 챙겨 주었다.",
+            "effects": [
+              {
+                "type": "loseNextSlot"
+              },
+              {
+                "type": "silver",
+                "delta": 2
+              },
+              {
+                "type": "food",
+                "delta": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

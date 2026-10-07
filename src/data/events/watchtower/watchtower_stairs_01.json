@@ -1,0 +1,88 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_stairs_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "무너진 돌계단",
+  "conditions": [],
+  "weight": 7,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "감시탑으로 오르는 돌계단이 중간에서 무너져 있다. 위쪽 창문 틈으로 무언가 반짝인다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "벽 틈을 디디고 올라간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "창턱에 걸린 낡은 화살통을 찾았다. 쓸 만한 화살이 몇 개 남아 있다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "arrow",
+                  "qty": 6
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "손끝이 찢어졌지만 화살 몇 개를 건졌다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "arrow",
+                  "qty": 3
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발 디딘 돌이 빠졌다. 바닥으로 떨어져 한참을 끙끙댔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "위험해 보여 돌아선다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

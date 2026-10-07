@@ -1,0 +1,57 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_wolf_rumor",
+  "category": "morning",
+  "title": "나무꾼들의 수다",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 2,
+      "max": 14
+    }
+  ],
+  "weight": 7,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 앞에서 나무꾼들이 늑대 무리가 숲 어귀까지 내려왔다며 떠든다.",
+      "choices": [
+        {
+          "id": "ask",
+          "label": "어디서 봤는지 자세히 묻는다",
+          "check": {
+            "stat": "cha",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "개울을 따라 내려오는 길목이라고 한다. 늑대가 다니는 길을 머릿속에 그려 두었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "다들 술기운에 한 말이라 앞뒤가 맞지 않는다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "흘려듣고 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

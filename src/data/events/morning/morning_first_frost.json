@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_first_frost",
+  "category": "morning",
+  "title": "첫서리",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": {
+        "variants": [
+          {
+            "when": [
+              {
+                "type": "job",
+                "job": "farmer"
+              }
+            ],
+            "text": "첫서리가 내렸다. 밭고랑이 하얗다. 보리를 서둘러 거두길 잘했다. 어머니가 묵은 솜옷을 꺼내 주셨다."
+          }
+        ],
+        "fallback": "첫서리가 내렸다. 밭고랑이 하얗고, 입김이 뿌옇게 피어오른다. 어머니가 묵은 솜옷을 꺼내 주셨다."
+      },
+      "choices": []
+    }
+  }
+}

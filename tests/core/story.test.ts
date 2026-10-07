@@ -10,7 +10,7 @@ import type { KeyValueStore } from "@/core/save/serialize";
 import { epitaph, makeRecord, resolveEnding } from "@/core/story/ending";
 import { SAVE_KEYS, type JobId, type Rng, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
-import { d20Sequence } from "./fixtures";
+import { d20Sequence, withoutDailyEvents } from "./fixtures";
 
 const NOW = "2026-10-07T00:00:00.000Z";
 const start = (job: JobId = "farmer", seed = 1) => newRun(CONTENT, job, "하람", { seed, now: NOW });
@@ -55,7 +55,7 @@ describe("스토리 발생", () => {
   });
 
   it("가족 굶주림 3이면 다음 날 「동생이 앓아눕다」", () => {
-    const ctx = ctxOf(edit(start(), (s) => { s.time.phase = "evening"; s.resources.food = 0; s.resources.familyHunger = 2; }), d20Sequence());
+    const ctx = { ...ctxOf(edit(start(), (s) => { s.time.phase = "evening"; s.resources.food = 0; s.resources.familyHunger = 2; }), d20Sequence()), content: withoutDailyEvents(CONTENT) };
     runEvening(ctx, "selfFirst");
     expect(ctx.draft.flags.sister_sick).toBe(true);
     const next = send(ctx.draft, { type: "chooseAction", action: "rest" });

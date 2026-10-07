@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "morning_dice_game",
+  "category": "morning",
+  "title": "여관 뒤의 노름판",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 3
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 뒤뜰에서 일꾼들이 주사위 노름판을 벌였다. 한 판 끼라며 손짓한다.",
+      "choices": [
+        {
+          "id": "play",
+          "label": "한 판 낀다",
+          "cost": {
+            "silver": 2
+          },
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "운이 따랐다. 판돈을 쓸어 담았다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "은화 두 닢이 순식간에 사라졌다.",
+              "next": "END"
+            },
+            "critFail": {
+              "text": "판돈을 잃은 것도 모자라 속임수를 썼다는 오해까지 샀다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "구경만 하다 자리를 뜬다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

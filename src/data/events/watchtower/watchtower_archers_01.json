@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_archers_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "날아드는 화살",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 19
+    }
+  ],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 창문마다 고블린 궁수가 보인다. 화살이 발밑에 꽂혔다!",
+      "choices": [
+        {
+          "id": "dodge",
+          "label": "몸을 숙이고 바위 뒤로 뛴다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ],
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "화살 비를 뚫고 숲으로 빠져나왔다. 놈들이 탑을 거점으로 삼았다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "화살이 어깨를 스쳤다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "허벅지에 화살이 박혔다. 절뚝이며 겨우 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

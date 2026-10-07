@@ -63,7 +63,7 @@
                   "flag": "recruit_passed"
                 }
               ],
-              "next": "END"
+              "next": "offer"
             },
             "fail": {
               "text": "이번에도 모집관은 고개를 저었다.",
@@ -76,6 +76,33 @@
           "label": "그냥 보낸다",
           "outcome": {
             "text": "모집관의 깃발이 로웬 쪽으로 멀어졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "offer": {
+      "text": "모집관이 로웬에서 기다리겠다며 증표를 내민다. 받으면 습격이 오는 밤에 마을에 없을 것이다.",
+      "choices": [
+        {
+          "id": "accept",
+          "label": "증표를 받는다",
+          "outcome": {
+            "text": "증표를 품에 넣었다. 어머니에게 어떻게 말을 꺼내야 할지 모르겠다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "route_rowen"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "decline",
+          "label": "마을에 남겠다고 한다",
+          "outcome": {
+            "text": "모집관이 어깨를 으쓱하고 말에 올랐다.",
             "next": "END"
           }
         }

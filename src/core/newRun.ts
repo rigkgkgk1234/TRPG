@@ -50,7 +50,7 @@ export function newRun(content: ContentDB, jobId: JobId, name: string, { seed, n
     },
     resources: { silver: job.silver, food: job.food, debt: 0, fatigue: 0, hunger: 0, familyHunger: 0 },
     inventory: startInventory(content, job.startItems),
-    // 아침 이벤트는 아침 이벤트 콘텐츠(7주차)와 함께 붙인다. 그 전까지 하루는 오전 행동부터 시작한다
+    // 첫날은 아침 이벤트 없이 오전 행동부터. 아침 이벤트는 날이 바뀔 때 연다 (evening.ts beginDay)
     time: { day: 1, phase: "am", skipNextAm: false, restsToday: 0, collapsedToday: false },
     flags: {},
     eventHistory: {},
