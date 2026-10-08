@@ -51,7 +51,7 @@ export function EndingPanel({ run }: { run: RunState }) {
         <Figure label="빚" value={String(run.resources.debt)} />
       </View>
       <View style={styles.lines}>
-        <Text style={styles.line}>가장 많이 익힌 숙련: {SKILL_LABEL[best]} {run.player.skills[best].rank}등급</Text>
+        <Text style={styles.line}>가장 많이 익힌 숙련: {SKILL_LABEL[best]} {run.player.skills[best].rank}레벨</Text>
         {st.lowestHp && <Text style={styles.line}>가장 위험했던 순간: {st.lowestHp.day}일차, HP {st.lowestHp.hp}</Text>}
         <Text style={styles.line}>남긴 흔적: {traits.length ? traits.map((t) => `「${t}」`).join(", ") : "없음"}</Text>
       </View>

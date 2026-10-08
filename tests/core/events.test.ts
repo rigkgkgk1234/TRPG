@@ -109,7 +109,7 @@ describe("조건", () => {
   });
 
   it("잠김 사유는 필요한 값을 말한다", () => {
-    expect(conditionReason({ type: "skill", skill: "tracking", min: 2 }, CONTENT)).toBe("추적 2 필요");
+    expect(conditionReason({ type: "skill", skill: "tracking", min: 2 }, CONTENT)).toBe("추적 2레벨 필요");
     expect(conditionReason({ type: "equipped", itemId: "hunting_bow" }, CONTENT)).toBe("사냥용 활 장착 필요");
     expect(conditionReason({ type: "hasItem", itemId: "herb", qty: 2 }, CONTENT)).toBe("약초 2개 필요");
     expect(conditionReason({ type: "wound", max: "light" }, CONTENT)).toBe("중상 상태로는 무리다");

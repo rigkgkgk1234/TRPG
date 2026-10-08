@@ -31,7 +31,7 @@ export function equipBlock(run: RunState, content: Pick<ContentDB, "items">, slo
   if (!stack || !def || !slot) return "몸에 걸칠 수 있는 물건이 아니다";
   if (def.category === "weapon" && def.requires) {
     for (const [stat, min] of Object.entries(def.requires) as [StatId, number][]) {
-      if (run.player.stats[stat] < min) return `${STAT_LABEL[stat]} ${min} 필요`;
+      if (run.player.stats[stat] < min) return `${STAT_LABEL[stat]} ${min}레벨 필요`;
     }
   }
   const weapon = run.inventory.equipment.weapon;

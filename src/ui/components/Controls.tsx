@@ -38,7 +38,7 @@ export function PickCell({ label, sub, badge, badgeNote, reason, disabled, wide,
       <View style={styles.pickRow}>
         <View style={styles.pickText}>
           <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
-          {reason || sub ? <Text style={styles.pickReason} numberOfLines={1}>{reason ?? sub}</Text> : null}
+          {reason || sub ? <Text style={styles.pickReason} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{reason ?? sub}</Text> : null}
         </View>
         {badge ? <WithNote main={badge} note={badgeNote} style={styles.pickBadge} noteStyle={styles.pickNote} /> : null}
       </View>
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   pickMuted: { opacity: 0.45 },
   pickRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.sm },
   pickText: { flexShrink: 1, gap: 2 },
-  pickBadge: { ...type.bodyStrong, color: colors.accent, fontVariant: ["tabular-nums"] },
+  // 확률은 줄바꿈하지 않는다 (설명이 길면 설명 쪽이 두 줄이 된다)
+  pickBadge: { ...type.bodyStrong, color: colors.accent, fontVariant: ["tabular-nums"], flexShrink: 0 },
   pickNote: { fontSize: 12 },
   pickReason: { ...type.caption, color: colors.textDim },
   pressed: { transform: [{ scale: motion.press }] },

@@ -55,8 +55,8 @@ export function evalAll(conds: readonly Condition[] | undefined, run: RunState, 
 export function conditionReason(c: Condition, content: Pick<ContentDB, "items" | "traits">): string | null {
   switch (c.type) {
     case "dayRange": return c.min ? `${c.min}일차부터` : `${c.max}일차까지`;
-    case "stat": return `${STAT_LABEL[c.stat]} ${c.min} 필요`;
-    case "skill": return `${SKILL_LABEL[c.skill]} ${c.min} 필요`;
+    case "stat": return `${STAT_LABEL[c.stat]} ${c.min}레벨 필요`;
+    case "skill": return `${SKILL_LABEL[c.skill]} ${c.min}레벨 필요`;
     case "reputation": return c.min !== undefined ? `평판 ${c.min} 필요` : "평판이 너무 높다";
     case "silver": return `은화 ${c.min} 필요`;
     case "food": return `식량 ${c.min} 필요`;

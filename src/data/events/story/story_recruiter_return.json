@@ -48,7 +48,7 @@
               ]
             }
           ],
-          "lockedReason": "무기 숙련 3 필요",
+          "lockedReason": "무기 숙련 3레벨 필요",
           "check": {
             "stat": "str",
             "skill": "guard",

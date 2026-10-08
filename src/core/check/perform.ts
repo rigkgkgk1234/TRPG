@@ -18,7 +18,7 @@ export function performCheck(ctx: Ctx, spec: CheckSpec, label: string, extra?: E
   if (result.outcome === "critFail") s.stats.fumbles += 1;
   s.player.statUses[spec.stat] += 1;
 
-  // 굴림을 먼저 피드에 넣어야 등급 상승 연출이 굴림 뒤에 나온다
+  // 굴림을 먼저 피드에 넣어야 레벨 상승 연출이 굴림 뒤에 나온다
   ctx.feed.push({ kind: "roll", label, result });
   if (spec.skill) result.xpGained = gainSkillXp(ctx, spec.skill, Math.min(raw.xpGained, xpCap));
   return result;

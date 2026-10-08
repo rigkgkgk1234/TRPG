@@ -115,24 +115,24 @@ describe("일하기", () => {
 });
 
 describe("훈련·휴식", () => {
-  it("혼자 훈련은 운동(능력치)을 골라야 하고, 능력치만으로 DC 10. 성공하면 판정 횟수 +3", () => {
+  it("혼자 훈련은 운동(능력치)을 골라야 하고, 능력치만으로 DC 10. 성공하면 판정 횟수 +5", () => {
     const run = start("hunter");
     expect(actionStatus(run, CONTENT, "trainSolo")).toMatchObject({ available: false });
     const ctx = withDice(run, d20Sequence(8)); // 8 + 민첩2 = 10
     handleAction(ctx, "trainSolo", { stat: "agi" });
-    expect(ctx.draft.player.statUses.agi).toBe(3);
+    expect(ctx.draft.player.statUses.agi).toBe(5);
     expect(ctx.draft.player.skills.bow.xp).toBe(0);
     expect(ctx.draft.resources.fatigue).toBe(2);
   });
 
-  it("운동은 실패해도 판정 횟수 +2, 대실패는 피로 +1 추가 (SYSTEM_SPEC 2-4)", () => {
+  it("운동은 실패해도 판정 횟수 +3, 대실패는 피로 +1 추가 (SYSTEM_SPEC 2-4)", () => {
     const fail = withDice(start("hunter"), d20Sequence(5));
     handleAction(fail, "trainSolo", { stat: "str" });
-    expect(fail.draft.player.statUses.str).toBe(2);
+    expect(fail.draft.player.statUses.str).toBe(3);
     const crit = withDice(start("hunter"), d20Sequence(1));
     handleAction(crit, "trainSolo", { stat: "str" });
     expect(crit.draft.resources.fatigue).toBe(3);
-    expect(crit.draft.player.statUses.str).toBe(2);
+    expect(crit.draft.player.statUses.str).toBe(3);
   });
 
   it("운동은 성장 굴림 기준(15)을 넘겨 쌓지 않고, 채웠거나 자연 상한이면 막는다. 말솜씨 운동은 없다", () => {

@@ -53,7 +53,7 @@ describe("장착", () => {
   });
 
   it("긴 활은 근력 1이 있어야 든다", () => {
-    expect(equipBlock(withBag(start("hunter"), gear("longbow")), CONTENT, 0)).toBe("근력 1 필요");
+    expect(equipBlock(withBag(start("hunter"), gear("longbow")), CONTENT, 0)).toBe("근력 1레벨 필요");
     expect(equipBlock(withBag(start("farmer"), gear("longbow")), CONTENT, 0)).toBeNull();
   });
 
@@ -227,7 +227,7 @@ describe("가게 물건 목록", () => {
 
   it("전투 망치는 근력 2가 있어야 든다, 농부는 못 든다", () => {
     const ctx = ctxOf(withBag(start("farmer"), gear("war_hammer")));
-    expect(equip(ctx, 0)).toBe("근력 2 필요");
+    expect(equip(ctx, 0)).toBe("근력 2레벨 필요");
     const smith = ctxOf(withBag(start("smith"), gear("war_hammer")));
     expect(equip(smith, 0)).toBeNull();
   });

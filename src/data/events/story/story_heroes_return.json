@@ -65,7 +65,7 @@
               ]
             }
           ],
-          "lockedReason": "검술 3 필요 (일행을 도왔다면 2)",
+          "lockedReason": "검술 3레벨 필요 (일행을 도왔다면 2레벨)",
           "check": {
             "stat": "str",
             "skill": "blade",
@@ -106,7 +106,7 @@
               ]
             }
           ],
-          "lockedReason": "둔기 3 필요 (일행을 도왔다면 2)",
+          "lockedReason": "둔기 3레벨 필요 (일행을 도왔다면 2레벨)",
           "check": {
             "stat": "str",
             "skill": "blunt",
@@ -147,7 +147,7 @@
               ]
             }
           ],
-          "lockedReason": "활 3 필요 (일행을 도왔다면 2)",
+          "lockedReason": "활 3레벨 필요 (일행을 도왔다면 2레벨)",
           "check": {
             "stat": "agi",
             "skill": "bow",

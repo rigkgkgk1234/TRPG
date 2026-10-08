@@ -19,8 +19,8 @@ export function skillXpRoomToday(player: PlayerState, skill: SkillId): number {
 }
 
 /**
- * 숙련 XP를 더하고 필요치를 채우면 등급을 올린다. (SYSTEM_SPEC 1-4)
- * 하루 상한을 넘는 몫은 버린다. 등급이 오르면 XP는 0으로 (넘친 XP는 이월하지 않음).
+ * 숙련 XP를 더하고 필요치를 채우면 레벨을 올린다. (SYSTEM_SPEC 1-4)
+ * 하루 상한을 넘는 몫은 버린다. 레벨이 오르면 XP는 0으로 (넘친 XP는 이월하지 않음).
  * @returns 실제로 쌓인 XP
  */
 export function gainSkillXp(ctx: Ctx, skill: SkillId, amount: number): number {

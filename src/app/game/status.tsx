@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatSigned, SKILL_IDS, SKILL_LABEL, STAT_IDS, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
+import { SKILL_IDS, SKILL_LABEL, STAT_IDS, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { SKILL_MAX_RANK, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, maxHp } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useShownRun } from "@/store/gameStore";
@@ -31,7 +31,7 @@ export default function StatusScreen() {
 
       <Section title="능력치" hint={`판정에 ${STAT_GROWTH_USES}번 쓸 때마다 성장 기회`}>
         {STAT_IDS.map((s) => (
-          <Row key={s} label={STAT_LABEL[s]} value={formatSigned(p.stats[s])}
+          <Row key={s} label={STAT_LABEL[s]} value={`${p.stats[s]}레벨`}
             progress={Math.min(1, p.statUses[s] / STAT_GROWTH_USES)} note={`${p.statUses[s]}/${STAT_GROWTH_USES}`} />
         ))}
       </Section>
@@ -43,7 +43,7 @@ export default function StatusScreen() {
           const need = maxed ? 0 : SKILL_XP_TO_NEXT[sk.rank];
           const today = p.skillXpToday[s] ?? 0;
           return (
-            <Row key={s} label={SKILL_LABEL[s]} value={`${sk.rank}등급`}
+            <Row key={s} label={SKILL_LABEL[s]} value={`${sk.rank}레벨`}
               progress={maxed ? 1 : sk.xp / need}
               note={maxed ? "달인" : `${sk.xp}/${need}${today ? `, 오늘 +${today}` : ""}`} />
           );
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   figureLabel: { ...type.caption, color: colors.textFaint },
   row: { flexDirection: "row", alignItems: "center", gap: space.md, minHeight: 32 },
   label: { ...type.body, color: colors.text, width: 56 },
-  value: { ...type.bodyStrong, color: colors.text, width: 44, fontVariant: ["tabular-nums"] },
+  value: { ...type.bodyStrong, color: colors.text, width: 60, fontVariant: ["tabular-nums"] },
   track: { flex: 1, height: 4, borderRadius: radius.pill, backgroundColor: colors.surfaceRaised, overflow: "hidden" },
   fill: { height: "100%", borderRadius: radius.pill, backgroundColor: colors.accent },
   note: { ...type.caption, color: colors.textFaint, minWidth: 84, textAlign: "right", fontVariant: ["tabular-nums"] },

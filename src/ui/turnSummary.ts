@@ -61,7 +61,7 @@ export interface TurnSummary {
   roll?: CheckResult;
   /** 자원별로 합친 변화 (0은 뺀다) */
   changes: Change[];
-  /** 문장·등급 상승·부상을 일어난 순서대로 */
+  /** 문장·레벨 상승·부상을 일어난 순서대로 */
   events: Line[];
   /** 거절 사유 (토스트) */
   notices: string[];
@@ -195,8 +195,8 @@ function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" 
       return { text: item.text, tone: "neutral" };
     case "levelUp":
       return item.skill
-        ? { text: `${SKILL_LABEL[item.skill]} ${item.newValue}등급이 되었다`, tone: "crit", mark: "levelUp" }
-        : { text: `${josa(STAT_LABEL[item.stat!], "이/가")} 올랐다 (${signed(item.newValue)})`, tone: "crit", mark: "levelUp" };
+        ? { text: `${SKILL_LABEL[item.skill]} ${item.newValue}레벨이 되었다`, tone: "crit", mark: "levelUp" }
+        : { text: `${josa(STAT_LABEL[item.stat!], "이/가")} ${item.newValue}레벨이 되었다`, tone: "crit", mark: "levelUp" };
     case "wound":
       return item.level === "none"
         ? { text: "상처가 다 나았다.", tone: "good", mark: "heal" }

@@ -6,7 +6,7 @@ import type { Effect, ItemDef, ItemStack, StatId } from "@/core/types";
 export function itemSummary(def: ItemDef): string[] {
   switch (def.category) {
     case "weapon": {
-      const req = Object.entries(def.requires ?? {}).map(([s, v]) => `${STAT_LABEL[s as StatId]} ${v} 필요`);
+      const req = Object.entries(def.requires ?? {}).map(([s, v]) => `${STAT_LABEL[s as StatId]} ${v}레벨 필요`);
       return [`${SKILL_LABEL[def.skill]}`, `피해 ${def.damage}`, ...(def.twoHanded ? ["양손"] : []), ...req];
     }
     case "armor":

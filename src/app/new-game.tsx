@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatSigned, SKILL_LABEL, STAT_IDS, STAT_LABEL } from "@/core/labels";
+import { SKILL_LABEL, STAT_IDS, STAT_LABEL } from "@/core/labels";
 import { maxHp, type JobDef, type JobId, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
@@ -74,7 +74,7 @@ export default function NewGameScreen() {
 function JobCard({ job, selected, onPress }: { job: JobDef; selected: boolean; onPress: () => void }) {
   const JobIcon = JOB_ICON[job.id];
   const skills = (Object.entries(job.startSkills) as [SkillId, number][])
-    .map(([s, r]) => `${SKILL_LABEL[s]} ${r}`).join(", ");
+    .map(([s, r]) => `${SKILL_LABEL[s]} ${r}레벨`).join(", ");
   const items = job.startItems.map((it) => CONTENT.items[it.itemId]?.name ?? it.itemId).join(", ");
   return (
     <Pressable
@@ -97,7 +97,7 @@ function JobCard({ job, selected, onPress }: { job: JobDef; selected: boolean; o
         {STAT_IDS.map((s) => (
           <View key={s} style={styles.stat}>
             <Text style={[styles.statValue, job.stats[s] < 0 && { color: colors.fail }, job.stats[s] > 0 && { color: colors.text }]}>
-              {formatSigned(job.stats[s])}
+              {job.stats[s]}<Text style={styles.statUnit}>레벨</Text>
             </Text>
             <Text style={styles.statLabel}>{STAT_LABEL[s]}</Text>
           </View>
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
   stat: { flex: 1, alignItems: "center", gap: 2 },
   statValue: { ...type.number, fontSize: 17, color: colors.textFaint },
   statLabel: { ...type.caption, color: colors.textFaint },
+  statUnit: { fontSize: 11 },
   meta: { gap: space.xs },
   metaLine: { ...type.caption, color: colors.textDim },
   metaKey: { fontFamily: fonts.semibold, color: colors.textFaint },

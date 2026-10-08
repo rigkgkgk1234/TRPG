@@ -96,7 +96,7 @@ export default function DiceTestScreen() {
             ))}
           </ChipRow>
           {input.skill && (
-            <Stepper label={`${SKILL_LABEL[input.skill]} 등급`} value={input.skillRank} min={0} max={SKILL_MAX_RANK} onChange={(v) => set("skillRank", v)} />
+            <Stepper label={`${SKILL_LABEL[input.skill]} 레벨`} value={input.skillRank} min={0} max={SKILL_MAX_RANK} onChange={(v) => set("skillRank", v)} />
           )}
         </Section>
 

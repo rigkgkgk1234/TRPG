@@ -3,10 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
-import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
+import { actionStatus, EXERCISE_USES, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
-import { EXERCISE_LABEL, EXERCISE_STATS, formatSigned, josa, REGION_LABEL, SKILL_LABEL, STAT_LABEL } from "@/core/labels";
+import { EXERCISE_LABEL, EXERCISE_STATS, josa, REGION_LABEL, SKILL_LABEL, STAT_LABEL } from "@/core/labels";
 import { SKILL_MAX_RANK, SKILL_STAT, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId, type StatId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
@@ -148,7 +148,7 @@ function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: S
       <DialogHead
         icon={ACTION_ICON.trainSolo}
         title={def.label}
-        subtitle={`판정 목표 ${SOLO_TRAINING_DC}, 피로 +${def.fatigue}. 성공할수록 더 단련된다`}
+        subtitle={`판정 목표 ${SOLO_TRAINING_DC}, 피로 +${def.fatigue}. 성공하면 성장 +${EXERCISE_USES.success}, 실패해도 +${EXERCISE_USES.other} (대성공 +${EXERCISE_USES.critSuccess})`}
       />
       <View style={styles.dialogSection}>
         <View style={styles.dialogSectionHead}>
@@ -163,7 +163,7 @@ function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: S
                 key={stat}
                 wide
                 label={EXERCISE_LABEL[stat]}
-                sub={`${STAT_LABEL[stat]} ${formatSigned(run.player.stats[stat])}, 성장까지 ${Math.min(run.player.statUses[stat], STAT_GROWTH_USES)}/${STAT_GROWTH_USES}`}
+                sub={exerciseLine(run, stat)}
                 {...(status.available ? workBadge(run, { stat, dc: SOLO_TRAINING_DC }) : {})}
                 reason={status.available ? undefined : status.reason}
                 disabled={!status.available}
@@ -178,7 +178,7 @@ function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: S
 }
 
 /**
- * 교습 창: 레나가 가르치는 숙련마다 한 줄 (등급, 어떤 능력치로 굴리는지, 다음 등급까지의 경험).
+ * 교습 창: 레나가 가르치는 숙련마다 한 줄 (어떤 능력치로 굴리는지, 현재 레벨, 다음 레벨까지의 경험).
  * 숙련을 누르면 바로 배운다.
  */
 function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: SkillId) => void; onClose: () => void }) {
@@ -188,7 +188,7 @@ function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: Ski
       <DialogHead
         icon={ACTION_ICON.trainLesson}
         title={def.label}
-        subtitle={`은화 ${def.silverCost}을 내고 판정 없이 경험 +${LESSON_XP}, 피로 +${def.fatigue}`}
+        subtitle={`은화 ${def.silverCost}을 내고 판정 없이 성장 +${LESSON_XP}, 피로 +${def.fatigue}`}
       />
       <View style={styles.dialogSection}>
         <View style={styles.dialogSectionHead}>
@@ -202,7 +202,7 @@ function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: Ski
               <PickCell
                 key={skill}
                 wide
-                label={`${SKILL_LABEL[skill]} ${run.player.skills[skill].rank}등급`}
+                label={`${SKILL_LABEL[skill]} 훈련`}
                 sub={skillLine(run, skill)}
                 reason={status.available ? undefined : status.reason}
                 disabled={!status.available}
@@ -216,11 +216,19 @@ function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: Ski
   );
 }
 
-/** "근력 판정, 경험 2/6" (달인이면 경험 대신 "달인") */
+/** "근력 판정, 현재 1레벨" / "성장까지 2/6 (+3)" 두 줄: 교습 한 번에 실제로 오르는 만큼 (하루 상한 반영). 가장 높은 레벨이면 "달인" */
 function skillLine(run: RunState, skill: SkillId): string {
   const { rank, xp } = run.player.skills[skill];
-  const progress = rank >= SKILL_MAX_RANK ? "달인" : `경험 ${xp}/${SKILL_XP_TO_NEXT[rank]}`;
-  return `${STAT_LABEL[SKILL_STAT[skill]]} 판정, ${progress}`;
+  const gain = Math.min(LESSON_XP, skillXpRoomToday(run.player, skill));
+  const progress = rank >= SKILL_MAX_RANK ? "달인" : `성장까지 ${xp}/${SKILL_XP_TO_NEXT[rank]}${gain > 0 ? ` (+${gain})` : ""}`;
+  return `${STAT_LABEL[SKILL_STAT[skill]]} 판정, 현재 ${rank}레벨\n${progress}`;
+}
+
+/** "민첩 판정, 현재 2레벨" / "성장까지 4/15 (성공 +5)": 성공하면 쌓이는 만큼 (성장 기회 15를 넘지 않게) */
+function exerciseLine(run: RunState, stat: StatId): string {
+  const uses = Math.min(run.player.statUses[stat], STAT_GROWTH_USES);
+  const gain = Math.min(EXERCISE_USES.success, STAT_GROWTH_USES - uses);
+  return `${STAT_LABEL[stat]} 판정, 현재 ${run.player.stats[stat]}레벨\n성장까지 ${uses}/${STAT_GROWTH_USES}${gain > 0 ? ` (성공 +${gain})` : ""}`;
 }
 
 /** 탐험 창: 갈 곳마다 한 줄. 누르면 그곳 안내 창으로 바뀌고, 고를 수 없는 곳도 안내는 볼 수 있다 */

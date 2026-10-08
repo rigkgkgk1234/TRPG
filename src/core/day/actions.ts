@@ -26,8 +26,8 @@ import { advanceSlot } from "./time";
 export const LESSON_SKILLS: readonly SkillId[] = ["blade", "blunt", "bow", "guard"];
 export const SOLO_TRAINING_DC = 10;
 /** 혼자 훈련은 몸을 단련하는 운동: 고른 능력치의 판정 횟수(성장 굴림용)를 늘린다. 말솜씨는 혼자 늘릴 수 없다. */
-/** 운동 한 번에 쌓이는 판정 횟수 (판정 자체의 1회 포함): 대성공 4, 성공 3, 그 밖 2 */
-export const EXERCISE_USES = { critSuccess: 4, success: 3, other: 2 } as const;
+/** 운동 한 번에 쌓이는 판정 횟수 (판정 자체의 1회 포함): 대성공 6, 성공 5, 그 밖 3 */
+export const EXERCISE_USES = { critSuccess: 6, success: 5, other: 3 } as const;
 export const LESSON_XP = 3;
 export const REST_HP = 2;
 /** 경상은 휴식 2회로 낫는다 */

@@ -205,7 +205,7 @@ describe("용사 일행", () => {
       s.activeEvent = { eventId: "story_heroes_return", sceneId: "ask" };
     });
     const locked = sceneView(back, CONTENT);
-    expect(locked?.kind === "choices" && locked.choices.find((c) => c.id === "bow")?.lockedReason).toBe("활 3 필요 (일행을 도왔다면 2)");
+    expect(locked?.kind === "choices" && locked.choices.find((c) => c.id === "bow")?.lockedReason).toBe("활 3레벨 필요 (일행을 도왔다면 2레벨)");
 
     const skilled = edit(back, (s) => { s.player.skills.bow.rank = 3; });
     const ctx = ctxOf(skilled, d20Sequence(15)); // 15 + 민첩 2 + 활 3 = 20 ≥ 13
@@ -226,7 +226,7 @@ describe("용사 일행", () => {
       const v = sceneView(run, CONTENT);
       return v?.kind === "choices" ? v.choices.find((c) => c.id === "blunt") : undefined;
     };
-    expect(blunt(back)?.lockedReason).toBe("둔기 3 필요 (일행을 도왔다면 2)");
+    expect(blunt(back)?.lockedReason).toBe("둔기 3레벨 필요 (일행을 도왔다면 2레벨)");
     expect(blunt(edit(back, (s) => { s.flags.heroes_helped = true; }))?.lockedReason).toBeNull();
     expect(blunt(edit(back, (s) => { s.flags.heroes_helped = true; s.player.skills.blunt.rank = 1; }))?.lockedReason).not.toBeNull();
   });

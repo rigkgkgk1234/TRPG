@@ -55,7 +55,7 @@ export default function RecordsScreen() {
                   <Text style={styles.dim}>{JOB_LABEL[r.job]}, {r.daysSurvived}일차</Text>
                 </View>
                 {r.death && <Text style={styles.line}>{epitaph(r)}</Text>}
-                {r.bestSkill && <Text style={styles.dim}>가장 많이 익힌 숙련: {SKILL_LABEL[r.bestSkill.skill]} {r.bestSkill.rank}등급</Text>}
+                {r.bestSkill && <Text style={styles.dim}>가장 많이 익힌 숙련: {SKILL_LABEL[r.bestSkill.skill]} {r.bestSkill.rank}레벨</Text>}
               </View>
             ))}
           </View>
