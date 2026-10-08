@@ -93,10 +93,10 @@ describe("최종 습격", () => {
     }));
     startCombat(ctx, { enemies: ["raid_leader"], initiative: "enemy", canFlee: false, onVictory: "won", onDefeat: "lost" });
     const c = ctx.draft.combat!;
-    expect(c.enemies[0].hp).toBe(18 - 3 * 3);
+    expect(c.enemies[0].hp).toBe(36 - 3 * 6);
     expect(c.setup).toMatchObject({ playerDefenseBonus: 2, initiative: "player", firstAttackAdvantage: true });
     expect(c.phase).toBe("playerTurn");
-    expect(texts(ctx.feed)[0]).toBe("마을 사람 3명이 함께 버티며 약탈단 두목을 몰아붙였다. (약탈단 두목 HP −9)");
+    expect(texts(ctx.feed)[0]).toBe("마을 사람 3명이 함께 버티며 약탈단 두목을 몰아붙였다. (약탈단 두목 HP −18)");
   });
 
   it("약탈단 두목에게 져도 죽지 않고 습격은 실패로 끝난다", () => {

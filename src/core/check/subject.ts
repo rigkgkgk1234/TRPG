@@ -31,6 +31,7 @@ export function blankSubject(opts: SubjectOptions = {}): CheckSubject {
       wound: { level: opts.wound ?? "none", restCount: 0, treatedDays: null, untreatedDays: 0 },
       traits: opts.traits ?? [],
       reputation: 10,
+      fame: 0,
     },
     resources: { silver: 0, food: 0, debt: 0, fatigue: opts.fatigue ?? 0, hunger: opts.hunger ?? 0, familyHunger: 0 },
     inventory: {

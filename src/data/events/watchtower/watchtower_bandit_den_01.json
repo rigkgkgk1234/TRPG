@@ -86,7 +86,7 @@
             "canFlee": true,
             "onVictory": "win",
             "onFled": "fled",
-            "enemyHpModifier": -3
+            "enemyHpModifier": -6
           }
         }
       ],

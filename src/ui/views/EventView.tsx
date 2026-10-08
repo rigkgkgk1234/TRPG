@@ -10,7 +10,7 @@ import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { chanceBadgeProps } from "@/ui/rollText";
-import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, TreeIcon, type Icon } from "@/ui/icons";
+import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, SwordIcon, TreeIcon, type Icon } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 
 /**
@@ -41,7 +41,7 @@ export function EventPanel({ run }: { run: RunState }) {
           {view.kind === "deeper" ? (
             <Header title={`${REGION_LABEL[view.region]} 깊은 곳`} progress={view.progress} collapsed={sheet.collapsed} />
           ) : (
-            <Header title={view.title} progress={view.progress} category={view.category} collapsed={sheet.collapsed} />
+            <Header title={view.title} progress={view.progress} category={view.category} place={run.activeEvent ? CONTENT.events[run.activeEvent.eventId]?.npc : undefined} collapsed={sheet.collapsed} />
           )}
         </Pressable>
       </View>
@@ -120,10 +120,12 @@ function useSheet(sceneKey: string) {
 }
 
 const CATEGORY_ICON: Partial<Record<EventCategory, Icon>> = { morning: SunHorizonIcon, night: MoonStarsIcon, npc: ChatCircleDotsIcon };
+/** 사람이 아닌 마을 볼일 장소 */
+const PLACE_ICON: Record<string, Icon> = { arena: SwordIcon, guild: ScrollIcon };
 
-/** 탐험 중이면 숲 아이콘, 아침·밤·마을 볼일은 그에 맞는 아이콘, 스토리는 두루마리 */
-function Header({ title, progress, category, collapsed }: { title: string; progress?: ExploreProgress; category?: EventCategory; collapsed: boolean }) {
-  const HeaderIcon = progress ? TreeIcon : (category && CATEGORY_ICON[category]) || ScrollIcon;
+/** 탐험 중이면 숲 아이콘, 아침·밤·마을 볼일은 그에 맞는 아이콘(결투장은 검, 의뢰 중개소는 두루마리), 스토리는 두루마리 */
+function Header({ title, progress, category, place, collapsed }: { title: string; progress?: ExploreProgress; category?: EventCategory; place?: string; collapsed: boolean }) {
+  const HeaderIcon = progress ? TreeIcon : (place && PLACE_ICON[place]) || (category && CATEGORY_ICON[category]) || ScrollIcon;
   const Caret = collapsed ? CaretUpIcon : CaretDownIcon;
   return (
     <View style={styles.header}>

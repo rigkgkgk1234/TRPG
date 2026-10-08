@@ -76,14 +76,35 @@ describe("저장 파일", () => {
     const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
     const sealed = (version: number) => seal(JSON.stringify({ ...file, version }));
     expect(decodeSave(sealed(SAVE_VERSION + 1))).toBeNull();
-    // 변환이 없는 옛 버전은 읽을 수 없다
-    expect(decodeSave(sealed(SAVE_VERSION - 1))).toBeNull();
-    MIGRATIONS[SAVE_VERSION - 1] = (old) => ({ ...(old as object), version: SAVE_VERSION });
+    // 변환이 없는 옛 버전(봉인 전 1)은 읽을 수 없다
+    expect(decodeSave(sealed(1))).toBeNull();
+    // 1 → 2 변환을 잠시 넣으면 2 → 3 → 4를 차례로 거친다 (옛 HP 6 → 12)
+    const old = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    old.data.player.hp = start().player.hp / 2;
+    MIGRATIONS[1] = (f) => ({ ...(f as object), version: 2 });
     try {
-      expect(decodeSave(sealed(SAVE_VERSION - 1))).toEqual(start());
+      expect(decodeSave(seal(JSON.stringify({ ...old, version: 1 })))).toEqual(start());
     } finally {
-      delete MIGRATIONS[SAVE_VERSION - 1];
+      delete MIGRATIONS[1];
     }
+  });
+
+  it("버전 2 저장은 명성 0을 더하고, 버전 3 저장은 HP를 2배로 읽는다", () => {
+    const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    file.data.player.hp = 6;
+    delete file.data.player.fame;
+    const back = decodeSave(seal(JSON.stringify({ ...file, version: 2 })), CONTENT);
+    expect(back?.player).toMatchObject({ fame: 0, hp: 12 });
+
+    const fighting = dispatch(start(), { type: "chooseAction", action: "village", npc: "arena" }, CONTENT).state;
+    const inFight = dispatch(fighting, { type: "chooseChoice", choiceId: "brawler" }, CONTENT).state;
+    expect(inFight.combat).not.toBeNull();
+    const v3 = JSON.parse(unseal(encodeSave(inFight, NOW))!);
+    v3.data.player.hp = 5;
+    for (const e of v3.data.combat.enemies) { e.hp = 3; e.maxHp = 6; }
+    const loaded = decodeSave(seal(JSON.stringify({ ...v3, version: 3 })), CONTENT);
+    expect(loaded?.player.hp).toBe(10);
+    expect(loaded?.combat?.enemies[0]).toMatchObject({ hp: 6, maxHp: 12 });
   });
 });
 

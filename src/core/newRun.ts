@@ -47,6 +47,7 @@ export function newRun(content: ContentDB, jobId: JobId, name: string, { seed, n
       wound: { level: "none", restCount: 0, treatedDays: null, untreatedDays: 0 },
       traits: [],
       reputation: job.reputation,
+      fame: 0,
     },
     resources: { silver: job.silver, food: job.food, debt: 0, fatigue: 0, hunger: 0, familyHunger: 0 },
     inventory: startInventory(content, job.startItems),

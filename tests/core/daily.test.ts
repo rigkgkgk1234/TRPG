@@ -237,3 +237,53 @@ describe("고르기 전 안내", () => {
     expect(possibleEvents(run, CONTENT, "npc", undefined, "toby").every((ev) => ev.npc === "toby")).toBe(true);
   });
 });
+
+describe("명성: 결투장·의뢰 중개소·소문을 들은 용사", () => {
+  const visit = (run: RunState, npc: string) => dispatch(run, { type: "chooseAction", action: "village", npc }, CONTENT);
+  const choices = (run: RunState) => {
+    const v = sceneView(run, CONTENT);
+    return v?.kind === "choices" ? v.choices : [];
+  };
+
+  it("명성은 0에서 시작하고, 의뢰 중개소는 명성 10부터 일을 준다", () => {
+    expect(start().player.fame).toBe(0);
+    expect(actionStatus(start(), CONTENT, "village", { npc: "guild" })).toEqual({ available: false, reason: "명성 10 필요" });
+    expect(actionStatus(edit(start(), (s) => { s.player.fame = 10; }), CONTENT, "village", { npc: "guild" })).toEqual({ available: true });
+    expect(actionStatus(start(), CONTENT, "village", { npc: "arena" })).toEqual({ available: true });
+  });
+
+  it("결투장은 하루에 한 번, 다음 날 다시 들어갈 수 있다", () => {
+    let run = visit(start(), "arena").state;
+    run = dispatch(run, { type: "chooseChoice", choiceId: "watch" }, CONTENT).state;
+    run = dispatch(run, { type: "continue" }, CONTENT).state;
+    expect(run.time.phase).toBe("pm");
+    expect(actionStatus(run, CONTENT, "village", { npc: "arena" })).toEqual({ available: false, reason: "결투는 하루에 한 번" });
+    expect(actionStatus(edit(run, (s) => { s.time.day += 1; s.time.phase = "am"; }), CONTENT, "village", { npc: "arena" })).toEqual({ available: true });
+  });
+
+  it("결투장 상대는 명성에 따라 열린다: 장정은 늘, 용병은 10, 우승자는 30", () => {
+    const locked = (fame: number) => {
+      const run = visit(edit(start(), (s) => { s.player.fame = fame; }), "arena").state;
+      expect(run.activeEvent?.eventId).toBe("arena_bout");
+      return Object.fromEntries(choices(run).map((c) => [c.id, c.lockedReason]));
+    };
+    expect(locked(0)).toEqual({ brawler: null, mercenary: "명성 10 필요", champion: "명성 30 필요", watch: null });
+    expect(locked(30)).toEqual({ brawler: null, mercenary: null, champion: null, watch: null });
+  });
+
+  it("의뢰는 명성 구간마다 보이는 것이 바뀐다 (한 번에 4개까지)", () => {
+    const shown = (fame: number) => choices(visit(edit(start(), (s) => { s.player.fame = fame; }), "guild").state).map((c) => c.id);
+    expect(shown(10)).toEqual(["letter", "rats", "wolf", "leave"]);
+    expect(shown(30)).toEqual(["wolf", "bandit", "leave"]);
+    expect(shown(40)).toEqual(["wolf", "bandit", "goblin", "leave"]);
+  });
+
+  it("19일차 전에 명성 50이면 용사 아델이 결투를 청한다 (이미 합류했으면 오지 않는다)", () => {
+    const ev = CONTENT.events.story_heroes_fame;
+    const ready = edit(start(), (s) => { s.time.day = 12; s.player.fame = 50; s.flags.heroes_met = true; });
+    expect(possibleEvents(ready, CONTENT, "story").map((e) => e.id)).toContain(ev.id);
+    expect(possibleEvents(edit(ready, (s) => { s.player.fame = 49; }), CONTENT, "story").map((e) => e.id)).not.toContain(ev.id);
+    expect(possibleEvents(edit(ready, (s) => { s.time.day = 19; }), CONTENT, "story").map((e) => e.id)).not.toContain(ev.id);
+    expect(possibleEvents(edit(ready, (s) => { s.flags.route_hero = true; }), CONTENT, "story").map((e) => e.id)).not.toContain(ev.id);
+  });
+});

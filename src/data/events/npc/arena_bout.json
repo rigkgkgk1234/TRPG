@@ -1,0 +1,203 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "arena_bout",
+  "category": "npc",
+  "npc": "arena",
+  "title": "결투장",
+  "conditions": [],
+  "weight": 10,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 1
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광장 뒤 공터에 밧줄을 둘러 만든 결투장. 관리인이 오늘의 상대를 불러 준다. 이기면 상금과 이름을, 지면 멍과 망신을 얻는다.",
+      "choices": [
+        {
+          "id": "brawler",
+          "label": "마을 장정과 붙는다",
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "brawler_fight"
+          }
+        },
+        {
+          "id": "mercenary",
+          "label": "떠돌이 용병과 붙는다",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 10
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "mercenary_fight"
+          }
+        },
+        {
+          "id": "champion",
+          "label": "우승자 가렛에게 도전한다",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 30
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "champion_fight"
+          }
+        },
+        {
+          "id": "watch",
+          "label": "구경만 하고 돌아간다",
+          "outcome": {
+            "text": "남의 싸움을 보며 발 놀림을 눈여겨봤다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "brawler_fight": {
+      "text": "어깨가 떡 벌어진 장정이 주먹을 우두둑 꺾으며 모래판에 올라선다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "arena_brawler"
+            ],
+            "initiative": "roll",
+            "canFlee": false,
+            "noFleeReason": "결투 중에는 물러설 수 없다",
+            "knockout": true,
+            "onVictory": "brawler_win",
+            "onDefeat": "brawler_lose"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "brawler_win": {
+      "text": "장정이 모래판에 벌렁 드러누웠다. 구경꾼들이 휘파람을 분다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": 4
+        },
+        {
+          "type": "silver",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "brawler_lose": {
+      "text": "모래를 한 움큼 씹었다. 구경꾼들이 혀를 찬다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": -2
+        }
+      ],
+      "choices": []
+    },
+    "mercenary_fight": {
+      "text": "흉터투성이 용병이 칼집째 검을 쥐고 고개를 까딱한다. 싸움으로 먹고사는 사람의 눈이다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "arena_mercenary"
+            ],
+            "initiative": "roll",
+            "canFlee": false,
+            "noFleeReason": "결투 중에는 물러설 수 없다",
+            "knockout": true,
+            "onVictory": "mercenary_win",
+            "onDefeat": "mercenary_lose"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "mercenary_win": {
+      "text": "용병이 무릎을 꿇고 손을 들었다. \"제법이군.\" 상금 주머니가 날아왔다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": 7
+        },
+        {
+          "type": "silver",
+          "delta": 4
+        }
+      ],
+      "choices": []
+    },
+    "mercenary_lose": {
+      "text": "용병이 칼집으로 어깨를 툭 치고 돌아섰다. \"더 굴러 보고 와.\"",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": -3
+        }
+      ],
+      "choices": []
+    },
+    "champion_fight": {
+      "text": "결투장 우승자 가렛이 천천히 모래판으로 내려온다. 구경꾼들이 숨을 죽인다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "arena_champion"
+            ],
+            "initiative": "roll",
+            "canFlee": false,
+            "noFleeReason": "결투 중에는 물러설 수 없다",
+            "knockout": true,
+            "onVictory": "champion_win",
+            "onDefeat": "champion_lose"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "champion_win": {
+      "text": "가렛이 모래판에 무릎을 꿇었다. 함성이 터지고, 사람들이 이름을 묻는다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": 12
+        },
+        {
+          "type": "silver",
+          "delta": 8
+        }
+      ],
+      "choices": []
+    },
+    "champion_lose": {
+      "text": "가렛의 일격에 시야가 흔들렸다. 우승자는 역시 우승자다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": -4
+        }
+      ],
+      "choices": []
+    }
+  }
+}

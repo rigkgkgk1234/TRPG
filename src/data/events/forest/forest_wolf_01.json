@@ -35,7 +35,7 @@
           "check": { "stat": "per", "skill": "tracking", "dc": 10, "allowPartial": true, "tags": ["beast"] },
           "outcomes": {
             "success": { "text": "늑대는 따라오지 않았다.", "next": "END" },
-            "partial": { "text": "가시덤불에 긁혀 가며 겨우 물러났다.", "effects": [{ "type": "hp", "delta": -1 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
+            "partial": { "text": "가시덤불에 긁혀 가며 겨우 물러났다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
             "fail": { "text": "등을 보인 순간, 늑대가 뛰어올랐다!", "next": "fight_ambushed" }
           }
         },
@@ -56,7 +56,7 @@
     },
     "fight_advantage": {
       "text": "상처 입은 늑대가 다리를 절며 다가온다.",
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "player", "canFlee": true, "enemyHpModifier": -3, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "player", "canFlee": true, "enemyHpModifier": -6, "onVictory": "win", "onFled": "fled" } }],
       "choices": []
     },
     "fight_ambushed": {

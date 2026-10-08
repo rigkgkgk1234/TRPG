@@ -1,0 +1,281 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "guild_board",
+  "category": "npc",
+  "npc": "guild",
+  "title": "의뢰 게시판",
+  "conditions": [],
+  "weight": 10,
+  "repeat": {
+    "mode": "always"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관 옆 작은 중개소. 게시판에 의뢰 쪽지가 빼곡하다. 중개인 오스카가 이름값에 맞는 일만 내준다며 장부를 펼친다. 이름이 알려질수록 큰일이 들어온다.",
+      "choices": [
+        {
+          "id": "letter",
+          "label": "이웃 마을 편지 배달 (은화 3, 명성 +2)",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 10,
+              "max": 29
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "해 지기 전에 편지를 전하고 답장까지 받아 왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "fame",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "길을 헤매다 늦게 도착했다. 품삯이 깎였다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          },
+          "hideIfLocked": true
+        },
+        {
+          "id": "rats",
+          "label": "방앗간 쥐 소탕 (은화 4, 명성 +3)",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 10,
+              "max": 29
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "rats_fight"
+          },
+          "hideIfLocked": true
+        },
+        {
+          "id": "wolf",
+          "label": "양치기 늑대 퇴치 (은화 7, 명성 +5)",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 20
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "wolf_fight"
+          }
+        },
+        {
+          "id": "bandit",
+          "label": "도적 현상금 (은화 10, 명성 +6)",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 30
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "bandit_fight"
+          },
+          "hideIfLocked": true
+        },
+        {
+          "id": "goblin",
+          "label": "고블린 전사 토벌 (은화 14, 명성 +8)",
+          "conditions": [
+            {
+              "type": "fame",
+              "min": 40
+            }
+          ],
+          "cost": {
+            "fatigue": 2
+          },
+          "outcome": {
+            "next": "goblin_fight"
+          },
+          "hideIfLocked": true
+        },
+        {
+          "id": "leave",
+          "label": "게시판만 보고 돌아간다",
+          "outcome": {
+            "text": "다음에 맡을 만한 일을 눈여겨봐 두었다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "rats_fight": {
+      "text": "방앗간 곡식 자루 사이에서 고양이만 한 쥐 두 마리가 튀어나온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "giant_rat",
+              "giant_rat"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "rats_win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "rats_win": {
+      "text": "쥐를 잡아 꼬리째 방앗간 주인에게 내밀었다. 주인이 질색하며 품삯을 쥐여 준다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 4
+        },
+        {
+          "type": "fame",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "wolf_fight": {
+      "text": "양 우리 근처 덤불에서 늑대와 들개가 함께 어슬렁거린다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf",
+              "wild_dog"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "wolf_win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "wolf_win": {
+      "text": "늑대 가죽을 우리 앞에 걸어 두었다. 양치기가 고맙다며 고개를 숙인다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 7
+        },
+        {
+          "type": "fame",
+          "delta": 5
+        }
+      ],
+      "choices": []
+    },
+    "bandit_fight": {
+      "text": "현상금 쪽지의 얼굴과 똑같은 도적이 숲길 쉼터에서 졸고 있다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "bandit_win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "bandit_win": {
+      "text": "도적을 묶어 중개소로 끌고 왔다. 중개인이 현상금을 세어 준다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 10
+        },
+        {
+          "type": "fame",
+          "delta": 6
+        }
+      ],
+      "choices": []
+    },
+    "goblin_fight": {
+      "text": "감시탑 아래 길목에서 녹슨 도끼를 든 고블린 전사가 길을 막는다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "goblin_win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "goblin_win": {
+      "text": "고블린 전사의 귀걸이를 증표로 가져왔다. 중개소가 술렁인다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 14
+        },
+        {
+          "type": "fame",
+          "delta": 8
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "의뢰를 끝내지 못하고 돌아왔다. 중개인이 장부에 줄을 긋는다.",
+      "onEnter": [
+        {
+          "type": "fame",
+          "delta": -1
+        }
+      ],
+      "choices": []
+    }
+  }
+}

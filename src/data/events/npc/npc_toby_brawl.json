@@ -43,7 +43,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -2
+                  "delta": -4
                 }
               ],
               "next": "END"

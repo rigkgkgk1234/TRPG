@@ -5,10 +5,11 @@ import { gainSkillXp, skillXpRoomToday } from "../check/progress";
 import { conditionReason, evalCondition } from "../events/conditions";
 import { EXPLORE_REGIONS } from "../events/explore";
 import { startExplore, startVillageVisit } from "../events/runner";
-import { eventPool } from "../events/selector";
-import { EXERCISE_LABEL, isExerciseStat, isNpcId, josa, SKILL_LABEL, STAT_LABEL, type NpcId } from "../labels";
+import { eventPool, possibleEvents } from "../events/selector";
+import { EXERCISE_LABEL, isExerciseStat, isVisitId, josa, SKILL_LABEL, STAT_LABEL, type VisitId } from "../labels";
 import {
   DAILY_ACTIONS,
+  GUILD_MIN_FAME,
   SKILL_MAX_RANK,
   STAT_GROWTH_USES,
   STAT_NATURAL_CAP,
@@ -29,11 +30,11 @@ export const SOLO_TRAINING_DC = 10;
 /** 운동 한 번에 쌓이는 판정 횟수 (판정 자체의 1회 포함): 대성공 6, 성공 5, 그 밖 3 */
 export const EXERCISE_USES = { critSuccess: 6, success: 5, other: 3 } as const;
 export const LESSON_XP = 3;
-export const REST_HP = 2;
+export const REST_HP = 4;
 /** 경상은 휴식 2회로 낫는다 */
 export const LIGHT_WOUND_RESTS = 2;
 /** 대장간 일 대실패의 화상: HP -2, 다친 데가 없으면 경상 (SYSTEM_SPEC 6-2) */
-const SMITH_BURN_HP = 2;
+const SMITH_BURN_HP = 4;
 /** 대실패에 별도 분기가 없을 때의 추가 페널티 (SYSTEM_SPEC 2-4) */
 const CRIT_FAIL_FATIGUE = 1;
 
@@ -72,8 +73,11 @@ export function actionStatus(
 
   if (id === "village") {
     if (!npc) return locked("찾아갈 사람을 고른다");
-    if (!isNpcId(npc)) return locked("그런 사람은 없다");
+    if (!isVisitId(npc)) return locked("그런 사람은 없다");
+    if (npc === "guild" && run.player.fame < GUILD_MIN_FAME) return locked(`명성 ${GUILD_MIN_FAME} 필요`);
     if (eventPool(content, "npc", undefined, npc).length === 0) return locked("준비 중");
+    // 결투장은 하루에 한 번 (arena_bout의 재등장 대기 1일). 사람과 달리 대신 나올 일이 없으므로 미리 막는다
+    if (npc === "arena" && possibleEvents(run, content, "npc", undefined, npc).length === 0) return locked("결투는 하루에 한 번");
   }
 
   if (id === "trainSolo") {
@@ -117,7 +121,7 @@ export function handleAction(ctx: Ctx, id: DailyActionId, { skill, stat, region,
 
   // 탐험·마을 볼일은 이벤트가 끝난 뒤 runner가 슬롯을 넘긴다
   if (id === "explore") startExplore(ctx, region!);
-  else if (id === "village") startVillageVisit(ctx, npc as NpcId);
+  else if (id === "village") startVillageVisit(ctx, npc as VisitId);
   else advanceSlot(ctx.draft);
   return true;
 }

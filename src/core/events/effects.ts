@@ -2,7 +2,7 @@ import type { Ctx } from "../commands";
 import { gainSkillXp } from "../check/progress";
 import { startCombat } from "../combat/combat";
 import { gainTrait } from "../day/evening";
-import { changeFatigue, changeFood, changeHp, changeReputation, changeSilver, setWound, worsenWound } from "../day/resources";
+import { changeFame, changeFatigue, changeFood, changeHp, changeReputation, changeSilver, setWound, worsenWound } from "../day/resources";
 import { addItem, removeItem } from "../items/inventory";
 import type { Effect } from "../types";
 import { WOUND_RANK } from "./conditions";
@@ -27,6 +27,7 @@ export function applyEffect(ctx: Ctx, e: Effect): void {
     }
     case "fatigue": return changeFatigue(ctx, e.delta);
     case "reputation": return changeReputation(ctx, e.delta);
+    case "fame": return changeFame(ctx, e.delta);
     case "addItem": addItem(ctx, e.itemId, e.qty); return;
     case "removeItem": removeItem(ctx, e.itemId, e.qty); return;
     case "wound": return worsenWound(ctx, e.steps);

@@ -37,7 +37,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -2
+                  "delta": -4
                 },
                 {
                   "type": "loseNextSlot"

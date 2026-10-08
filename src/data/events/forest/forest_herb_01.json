@@ -21,7 +21,7 @@
             "critSuccess": { "text": "약초다. 바위 뒤쪽에도 한 무더기가 더 있었다.", "effects": [{ "type": "addItem", "itemId": "herb", "qty": 3 }], "next": "END" },
             "success": { "text": "약초다. 뿌리째 조심스럽게 캤다.", "effects": [{ "type": "addItem", "itemId": "herb", "qty": 2 }], "next": "END" },
             "fail": { "text": "확신이 서지 않아 그냥 두었다.", "next": "END" },
-            "critFail": { "text": "독초였다. 손끝이 저려 온다.", "effects": [{ "type": "hp", "delta": -2 }], "next": "END" }
+            "critFail": { "text": "독초였다. 손끝이 저려 온다.", "effects": [{ "type": "hp", "delta": -4 }], "next": "END" }
           }
         },
         { "id": "leave", "label": "그냥 지나간다", "outcome": { "next": "END" } }

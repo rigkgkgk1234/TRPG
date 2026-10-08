@@ -50,7 +50,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -1
+                  "delta": -2
                 }
               ],
               "next": "END"

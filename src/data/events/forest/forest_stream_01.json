@@ -21,7 +21,7 @@
           "outcomes": {
             "success": { "text": "미끈한 놈을 움켜쥐었다!", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
             "fail": { "text": "물만 잔뜩 튀기고 옷이 다 젖었다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" },
-            "critFail": { "text": "이끼 낀 돌을 밟고 그대로 넘어졌다.", "effects": [{ "type": "hp", "delta": -1 }, { "type": "fatigue", "delta": 1 }], "next": "END" }
+            "critFail": { "text": "이끼 낀 돌을 밟고 그대로 넘어졌다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" }
           }
         }
       ]

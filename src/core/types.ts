@@ -43,6 +43,8 @@ export const SKILL_MAX_RANK = 5;
 /** index = 현재 등급. 등급 0→1에 3, 1→2에 6 ... */
 export const SKILL_XP_TO_NEXT = [3, 6, 10, 15, 21] as const;
 export const SKILL_XP_CAP_PER_COMBAT = 4;
+/** 결투(knockout)는 명성을 얻는 싸움이라 숙련 경험이 없다 (이겨도 COMBAT_VICTORY_XP 없음). 능력치 판정 횟수는 센다 */
+export const DUEL_XP_CAP_PER_COMBAT = 0;
 /** 이긴 전투에서 공격에 쓴 무기 숙련에 더 주는 XP (전투 상한과 별개, 하루 상한은 적용) */
 export const COMBAT_VICTORY_XP = 1;
 export const SKILL_XP_CAP_PER_DAY = 6;
@@ -69,7 +71,13 @@ export interface PlayerState {
   traits: TraitId[];
   /** 0 ~ 100 */
   reputation: number;
+  /** 명성 0 ~ 100: 마을 밖에도 알려진 싸움 실력. 결투장·의뢰로 오른다 (평판은 마을 사람들의 믿음) */
+  fame: number;
 }
+
+export const FAME_MAX = 100;
+/** 의뢰 중개소가 일을 맡기기 시작하는 명성 */
+export const GUILD_MIN_FAME = 10;
 
 /** 흔적(특성) 데이터. 판정 보정은 buildCheckContext가 읽는다. */
 export interface TraitDef {
@@ -85,7 +93,7 @@ export interface TraitDef {
 }
 
 export function maxHp(stats: Stats): number {
-  return 8 + stats.con * 2;
+  return 16 + stats.con * 4;
 }
 
 export interface JobDef {
@@ -296,6 +304,10 @@ export interface CombatSetup {
   onVictory: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
+  /** 결투: 지면 죽지 않고 HP 1로 깨어난다 (부상이 없으면 경상, 은화는 그대로). 적의 쓰러짐 규칙보다 먼저 */
+  knockout?: boolean;
+  /** 결투에서 졌어도 적 HP가 이 비율 이하로 남았으면 onDefeat 대신 scene으로 (예: 용사 아델을 30%까지 몰아붙임) */
+  closeDefeat?: { enemyHpRatio: number; scene: SceneId };
 }
 
 export interface CombatState {
@@ -337,6 +349,7 @@ export type Condition =
   | { type: "stat"; stat: StatId; min: number }
   | { type: "skill"; skill: SkillId; min: number }
   | { type: "reputation"; min?: number; max?: number }
+  | { type: "fame"; min?: number; max?: number }
   | { type: "silver"; min: number }
   | { type: "food"; min: number }
   | { type: "hasItem"; itemId: ItemId; qty?: number }
@@ -354,6 +367,7 @@ export type Effect =
   | { type: "hp"; delta: number }
   | { type: "fatigue"; delta: number }
   | { type: "reputation"; delta: number }
+  | { type: "fame"; delta: number }
   | { type: "addItem"; itemId: ItemId; qty: number }
   | { type: "removeItem"; itemId: ItemId; qty: number }
   | { type: "wound"; steps: number }
@@ -491,7 +505,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
           check: { stat: "per", skill: "tracking", dc: 10, allowPartial: true },
           outcomes: {
             success: { text: "늑대는 따라오지 않았다.", next: "END" },
-            partial: { text: "도망치다 가시덤불에 긁혔다.", effects: [{ type: "hp", delta: -1 }, { type: "fatigue", delta: 1 }], next: "END" },
+            partial: { text: "도망치다 가시덤불에 긁혔다.", effects: [{ type: "hp", delta: -2 }, { type: "fatigue", delta: 1 }], next: "END" },
             fail: { text: "등을 보인 순간, 늑대가 뛰어올랐다!", next: "fight_ambushed" },
           },
         },
@@ -630,7 +644,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
     defense: 3, checkPenalty: { stat: "agi", value: -1 }, durabilityMax: 25 },
   { id: "herb", name: "약초", category: "consumable", description: "씹으면 쓰지만 상처가 아문다.", price: 2, sellable: true, stackMax: 5,
-    use: [{ type: "hp", delta: 2 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },
+    use: [{ type: "hp", delta: 4 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },
   { id: "goblin_token", name: "고블린 부적", category: "quest", description: "뼈와 깃털을 엮은 부적. 촌장에게 보여야 한다.", price: 0, sellable: false, stackMax: 1 },
 ];
 
@@ -714,7 +728,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 4;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

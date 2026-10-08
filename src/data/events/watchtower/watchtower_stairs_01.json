@@ -50,7 +50,7 @@
                 },
                 {
                   "type": "hp",
-                  "delta": -1
+                  "delta": -2
                 },
                 {
                   "type": "fatigue",
@@ -64,7 +64,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -2
+                  "delta": -4
                 },
                 {
                   "type": "fatigue",

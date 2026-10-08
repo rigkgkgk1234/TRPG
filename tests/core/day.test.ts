@@ -32,7 +32,7 @@ describe("newRun", () => {
   it("농부: 기획서 시작값과 쇠갈퀴 장착", () => {
     const r = start("farmer");
     expect(r.player.stats).toEqual({ str: 1, agi: 0, con: 2, per: 1, cha: 0 });
-    expect(r.player.hp).toBe(12);
+    expect(r.player.hp).toBe(24);
     expect(r.player.skills.farming).toEqual({ rank: 2, xp: 0 });
     expect(r.player.skills.blade).toEqual({ rank: 0, xp: 0 });
     expect(r.resources).toMatchObject({ silver: 10, food: 6, debt: 0, fatigue: 0 });
@@ -84,11 +84,11 @@ describe("일하기", () => {
     expect(crit.draft.resources).toMatchObject({ silver: 14, food: 8 });
   });
 
-  it("대장장이 대실패: HP -2, 경상, 피로 3+1. 이미 다쳤으면 부상은 그대로", () => {
+  it("대장장이 대실패: HP -4, 경상, 피로 3+1. 이미 다쳤으면 부상은 그대로", () => {
     const ctx = withDice(start("smith"), d20Sequence(1));
     handleAction(ctx, "work");
     expect(ctx.draft.player.wound.level).toBe("light");
-    expect(ctx.draft.player.hp).toBe(start("smith").player.hp - 2);
+    expect(ctx.draft.player.hp).toBe(start("smith").player.hp - 4);
     expect(ctx.draft.resources.fatigue).toBe(4);
     expect(ctx.draft.resources.silver).toBe(8 + 3);
 
@@ -161,7 +161,7 @@ describe("훈련·휴식", () => {
     expect(actionStatus(poor, CONTENT, "trainLesson", { skill: "blade" })).toEqual({ available: false, reason: "은화 3 필요" });
   });
 
-  it("휴식: HP +2(최대치까지), 피로 -3, 경상은 휴식 2회로 회복", () => {
+  it("휴식: HP +4(최대치까지), 피로 -3, 경상은 휴식 2회로 회복", () => {
     const hurt = edit(start("farmer"), (s) => {
       s.player.hp = 5;
       s.resources.fatigue = 5;
@@ -169,7 +169,7 @@ describe("훈련·휴식", () => {
     });
     const ctx = withDice(hurt);
     handleAction(ctx, "rest");
-    expect(ctx.draft.player.hp).toBe(7);
+    expect(ctx.draft.player.hp).toBe(9);
     expect(ctx.draft.resources.fatigue).toBe(2);
     expect(ctx.draft.player.wound).toMatchObject({ level: "light", restCount: 1 });
     handleAction(ctx, "rest");
@@ -258,12 +258,12 @@ describe("저녁 정산", () => {
   const evening = (fn: (s: RunState) => void = () => {}) =>
     edit(start("farmer"), (s) => { s.time.phase = "evening"; fn(s); });
 
-  it("식량 2를 먹고, 수면 -3, HP +1, 다음 날 아침", () => {
+  it("식량 2를 먹고, 수면 -3, HP +2, 다음 날 아침", () => {
     const ctx = withDice(evening((s) => { s.resources.fatigue = 4; s.player.hp = 10; s.player.skillXpToday = { farming: 3 }; }));
     expect(runEvening(ctx)).toBe(true);
     const s = ctx.draft;
     expect(s.resources).toMatchObject({ food: 4, hunger: 0, familyHunger: 0, fatigue: 1 });
-    expect(s.player.hp).toBe(11);
+    expect(s.player.hp).toBe(12);
     expect(s.time).toMatchObject({ day: 2, phase: "am", restsToday: 0 });
     expect(s.player.skillXpToday).toEqual({});
   });

@@ -26,6 +26,7 @@ export default function StatusScreen() {
         <Figure label="HP" value={`${p.hp}/${maxHp(p.stats)}`} />
         <Figure label="부상" value={WOUND_LABEL[p.wound.level]} />
         <Figure label="평판" value={String(p.reputation)} />
+        <Figure label="명성" value={String(p.fame)} />
         <Figure label="빚" value={String(r.debt)} />
       </View>
 

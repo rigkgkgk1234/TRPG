@@ -257,7 +257,7 @@
    "use": [
     {
      "type": "hp",
-     "delta": 2
+     "delta": 4
     }
    ],
    "chanceEffects": [
@@ -316,7 +316,7 @@
    "use": [
     {
      "type": "hp",
-     "delta": 4
+     "delta": 8
     }
    ],
    "usableInCombat": false
@@ -332,7 +332,7 @@
    "use": [
     {
      "type": "hp",
-     "delta": 3
+     "delta": 6
     },
     {
      "type": "fatigue",
@@ -384,7 +384,7 @@
    "use": [
     {
      "type": "hp",
-     "delta": 2
+     "delta": 4
     },
     {
      "type": "fatigue",
@@ -408,7 +408,7 @@
     },
     {
      "type": "hp",
-     "delta": -1
+     "delta": -2
     }
    ],
    "usableInCombat": false
@@ -424,7 +424,7 @@
    "use": [
     {
      "type": "hp",
-     "delta": 6
+     "delta": 12
     },
     {
      "type": "healWound",
@@ -515,7 +515,7 @@
   "wolf": {
    "id": "wolf",
    "name": "늑대",
-   "hp": 6,
+   "hp": 12,
    "defense": 11,
    "attackBonus": 3,
    "damage": "1d6",
@@ -537,7 +537,7 @@
   "boar": {
    "id": "boar",
    "name": "멧돼지",
-   "hp": 9,
+   "hp": 18,
    "defense": 10,
    "attackBonus": 3,
    "damage": "1d6",
@@ -559,7 +559,7 @@
   "bandit": {
    "id": "bandit",
    "name": "도적",
-   "hp": 9,
+   "hp": 18,
    "defense": 12,
    "attackBonus": 3,
    "damage": "1d6",
@@ -581,7 +581,7 @@
   "wild_dog": {
    "id": "wild_dog",
    "name": "들개",
-   "hp": 4,
+   "hp": 8,
    "defense": 10,
    "attackBonus": 1,
    "damage": "1d4",
@@ -596,7 +596,7 @@
   "giant_rat": {
    "id": "giant_rat",
    "name": "큰 쥐",
-   "hp": 3,
+   "hp": 6,
    "defense": 9,
    "attackBonus": 1,
    "damage": "1d3",
@@ -611,7 +611,7 @@
   "poacher": {
    "id": "poacher",
    "name": "밀렵꾼",
-   "hp": 6,
+   "hp": 12,
    "defense": 10,
    "attackBonus": 1,
    "damage": "1d4",
@@ -633,7 +633,7 @@
   "goblin_scout": {
    "id": "goblin_scout",
    "name": "고블린 정찰병",
-   "hp": 6,
+   "hp": 12,
    "defense": 12,
    "attackBonus": 2,
    "damage": "1d4+1",
@@ -655,7 +655,7 @@
   "goblin_warrior": {
    "id": "goblin_warrior",
    "name": "고블린 전사",
-   "hp": 12,
+   "hp": 24,
    "defense": 14,
    "attackBonus": 4,
    "damage": "1d8",
@@ -675,7 +675,7 @@
   "raid_leader": {
    "id": "raid_leader",
    "name": "약탈단 두목",
-   "hp": 18,
+   "hp": 36,
    "defense": 13,
    "attackBonus": 4,
    "damage": "1d8+1",
@@ -686,9 +686,268 @@
     "boss"
    ],
    "loot": []
+  },
+  "arena_brawler": {
+   "id": "arena_brawler",
+   "name": "마을 장정",
+   "hp": 12,
+   "defense": 10,
+   "attackBonus": 2,
+   "damage": "1d4",
+   "speed": 2,
+   "morale": 0.3,
+   "onDefeat": "deathSave",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": []
+  },
+  "arena_mercenary": {
+   "id": "arena_mercenary",
+   "name": "떠돌이 용병",
+   "hp": 18,
+   "defense": 12,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 3,
+   "onDefeat": "deathSave",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": []
+  },
+  "arena_champion": {
+   "id": "arena_champion",
+   "name": "결투장 우승자 가렛",
+   "hp": 24,
+   "defense": 13,
+   "attackBonus": 4,
+   "damage": "1d6+1",
+   "speed": 3,
+   "onDefeat": "deathSave",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": []
+  },
+  "hero_adel": {
+   "id": "hero_adel",
+   "name": "용사 아델",
+   "hp": 32,
+   "defense": 14,
+   "attackBonus": 5,
+   "damage": "1d8",
+   "speed": 4,
+   "onDefeat": "deathSave",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": []
   }
  },
  "events": {
+  "arena_bout": {
+   "id": "arena_bout",
+   "category": "npc",
+   "npc": "arena",
+   "title": "결투장",
+   "conditions": [],
+   "weight": 10,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 1
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광장 뒤 공터에 밧줄을 둘러 만든 결투장. 관리인이 오늘의 상대를 불러 준다. 이기면 상금과 이름을, 지면 멍과 망신을 얻는다.",
+     "choices": [
+      {
+       "id": "brawler",
+       "label": "마을 장정과 붙는다",
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "brawler_fight"
+       }
+      },
+      {
+       "id": "mercenary",
+       "label": "떠돌이 용병과 붙는다",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 10
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "mercenary_fight"
+       }
+      },
+      {
+       "id": "champion",
+       "label": "우승자 가렛에게 도전한다",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 30
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "champion_fight"
+       }
+      },
+      {
+       "id": "watch",
+       "label": "구경만 하고 돌아간다",
+       "outcome": {
+        "text": "남의 싸움을 보며 발 놀림을 눈여겨봤다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "brawler_fight": {
+     "text": "어깨가 떡 벌어진 장정이 주먹을 우두둑 꺾으며 모래판에 올라선다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "arena_brawler"
+        ],
+        "initiative": "roll",
+        "canFlee": false,
+        "noFleeReason": "결투 중에는 물러설 수 없다",
+        "knockout": true,
+        "onVictory": "brawler_win",
+        "onDefeat": "brawler_lose"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "brawler_win": {
+     "text": "장정이 모래판에 벌렁 드러누웠다. 구경꾼들이 휘파람을 분다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": 4
+      },
+      {
+       "type": "silver",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "brawler_lose": {
+     "text": "모래를 한 움큼 씹었다. 구경꾼들이 혀를 찬다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": -2
+      }
+     ],
+     "choices": []
+    },
+    "mercenary_fight": {
+     "text": "흉터투성이 용병이 칼집째 검을 쥐고 고개를 까딱한다. 싸움으로 먹고사는 사람의 눈이다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "arena_mercenary"
+        ],
+        "initiative": "roll",
+        "canFlee": false,
+        "noFleeReason": "결투 중에는 물러설 수 없다",
+        "knockout": true,
+        "onVictory": "mercenary_win",
+        "onDefeat": "mercenary_lose"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "mercenary_win": {
+     "text": "용병이 무릎을 꿇고 손을 들었다. \"제법이군.\" 상금 주머니가 날아왔다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": 7
+      },
+      {
+       "type": "silver",
+       "delta": 4
+      }
+     ],
+     "choices": []
+    },
+    "mercenary_lose": {
+     "text": "용병이 칼집으로 어깨를 툭 치고 돌아섰다. \"더 굴러 보고 와.\"",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": -3
+      }
+     ],
+     "choices": []
+    },
+    "champion_fight": {
+     "text": "결투장 우승자 가렛이 천천히 모래판으로 내려온다. 구경꾼들이 숨을 죽인다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "arena_champion"
+        ],
+        "initiative": "roll",
+        "canFlee": false,
+        "noFleeReason": "결투 중에는 물러설 수 없다",
+        "knockout": true,
+        "onVictory": "champion_win",
+        "onDefeat": "champion_lose"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "champion_win": {
+     "text": "가렛이 모래판에 무릎을 꿇었다. 함성이 터지고, 사람들이 이름을 묻는다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": 12
+      },
+      {
+       "type": "silver",
+       "delta": 8
+      }
+     ],
+     "choices": []
+    },
+    "champion_lose": {
+     "text": "가렛의 일격에 시야가 흔들렸다. 우승자는 역시 우승자다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": -4
+      }
+     ],
+     "choices": []
+    }
+   }
+  },
   "forest_bandit_01": {
    "id": "forest_bandit_01",
    "category": "explore",
@@ -960,7 +1219,7 @@
           },
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -970,7 +1229,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -1043,7 +1302,7 @@
           },
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -1053,7 +1312,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -1063,7 +1322,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "fatigue",
@@ -1338,7 +1597,7 @@
           },
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -1379,7 +1638,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "fatigue",
@@ -1397,7 +1656,7 @@
           },
           {
            "type": "hp",
-           "delta": -3
+           "delta": -6
           }
          ],
          "next": "END"
@@ -1908,7 +2167,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -1918,7 +2177,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "wound",
@@ -1997,7 +2256,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -2119,7 +2378,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "fatigue",
@@ -2252,7 +2511,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -2282,7 +2541,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "fatigue",
@@ -2349,7 +2608,7 @@
           },
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -2373,7 +2632,7 @@
           },
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -2879,7 +3138,7 @@
          },
          {
           "type": "hp",
-          "delta": 1
+          "delta": 2
          }
         ],
         "next": "END"
@@ -2957,7 +3216,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -2967,7 +3226,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "wound",
@@ -2995,7 +3254,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "wound",
@@ -3074,7 +3333,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "fatigue",
@@ -3232,7 +3491,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "fight"
@@ -3361,7 +3620,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "fatigue",
@@ -3431,7 +3690,7 @@
         ],
         "initiative": "player",
         "canFlee": true,
-        "enemyHpModifier": -3,
+        "enemyHpModifier": -6,
         "onVictory": "win",
         "onFled": "fled"
        }
@@ -3915,6 +4174,286 @@
        }
       }
      ]
+    }
+   }
+  },
+  "guild_board": {
+   "id": "guild_board",
+   "category": "npc",
+   "npc": "guild",
+   "title": "의뢰 게시판",
+   "conditions": [],
+   "weight": 10,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관 옆 작은 중개소. 게시판에 의뢰 쪽지가 빼곡하다. 중개인 오스카가 이름값에 맞는 일만 내준다며 장부를 펼친다. 이름이 알려질수록 큰일이 들어온다.",
+     "choices": [
+      {
+       "id": "letter",
+       "label": "이웃 마을 편지 배달 (은화 3, 명성 +2)",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 10,
+         "max": 29
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "해 지기 전에 편지를 전하고 답장까지 받아 왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "fame",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "길을 헤매다 늦게 도착했다. 품삯이 깎였다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       },
+       "hideIfLocked": true
+      },
+      {
+       "id": "rats",
+       "label": "방앗간 쥐 소탕 (은화 4, 명성 +3)",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 10,
+         "max": 29
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "rats_fight"
+       },
+       "hideIfLocked": true
+      },
+      {
+       "id": "wolf",
+       "label": "양치기 늑대 퇴치 (은화 7, 명성 +5)",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 20
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "wolf_fight"
+       }
+      },
+      {
+       "id": "bandit",
+       "label": "도적 현상금 (은화 10, 명성 +6)",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 30
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "bandit_fight"
+       },
+       "hideIfLocked": true
+      },
+      {
+       "id": "goblin",
+       "label": "고블린 전사 토벌 (은화 14, 명성 +8)",
+       "conditions": [
+        {
+         "type": "fame",
+         "min": 40
+        }
+       ],
+       "cost": {
+        "fatigue": 2
+       },
+       "outcome": {
+        "next": "goblin_fight"
+       },
+       "hideIfLocked": true
+      },
+      {
+       "id": "leave",
+       "label": "게시판만 보고 돌아간다",
+       "outcome": {
+        "text": "다음에 맡을 만한 일을 눈여겨봐 두었다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "rats_fight": {
+     "text": "방앗간 곡식 자루 사이에서 고양이만 한 쥐 두 마리가 튀어나온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "giant_rat",
+         "giant_rat"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "rats_win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "rats_win": {
+     "text": "쥐를 잡아 꼬리째 방앗간 주인에게 내밀었다. 주인이 질색하며 품삯을 쥐여 준다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 4
+      },
+      {
+       "type": "fame",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "wolf_fight": {
+     "text": "양 우리 근처 덤불에서 늑대와 들개가 함께 어슬렁거린다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf",
+         "wild_dog"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "wolf_win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "wolf_win": {
+     "text": "늑대 가죽을 우리 앞에 걸어 두었다. 양치기가 고맙다며 고개를 숙인다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 7
+      },
+      {
+       "type": "fame",
+       "delta": 5
+      }
+     ],
+     "choices": []
+    },
+    "bandit_fight": {
+     "text": "현상금 쪽지의 얼굴과 똑같은 도적이 숲길 쉼터에서 졸고 있다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "bandit_win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "bandit_win": {
+     "text": "도적을 묶어 중개소로 끌고 왔다. 중개인이 현상금을 세어 준다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 10
+      },
+      {
+       "type": "fame",
+       "delta": 6
+      }
+     ],
+     "choices": []
+    },
+    "goblin_fight": {
+     "text": "감시탑 아래 길목에서 녹슨 도끼를 든 고블린 전사가 길을 막는다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "goblin_win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "goblin_win": {
+     "text": "고블린 전사의 귀걸이를 증표로 가져왔다. 중개소가 술렁인다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 14
+      },
+      {
+       "type": "fame",
+       "delta": 8
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "의뢰를 끝내지 못하고 돌아왔다. 중개인이 장부에 줄을 긋는다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": -1
+      }
+     ],
+     "choices": []
     }
    }
   },
@@ -4517,7 +5056,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "fatigue",
@@ -5176,7 +5715,7 @@
         "effects": [
          {
           "type": "hp",
-          "delta": 2
+          "delta": 4
          },
          {
           "type": "reputation",
@@ -5240,7 +5779,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -5444,7 +5983,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "reputation",
@@ -5462,7 +6001,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "reputation",
@@ -5866,7 +6405,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "loseNextSlot"
@@ -6816,7 +7355,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -7046,7 +7585,7 @@
          },
          {
           "type": "hp",
-          "delta": 2
+          "delta": 4
          }
         ],
         "next": "END"
@@ -7209,7 +7748,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -8313,6 +8852,133 @@
     }
    }
   },
+  "story_heroes_fame": {
+   "id": "story_heroes_fame",
+   "category": "story",
+   "title": "소문을 들은 용사",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "max": 18
+    },
+    {
+     "type": "fame",
+     "min": 50
+    },
+    {
+     "type": "flag",
+     "flag": "heroes_met"
+    },
+    {
+     "type": "notFlag",
+     "flag": "route_hero"
+    }
+   ],
+   "weight": 1,
+   "priority": 12,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "결투장에서 이름을 날린다는 소문이 북쪽 길까지 퍼졌다. 용사 아델이 일행을 이끌고 다시 마을을 찾았다. \"네가 그 소문의 주인공인가? 실력을 직접 보고 싶다.\"",
+     "choices": [
+      {
+       "id": "duel",
+       "label": "결투를 받아들인다",
+       "outcome": {
+        "next": "duel"
+       }
+      },
+      {
+       "id": "decline",
+       "label": "아직 자신이 없다며 사양한다",
+       "outcome": {
+        "text": "아델이 웃으며 어깨를 으쓱했다. \"마음이 바뀌면 북쪽에서 돌아올 때 다시 보자.\"",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "duel": {
+     "text": "아델이 목검 대신 진검을 뽑았다. \"봐주지는 않겠다. 끝까지 버텨 봐.\"",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "hero_adel"
+        ],
+        "initiative": "roll",
+        "canFlee": false,
+        "noFleeReason": "결투 중에는 물러설 수 없다",
+        "knockout": true,
+        "closeDefeat": {
+         "enemyHpRatio": 0.3,
+         "scene": "close"
+        },
+        "onVictory": "won",
+        "onDefeat": "lost"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "won": {
+     "text": "아델의 검이 모래 위로 떨어졌다. 아델이 한참 웃더니 손을 내밀었다.",
+     "onEnter": [
+      {
+       "type": "fame",
+       "delta": 10
+      }
+     ],
+     "choices": [],
+     "autoNext": "offer"
+    },
+    "close": {
+     "text": "결국 쓰러졌지만, 아델도 거친 숨을 몰아쉬며 검을 짚고 섰다. \"졌다고 생각하지 마. 나를 여기까지 몰아붙인 사람은 처음이야.\"",
+     "choices": [],
+     "autoNext": "offer"
+    },
+    "lost": {
+     "text": "아델의 검끝이 목에 닿았다. \"아직은 아니야. 그래도 소문이 거짓은 아니었군.\"",
+     "choices": []
+    },
+    "offer": {
+     "text": "\"며칠 뒤 로웬으로 떠날 때 데리러 오겠다. 함께 가겠나?\" 아델이 손을 내민다. 따라가면 습격이 오는 밤에 마을에 없을 것이다.",
+     "choices": [
+      {
+       "id": "accept",
+       "label": "따라가겠다고 한다",
+       "outcome": {
+        "text": "아델이 손을 맞잡았다. 가슴이 쿵쾅거린다. 어머니에게는 뭐라고 말해야 할까.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "route_hero"
+         },
+         {
+          "type": "setFlag",
+          "flag": "route_rowen",
+          "value": false
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "decline",
+       "label": "마을에 남겠다고 한다",
+       "outcome": {
+        "text": "아델은 아쉬워하면서도 고개를 끄덕였다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "story_heroes_return": {
    "id": "story_heroes_return",
    "category": "story",
@@ -8325,6 +8991,10 @@
     {
      "type": "flag",
      "flag": "heroes_met"
+    },
+    {
+     "type": "notFlag",
+     "flag": "route_hero"
     }
    ],
    "weight": 1,
@@ -9496,7 +10166,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           }
          ],
          "next": "END"
@@ -9506,7 +10176,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -3
+           "delta": -6
           },
           {
            "type": "wound",
@@ -9571,7 +10241,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -9744,7 +10414,7 @@
         "canFlee": true,
         "onVictory": "win",
         "onFled": "fled",
-        "enemyHpModifier": -3
+        "enemyHpModifier": -6
        }
       }
      ],
@@ -10253,7 +10923,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -10316,7 +10986,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "fatigue",
@@ -11198,7 +11868,7 @@
           },
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           }
          ],
          "next": "END"
@@ -11208,7 +11878,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -3
+           "delta": -6
           },
           {
            "type": "wound",
@@ -11335,7 +12005,7 @@
          },
          {
           "type": "hp",
-          "delta": 1
+          "delta": 2
          }
         ],
         "next": "END"
@@ -11626,7 +12296,7 @@
           },
           {
            "type": "hp",
-           "delta": -1
+           "delta": -2
           },
           {
            "type": "fatigue",
@@ -11640,7 +12310,7 @@
          "effects": [
           {
            "type": "hp",
-           "delta": -2
+           "delta": -4
           },
           {
            "type": "fatigue",
@@ -11949,7 +12619,7 @@
         "effects": [
          {
           "type": "hp",
-          "delta": -1
+          "delta": -2
          },
          {
           "type": "fatigue",

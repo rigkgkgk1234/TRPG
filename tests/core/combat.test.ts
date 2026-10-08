@@ -102,40 +102,40 @@ describe("전투 진행", () => {
     expect(first.draft.combat!.phase).toBe("playerTurn");
     expect(texts(first)[0]).toBe("늑대가 덤비기 전에 먼저 움직였다.");
 
-    // 2 + 2 < 14 → 늑대 먼저: 늑대 굴림 10 + 3 = 13 ≥ 방어도 12, 피해 4
+    // 2 + 2 < 14 → 늑대 먼저: 늑대 굴림 10 + 3 = 13 ≥ 방어도 12, 피해 4 (사냥꾼 HP 20)
     const late = ctxOf(start("hunter"), seq(f20(2), f20(10), fd(4, 6)));
     startCombat(late, setup(["wolf"], { initiative: "roll" }));
     expect(texts(late)).toEqual(["늑대가 먼저 덮쳐 왔다!", "늑대가 달려들어 팔을 물었다. 피해 4."]);
-    expect(late.draft.player.hp).toBe(6);
+    expect(late.draft.player.hp).toBe(16);
     expect(late.draft.combat).toMatchObject({ round: 2, phase: "playerTurn" });
   });
 
   it("공격 명중 → 피해 = 무기 주사위 + 근력, 쓰러뜨리면 승리", () => {
-    // 농부: 근력 1 + 둔기 0, 15 + 1 = 16 ≥ 11, 쇠갈퀴 1d6 → 5 + 1 = 6 → 늑대 HP 6
-    const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(15), fd(5, 6)));
+    // 농부: 근력 1 + 둔기 0, 15 + 1 = 16 ≥ 11, 쇠갈퀴 1d6 → 5 + 1 = 6 → 남은 HP 6인 늑대가 쓰러진다
+    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(5, 6)));
     expect(combatStep(ctx, { type: "attack", targetId: "wolf_1" })).toBeNull();
     expect(ctx.draft.combat!.result).toBe("victory");
     expect(texts(ctx)).toEqual(["늑대에게 일격을 먹였다. 피해 6.", "늑대가 쓰러졌다."]);
   });
 
   it("강타는 피로 +1, 맞히면 피해 +3", () => {
-    // 멧돼지 HP 9 → 4로 절반 이하가 되어 라운드 끝에 사기 굴림(0.99: 버팀)
-    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(18), fd(1, 6), f20(1), 0.99));
+    // 멧돼지 HP 18 → 13 (절반 9보다 많아 사기 굴림 없음)
+    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(18), fd(1, 6), f20(1)));
     combatStep(ctx, { type: "powerAttack", targetId: "boar_1" });
-    expect(ctx.draft.combat!.enemies[0].hp).toBe(9 - (1 + 1 + 3));
+    expect(ctx.draft.combat!.enemies[0].hp).toBe(18 - (1 + 1 + 3));
     expect(ctx.draft.resources.fatigue).toBe(1);
   });
 
   it("대성공은 피해 주사위 2배, 근접 대실패는 그 라운드 방어도 −2", () => {
-    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), fd(3, 6), fd(4, 6), f20(1), 0.99));
+    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), fd(3, 6), fd(4, 6), f20(1)));
     combatStep(crit, { type: "attack", targetId: "boar_1" });
-    expect(crit.draft.combat!.enemies[0].hp).toBe(9 - (3 + 4 + 1));
+    expect(crit.draft.combat!.enemies[0].hp).toBe(18 - (3 + 4 + 1));
 
     // 대실패 뒤 멧돼지 굴림 7 + 3 = 10: 평소 방어도 10이면 맞지만, −2라 8 → 역시 명중. 6 + 3 = 9는 −2일 때만 명중
     const fumble = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(1), f20(6), fd(2, 6)));
     combatStep(fumble, { type: "attack", targetId: "boar_1" });
     expect(texts(fumble)).toContain("중심을 잃고 비틀거렸다. (이번 라운드 방어도 −2)");
-    expect(fumble.draft.player.hp).toBe(12 - 2);
+    expect(fumble.draft.player.hp).toBe(24 - 2);
     expect(fumble.draft.combat!.defensePenalty).toBe(0); // 라운드가 끝나면 풀린다
   });
 
@@ -155,13 +155,13 @@ describe("전투 진행", () => {
     // 실패 → 늑대 주사위 2개 중 높은 것(3, 17) → 17 + 3 = 20 명중
     const fail = ctxOf(inCombat(start("hunter"), ["wolf"]), seq(f20(2), f20(3), f20(17), fd(2, 6)));
     combatStep(fail, { type: "flee" });
-    expect(fail.draft.player.hp).toBe(10 - 2);
+    expect(fail.draft.player.hp).toBe(20 - 2);
   });
 
   it("적의 대성공: 피해 2배 + 부상 한 단계", () => {
     const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(2), f20(20), fd(2, 6)));
     combatStep(ctx, { type: "attack", targetId: "wolf_1" });
-    expect(ctx.draft.player.hp).toBe(12 - 4);
+    expect(ctx.draft.player.hp).toBe(24 - 4);
     expect(ctx.draft.player.wound.level).toBe("light");
   });
 
@@ -179,15 +179,15 @@ describe("전투 진행", () => {
   });
 
   it("사기: HP 절반 이하인 적은 라운드 끝에 확률로 달아나고, 모두 없어지면 승리", () => {
-    // 쇠갈퀴 2 + 1 = 3 → 늑대 HP 3 (절반), 늑대 빗나감, 사기 굴림 0.1 < 0.5 → 달아남
-    const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(15), fd(2, 6), f20(2), 0.1));
+    // 남은 HP 9인 늑대(최대 12)에 쇠갈퀴 2 + 1 = 3 → 6 (절반), 늑대 빗나감, 사기 굴림 0.1 < 0.5 → 달아남
+    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 9; }), seq(f20(15), fd(2, 6), f20(2), 0.1));
     combatStep(ctx, { type: "attack", targetId: "wolf_1" });
     expect(ctx.draft.combat!.result).toBe("victory");
     expect(texts(ctx)).toContain("늑대가 겁을 먹고 달아났다.");
   });
 
   it("고블린 정찰병이 달아나면 플래그", () => {
-    const ctx = ctxOf(inCombat(start("smith"), ["goblin_scout"]), seq(f20(15), fd(1, 6), f20(2), 0.1));
+    const ctx = ctxOf(edit(inCombat(start("smith"), ["goblin_scout"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(1, 6), f20(2), 0.1));
     combatStep(ctx, { type: "attack", targetId: "goblin_scout_1" });
     expect(ctx.draft.flags.goblin_alerted).toBe(true);
   });
@@ -208,6 +208,15 @@ describe("전투 진행", () => {
     for (let i = 0; i < 3; i++) combatStep(ctx, { type: "attack", targetId: "boar_1" });
     expect(ctx.draft.combat!.xpThisCombat.blunt).toBe(4);
   });
+
+  it("결투(knockout)는 숙련 경험이 쌓이지 않는다", () => {
+    let run = inCombat(start("farmer"), ["boar"], { knockout: true });
+    run = edit(run, (s) => { s.combat!.enemies[0].hp = 99; });
+    const ctx = ctxOf(run, seq(f20(3), f20(2), f20(3), f20(2)));
+    for (let i = 0; i < 2; i++) combatStep(ctx, { type: "attack", targetId: "boar_1" });
+    expect(ctx.draft.combat!.xpThisCombat.blunt).toBeUndefined();
+    expect(ctx.draft.player.skills.blunt).toEqual(run.player.skills.blunt);
+  });
 });
 
 describe("전투 끝", () => {
@@ -220,6 +229,16 @@ describe("전투 끝", () => {
     finishCombat(ctx);
     expect(ctx.draft.player.skills.blunt.xp).toBe(run.player.skills.blunt.xp + 1);
     expect(ctx.draft.player.skills.guard.xp).toBe(run.player.skills.guard.xp);
+  });
+
+  it("결투에서 이겨도 승리 경험 +1은 없다", () => {
+    const run = edit(inCombat(start("farmer"), ["arena_brawler"], { knockout: true }), (s) => {
+      s.combat!.result = "victory";
+      s.combat!.xpThisCombat = { blunt: 2 };
+    });
+    const ctx = ctxOf(run, seq(0.9, 0.9));
+    finishCombat(ctx);
+    expect(ctx.draft.player.skills.blunt).toEqual(run.player.skills.blunt);
   });
 
   it("공격하지 않고 이기면 승리 경험은 없다", () => {
@@ -252,6 +271,27 @@ describe("전투 끝", () => {
     expect(ctx.draft.resources.silver).toBe(7);
     expect(ctx.draft.time.phase).toBe("evening");
     expect(texts(ctx)[0]).toBe("눈앞이 캄캄해진다. 사망 굴림: 주사위 10, 합계 12 (목표 10)");
+  });
+
+  it("결투(knockout)에서 지면 사망 굴림 없이 HP 1·경상, 은화는 그대로", () => {
+    const run = edit(inCombat(start("farmer"), ["arena_brawler"], { knockout: true, onDefeat: "lose" }), (s) => { s.combat!.result = "defeated"; s.player.hp = 0; });
+    const ctx = ctxOf(run, seq()); // 주사위를 쓰지 않는다
+    expect(finishCombat(ctx)).toBe("lose");
+    expect(ctx.draft.player).toMatchObject({ hp: 1, wound: { level: "light" }, traits: [] });
+    expect(ctx.draft.resources.silver).toBe(run.resources.silver);
+    expect(ctx.draft.ending).toBeNull();
+  });
+
+  it("결투에서 졌어도 적 HP를 30% 이하로 몰아붙였으면 closeDefeat 장면으로", () => {
+    const close = { enemyHpRatio: 0.3, scene: "close" };
+    const lost = (hp: number) => {
+      const run = edit(inCombat(start("farmer"), ["hero_adel"], { knockout: true, closeDefeat: close, onDefeat: "lost" }), (s) => {
+        s.combat!.result = "defeated"; s.player.hp = 0; s.combat!.enemies[0].hp = hp;
+      });
+      return finishCombat(ctxOf(run, seq()));
+    };
+    expect(lost(9)).toBe("close"); // 32의 28%
+    expect(lost(10)).toBe("lost"); // 31%
   });
 
   it("사망 굴림 자연 20은 경상으로 일어서고, 실패하면 사망 엔딩", () => {
@@ -288,7 +328,7 @@ describe("전투 끝", () => {
 });
 
 describe("아이템 사용", () => {
-  it("약초: HP +2, 경상이면 50%로 낫고, 중상은 못 고친다", () => {
+  it("약초: HP +4, 경상이면 50%로 낫고, 중상은 못 고친다", () => {
     const hurt = edit(start("farmer"), (s) => {
       s.player.hp = 5;
       s.player.wound.level = "light";
@@ -296,7 +336,7 @@ describe("아이템 사용", () => {
     });
     const ctx = ctxOf(hurt, seq(0.1));
     expect(consumeItem(ctx, "herb", true)).toBe(true);
-    expect(ctx.draft.player).toMatchObject({ hp: 7, wound: { level: "none" } });
+    expect(ctx.draft.player).toMatchObject({ hp: 9, wound: { level: "none" } });
     const serious = ctxOf(edit(hurt, (s) => { s.player.wound.level = "serious"; }), seq(0.1));
     consumeItem(serious, "herb", true);
     expect(serious.draft.player.wound.level).toBe("serious");
@@ -328,8 +368,8 @@ describe("이벤트와 전투", () => {
     const res = dispatch(exploring("farmer"), { type: "chooseChoice", choiceId: "go" }, content);
     expect(res.feed).toContainEqual({ kind: "text", text: "늑대가 튀어나왔다!" });
     expect(res.state.combat).not.toBeNull();
-    // 15 + 1 ≥ 11, 피해 5 + 1 = 6 → 쓰러뜨림, 전리품 굴림 0.1
-    const ctx = ctxOf(res.state, seq(f20(15), fd(5, 6), 0.1), content);
+    // 15 + 1 ≥ 11, 피해 5 + 1 = 6 → 남은 HP 6인 늑대를 쓰러뜨림, 전리품 굴림 0.1
+    const ctx = ctxOf(edit(res.state, (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(5, 6), 0.1), content);
     expect(handleCombat(ctx, { type: "attack", targetId: "wolf_1" })).toBe(true);
     expect(ctx.draft.combat).toBeNull();
     expect(ctx.draft.activeEvent).toMatchObject({ sceneId: "win", explore: { cardsDrawn: 1 } });

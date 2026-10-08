@@ -29,6 +29,7 @@ export function evalCondition(c: Condition, run: RunState, rng?: Rng): boolean {
     case "stat": return p.stats[c.stat] >= c.min;
     case "skill": return p.skills[c.skill].rank >= c.min;
     case "reputation": return p.reputation >= (c.min ?? 0) && p.reputation <= (c.max ?? Infinity);
+    case "fame": return p.fame >= (c.min ?? 0) && p.fame <= (c.max ?? Infinity);
     case "silver": return r.silver >= c.min;
     case "food": return r.food >= c.min;
     case "hasItem": return countItem(run.inventory, c.itemId) >= (c.qty ?? 1);
@@ -58,6 +59,7 @@ export function conditionReason(c: Condition, content: Pick<ContentDB, "items" |
     case "stat": return `${STAT_LABEL[c.stat]} ${c.min}레벨 필요`;
     case "skill": return `${SKILL_LABEL[c.skill]} ${c.min}레벨 필요`;
     case "reputation": return c.min !== undefined ? `평판 ${c.min} 필요` : "평판이 너무 높다";
+    case "fame": return c.min !== undefined ? `명성 ${c.min} 필요` : "이름이 너무 알려졌다";
     case "silver": return `은화 ${c.min} 필요`;
     case "food": return `식량 ${c.min} 필요`;
     case "hasItem": return `${itemName(content, c.itemId)}${c.qty && c.qty > 1 ? ` ${c.qty}개` : ""} 필요`;

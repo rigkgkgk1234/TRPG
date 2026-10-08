@@ -1,5 +1,5 @@
 import type { Ctx, ResourceKey } from "../commands";
-import { FATIGUE_MAX, maxHp, type WoundLevel } from "../types";
+import { FAME_MAX, FATIGUE_MAX, maxHp, type WoundLevel } from "../types";
 
 /** 자원 변화는 모두 이 함수들을 거친다: 범위 제한 + 피드 기록이 한 곳에 모인다. */
 
@@ -55,6 +55,14 @@ export function changeReputation(ctx: Ctx, delta: number): void {
   const next = Math.min(REPUTATION_MAX, Math.max(0, p.reputation + delta + bonus));
   record(ctx, "reputation", next - p.reputation);
   p.reputation = next;
+}
+
+/** 명성은 말솜씨 보너스 없이 그대로 (싸움으로 얻는 이름) */
+export function changeFame(ctx: Ctx, delta: number): void {
+  const p = ctx.draft.player;
+  const next = Math.min(FAME_MAX, Math.max(0, p.fame + delta));
+  record(ctx, "fame", next - p.fame);
+  p.fame = next;
 }
 
 const WOUND_ORDER: WoundLevel[] = ["none", "light", "serious", "critical"];

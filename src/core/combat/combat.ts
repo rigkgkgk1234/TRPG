@@ -17,6 +17,7 @@ import {
   POWER_ATTACK_DAMAGE_BONUS,
   POWER_ATTACK_HIT_PENALTY,
   COMBAT_VICTORY_XP,
+  DUEL_XP_CAP_PER_COMBAT,
   SKILL_XP_CAP_PER_COMBAT,
   type CheckSpec,
   type CombatAction,
@@ -210,7 +211,7 @@ const signedOrEmpty = (n: number) => (n > 0 ? `+${n}` : n < 0 ? String(n) : "");
 /** 자경단원 한 명당 약탈단 두목 시작 HP −3, 최대 5명 (SYSTEM_SPEC 3-6) */
 const MILITIA_PER_REPUTATION = 20;
 const MILITIA_MAX = 5;
-const MILITIA_HP_CUT = 3;
+const MILITIA_HP_CUT = 6;
 const PALISADE_DEFENSE = 2;
 
 /**
@@ -497,6 +498,15 @@ function loot(ctx: Ctx, c: CombatState): void {
 
 function defeat(ctx: Ctx, c: CombatState): SceneId | "END" | null {
   const s = ctx.draft;
+  // 결투: 죽지 않는다. 쓰러져도 HP 1, 부상이 없으면 경상, 은화는 그대로
+  if (c.setup.knockout) {
+    say(ctx, c, "player", "무릎이 꺾였다. 심판이 결투를 멈췄다.");
+    changeHp(ctx, 1 - s.player.hp);
+    if (s.player.wound.level === "none") setWound(ctx, "light");
+    const close = c.setup.closeDefeat;
+    if (close && c.enemies.every((e) => e.routed || e.hp <= e.maxHp * close.enemyHpRatio)) return close.scene;
+    return c.setup.onDefeat ?? "END";
+  }
   const rule = enemyDef(ctx.content, c.enemies[0]).onDefeat;
   if (rule === "scripted") {
     s.player.hp = 1;
@@ -551,6 +561,7 @@ function inVillage(ctx: Ctx): boolean {
 
 /** 이긴 싸움에서 배운 것: 공격으로 경험을 가장 많이 얻은 무기 숙련에 +1 (전투 상한 밖, 하루 상한 안) */
 function victoryXp(ctx: Ctx, c: CombatState): void {
+  if (c.setup.knockout) return; // 결투는 숙련 경험이 없다
   const used = (Object.entries(c.xpThisCombat) as [SkillId, number][])
     .filter(([skill, n]) => skill !== "guard" && n > 0)
     .sort((a, b) => b[1] - a[1]);
@@ -561,7 +572,8 @@ function victoryXp(ctx: Ctx, c: CombatState): void {
 }
 
 function xpRoom(c: CombatState, skill: SkillId): number {
-  return Math.max(0, SKILL_XP_CAP_PER_COMBAT - (c.xpThisCombat[skill] ?? 0));
+  const cap = c.setup.knockout ? DUEL_XP_CAP_PER_COMBAT : SKILL_XP_CAP_PER_COMBAT;
+  return Math.max(0, cap - (c.xpThisCombat[skill] ?? 0));
 }
 
 function addCombatXp(c: CombatState, skill: SkillId, n: number): void {

@@ -1,6 +1,6 @@
 import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
-import { EXERCISE_LABEL, isExerciseStat, isNpcId, josa, NPC_LABEL, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
+import { EXERCISE_LABEL, isExerciseStat, isVisitId, josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, VISIT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { equippedWeapon, isBow } from "@/core/combat/combat";
 import type { CheckOutcome, CheckResult, CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -38,11 +38,12 @@ const RESOURCE_LABEL: Record<ResourceKey, string> = {
   hp: "HP",
   fatigue: "피로",
   reputation: "평판",
+  fame: "명성",
   debt: "빚",
 };
 
 /** 표시 순서: 벌이 → 먹을 것 → 몸 → 관계 → 빚 */
-const RESOURCE_ORDER: ResourceKey[] = ["silver", "food", "hp", "fatigue", "reputation", "debt"];
+const RESOURCE_ORDER: ResourceKey[] = ["silver", "food", "hp", "fatigue", "reputation", "fame", "debt"];
 
 /** 늘어나면 나쁜 자원 */
 const COST_KEYS = new Set<ResourceKey>(["fatigue", "debt"]);
@@ -126,7 +127,7 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
       if (cmd.action === "trainLesson") return `레나의 교습${skill}`;
       if (cmd.action === "rest") return "휴식";
       if (cmd.action === "explore" && cmd.region) return `${REGION_LABEL[cmd.region]} 탐험`;
-      if (cmd.action === "village" && cmd.npc && isNpcId(cmd.npc)) return `${NPC_LABEL[cmd.npc]} 찾아가기`;
+      if (cmd.action === "village" && cmd.npc && isVisitId(cmd.npc)) return `${VISIT_LABEL[cmd.npc]} 찾아가기`;
       return cmd.action;
     }
     case "chooseChoice": {

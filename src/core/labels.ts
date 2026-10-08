@@ -128,3 +128,15 @@ export const NPC_LABEL: Record<NpcId, string> = {
 export function isNpcId(id: string): id is NpcId {
   return (NPC_IDS as readonly string[]).includes(id);
 }
+
+/** 사람이 아닌 마을 볼일 장소. 이벤트의 npc 필드에 사람 ID 대신 쓴다 */
+export const PLACE_IDS = ["arena", "guild"] as const;
+export type PlaceId = (typeof PLACE_IDS)[number];
+export const PLACE_LABEL: Record<PlaceId, string> = { arena: "결투장", guild: "의뢰 중개소" };
+
+/** 마을 볼일로 찾아갈 수 있는 곳: 사람 + 장소 */
+export type VisitId = NpcId | PlaceId;
+export const VISIT_LABEL: Record<VisitId, string> = { ...NPC_LABEL, ...PLACE_LABEL };
+export function isVisitId(id: string): id is VisitId {
+  return isNpcId(id) || (PLACE_IDS as readonly string[]).includes(id);
+}

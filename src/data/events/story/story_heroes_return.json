@@ -11,6 +11,10 @@
     {
       "type": "flag",
       "flag": "heroes_met"
+    },
+    {
+      "type": "notFlag",
+      "flag": "route_hero"
     }
   ],
   "weight": 1,

@@ -29,7 +29,7 @@ const DEEP_FATIGUE_MAX = 4;
 /** 사람마다 다를 갈림길: 무작위로 고른다 (21일차 결정, 모집관의 증표, 로웬으로 떠나는 날, 용사 일행의 제안과 출발) */
 const RANDOM_SCENES = new Set([
   "story_decision/start", "story_recruiter_return/offer", "story_rowen_departure/start",
-  "story_heroes_return/offer", "story_heroes_departure/start",
+  "story_heroes_return/offer", "story_heroes_fame/offer", "story_heroes_departure/start",
 ]);
 /** 스토리에서 이보다 낮은 확률의 판정은 건너뛴다 */
 const STORY_RISK_FLOOR = 0.4;
@@ -93,6 +93,9 @@ function pickCommand(run: RunState, ai: Ai): GameCommand {
   const region = run.time.day < 11 ? "forest" : ai.rand() < 0.5 ? "watchtower" : "forest";
   const skill = MAIN_SKILL[run.player.job];
   if (ai.rand() < 0.15) options.push({ type: "chooseAction", action: "village", npc: NPC_IDS[Math.floor(ai.rand() * NPC_IDS.length)] });
+  // 다치지 않았으면 가끔 결투장·의뢰 중개소 (명성)
+  const healthy = run.player.wound.level === "none" && run.player.hp >= maxHp(run.player.stats) * DEEP_HP_RATIO && run.resources.fatigue <= DEEP_FATIGUE_MAX;
+  if (healthy && ai.rand() < 0.12) options.push({ type: "chooseAction", action: "village", npc: ai.rand() < 0.5 ? "arena" : "guild" });
   if (run.time.phase === "am") {
     if (LESSON_SKILLS.includes(skill) && run.resources.silver >= SILVER_FLOOR + 3) options.push({ type: "chooseAction", action: "trainLesson", skill });
     // 혼자 훈련은 주 무기의 능력치를 단련하고, 그게 막히면 체력
@@ -111,6 +114,11 @@ function pickChoice(run: RunState, choices: ChoiceView[], ai: Ai): string {
   if (id === "story_raid") {
     const pref = run.flags.route_defend ? "fight" : run.flags.flee_organized ? "flee" : "hide";
     return (open.find((c) => c.id === pref) ?? open.find((c) => c.id === "hide") ?? open[0]).id;
+  }
+  // 결투장: 열린 상대 중 가장 센 상대, 의뢰: 열린 의뢰 중 무작위 (구경·돌아가기는 마지막에)
+  if (id === "arena_bout" || id === "guild_board") {
+    const fights = open.filter((c) => c.id !== "watch" && c.id !== "leave");
+    if (fights.length > 0) return (id === "arena_bout" ? fights[fights.length - 1] : fights[Math.floor(ai.rand() * fights.length)]).id;
   }
   if (CONTENT.events[id]?.category === "story") return (open.find((c) => c.chance === undefined || c.chance >= STORY_RISK_FLOOR) ?? open[0]).id;
   const score = (c: ChoiceView) => (c.chance !== undefined ? c.chance : c.danger ? 0.3 : 0.6);
@@ -190,6 +198,8 @@ for (const job of JOBS) {
     "3 이상": pct(ranks.filter((x) => x >= 3).length, ranks.length || 1),
     "2 이상": pct(ranks.filter((x) => x >= 2).length, ranks.length || 1),
     "일행 도움": pct(results.filter((r) => r.run.flags.heroes_helped).length, results.length),
+    "명성 50": pct(results.filter((r) => r.run.player.fame >= 50 || r.run.eventHistory.story_heroes_fame).length, results.length),
+    "용사 결투": pct(results.filter((r) => r.run.eventHistory.story_heroes_fame).length, results.length),
     "시험 합격": pct(results.filter((r) => r.run.flags.route_hero !== undefined).length, results.length),
   };
   curveRows[name] = Object.fromEntries(CURVE_DAYS.map((d) => [`${d}일`, fmt(avg(results.map((r) => r.silverByDay.get(d)).filter((x): x is number => x !== undefined)))]));
@@ -215,7 +225,7 @@ console.table(Object.fromEntries(
   ["goblin_tracks_found", "goblin_scout_seen", "reported", "route_defend", "route_flee", "route_rowen", "route_self", "recruit_passed", "heroes_helped", "route_hero", "palisade_built", "goblin_plan_known", "raid_won"]
     .map((f) => [f, pct(all.filter((r) => !!r.run.flags[f]).length, all.length)]),
 ));
-console.log(`평균 평판 ${fmt(avg(all.map((r) => r.run.player.reputation)))}, 평균 흔적 ${fmt(avg(all.map((r) => r.run.player.traits.length)))}개, 벌어들인 은화 ${fmt(avg(all.map((r) => r.run.stats.silverEarned)))}`);
+console.log(`평균 평판 ${fmt(avg(all.map((r) => r.run.player.reputation)))}, 평균 명성 ${fmt(avg(all.map((r) => r.run.player.fame)))}, 평균 흔적 ${fmt(avg(all.map((r) => r.run.player.traits.length)))}개, 벌어들인 은화 ${fmt(avg(all.map((r) => r.run.stats.silverEarned)))}`);
 
 function endingRow(results: Result[]): Record<string, string> {
   const n = results.length;

@@ -19,9 +19,9 @@
           "check": { "stat": "agi", "dc": 12, "allowPartial": true },
           "outcomes": {
             "success": { "text": "용수철을 조심조심 풀어 쇠붙이를 챙겼다. 돌아오는 길에 브록에게 넘기고 은화 두 닢을 받았다.", "effects": [{ "type": "silver", "delta": 2 }], "next": "END" },
-            "partial": { "text": "쇠붙이는 챙겼지만 녹슨 이빨에 손끝이 찢어졌다.", "effects": [{ "type": "silver", "delta": 2 }, { "type": "hp", "delta": -1 }], "next": "END" },
+            "partial": { "text": "쇠붙이는 챙겼지만 녹슨 이빨에 손끝이 찢어졌다.", "effects": [{ "type": "silver", "delta": 2 }, { "type": "hp", "delta": -2 }], "next": "END" },
             "fail": { "text": "덫이 덜컥 닫히며 소매를 물었다. 옷만 찢기고 겨우 빼냈다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" },
-            "critFail": { "text": "덫이 발목을 물었다!", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -2 }], "next": "END" }
+            "critFail": { "text": "덫이 발목을 물었다!", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -4 }], "next": "END" }
           }
         },
         { "id": "mark", "label": "나뭇가지로 표시만 해 둔다", "outcome": { "text": "다른 사람이 밟지 않게 덫 옆에 가지를 꽂아 두었다.", "effects": [{ "type": "reputation", "delta": 1 }], "next": "END" } },

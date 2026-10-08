@@ -189,10 +189,10 @@ describe("내구도", () => {
     expect(ctx.feed).toContainEqual({ kind: "text", text: "쇠갈퀴가 망가졌다. 대장간에서 고쳐야 한다." });
 
     // 망가진 쇠갈퀴: 1d6(=6) + 근력 1 − 2 = 5
-    // 멧돼지 HP 9 → 4로 절반 이하: 라운드 끝 사기 굴림(0.99: 버팀)
-    const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2), 0.99));
+    // 멧돼지 HP 18 → 13 (절반 9보다 많아 사기 굴림 없음)
+    const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2)));
     combatStep(hit, { type: "attack", targetId: "boar_1" });
-    expect(hit.draft.combat!.enemies[0].hp).toBe(9 - 5);
+    expect(hit.draft.combat!.enemies[0].hp).toBe(18 - 5);
   });
 });
 

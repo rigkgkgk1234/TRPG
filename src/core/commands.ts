@@ -40,7 +40,7 @@ export type FeedItem =
   | { kind: "wound"; level: WoundLevel }
   | { kind: "toast"; text: string };
 
-export type ResourceKey = "silver" | "food" | "hp" | "fatigue" | "reputation" | "debt";
+export type ResourceKey = "silver" | "food" | "hp" | "fatigue" | "reputation" | "fame" | "debt";
 
 export interface DispatchResult {
   state: RunState;

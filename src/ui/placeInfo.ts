@@ -1,4 +1,4 @@
-import type { NpcId } from "@/core/labels";
+import type { NpcId, PlaceId } from "@/core/labels";
 import type { RegionId } from "@/core/types";
 
 /**
@@ -65,5 +65,29 @@ export const NPC_INFO: Record<NpcId, NpcInfo> = {
     role: "인심 좋은 여관 주인",
     summary: "마을의 소문은 다 이 여관으로 모인다. 일손이 필요할 때가 많다.",
     gains: ["장작·부엌일 → 은화·식량", "손님들에게 들은 소문", "싸움 말리기 → 평판"],
+  },
+};
+
+export interface VillagePlaceInfo {
+  /** 이름 아래 한 줄 */
+  subtitle: string;
+  summary: string;
+  gains: string[];
+  risks: string[];
+}
+
+/** 결투장·의뢰 중개소: 명성을 얻는 곳 */
+export const PLACE_INFO: Record<PlaceId, VillagePlaceInfo> = {
+  arena: {
+    subtitle: "이기면 명성과 상금",
+    summary: "광장 뒤 공터에 밧줄을 둘러 만든 결투장. 명성이 오를수록 센 상대가 나선다.",
+    gains: ["마을 장정 → 명성 +4, 은화 2", "떠돌이 용병(명성 10) → 명성 +7, 은화 4", "우승자 가렛(명성 30) → 명성 +12, 은화 8"],
+    risks: ["져도 죽지는 않지만 경상을 입고 명성이 깎인다", "도망칠 수 없다", "하루에 한 번만 들어갈 수 있다", "숙련 경험은 쌓이지 않는다 (명성만 오른다)"],
+  },
+  guild: {
+    subtitle: "명성에 맞는 의뢰를 맡는다",
+    summary: "여관 옆 작은 중개소. 이름이 알려질수록 품삯이 큰 일을 내준다.",
+    gains: ["배달·쥐 소탕(명성 10)", "늑대 퇴치(명성 20)", "도적 현상금(명성 30)·고블린 토벌(명성 40)"],
+    risks: ["의뢰 전투는 진짜 싸움이다", "도망치면 명성 -1"],
   },
 };

@@ -56,7 +56,7 @@ export type Rng = (() => number) & { memory?: RngState };
 
 | 수치 | 공식 | 예시 (농부: 체력+2, 민첩0) |
 |------|------|------|
-| 최대 HP | `8 + 체력 × 2` | 12 |
+| 최대 HP | `16 + 체력 × 4` | 24 |
 | 방어도 | `10 + 민첩 + 방어구 + 방패` | 10 (가죽 갑옷 착용 시 12) |
 | 근접 피해 | `무기 주사위 + 근력` (최소 1) | 쇠갈퀴 1d6+1 |
 | 평판 상승 보정 | 말솜씨 +2 이상이면 평판 획득 +1 | — |
@@ -113,6 +113,8 @@ export const SKILL_MAX_RANK = 5;
 /** index = 현재 등급. 등급 0→1에 3, 1→2에 6 ... */
 export const SKILL_XP_TO_NEXT = [3, 6, 10, 15, 21] as const;
 export const SKILL_XP_CAP_PER_COMBAT = 4;
+/** 결투(knockout)는 명성을 얻는 싸움이라 숙련 경험이 없다 (이겨도 COMBAT_VICTORY_XP 없음). 능력치 판정 횟수는 센다 */
+export const DUEL_XP_CAP_PER_COMBAT = 0;
 /** 이긴 전투에서 공격에 쓴 무기 숙련에 더 주는 XP (전투 상한과 별개, 하루 상한은 적용) */
 export const COMBAT_VICTORY_XP = 1;
 export const SKILL_XP_CAP_PER_DAY = 6;
@@ -139,7 +141,13 @@ export interface PlayerState {
   traits: TraitId[];
   /** 0 ~ 100 */
   reputation: number;
+  /** 명성 0 ~ 100: 마을 밖에도 알려진 싸움 실력. 결투장·의뢰로 오른다 (평판은 마을 사람들의 믿음) */
+  fame: number;
 }
+
+export const FAME_MAX = 100;
+/** 의뢰 중개소가 일을 맡기기 시작하는 명성 */
+export const GUILD_MIN_FAME = 10;
 
 /** 흔적(특성) 데이터. 판정 보정은 buildCheckContext가 읽는다. */
 export interface TraitDef {
@@ -155,7 +163,7 @@ export interface TraitDef {
 }
 
 export function maxHp(stats: Stats): number {
-  return 8 + stats.con * 2;
+  return 16 + stats.con * 4;
 }
 ```
 
@@ -461,25 +469,26 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 
 | 적 | HP | 방어도 | 공격 | 피해 | 속도 | 사기 | 패배 규칙 | 태그 |
 |----|---:|------:|-----:|------|----:|----:|-----------|------|
-| 늑대 | 6 | 11 | +3 | 1d6 | 4 | 50% | deathSave | beast |
-| 멧돼지 | 9 | 10 | +3 | 1d6 | 2 | 30% | deathSave | beast |
-| 도적 | 9 | 12 | +3 | 1d6 | 2 | 30% | robbed | humanoid |
-| 들개 | 4 | 10 | +1 | 1d4 | 4 | 60% | deathSave | beast |
-| 큰 쥐 | 3 | 9 | +1 | 1d3 | 3 | 50% | deathSave | beast |
-| 밀렵꾼 | 6 | 10 | +1 | 1d4 | 3 | 60% | robbed | humanoid |
-| 고블린 정찰병 | 6 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
-| 고블린 전사 | 12 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
-| 약탈단 두목 | 18 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
+| 늑대 | 12 | 11 | +3 | 1d6 | 4 | 50% | deathSave | beast |
+| 멧돼지 | 18 | 10 | +3 | 1d6 | 2 | 30% | deathSave | beast |
+| 도적 | 18 | 12 | +3 | 1d6 | 2 | 30% | robbed | humanoid |
+| 들개 | 8 | 10 | +1 | 1d4 | 4 | 60% | deathSave | beast |
+| 큰 쥐 | 6 | 9 | +1 | 1d3 | 3 | 50% | deathSave | beast |
+| 밀렵꾼 | 12 | 10 | +1 | 1d4 | 3 | 60% | robbed | humanoid |
+| 고블린 정찰병 | 12 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
+| 고블린 전사 | 24 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
+| 약탈단 두목 | 36 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
 
 - **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(전리품 절반).
 
 **밸런스 확인 (시작 사냥꾼 vs 늑대)**
-- 사냥꾼 명중 70% × 평균 피해 3.5 → 늑대(HP 6)를 약 2.5라운드에 처치.
-- 늑대 명중 `+3 vs 방어도 12` 60% × 3.5 → 라운드당 2.1 피해. 2.5라운드면 약 5 피해 → 사냥꾼 HP 10 중 5 남음(부상 조건 2에 걸릴 확률 높음).
+- 사냥꾼 명중 70% × 평균 피해 3.5 → 늑대(HP 12)를 약 5라운드에 처치.
+- 늑대 명중 `+3 vs 방어도 12` 60% × 3.5 → 라운드당 2.1 피해. 5라운드면 약 10 피해 → 사냥꾼 HP 20 중 10 남음(부상 조건 2에 걸릴 확률 높음).
+- HP는 플레이어·적 모두 처음 설계의 2배다(전투가 너무 빨리 끝나서). 피해 주사위는 그대로, 회복·비전투 피해는 2배.
 - 20일차(민첩3·활4·가죽 갑옷): 명중 85%, 늑대 명중 45% → 받는 피해가 절반 이하. **성장을 숫자로 체감**.
 
 **최종 습격 전투 보정** (`scripted` 스토리 전투 전용)
-- 자경단 인원 = `floor(평판 / 20)` (최대 5). 1명당 약탈단 두목 시작 HP -3.
+- 자경단 인원 = `floor(평판 / 20)` (최대 5). 1명당 약탈단 두목 시작 HP -6.
 - 플래그 보정: `palisade_built`(나무 울타리) → 플레이어 방어도 +2, `goblin_plan_known`(작전 정보) → 플레이어 선공 + 첫 공격 유리함.
 
 ```ts
@@ -550,6 +559,10 @@ export interface CombatSetup {
   onVictory: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
+  /** 결투: 지면 죽지 않고 HP 1로 깨어난다 (부상이 없으면 경상, 은화는 그대로). 적의 쓰러짐 규칙보다 먼저 */
+  knockout?: boolean;
+  /** 결투에서 졌어도 적 HP가 이 비율 이하로 남았으면 onDefeat 대신 scene으로 (예: 용사 아델을 30%까지 몰아붙임) */
+  closeDefeat?: { enemyHpRatio: number; scene: SceneId };
 }
 
 export interface CombatState {
@@ -657,6 +670,7 @@ export type Condition =
   | { type: "stat"; stat: StatId; min: number }
   | { type: "skill"; skill: SkillId; min: number }
   | { type: "reputation"; min?: number; max?: number }
+  | { type: "fame"; min?: number; max?: number }
   | { type: "silver"; min: number }
   | { type: "food"; min: number }
   | { type: "hasItem"; itemId: ItemId; qty?: number }
@@ -674,6 +688,7 @@ export type Effect =
   | { type: "hp"; delta: number }
   | { type: "fatigue"; delta: number }
   | { type: "reputation"; delta: number }
+  | { type: "fame"; delta: number }
   | { type: "addItem"; itemId: ItemId; qty: number }
   | { type: "removeItem"; itemId: ItemId; qty: number }
   | { type: "wound"; steps: number }
@@ -815,7 +830,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
           check: { stat: "per", skill: "tracking", dc: 10, allowPartial: true },
           outcomes: {
             success: { text: "늑대는 따라오지 않았다.", next: "END" },
-            partial: { text: "도망치다 가시덤불에 긁혔다.", effects: [{ type: "hp", delta: -1 }, { type: "fatigue", delta: 1 }], next: "END" },
+            partial: { text: "도망치다 가시덤불에 긁혔다.", effects: [{ type: "hp", delta: -2 }, { type: "fatigue", delta: 1 }], next: "END" },
             fail: { text: "등을 보인 순간, 늑대가 뛰어올랐다!", next: "fight_ambushed" },
           },
         },
@@ -926,16 +941,16 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | ID | 이름 | 효과 | 가격 | 전투 중 |
 |----|------|------|----:|:---:|
 | `arrow` | 화살 | 활 공격 1회 | 10개 3 | — |
-| `herb` | 약초 | HP +2, 경상이면 50% 확률 치료 | 2 | O |
+| `herb` | 약초 | HP +4, 경상이면 50% 확률 치료 | 2 | O |
 | `bandage` | 붕대 | 경상 → 없음 | 3 | X |
 | `bitter_tea` | 쓴 약초차 | 피로 -2 | 3 | X |
-| `salve` | 상처 연고 | HP +4 | 4 | X |
-| `vigor_pill` | 기력 알약 | HP +3, 피로 -1 | 6 | O |
+| `salve` | 상처 연고 | HP +8 | 4 | X |
+| `vigor_pill` | 기력 알약 | HP +6, 피로 -1 | 6 | O |
 | `sleep_herb` | 수면 약초 | 피로 -3 | 5 | X |
 | `splint` | 부목 | 중상 → 경상 (부상이 맞지 않으면 쓸 수 없다) | 10 | X |
-| `hot_stew` | 고기 스튜 (여관) | HP +2, 피로 -1 | 2 | X |
-| `barley_ale` | 보리술 (여관) | 피로 -2, HP -1 | 2 | X |
-| `healing_potion` | 치유 물약 | HP +6, 치명상 → 중상 | 20 | O |
+| `hot_stew` | 고기 스튜 (여관) | HP +4, 피로 -1 | 2 | X |
+| `barley_ale` | 보리술 (여관) | 피로 -2, HP -2 | 2 | X |
+| `healing_potion` | 치유 물약 | HP +12, 치명상 → 중상 | 20 | O |
 | `wolf_pelt` | 늑대 가죽 | 판매용 | (판매 4) | — |
 | `boar_tusk` | 멧돼지 송곳니 | 판매용, 멧돼지 전리품(70%) | (판매 3) | — |
 | `rare_herb` | 늪 약초 | 판매용 / 물약 재료(확장) | (판매 8) | — |
@@ -1040,7 +1055,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
     defense: 3, checkPenalty: { stat: "agi", value: -1 }, durabilityMax: 25 },
   { id: "herb", name: "약초", category: "consumable", description: "씹으면 쓰지만 상처가 아문다.", price: 2, sellable: true, stackMax: 5,
-    use: [{ type: "hp", delta: 2 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },
+    use: [{ type: "hp", delta: 4 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },
   { id: "goblin_token", name: "고블린 부적", category: "quest", description: "뼈와 깃털을 엮은 부적. 촌장에게 보여야 한다.", price: 0, sellable: false, stackMax: 1 },
 ];
 ```
@@ -1064,7 +1079,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 혼자 훈련 | 1 | +2 | 운동 하나 골라 능력치 판정 DC 10 → 능력치 성장까지의 판정 횟수 (1-4) |
 | 교습 훈련 | 1 | +3 | 은화 3, 선택 숙련 XP +3 (레나: 검술·둔기·활·방어) |
 | 탐험 | 1 | +2 (+1 더 깊이) | 지역 카드 2~3장 |
-| 휴식 | 1 | **-3** | HP +2, 경상 회복 카운트 +1 |
+| 휴식 | 1 | **-3** | HP +4, 경상 회복 카운트 +1 |
 | 마을 볼일 | 1 | 0 | NPC 이벤트 1개 |
 | 로웬 다녀오기 | 2 | +3 | 확장(MVP는 모집관 이벤트로 대체) |
 
@@ -1073,7 +1088,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 직업 | 판정 | 기본 | 성공 추가 | 대성공 | 실패 |
 |------|------|----:|---------:|--------|------|
 | 농부 | 근력+농사 DC 10 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
-| 대장장이 견습 | 근력+대장일 DC 12 | 은화 3 | +2, 둔기 XP +1 | 추가분 2배 | 기본만, 대실패 시 HP -2·경상(이미 다쳤으면 그대로) |
+| 대장장이 견습 | 근력+대장일 DC 12 | 은화 3 | +2, 둔기 XP +1 | 추가분 2배 | 기본만, 대실패 시 HP -4·경상(이미 다쳤으면 그대로) |
 | 사냥꾼 | 감각+추적 DC 12 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
 | 공통 잡일 | 근력 DC 10 | 은화 1 | +1 | — | 기본만 |
 
@@ -1098,7 +1113,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 |-------|------|
 | 1 | 수면 피로 회복 -1 |
 | 2 | 모든 판정 불리함 |
-| 3+ | 매일 밤 HP -2 |
+| 3+ | 매일 밤 HP -4 |
 
 - 가족 굶주림(`familyHunger`): 못 먹이면 +1, 먹이면 0. **3에 도달하면** 스토리 이벤트 「동생이 앓아눕다」(의원비 은화 5, 엔딩 서술에 영향).
 - 식량이 부족하면 먹이는 순서를 저녁 정산에서 선택(본인 먼저 / 가족 먼저).
@@ -1118,10 +1133,33 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 
 → **하루 1회는 일해야 현상 유지**, 남은 1슬롯이 훈련·탐험·휴식. 장비 하나(가죽 갑옷 25)는 일주일 정도 아껴야 산다.
 
+### 6-5b. 명성 (0~100), 결투장, 의뢰 중개소
+- **명성**(`player.fame`)은 평판과 따로 센다. 평판은 마을 사람들의 믿음, 명성은 바깥까지 알려진 싸움 실력. 0에서 시작하고 말솜씨 보너스는 없다.
+- 마을 창의 **결투장**·**의뢰 중개소**는 마을 볼일(행동 1칸)이다. 이벤트의 `npc` 필드에 `arena`·`guild`를 쓴다(`PLACE_IDS`).
+- **결투장**(`arena_bout`): **하루에 한 번**(재등장 대기 1일, 구경만 해도 그날은 끝). 상대를 골라 겨룬다(피로 +2, 도주 불가, `knockout`). 숙련 경험은 없다(무기·방어 모두, 이겨도 +1 없음). 능력치 성장 횟수는 센다. 지면 죽지 않고 HP 1·경상(부상이 없을 때), 은화는 그대로, 명성이 깎인다.
+
+| 상대 | 열리는 명성 | HP / 방어 / 명중 / 피해 | 이기면 | 지면 |
+|------|----:|------|------|----:|
+| 마을 장정 | 0 | 12 / 10 / +2 / 1d4 | 명성 +4, 은화 2 | 명성 -2 |
+| 떠돌이 용병 | 10 | 18 / 12 / +3 / 1d6 | 명성 +7, 은화 4 | 명성 -3 |
+| 우승자 가렛 | 30 | 24 / 13 / +4 / 1d6+1 | 명성 +12, 은화 8 | 명성 -4 |
+
+- **의뢰 중개소**(`guild_board`): 명성 **10**부터 들어갈 수 있다(`GUILD_MIN_FAME`). 의뢰는 피로 +2, 전투는 진짜 싸움(사망 굴림·강탈 그대로)이고 도망치면 명성 -1.
+
+| 의뢰 | 보이는 명성 | 내용 | 보상 |
+|------|------|------|------|
+| 편지 배달 | 10~29 | 민첩 DC 10 | 은화 3, 명성 +2 (실패 은화 1) |
+| 방앗간 쥐 소탕 | 10~29 | 큰 쥐 둘 | 은화 4, 명성 +3 |
+| 늑대 퇴치 | 20~ (10부터 잠김 표시) | 늑대 + 들개 | 은화 7, 명성 +5 |
+| 도적 현상금 | 30~ | 도적 | 은화 10, 명성 +6 |
+| 고블린 토벌 | 40~ | 고블린 전사 | 은화 14, 명성 +8 |
+
+- **소문을 들은 용사**(`story_heroes_fame`): 18일차까지 명성 **50**이 되면(용사 일행을 만난 뒤) 아델이 결투를 청한다. 아델(HP 32, 방어 14, 명중 +5, 1d8)에게 이기거나, 져도 아델 HP를 **30% 이하**로 몰아붙였으면(`closeDefeat`) 합류 제안 → 받아들이면 `route_hero`(「용사 일행」 엔딩, 26일차 출발). 이미 합류하기로 했으면 19일차 귀환 이벤트는 오지 않는다.
+
 ### 6-6. 저녁 정산 순서 (고정)
 1. 식사(식량 소비, 굶주림 갱신)
 2. 수면(피로 회복)
-3. HP 회복: 부상 없음·경상 +1 / 중상·치명상 0 / 굶주림 3+ → -2
+3. HP 회복: 부상 없음·경상 +2 / 중상·치명상 0 / 굶주림 3+ → -4
 4. 부상 타이머 진행(치료 경과일, 방치일)
 5. 세금(7의 배수일)
 6. 능력치 성장(15회 채운 것)
@@ -1253,7 +1291,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 - 한계: 열쇠가 앱 안에 있으므로 앱을 뜯어 분석하는 사람까지 막지는 못한다. 흔한 저장 편집기·메모리 조작 도구로 수치를 바꾸거나 엔딩으로 건너뛰는 것을 막는다.
 
 ```ts
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 4;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

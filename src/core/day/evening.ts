@@ -21,7 +21,9 @@ import { changeDebt, changeFatigue, changeFood, changeHp, changeReputation, chan
 /** 본인 1 + 가족 1 (SYSTEM_SPEC 6-4) */
 export const FOOD_PER_DAY = 2;
 const HUNGER_HP_LOSS_AT = 3;
-const HUNGER_HP_LOSS = 2;
+const HUNGER_HP_LOSS = 4;
+/** 밤 수면 HP 회복 (부상 없음·경상) */
+const SLEEP_HP = 2;
 const FAMILY_HUNGER_WARNING_AT = 3;
 const TAX_REPUTATION_PENALTY = -5;
 const SERIOUS_TREATED_DAYS = 3;
@@ -138,7 +140,7 @@ function sleep(ctx: Ctx): void {
 function regenHp(ctx: Ctx): void {
   const s = ctx.draft;
   if (s.resources.hunger >= HUNGER_HP_LOSS_AT) changeHp(ctx, -HUNGER_HP_LOSS);
-  else if (s.player.wound.level === "none" || s.player.wound.level === "light") changeHp(ctx, 1);
+  else if (s.player.wound.level === "none" || s.player.wound.level === "light") changeHp(ctx, SLEEP_HP);
 }
 
 /** 중상: 치료 후 3일 → 경상, 방치 5일 → 경상 + 「오래된 상처」. 치명상은 아침마다 사망 굴림(survivesCriticalWound). */

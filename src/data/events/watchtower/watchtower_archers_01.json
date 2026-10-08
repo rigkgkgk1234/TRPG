@@ -48,7 +48,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -2
+                  "delta": -4
                 }
               ],
               "next": "END"
@@ -58,7 +58,7 @@
               "effects": [
                 {
                   "type": "hp",
-                  "delta": -3
+                  "delta": -6
                 },
                 {
                   "type": "wound",

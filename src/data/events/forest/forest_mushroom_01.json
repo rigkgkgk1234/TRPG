@@ -21,7 +21,7 @@
             "critSuccess": { "text": "귀한 버섯까지 섞여 있었다. 넉넉히 챙겼다.", "effects": [{ "type": "food", "delta": 2 }], "next": "END" },
             "success": { "text": "먹는 버섯이다. 국에 넣으면 한 끼는 된다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
             "fail": { "text": "아무래도 확신이 서지 않는다. 그냥 두었다.", "next": "END" },
-            "critFail": { "text": "먹는 버섯인 줄 알았는데 만진 손이 따끔거린다.", "effects": [{ "type": "hp", "delta": -1 }], "next": "END" }
+            "critFail": { "text": "먹는 버섯인 줄 알았는데 만진 손이 따끔거린다.", "effects": [{ "type": "hp", "delta": -2 }], "next": "END" }
           }
         },
         {
@@ -30,7 +30,7 @@
           "check": { "stat": "con", "dc": 10 },
           "outcomes": {
             "success": { "text": "멀쩡하다. 나머지도 챙겼다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
-            "fail": { "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 토했다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 2 }], "next": "END" }
+            "fail": { "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 토했다.", "effects": [{ "type": "hp", "delta": -4 }, { "type": "fatigue", "delta": 2 }], "next": "END" }
           }
         },
         { "id": "leave", "label": "괜한 모험은 하지 않는다", "outcome": { "next": "END" } }

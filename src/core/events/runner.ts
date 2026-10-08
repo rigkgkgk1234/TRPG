@@ -7,7 +7,7 @@ import { changeFatigue, changeFood, changeSilver } from "../day/resources";
 import { beginDay } from "../day/evening";
 import { advanceSlot } from "../day/time";
 import { countInBag, removeItem } from "../items/inventory";
-import { josa, NPC_LABEL, REGION_LABEL, type NpcId } from "../labels";
+import { josa, REGION_LABEL, VISIT_LABEL, type VisitId } from "../labels";
 import type {
   ActiveEventState, CheckOutcome, EventCategory, ChoiceCost, CombatAction, ChoiceDef, Effect, EventDef, Outcome, OutcomeMap, RegionId, RollMode, RunState, SceneDef, SceneId,
 } from "../types";
@@ -212,9 +212,9 @@ export function startExplore(ctx: Ctx, region: RegionId): void {
   drawCard(ctx, region, false, 0);
 }
 
-/** 마을 볼일: 그 사람의 이벤트 하나. 행동 슬롯은 이벤트가 끝날 때 쓴다 (endEvent). */
-export function startVillageVisit(ctx: Ctx, npc: NpcId): void {
-  ctx.feed.push({ kind: "text", text: `${josa(NPC_LABEL[npc], "을/를")} 찾아갔다.` });
+/** 마을 볼일: 그 사람(또는 결투장·의뢰 중개소)의 이벤트 하나. 행동 슬롯은 이벤트가 끝날 때 쓴다 (endEvent). */
+export function startVillageVisit(ctx: Ctx, npc: VisitId): void {
+  ctx.feed.push({ kind: "text", text: `${josa(VISIT_LABEL[npc], "을/를")} 찾아갔다.` });
   const ev = selectEvent(ctx, "npc", undefined, false, npc);
   if (ev) startEvent(ctx, ev);
   else advanceSlot(ctx.draft);

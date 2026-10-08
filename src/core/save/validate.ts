@@ -1,6 +1,7 @@
 import type { ContentDB } from "../content";
-import { isNpcId, SKILL_IDS, STAT_IDS } from "../labels";
+import { isVisitId, SKILL_IDS, STAT_IDS } from "../labels";
 import {
+  FAME_MAX,
   FATIGUE_MAX,
   INVENTORY_CAPACITY,
   LAST_DAY,
@@ -43,6 +44,7 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
   if (!int(p.hp, 0, maxHp(p.stats))) return "HP";
   if (!["none", "light", "serious", "critical"].includes(p.wound.level)) return "부상";
   if (!int(p.reputation, 0, 100)) return "평판";
+  if (!int(p.fame, 0, FAME_MAX)) return "명성";
   if (!p.traits.every((id) => content.traits[id])) return "흔적";
   if (new Set(p.traits).size !== p.traits.length) return "흔적 중복";
 
@@ -75,7 +77,7 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
     const ev = content.events[a.eventId];
     if (!ev) return "진행 중 이벤트";
     if (!ev.scenes[a.sceneId] && !a.explore) return "진행 중 장면";
-    if (ev.npc !== undefined && !isNpcId(ev.npc)) return "마을 볼일";
+    if (ev.npc !== undefined && !isVisitId(ev.npc)) return "마을 볼일";
   }
   const c = run.combat;
   if (c) {

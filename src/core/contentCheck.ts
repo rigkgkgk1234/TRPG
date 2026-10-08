@@ -1,7 +1,7 @@
 import type { ContentDB } from "./content";
 import { EXPLORE_REGIONS } from "./events/explore";
 import { fallbackId, isFallback } from "./events/selector";
-import { isNpcId } from "./labels";
+import { isVisitId } from "./labels";
 import type { ChoiceDef, Condition, Effect, EventDef, Outcome, SceneDef, TextBlock } from "./types";
 
 /** 장면 텍스트가 이보다 길면 한 화면에 안 들어간다 (ARCHITECTURE 2-5) */
@@ -38,7 +38,7 @@ export function checkContent(content: ContentDB): ContentIssues {
       if (!ev.region) err("", "탐험 이벤트에 region이 없다");
       else if (!EXPLORE_REGIONS.includes(ev.region)) err("", `탐험할 수 없는 지역: ${ev.region}`);
     }
-    if (ev.category === "npc" && !isFallback(ev) && (!ev.npc || !isNpcId(ev.npc))) err("", `마을 볼일 이벤트의 npc가 올바르지 않다: ${ev.npc ?? "(없음)"}`);
+    if (ev.category === "npc" && !isFallback(ev) && (!ev.npc || !isVisitId(ev.npc))) err("", `마을 볼일 이벤트의 npc가 올바르지 않다: ${ev.npc ?? "(없음)"}`);
     if (ev.category !== "npc" && ev.npc) warn("", "마을 볼일 이벤트가 아닌데 npc가 있다 (쓰이지 않는다)");
     if (isFallback(ev)) {
       if (ev.conditions.length > 0) warn("", "대체 이벤트에 조건이 있으면 아무것도 안 나올 수 있다");
@@ -132,7 +132,8 @@ export function checkContent(content: ContentDB): ContentIssues {
             for (const enemy of e.combat.enemies) if (!content.enemies[enemy]) err(where, `없는 적: ${enemy}`);
             if (e.combat.canFlee && !e.combat.onFled) warn(where, "도주할 수 있는데 onFled가 없다 (도주하면 이벤트가 바로 끝난다)");
             if (e.combat.enemies.some((id) => content.enemies[id]?.onDefeat === "scripted") && !e.combat.onDefeat) err(where, "스토리 전투(scripted)는 onDefeat 장면이 있어야 한다");
-            for (const next of [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat]) if (next) checkNext(next, where);
+            if (e.combat.closeDefeat && !e.combat.knockout) err(where, "closeDefeat는 결투(knockout)에만 쓴다");
+            for (const next of [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene]) if (next) checkNext(next, where);
             break;
         }
       }
@@ -172,15 +173,21 @@ export function checkContent(content: ContentDB): ContentIssues {
  * 한 화면에 한꺼번에 보일 수 있는 선택지 수. 직업 조건으로 숨긴 선택지는 그 직업에게만 보이므로
  * 직업마다 따로 세어 가장 많은 쪽을 더한다 (용사 일행처럼 직업별 선택지가 여럿인 장면).
  */
+/** 한 번에 보일 수 있는 선택지 수. 직업으로 숨긴 것은 직업마다, 명성으로 숨긴 것은 명성 값마다 따로 센다 */
 function maxShownChoices(scene: SceneDef): number {
   const perJob = new Map<string, number>();
+  const byFame: { min: number; max: number }[] = [];
   let common = 0;
   for (const c of scene.choices) {
     const job = c.hideIfLocked ? c.conditions?.find((x) => x.type === "job") : undefined;
+    const fame = c.hideIfLocked ? c.conditions?.find((x) => x.type === "fame") : undefined;
     if (job?.type === "job") perJob.set(job.job, (perJob.get(job.job) ?? 0) + 1);
+    else if (fame?.type === "fame") byFame.push({ min: fame.min ?? 0, max: fame.max ?? Infinity });
     else common++;
   }
-  return common + Math.max(0, ...perJob.values());
+  let fameMost = 0;
+  for (let f = 0; f <= 100; f++) fameMost = Math.max(fameMost, byFame.filter((b) => f >= b.min && f <= b.max).length);
+  return common + fameMost + Math.max(0, ...perJob.values());
 }
 
 function outcomesOf(c: ChoiceDef): [string, Outcome][] {
@@ -198,7 +205,7 @@ function sceneEdges(ev: EventDef): Map<string, string[]> {
 function nextsOf(scene: SceneDef): string[] {
   // 전투는 끝나면 결과별 장면으로 이어진다 (4주차)
   const combat = (scene.onEnter ?? []).flatMap((e) =>
-    e.type === "startCombat" ? [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat].filter((x): x is string => !!x) : []);
+    e.type === "startCombat" ? [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene].filter((x): x is string => !!x) : []);
   if (combat.length > 0) return combat;
   if (scene.choices.length === 0) return [scene.autoNext ?? "END"];
   return scene.choices.flatMap((c) => outcomesOf(c).map(([, o]) => o.next));
