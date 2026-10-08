@@ -88,7 +88,7 @@ describe("가게", () => {
   it("가죽 갑옷을 사면 몸 칸이 비어 있으니 바로 입는다", () => {
     const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 30; }));
     expect(buy(ctx, "smithy", "leather_armor")).toBeNull();
-    expect(ctx.draft.resources.silver).toBe(5);
+    expect(ctx.draft.resources.silver).toBe(6);
     expect(ctx.draft.inventory.equipment.armor).toEqual({ itemId: "leather_armor", qty: 1, durability: 25 });
     expect(playerDefense(ctx.draft, CONTENT, null)).toBe(12);
   });
@@ -104,7 +104,7 @@ describe("가게", () => {
   });
 
   it("팔기: 구매가의 절반(내림), 가죽은 정해진 값, 증거물은 못 판다", () => {
-    expect(sellPrice(CONTENT.items.rusty_sword)).toBe(7);
+    expect(sellPrice(CONTENT.items.rusty_sword)).toBe(5);
     expect(sellPrice(CONTENT.items.wolf_pelt)).toBe(4);
     expect(sellPrice(CONTENT.items.goblin_token)).toBe(0);
     const ctx = ctxOf(withBag(start(), { itemId: "wolf_pelt", qty: 3 }));
@@ -230,5 +230,53 @@ describe("가게 물건 목록", () => {
     expect(equip(ctx, 0)).toBe("근력 2레벨 필요");
     const smith = ctxOf(withBag(start("smith"), gear("war_hammer")));
     expect(equip(smith, 0)).toBeNull();
+  });
+});
+
+describe("아이템 값과 쓸모", () => {
+  /** 파는 물건만 (전리품·재료는 값이 0) */
+  const onSale = Object.values(CONTENT.items).filter((d) => d.price > 0);
+  const avg = (dice: string) => {
+    const m = /^(\d+)d(\d+)([+-]\d+)?$/.exec(dice)!;
+    return Number(m[1]) * (Number(m[2]) + 1) / 2 + Number(m[3] ?? 0);
+  };
+  /** a가 b보다 모든 면에서 같거나 낫고 한 가지라도 나으면 true */
+  const dominates = (a: number[], b: number[]) => a.every((x, i) => x >= b[i]) && a.some((x, i) => x > b[i]);
+
+  it("값이 같거나 싼데 모든 면에서 같거나 나은 물건이 없다 (무기·방어구·방패·소모품)", () => {
+    const score = (d: (typeof onSale)[number]): { group: string; v: number[] } | null => {
+      switch (d.category) {
+        case "weapon": {
+          const req = Object.values(d.requires ?? {}).reduce((s, x) => s + (x ?? 0), 0);
+          // 숙련(검·둔기)은 쓰는 사람에 따라 다르므로 비교하지 않는다. 활은 활끼리
+          return { group: d.ammo ? "bow" : "melee", v: [avg(d.damage), d.twoHanded ? 0 : 1, d.durabilityMax, -req] };
+        }
+        case "armor":
+        case "shield":
+          return { group: d.category, v: [d.defense, d.durabilityMax, "checkPenalty" in d && d.checkPenalty ? d.checkPenalty.value : 0] };
+        case "consumable": {
+          const sum = (t: string) => d.use.reduce((s, e) => s + (e.type === t && "delta" in e ? e.delta : 0), 0);
+          const heal = (to: string) => (d.use.some((e) => e.type === "healWound" && e.to === to) ? 1 : 0);
+          const chanceHeal = d.chanceEffects?.reduce((s, c) => s + c.p, 0) ?? 0;
+          return { group: "consumable", v: [sum("hp"), -sum("fatigue"), heal("none") + chanceHeal, heal("light"), heal("serious"), d.usableInCombat ? 1 : 0] };
+        }
+        default: return null;
+      }
+    };
+    const scored = onSale.map((d) => ({ d, s: score(d) })).filter((x) => x.s !== null);
+    for (const a of scored) {
+      for (const b of scored) {
+        if (a === b || a.s!.group !== b.s!.group) continue;
+        const cheaperOrSame = a.d.price <= b.d.price;
+        expect(cheaperOrSame && dominates(a.s!.v, b.s!.v), `${a.d.name}(${a.d.price})가 ${b.d.name}(${b.d.price})보다 싸거나 같은 값에 모든 면에서 낫다`).toBe(false);
+      }
+    }
+  });
+
+  it("성능이 똑같은 물건은 값도 같다", () => {
+    const key = (d: (typeof onSale)[number]) => JSON.stringify({ ...d, id: "", name: "", description: "", price: 0, skill: "" });
+    for (const a of onSale) for (const b of onSale) {
+      if (a !== b && key(a) === key(b)) expect(a.price, `${a.name}·${b.name}`).toBe(b.price);
+    }
   });
 });
