@@ -12,7 +12,8 @@ import { colors, space, type } from "@/ui/theme";
  * 게임 화면 가운데: 방금 한 일은 큰 결과 카드로, 그 전 일들은 짧은 요약으로 아래에 쌓는다.
  * 연출 중인 묶음이면 카드가 주사위부터 굴린다 ("동작 줄이기"가 켜져 있으면 바로 보여 준다).
  */
-export function TurnLog({ intro }: { intro?: { title: string; body: string } }) {
+/** compact: 전투 중. 최신 카드만 보이고(지난 기록은 숨긴다) 높이는 아래 패널을 뺀 나머지로 고정, 글이 길면 그 안에서 스크롤 */
+export function TurnLog({ intro, compact }: { intro?: { title: string; body: string }; compact?: boolean }) {
   const log = useGame((s) => s.log);
   const playingId = useGame((s) => s.playing?.id);
   const finishPlaying = useGame((s) => s.finishPlaying);
@@ -20,7 +21,7 @@ export function TurnLog({ intro }: { intro?: { title: string; body: string } }) 
   const scroll = useRef<ScrollView>(null);
 
   const latest = log.at(-1);
-  const older = log.slice(0, -1).reverse();
+  const older = compact ? [] : log.slice(0, -1).reverse();
 
   // 새 결과가 오면 맨 위(최신 카드)로
   useEffect(() => {
@@ -29,7 +30,7 @@ export function TurnLog({ intro }: { intro?: { title: string; body: string } }) 
 
   const playing = latest !== undefined && latest.id === playingId;
   return (
-    <ScrollView ref={scroll} style={styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView ref={scroll} style={compact ? styles.scrollCompact : styles.scroll} contentContainerStyle={styles.content}>
       {latest ? (
         <TurnCard
           key={latest.id}
@@ -79,6 +80,8 @@ const HistoryRow = memo(function HistoryRow({ group }: { group: LogGroup }) {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
+  // 글 길이와 상관없이 남는 자리를 그대로 쓴다 → 글이 바뀌어도 아래 전투 패널이 움직이지 않는다
+  scrollCompact: { flex: 1, minHeight: 120 },
   content: { padding: space.lg, gap: space.xxl },
   intro: { gap: space.sm, paddingTop: space.xl, paddingRight: space.xl },
   introTitle: { ...type.display, fontSize: 28, lineHeight: 36, color: colors.text },

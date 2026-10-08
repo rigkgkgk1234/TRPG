@@ -1,5 +1,5 @@
 import type { Ctx, FeedOrder } from "../commands";
-import { rollStatGrowth } from "../check/progress";
+import { growStats } from "../check/progress";
 import { startRandomEvent, startStoryEvent } from "../events/runner";
 import { eventPool } from "../events/selector";
 import {
@@ -75,7 +75,7 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
     if (s.resources.debt >= DEBT_ENDING_THRESHOLD) return endRun(ctx, "debtor", "세금 걷는 관리가 빚 문서를 들고 문을 두드렸다.");
     payTax(ctx);
   }
-  rollStatGrowth(ctx);                                   // 6. 능력치 성장
+  growStats(ctx);                                        // 6. 능력치 성장
   // 7. 30일차 밤은 최종 습격. 습격 이벤트가 엔딩을 정한다. 그 밖의 밤은 25%로 밤 이벤트.
   if (s.time.day >= LAST_DAY) {
     // 습격 이벤트는 이 플래그가 있어야 열린다 (아침·낮의 스토리 검사에서 미리 터지지 않게)

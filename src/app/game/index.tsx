@@ -29,9 +29,9 @@ export default function GameScreen() {
   return (
     <View style={styles.root}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
-      <TurnLog intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)} />
-      {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다 (나머지 패널은 내용 높이 그대로) */}
-      <View style={[view === "event" && styles.shrink, busy && styles.busy]}>
+      <TurnLog compact={view === "combat"} intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)} />
+      {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
+      <View style={[(view === "event" || view === "combat") && styles.shrink, busy && styles.busy]}>
         <Panel view={view} run={shown} />
       </View>
     </View>

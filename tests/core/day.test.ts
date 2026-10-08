@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Ctx, GameCommand } from "@/core/commands";
-import { gainSkillXp, rollStatGrowth } from "@/core/check/progress";
+import { gainSkillXp, growStats } from "@/core/check/progress";
 import { actionStatus, handleAction } from "@/core/day/actions";
 import { previewEvening, runEvening } from "@/core/day/evening";
 import { buyFood, payDebt } from "@/core/day/town";
@@ -135,11 +135,11 @@ describe("훈련·휴식", () => {
     expect(crit.draft.player.statUses.str).toBe(3);
   });
 
-  it("운동은 성장 굴림 기준(15)을 넘겨 쌓지 않고, 채웠거나 자연 상한이면 막는다. 말솜씨 운동은 없다", () => {
+  it("운동은 성장 기준(15)을 넘겨 쌓지 않고, 채웠거나 자연 상한이면 막는다. 말솜씨 운동은 없다", () => {
     const ctx = withDice(edit(start("hunter"), (s) => { s.player.statUses.con = 13; }), d20Sequence(20));
     handleAction(ctx, "trainSolo", { stat: "con" });
     expect(ctx.draft.player.statUses.con).toBe(15);
-    expect(actionStatus(ctx.draft, CONTENT, "trainSolo", { stat: "con" })).toEqual({ available: false, reason: "저녁에 성장 기회가 온다" });
+    expect(actionStatus(ctx.draft, CONTENT, "trainSolo", { stat: "con" })).toEqual({ available: false, reason: "오늘 저녁에 1레벨 오른다" });
     const capped = edit(start("hunter"), (s) => { s.player.stats.per = 4; });
     expect(actionStatus(capped, CONTENT, "trainSolo", { stat: "per" }).available).toBe(false);
     expect(actionStatus(start(), CONTENT, "trainSolo", { stat: "cha" })).toEqual({ available: false, reason: "그런 운동은 없다" });
@@ -210,20 +210,33 @@ describe("숙련 XP 상한과 능력치 성장", () => {
     expect(ctx.draft.player.skills.blade).toEqual({ rank: 1, xp: 1 });
   });
 
-  it("15회 사용 시 D20 + 능력치 ≤ 15면 +1, 실패면 카운트 10", () => {
-    const run = edit(start("farmer"), (s) => { s.player.statUses.str = 15; s.player.statUses.per = 15; });
-    const ctx = withDice(run, d20Sequence(14, 15)); // 근력: 14+1=15 성공, 감각: 15+1=16 실패
-    rollStatGrowth(ctx);
+  it("15회 채운 능력치는 굴림 없이 +1, 카운트 0", () => {
+    const run = edit(start("farmer"), (s) => { s.player.statUses.str = 15; s.player.statUses.per = 15; s.player.statUses.agi = 14; });
+    const ctx = withDice(run); // 주사위를 쓰면 d20Sequence가 오류를 던진다
+    growStats(ctx);
     expect(ctx.draft.player.stats.str).toBe(2);
     expect(ctx.draft.player.statUses.str).toBe(0);
-    expect(ctx.draft.player.stats.per).toBe(1);
-    expect(ctx.draft.player.statUses.per).toBe(10);
+    expect(ctx.draft.player.stats.per).toBe(2);
+    expect(ctx.draft.player.statUses.per).toBe(0);
+    expect(ctx.draft.player.statUses.agi).toBe(14);
   });
 
-  it("자연 성장 상한 +4면 굴리지 않는다", () => {
+  it("밤 이벤트가 일어나도 저녁 성장은 그대로 남는다", () => {
+    let nights = 0;
+    for (let seed = 1; seed <= 200; seed++) {
+      const run = edit(start("farmer", seed), (s) => { s.activeEvent = null; s.time.phase = "evening"; s.time.day = 5; s.resources.food = 9; s.player.statUses.str = 15; });
+      const next = dispatch(run, { type: "endDay", order: "selfFirst" }, CONTENT).state;
+      if (next.activeEvent && next.time.day === 5) nights++;
+      expect(next.player.stats.str).toBe(run.player.stats.str + 1);
+      expect(next.player.statUses.str).toBe(0);
+    }
+    expect(nights).toBeGreaterThan(0);
+  });
+
+  it("자연 성장 상한 +4면 오르지 않는다", () => {
     const run = edit(start(), (s) => { s.player.stats.str = 4; s.player.statUses.str = 20; });
     const ctx = withDice(run); // 주사위를 쓰면 d20Sequence가 오류를 던진다
-    rollStatGrowth(ctx);
+    growStats(ctx);
     expect(ctx.draft.player.stats.str).toBe(4);
   });
 });

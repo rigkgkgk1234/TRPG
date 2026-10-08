@@ -1,12 +1,9 @@
 import type { Ctx } from "../commands";
 import { STAT_IDS } from "../labels";
 import {
-  d,
   SKILL_MAX_RANK,
   SKILL_XP_CAP_PER_DAY,
   SKILL_XP_TO_NEXT,
-  STAT_GROWTH_RETRY_USES,
-  STAT_GROWTH_TARGET,
   STAT_GROWTH_USES,
   STAT_NATURAL_CAP,
   type PlayerState,
@@ -42,19 +39,15 @@ export function gainSkillXp(ctx: Ctx, skill: SkillId, amount: number): number {
 }
 
 /**
- * 저녁 정산 6단계: 판정에 15회 쓴 능력치마다 성장 굴림 D20 + 현재 값 ≤ 15.
- * 성공하면 +1 후 카운트 0, 실패하면 카운트 10(5회 뒤 재도전). 자연 성장 상한(+4)이면 굴리지 않는다.
+ * 저녁 정산 6단계: 판정에 15회 쓴 능력치는 +1 하고 카운트를 0으로. 자연 성장 상한(+4)이면 오르지 않는다.
+ * 화면이 "성장까지 15/15"로 다 찼다고 보여 주므로 굴림 없이 반드시 오른다.
  */
-export function rollStatGrowth(ctx: Ctx): void {
+export function growStats(ctx: Ctx): void {
   const p = ctx.draft.player;
   for (const stat of STAT_IDS) {
     if (p.statUses[stat] < STAT_GROWTH_USES || p.stats[stat] >= STAT_NATURAL_CAP) continue;
-    if (d(20, ctx.rng) + p.stats[stat] <= STAT_GROWTH_TARGET) {
-      p.stats[stat] += 1;
-      p.statUses[stat] = 0;
-      ctx.feed.push({ kind: "levelUp", stat, newValue: p.stats[stat] });
-    } else {
-      p.statUses[stat] = STAT_GROWTH_RETRY_USES;
-    }
+    p.stats[stat] += 1;
+    p.statUses[stat] = 0;
+    ctx.feed.push({ kind: "levelUp", stat, newValue: p.stats[stat] });
   }
 }

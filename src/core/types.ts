@@ -44,8 +44,6 @@ export const SKILL_XP_CAP_PER_COMBAT = 4;
 export const COMBAT_VICTORY_XP = 1;
 export const SKILL_XP_CAP_PER_DAY = 6;
 export const STAT_GROWTH_USES = 15;
-export const STAT_GROWTH_RETRY_USES = 10;
-export const STAT_GROWTH_TARGET = 15;
 
 export const SKILL_STAT: Record<SkillId, StatId> = {
   blade: "str", blunt: "str", bow: "agi", guard: "con",
@@ -58,7 +56,7 @@ export interface PlayerState {
   name: string;
   job: JobId;
   stats: Stats;
-  /** 능력치별 판정 사용 횟수 (성장 굴림용) */
+  /** 능력치별 판정 사용 횟수 (15회면 저녁에 +1) */
   statUses: Record<StatId, number>;
   skills: Skills;
   /** 오늘 숙련별로 얻은 XP (하루 상한 계산용, 아침마다 초기화) */

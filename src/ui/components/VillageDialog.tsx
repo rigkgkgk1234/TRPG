@@ -1,39 +1,29 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { actionStatus } from "@/core/day/actions";
 import { canTrade } from "@/core/day/town";
 import { possibleEvents } from "@/core/events/selector";
-import { SHOPS, type ShopId } from "@/core/items/shop";
 import { NPC_IDS, NPC_LABEL, type NpcId } from "@/core/labels";
 import type { RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
-import { ActionButton } from "@/ui/components/Buttons";
+import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { PickCell, PickGrid } from "@/ui/components/Controls";
-import { DialogFrame, DialogHead, DialogSectionTitle, InfoDialog } from "@/ui/components/InfoDialog";
+import { DialogFrame, DialogHead, InfoDialog } from "@/ui/components/InfoDialog";
 import { ChatCircleDotsIcon, StorefrontIcon } from "@/ui/icons";
 import { NPC_INFO } from "@/ui/placeInfo";
-import { colors, space, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
 
-const SHOP_IDS: ShopId[] = ["smithy", "healer", "inn"];
-
-/** 가게마다 무엇을 하는지 (가게 칸의 둘째 줄) */
-const SHOP_NOTE: Record<ShopId, string> = {
-  smithy: "장비 사기와 수리",
-  healer: "약과 상처 치료",
-  inn: "식량·화살, 팔기, 빚",
-};
-
 /**
- * 마을 창: 가게에 들르거나(행동 소모 없음) 주민과 대화한다(행동 1칸).
- * 주민을 고르면 그 사람의 안내 창으로 바뀌고, "대화한다"를 눌러야 행동을 쓴다.
+ * 마을 창: 먼저 [가게] [주민과 대화] 둘 중 하나를 고른다.
+ * 가게는 마을 화면(대장간·약초방·여관 탭)을 열고(행동 소모 없음), 대화는 주민 고르기 → 그 사람의 안내 창 → "대화한다"(행동 1칸).
  */
 export function VillageDialog({ run, visible, onClose }: { run: RunState; visible: boolean; onClose: () => void }) {
   const send = useGame((s) => s.send);
+  const [step, setStep] = useState<"menu" | "talk">("menu");
   const [npc, setNpc] = useState<NpcId | null>(null);
   const close = () => {
     setNpc(null);
+    setStep("menu");
     onClose();
   };
 
@@ -61,39 +51,11 @@ export function VillageDialog({ run, visible, onClose }: { run: RunState; visibl
     );
   }
 
-  const trade = canTrade(run);
-  const openShop = (tab: ShopId) => {
-    if (pushOnce({ pathname: "/game/town", params: { tab } })) close();
-  };
-
-  return (
-    <DialogFrame visible={visible} onClose={close} actions={<ActionButton center label="닫기" onPress={close} />}>
-      <DialogHead icon={StorefrontIcon} title="보리울" subtitle="가게에 들르거나 주민과 대화한다" />
-
-      <View style={styles.section}>
-        <View style={styles.sectionHead}>
-          <DialogSectionTitle>가게</DialogSectionTitle>
-          <Text style={styles.cost}>행동 소모 없음</Text>
-        </View>
-        <PickGrid>
-          {SHOP_IDS.map((id) => (
-            <PickCell
-              key={id}
-              label={SHOPS[id].name}
-              sub={SHOP_NOTE[id]}
-              reason={trade ? undefined : "지금은 갈 수 없다"}
-              disabled={!trade}
-              onPress={() => openShop(id)}
-            />
-          ))}
-        </PickGrid>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHead}>
-          <DialogSectionTitle>대화</DialogSectionTitle>
-          <Text style={styles.cost}>행동 1칸</Text>
-        </View>
+  if (step === "talk") {
+    const back = () => setStep("menu");
+    return (
+      <DialogFrame visible={visible} onClose={close} actions={<ActionButton center label="뒤로" onPress={back} />}>
+        <DialogHead icon={ChatCircleDotsIcon} title="주민과 대화" subtitle="행동 1칸, 피로 없음. 누구를 찾아갈까?" />
         <PickGrid>
           {NPC_IDS.map((id) => {
             const status = actionStatus(run, CONTENT, "village", { npc: id });
@@ -108,13 +70,43 @@ export function VillageDialog({ run, visible, onClose }: { run: RunState; visibl
             );
           })}
         </PickGrid>
-      </View>
+      </DialogFrame>
+    );
+  }
+
+  const trade = canTrade(run);
+  const talk = NPC_IDS.some((id) => actionStatus(run, CONTENT, "village", { npc: id }).available);
+  const openShop = () => {
+    if (pushOnce({ pathname: "/game/town" })) close();
+  };
+
+  return (
+    <DialogFrame visible={visible} onClose={close} actions={<ActionButton center label="닫기" onPress={close} />}>
+      <DialogHead icon={StorefrontIcon} title="보리울" subtitle="가게에 들르거나 주민과 대화한다" />
+      <ButtonGrid>
+        <GridCell>
+          <ActionButton
+            fill
+            large
+            icon={StorefrontIcon}
+            label="가게"
+            detail={trade ? "행동 소모 없음" : "지금은 갈 수 없다"}
+            disabled={!trade}
+            onPress={openShop}
+          />
+        </GridCell>
+        <GridCell>
+          <ActionButton
+            fill
+            large
+            icon={ChatCircleDotsIcon}
+            label="주민과 대화"
+            detail={talk ? "행동 1칸" : "지금은 대화할 수 없다"}
+            onPress={() => setStep("talk")}
+          />
+        </GridCell>
+      </ButtonGrid>
     </DialogFrame>
   );
 }
 
-const styles = StyleSheet.create({
-  section: { gap: space.sm },
-  sectionHead: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
-  cost: { ...type.caption, color: colors.textFaint },
-});

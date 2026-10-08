@@ -138,7 +138,7 @@ function ExploreDialog({ run, region, onConfirm, onClose }: { run: RunState; reg
 }
 
 /**
- * 혼자 훈련 창: 운동마다 한 줄 (어느 능력치를 단련하는지, 성장 굴림까지 남은 판정 횟수, 성공 확률).
+ * 혼자 훈련 창: 운동마다 한 줄 (어느 능력치를 단련하는지, 성장까지 남은 판정 횟수, 성공 확률).
  * 운동을 누르면 바로 한다.
  */
 function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: StatId) => void; onClose: () => void }) {
@@ -153,7 +153,7 @@ function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: S
       <View style={styles.dialogSection}>
         <View style={styles.dialogSectionHead}>
           <DialogSectionTitle>할 운동</DialogSectionTitle>
-          <Text style={styles.dialogNote}>{STAT_GROWTH_USES}번 채우면 저녁에 성장 굴림</Text>
+          <Text style={styles.dialogNote}>{STAT_GROWTH_USES}번 채우면 그날 저녁에 1레벨 오른다</Text>
         </View>
         <PickGrid>
           {EXERCISE_STATS.map((stat) => {
@@ -224,7 +224,7 @@ function skillLine(run: RunState, skill: SkillId): string {
   return `${STAT_LABEL[SKILL_STAT[skill]]} 판정, 현재 ${rank}레벨\n${progress}`;
 }
 
-/** "민첩 판정, 현재 2레벨" / "성장까지 4/15 (성공 +5)": 성공하면 쌓이는 만큼 (성장 기회 15를 넘지 않게) */
+/** "민첩 판정, 현재 2레벨" / "성장까지 4/15 (성공 +5)": 성공하면 쌓이는 만큼 (성장 기준 15를 넘지 않게) */
 function exerciseLine(run: RunState, stat: StatId): string {
   const uses = Math.min(run.player.statUses[stat], STAT_GROWTH_USES);
   const gain = Math.min(EXERCISE_USES.success, STAT_GROWTH_USES - uses);

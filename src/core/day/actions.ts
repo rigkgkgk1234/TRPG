@@ -25,7 +25,7 @@ import { advanceSlot } from "./time";
 /** 레나가 가르치는 숙련 (SYSTEM_SPEC 6-2) */
 export const LESSON_SKILLS: readonly SkillId[] = ["blade", "blunt", "bow", "guard"];
 export const SOLO_TRAINING_DC = 10;
-/** 혼자 훈련은 몸을 단련하는 운동: 고른 능력치의 판정 횟수(성장 굴림용)를 늘린다. 말솜씨는 혼자 늘릴 수 없다. */
+/** 혼자 훈련은 몸을 단련하는 운동: 고른 능력치의 판정 횟수(성장용)를 늘린다. 말솜씨는 혼자 늘릴 수 없다. */
 /** 운동 한 번에 쌓이는 판정 횟수 (판정 자체의 1회 포함): 대성공 6, 성공 5, 그 밖 3 */
 export const EXERCISE_USES = { critSuccess: 6, success: 5, other: 3 } as const;
 export const LESSON_XP = 3;
@@ -80,7 +80,7 @@ export function actionStatus(
     if (!stat) return locked("할 운동을 고른다");
     if (!isExerciseStat(stat)) return locked("그런 운동은 없다");
     if (run.player.stats[stat] >= STAT_NATURAL_CAP) return locked(`${josa(STAT_LABEL[stat], "은/는")} 더 단련해도 늘지 않는다`);
-    if (run.player.statUses[stat] >= STAT_GROWTH_USES) return locked("저녁에 성장 기회가 온다");
+    if (run.player.statUses[stat] >= STAT_GROWTH_USES) return locked("오늘 저녁에 1레벨 오른다");
   }
 
   if (id === "trainLesson") {
@@ -151,7 +151,7 @@ function work(ctx: Ctx): void {
   changeFatigue(ctx, w.fatigue);
 }
 
-/** 운동: 능력치만으로 DC 10. 판정이 1회 세고, 결과에 따라 판정 횟수를 더 얹는다 (상한은 성장 굴림 기준치). */
+/** 운동: 능력치만으로 DC 10. 판정이 1회 세고, 결과에 따라 판정 횟수를 더 얹는다 (상한은 성장 기준치). */
 function trainSolo(ctx: Ctx, stat: StatId): void {
   if (!isExerciseStat(stat)) return;
   const r = performCheck(ctx, { stat, dc: SOLO_TRAINING_DC }, EXERCISE_LABEL[stat]);
