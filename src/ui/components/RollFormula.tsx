@@ -1,6 +1,7 @@
-import { StyleSheet, Text, type TextStyle } from "react-native";
+import { StyleSheet, type TextStyle } from "react-native";
 import type { CheckResult } from "@/core/types";
 import { rollFormula, rollTerms } from "@/ui/rollText";
+import { Text } from "@/ui/Text";
 
 /**
  * 굴림 계산식: 9(D20) + 1(근력) + 2(농사) = 12

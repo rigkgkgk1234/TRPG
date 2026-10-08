@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Animated, Easing, Platform, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, Platform, StyleSheet, View } from "react-native";
 import type { CheckResult } from "@/core/types";
 import { OUTCOME_COLOR } from "@/ui/turnSummary";
 import { colors, fonts, motion, radius } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 /** 웹에는 네이티브 애니메이션 모듈이 없어 경고가 난다 */
 export const NATIVE_DRIVER = Platform.OS !== "web";

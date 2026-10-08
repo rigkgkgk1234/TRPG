@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { canTrade } from "@/core/day/town";
 import { slotOf } from "@/core/items/equipment";
@@ -16,6 +16,7 @@ import { ItemRow } from "@/ui/components/ItemRow";
 import { durabilityText, itemSummary } from "@/ui/itemText";
 import { summarizeTurn } from "@/ui/turnSummary";
 import { colors, hairline, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 const TABS: ShopId[] = ["smithy", "healer", "inn"];
 
@@ -186,7 +187,7 @@ function Healer({ run }: { run: RunState }) {
 function healerNote(run: RunState): string {
   const w = run.player.wound;
   if (w.level === "serious") return `치료를 받았다. ${w.treatedDays ?? 0}일째 아물고 있다.`;
-  if (w.level === "light") return `${WOUND_LABEL.light}은 쉬거나 약초·붕대로 낫는다.`;
+  if (w.level === "light") return `${WOUND_LABEL.light}은 쉬거나 약초, 붕대로 낫는다.`;
   return "아픈 데가 없다.";
 }
 
@@ -216,7 +217,7 @@ function Inn({ run }: { run: RunState }) {
           )}
         </View>
       </Section>
-      <Section title="팔기" hint="토비가 사들인다. 구매가의 절반, 가죽·송곳니 같은 전리품은 정해진 값.">
+      <Section title="팔기" hint="토비가 사들인다. 구매가의 절반, 가죽, 송곳니 같은 전리품은 정해진 값.">
         {sellable.length === 0 ? (
           <Text style={styles.note}>팔 만한 물건이 없다.</Text>
         ) : (

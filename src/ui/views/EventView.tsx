@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DEEP_FATIGUE, EXPLORE_CARDS } from "@/core/events/explore";
 import { sceneView, type ChoiceView, type ExploreProgress } from "@/core/events/runner";
@@ -12,6 +12,7 @@ import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, SwordIcon, TreeIcon, type Icon } from "@/ui/icons";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 /**
  * 이벤트 패널: 장면 글 → 선택지. 선택지마다 성공 확률·비용·잠김 사유·위험 표시를 붙인다. (SYSTEM_SPEC 4-2)
@@ -53,7 +54,7 @@ export function EventPanel({ run }: { run: RunState }) {
         >
           {view.kind === "deeper" ? (
             <>
-              <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>
+              <Text style={styles.text}>
                 안쪽은 더 어둡고 조용하다. 더 들어가면 위험하지만, 남들이 못 본 것을 찾을지도 모른다.
               </Text>
               <View style={styles.choices}>
@@ -68,7 +69,7 @@ export function EventPanel({ run }: { run: RunState }) {
             </>
           ) : (
             <>
-              <Text lineBreakStrategyIOS="hangul-word" style={styles.text}>{view.text}</Text>
+              <Text style={styles.text}>{view.text}</Text>
               <View style={styles.choices}>
                 {view.kind === "continue" ? (
                   <ActionButton primary icon={ArrowRightIcon} label="계속" onPress={() => send({ type: "continue" })} />

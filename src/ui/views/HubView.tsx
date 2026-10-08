@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, EXERCISE_USES, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
-import { EXERCISE_LABEL, EXERCISE_STATS, josa, REGION_LABEL, SKILL_LABEL, STAT_LABEL } from "@/core/labels";
-import { SKILL_MAX_RANK, SKILL_STAT, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId, type StatId } from "@/core/types";
+import { EXERCISE_LABEL, EXERCISE_STATS, josa, REGION_LABEL, SKILL_LABEL, STAT_GROWTH_NOTE, STAT_LABEL } from "@/core/labels";
+import { SKILL_MAX_RANK, SKILL_STAT, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId, type StatId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
@@ -18,6 +18,7 @@ import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
 import { REGION_INFO } from "@/ui/placeInfo";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, hairline, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 /** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
 type Picking = "trainSolo" | "trainLesson" | "explore";
@@ -153,7 +154,7 @@ function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: S
       <View style={styles.dialogSection}>
         <View style={styles.dialogSectionHead}>
           <DialogSectionTitle>할 운동</DialogSectionTitle>
-          <Text style={styles.dialogNote}>{STAT_GROWTH_USES}번 채우면 그날 저녁에 1레벨 오른다</Text>
+          <Text style={styles.dialogNote}>{STAT_GROWTH_NOTE}</Text>
         </View>
         <PickGrid>
           {EXERCISE_STATS.map((stat) => {
@@ -191,10 +192,7 @@ function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: Ski
         subtitle={`은화 ${def.silverCost}을 내고 판정 없이 성장 +${LESSON_XP}, 피로 +${def.fatigue}`}
       />
       <View style={styles.dialogSection}>
-        <View style={styles.dialogSectionHead}>
-          <DialogSectionTitle>레나가 가르치는 숙련</DialogSectionTitle>
-          <Text style={styles.dialogNote}>하루 경험 {SKILL_XP_CAP_PER_DAY}까지</Text>
-        </View>
+        <DialogSectionTitle>레나가 가르치는 기술</DialogSectionTitle>
         <PickGrid>
           {LESSON_SKILLS.map((skill) => {
             const status = actionStatus(run, CONTENT, "trainLesson", { skill });

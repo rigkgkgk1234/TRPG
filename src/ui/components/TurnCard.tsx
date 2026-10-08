@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { OUTCOME_LABEL } from "@/core/labels";
 import type { CheckResult } from "@/core/types";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
@@ -8,6 +8,7 @@ import { OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line
 import { RollFormula } from "@/ui/components/RollFormula";
 import { rollModeNote } from "@/ui/rollText";
 import { colors, icon, motion, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 const TONE_BG: Record<Tone, string> = { good: colors.goodBg, bad: colors.badBg, crit: colors.critBg, neutral: colors.neutralBg };
 const MARK_ICON: Record<NonNullable<Line["mark"]>, Icon> = { levelUp: TrendUpIcon, wound: WarningIcon, heal: BandaidsIcon };
@@ -115,7 +116,7 @@ function EventLine({ line }: { line: Line }) {
   return (
     <View style={styles.eventRow}>
       {MarkIcon && <MarkIcon size={icon.sm} weight={icon.weight} color={color} style={styles.eventIcon} />}
-      <Text lineBreakStrategyIOS="hangul-word" style={[styles.event, { color }]}>{line.text}</Text>
+      <Text style={[styles.event, { color }]}>{line.text}</Text>
     </View>
   );
 }

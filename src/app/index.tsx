@@ -1,9 +1,10 @@
 import type { Href } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
 import { colors, hairline, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
+import { Text } from "@/ui/Text";
 
 /** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 설정은 8주차. */
 export default function TitleScreen() {
@@ -21,7 +22,7 @@ export default function TitleScreen() {
       <View style={[styles.buttons, !hydrated && styles.hidden]}>
         {notice && (
           <Pressable onPress={dismissNotice} accessibilityRole="button" accessibilityHint="안내 닫기" style={styles.notice}>
-            <Text lineBreakStrategyIOS="hangul-word" style={styles.noticeText}>{notice}</Text>
+            <Text style={styles.noticeText}>{notice}</Text>
           </Pressable>
         )}
         {canResume && <TitleButton href="/game" label="이어하기" sub={resume} primary />}

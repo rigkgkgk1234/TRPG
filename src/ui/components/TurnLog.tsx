@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { OUTCOME_LABEL } from "@/core/labels";
 import { useGame, type LogGroup } from "@/store/gameStore";
 import { TurnCard } from "@/ui/components/TurnCard";
@@ -7,6 +7,7 @@ import { changesLine, OUTCOME_COLOR, summarizeTurn } from "@/ui/turnSummary";
 import { useReducedMotion } from "@/ui/useReducedMotion";
 import { RollFormula } from "@/ui/components/RollFormula";
 import { colors, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 /**
  * 게임 화면 가운데: 방금 한 일은 큰 결과 카드로, 그 전 일들은 짧은 요약으로 아래에 쌓는다.
@@ -41,7 +42,7 @@ export function TurnLog({ intro, compact }: { intro?: { title: string; body: str
       ) : intro ? (
         <View style={styles.intro}>
           <Text style={styles.introTitle}>{intro.title}</Text>
-          <Text lineBreakStrategyIOS="hangul-word" style={styles.introBody}>{intro.body}</Text>
+          <Text style={styles.introBody}>{intro.body}</Text>
         </View>
       ) : null}
 
@@ -73,7 +74,7 @@ const HistoryRow = memo(function HistoryRow({ group }: { group: LogGroup }) {
           {" / "}목표 {s.roll.spec.dc}
         </Text>
       )}
-      <Text lineBreakStrategyIOS="hangul-word" style={styles.rowText}>{changesLine(s)}</Text>
+      <Text style={styles.rowText}>{changesLine(s)}</Text>
     </View>
   );
 });

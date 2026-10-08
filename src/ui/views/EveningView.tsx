@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { FeedOrder } from "@/core/commands";
 import { FOOD_PER_DAY, previewEvening } from "@/core/day/evening";
@@ -10,6 +10,7 @@ import { Chip, ChipRow } from "@/ui/components/Controls";
 import { TownRow } from "@/ui/components/TownRow";
 import { BasketIcon, HandCoinsIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
 import { colors, hairline, icon, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 /** 저녁 패널: 정산을 미리 알려 주고, 모자란 식량을 사거나 먹일 순서를 정한 뒤 잠자리에 든다. */
 export function EveningPanel({ run }: { run: RunState }) {
@@ -44,7 +45,7 @@ export function EveningPanel({ run }: { run: RunState }) {
           {notes.map((n) => (
             <View key={n.text} style={styles.noteRow}>
               {n.tone !== "info" && <WarningIcon size={icon.sm} weight={icon.weight} color={TONE[n.tone]} style={styles.noteIcon} />}
-              <Text lineBreakStrategyIOS="hangul-word" style={[styles.note, { color: TONE[n.tone] }]}>{n.text}</Text>
+              <Text style={[styles.note, { color: TONE[n.tone] }]}>{n.text}</Text>
             </View>
           ))}
         </View>

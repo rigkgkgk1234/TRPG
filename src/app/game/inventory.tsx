@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { equippedWeapon, playerDefense } from "@/core/combat/combat";
 import { equipBlock, slotOf, type EquipSlot } from "@/core/items/equipment";
@@ -11,6 +11,7 @@ import { Section } from "@/ui/components/Controls";
 import { ItemRow, type RowAction } from "@/ui/components/ItemRow";
 import { durabilityText, itemSummary } from "@/ui/itemText";
 import { colors, hairline, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 const SLOT_LABEL: Record<EquipSlot, string> = { weapon: "무기", armor: "방어구", shield: "방패" };
 

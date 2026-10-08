@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ENDING_LABEL, JOB_LABEL, SKILL_LABEL } from "@/core/labels";
 import { epitaph } from "@/core/story/ending";
@@ -7,6 +7,7 @@ import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
 import { Section } from "@/ui/components/Controls";
 import { colors, hairline, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 const ENDINGS: EndingId[] = ["shield_of_village", "flee_together", "rowen_spearman", "hero_party", "survivor", "debtor", "death"];
 
@@ -37,7 +38,7 @@ export default function RecordsScreen() {
           return (
             <View key={t.id} style={styles.traitRow}>
               <Text style={[styles.line, !seen && styles.unseenText]}>{seen ? `「${t.name}」` : "「?」"}</Text>
-              <Text lineBreakStrategyIOS="hangul-word" style={styles.dim}>{seen ? t.description : "아직 얻지 못했다"}</Text>
+              <Text style={styles.dim}>{seen ? t.description : "아직 얻지 못했다"}</Text>
             </View>
           );
         })}

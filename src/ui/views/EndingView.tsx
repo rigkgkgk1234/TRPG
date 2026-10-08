@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ENDING_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
 import { endingText, epitaph } from "@/core/story/ending";
@@ -9,6 +9,7 @@ import { useMeta } from "@/store/metaStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { colors, hairline, space, type } from "@/ui/theme";
 import { once, pushOnce } from "@/ui/navigate";
+import { Text } from "@/ui/Text";
 
 /**
  * 엔딩 머리. 엔딩도 라우터로 옮기지 않고 게임 화면 안에서 보여 준다:
@@ -38,8 +39,8 @@ export function EndingPanel({ run }: { run: RunState }) {
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
-      <Text lineBreakStrategyIOS="hangul-word" style={styles.story}>{endingText(run)}</Text>
-      {grave ? <Text lineBreakStrategyIOS="hangul-word" style={styles.grave}>{grave}</Text> : null}
+      <Text style={styles.story}>{endingText(run)}</Text>
+      {grave ? <Text style={styles.grave}>{grave}</Text> : null}
       <View style={styles.stats}>
         <Figure label="판정" value={`${st.checksRolled}회`} />
         <Figure label="대성공" value={String(st.crits)} />

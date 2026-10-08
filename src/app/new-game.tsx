@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SKILL_LABEL, STAT_IDS, STAT_LABEL } from "@/core/labels";
 import { maxHp, type JobDef, type JobId, type SkillId } from "@/core/types";
@@ -10,6 +10,7 @@ import { ActionButton } from "@/ui/components/Buttons";
 import { JOB_ICON } from "@/ui/gameIcons";
 import { colors, fonts, hairline, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { once } from "@/ui/navigate";
+import { Text } from "@/ui/Text";
 
 const NAME_MAX = 8;
 const MVP_JOBS = Object.values(CONTENT.jobs).filter((j): j is JobDef => !!j?.mvp);
@@ -61,7 +62,7 @@ export default function NewGameScreen() {
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + space.md }]}>
         {current && (
-          <Text lineBreakStrategyIOS="hangul-word" style={styles.warn}>
+          <Text style={styles.warn}>
             진행 중인 회차({current})가 있다. 새로 시작하면 그 회차는 사라진다.
           </Text>
         )}

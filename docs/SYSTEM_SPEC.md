@@ -211,7 +211,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
       { itemId: "arrow", qty: 10 },
       { itemId: "hunting_knife", qty: 1 },
     ],
-    work: { label: "덫·가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
+    work: { label: "덫, 가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
   },
 };
 ```

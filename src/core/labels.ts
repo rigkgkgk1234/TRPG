@@ -43,6 +43,11 @@ export const SKILL_LABEL: Record<SkillId, string> = {
   herbalism: "약초",
 };
 
+/** 능력치 성장 안내 (상태·혼자 훈련 창) */
+export const STAT_GROWTH_NOTE = "최대치를 채우면 밤에 레벨 상승";
+/** 숙련이 쓰이는 판정 (상태 창 숙련 안내) */
+export const SKILL_USE_NOTE = "공격, 일, 이벤트 판정에 레벨만큼 더해짐";
+
 export const OUTCOME_LABEL: Record<CheckOutcome, string> = {
   critSuccess: "대성공",
   success: "성공",

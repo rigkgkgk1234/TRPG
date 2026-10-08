@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import type { Icon } from "@/ui/icons";
 import { ActionButton } from "@/ui/components/Buttons";
 import { colors, hairline, icon as iconToken, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 export interface InfoSection {
   title: string;
@@ -49,7 +50,7 @@ export function InfoDialog({ visible, icon, title, subtitle, body, facts, sectio
       }
     >
       <DialogHead icon={icon} title={title} subtitle={subtitle} />
-      <Text lineBreakStrategyIOS="hangul-word" style={styles.body}>{body}</Text>
+      <Text style={styles.body}>{body}</Text>
       {facts && facts.length > 0 && (
         <View style={styles.facts}>
           {facts.map((f) => <Text key={f} style={styles.fact}>{f}</Text>)}
@@ -59,7 +60,7 @@ export function InfoDialog({ visible, icon, title, subtitle, body, facts, sectio
         <View key={s.title} style={styles.section}>
           <Text style={styles.sectionTitle}>{s.title}</Text>
           {s.items.map((it) => (
-            <Text key={it} lineBreakStrategyIOS="hangul-word" style={styles.item}>· {it}</Text>
+            <Text key={it} style={styles.item}>· {it}</Text>
           ))}
         </View>
       ))}

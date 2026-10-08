@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View, type LayoutChangeEvent } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { combatView, type CombatActionView, type CombatView } from "@/core/combat/combat";
 import { MODE_LABEL } from "@/core/labels";
@@ -11,6 +11,7 @@ import { Chip, ChipRow } from "@/ui/components/Controls";
 import { CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 const ACTION_ICON: Record<CombatActionView["type"], Icon> = {
   attack: SwordIcon,

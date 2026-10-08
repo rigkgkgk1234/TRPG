@@ -108,7 +108,7 @@ export function VillageDialog({ run, visible, onClose }: { run: RunState; visibl
 
   return (
     <DialogFrame visible={visible} onClose={close} actions={<ActionButton center label="닫기" onPress={close} />}>
-      <DialogHead icon={StorefrontIcon} title="보리울" subtitle={`가게·주민·결투장·의뢰 중개소. 내 명성 ${run.player.fame}`} />
+      <DialogHead icon={StorefrontIcon} title="보리울" subtitle={`가게, 주민, 결투장, 의뢰 중개소. 내 명성 ${run.player.fame}`} />
       <ButtonGrid>
         <GridCell>
           <ActionButton

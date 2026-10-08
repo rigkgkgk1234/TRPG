@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { formatSigned, MODE_LABEL, OUTCOME_LABEL, SKILL_IDS, SKILL_LABEL, STAT_IDS, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
@@ -19,6 +19,7 @@ import { Chip, ChipRow, Section, Stepper } from "@/ui/components/Controls";
 import { DEV_CONTENT, devSubject, type DevCheckInput } from "@/ui/dev/devSubject";
 import { colors, fonts, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { OUTCOME_COLOR } from "@/ui/turnSummary";
+import { Text } from "@/ui/Text";
 
 const DCS = [8, 10, 12, 14, 16, 20];
 const WOUNDS: WoundLevel[] = ["none", "light", "serious"];

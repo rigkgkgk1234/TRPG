@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHASE_LABEL, WOUND_LABEL } from "@/core/labels";
 import { FOOD_PER_DAY } from "@/core/day/evening";
@@ -9,6 +9,7 @@ import {
 } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
+import { Text } from "@/ui/Text";
 
 const FATIGUE_TIRED_AT = 4;
 const FLASH_MS = 1200;

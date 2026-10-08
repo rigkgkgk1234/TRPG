@@ -9,7 +9,7 @@ import { colors, FONT_FILES, fonts } from "@/ui/theme";
 
 /**
  * 웹 브라우저는 한국어를 글자 단위로 줄바꿈해 "모으\n고"처럼 낱말이 쪼개진다.
- * 낱말 단위로 바꾸고(keep-all), 한 낱말이 칸보다 길 때만 쪼갠다. (iOS는 Text의 lineBreakStrategyIOS="hangul-word")
+ * 낱말 단위로 바꾸고(keep-all), 한 낱말이 칸보다 길 때만 쪼갠다. (앱에서는 @/ui/Text가 글자 사이에 단어 이음표를 넣어 같은 효과를 낸다)
  */
 if (Platform.OS === "web" && typeof document !== "undefined") {
   const style = document.createElement("style");

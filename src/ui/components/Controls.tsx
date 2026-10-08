@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { formatSigned } from "@/core/labels";
 import { WithNote } from "@/ui/components/RollFormula";
 import { colors, hairline, motion, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 export function Chip({ label, selected, disabled, onPress }: { label: string; selected: boolean; disabled?: boolean; onPress: () => void }) {
   return (
@@ -38,7 +39,7 @@ export function PickCell({ label, sub, badge, badgeNote, reason, disabled, wide,
       <View style={styles.pickRow}>
         <View style={styles.pickText}>
           <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
-          {reason || sub ? <Text style={styles.pickReason} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{reason ?? sub}</Text> : null}
+          {reason || sub ? <Text style={styles.pickReason} numberOfLines={2}>{reason ?? sub}</Text> : null}
         </View>
         {badge ? <WithNote main={badge} note={badgeNote} style={styles.pickBadge} noteStyle={styles.pickNote} /> : null}
       </View>

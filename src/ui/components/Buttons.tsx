@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import type { Icon } from "@/ui/icons";
 import { WithNote } from "@/ui/components/RollFormula";
 import { colors, hairline, icon as iconToken, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 interface ActionButtonProps {
   label: string;
@@ -57,7 +58,7 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
         <View style={styles.main}>
           <View style={[styles.labelRow, (primary || center) && styles.center]}>
             {IconC && <IconC size={large ? iconToken.md + 2 : iconToken.md} weight={iconToken.weight} color={iconColor ?? (filled ? fg : selected ? colors.accent : colors.textDim)} />}
-            <Text style={[styles.label, large && styles.labelLarge, { color: fg }]} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{label}</Text>
+            <Text style={[styles.label, large && styles.labelLarge, { color: fg }]} numberOfLines={2}>{label}</Text>
           </View>
           {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badge} noteStyle={styles.badgeNote} /> : null}
           {Array.isArray(detail) ? (

@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { colors, hairline, motion, radius, space, type } from "@/ui/theme";
+import { Text } from "@/ui/Text";
 
 export interface RowAction {
   label: string;
