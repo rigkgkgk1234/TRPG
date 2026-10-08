@@ -29,7 +29,7 @@ export function resolveEnding(s: RunState): EndingId {
 export function endingText(s: RunState): string {
   switch (s.ending) {
     case "shield_of_village":
-      return "고블린들은 목책 앞에서 무너졌다. 노래로 남을 일은 아니지만, 보리울 사람들은 그날 밤 누가 앞에 섰는지 오래 기억할 것이다.";
+      return "고블린들은 나무 울타리 앞에서 무너졌다. 노래로 남을 일은 아니지만, 보리울 사람들은 그날 밤 누가 앞에 섰는지 오래 기억할 것이다.";
     case "flee_together":
       return "보리울은 불탔다. 그래도 수레마다 사람이 타고 있었다. 마을은 잃었지만 이웃은 잃지 않았다.";
     case "rowen_spearman":
@@ -41,7 +41,7 @@ export function endingText(s: RunState): string {
       if (s.flags.fled_together) return "수레는 떠났지만 따라나선 이웃은 몇 되지 않았다. 남은 사람들의 소식은 끝내 듣지 못했다.";
       return "날이 밝자 마을 곳곳에 연기가 피어올랐다. 살아남았다. 그것 말고는 아무것도 장담할 수 없다.";
     case "debtor":
-      return "징수관이 빚 문서를 흔들었다. 영지의 노역장으로 끌려가며, 서른 날을 다 채우지 못한 것이 못내 아쉬웠다.";
+      return "세금 걷는 관리가 빚 문서를 흔들었다. 빚을 갚을 때까지 영주의 땅에서 일하게 되었다. 서른 날을 다 채우지 못한 것이 못내 아쉬웠다.";
     case "death":
       return "보리울의 서른 날은 여기서 끝났다.";
     default:

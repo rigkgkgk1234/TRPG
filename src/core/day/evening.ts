@@ -72,7 +72,7 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
   if (s.player.hp <= 0) return endRun(ctx, "death", "굶주림 끝에 다시 눈을 뜨지 못했다.");
   tickWound(ctx);                                        // 4. 부상 타이머
   if (isTaxDay(s.time.day)) {                            // 5. 세금
-    if (s.resources.debt >= DEBT_ENDING_THRESHOLD) return endRun(ctx, "debtor", "징수관이 빚 문서를 들고 문을 두드렸다.");
+    if (s.resources.debt >= DEBT_ENDING_THRESHOLD) return endRun(ctx, "debtor", "세금 걷는 관리가 빚 문서를 들고 문을 두드렸다.");
     payTax(ctx);
   }
   rollStatGrowth(ctx);                                   // 6. 능력치 성장

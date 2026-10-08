@@ -111,7 +111,7 @@ describe("전투 진행", () => {
   });
 
   it("공격 명중 → 피해 = 무기 주사위 + 근력, 쓰러뜨리면 승리", () => {
-    // 농부: 근력 1 + 둔기 0, 15 + 1 = 16 ≥ 11, 쇠스랑 1d6 → 5 + 1 = 6 → 늑대 HP 6
+    // 농부: 근력 1 + 둔기 0, 15 + 1 = 16 ≥ 11, 쇠갈퀴 1d6 → 5 + 1 = 6 → 늑대 HP 6
     const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(15), fd(5, 6)));
     expect(combatStep(ctx, { type: "attack", targetId: "wolf_1" })).toBeNull();
     expect(ctx.draft.combat!.result).toBe("victory");
@@ -179,7 +179,7 @@ describe("전투 진행", () => {
   });
 
   it("사기: HP 절반 이하인 적은 라운드 끝에 확률로 달아나고, 모두 없어지면 승리", () => {
-    // 쇠스랑 2 + 1 = 3 → 늑대 HP 3 (절반), 늑대 빗나감, 사기 굴림 0.1 < 0.5 → 달아남
+    // 쇠갈퀴 2 + 1 = 3 → 늑대 HP 3 (절반), 늑대 빗나감, 사기 굴림 0.1 < 0.5 → 달아남
     const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(15), fd(2, 6), f20(2), 0.1));
     combatStep(ctx, { type: "attack", targetId: "wolf_1" });
     expect(ctx.draft.combat!.result).toBe("victory");

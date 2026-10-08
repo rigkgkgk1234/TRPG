@@ -8,6 +8,7 @@ import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { colors, radius, space, type } from "@/ui/theme";
+import { once, pushOnce } from "@/ui/navigate";
 
 /**
  * 엔딩 머리. 엔딩도 라우터로 옮기지 않고 게임 화면 안에서 보여 준다:
@@ -33,7 +34,7 @@ export function EndingPanel({ run }: { run: RunState }) {
   const traits = run.player.traits.map((t) => CONTENT.traits[t]?.name ?? t);
 
   // 끝난 회차는 스토어에 남겨 둔다 (타이틀의 "이어하기"는 끝나지 않은 회차만 보인다). 새 게임이 덮어쓴다.
-  const toTitle = () => router.dismissTo("/");
+  const toTitle = () => once(() => router.dismissTo("/"));
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
@@ -55,7 +56,7 @@ export function EndingPanel({ run }: { run: RunState }) {
         <Text style={styles.line}>남긴 흔적: {traits.length ? traits.map((t) => `「${t}」`).join(", ") : "없음"}</Text>
       </View>
       <View style={styles.buttons}>
-        <View style={styles.cell}><ActionButton fill center label="기록 보기" onPress={() => router.push("/records")} /></View>
+        <View style={styles.cell}><ActionButton fill center label="기록 보기" onPress={() => pushOnce("/records")} /></View>
         <View style={styles.cell}><ActionButton fill primary label="처음 화면으로" onPress={toTitle} /></View>
       </View>
     </View>

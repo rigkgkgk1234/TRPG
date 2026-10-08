@@ -3,7 +3,7 @@
   "id": "watchtower_armor_cache_01",
   "category": "explore",
   "region": "watchtower",
-  "title": "봉인된 궤짝",
+  "title": "잠긴 상자",
   "conditions": [
     {
       "type": "notFlag",
@@ -19,7 +19,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "지휘실 바닥 밑에 쇠 띠를 두른 궤짝이 숨겨져 있다. 자물쇠는 녹이 슬었다.",
+      "text": "지휘실 바닥 밑에 쇠 띠를 두른 상자가 숨겨져 있다. 자물쇠는 녹이 슬었다.",
       "choices": [
         {
           "id": "force",
@@ -30,7 +30,7 @@
           },
           "outcomes": {
             "success": {
-              "text": "궤짝 안에 기름 먹인 가죽 갑옷이 고이 개켜져 있었다.",
+              "text": "상자 안에 기름 먹인 가죽 갑옷이 곱게 개어져 있었다.",
               "effects": [
                 {
                   "type": "addItem",

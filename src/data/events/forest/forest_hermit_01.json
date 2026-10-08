@@ -3,7 +3,7 @@
   "id": "forest_hermit_01",
   "category": "explore",
   "region": "forest",
-  "title": "숲속의 은자",
+  "title": "숲속 오두막의 노인",
   "conditions": [],
   "weight": 5,
   "repeat": {
@@ -14,7 +14,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에 사는 은자라고 한다.",
+      "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에서 혼자 산다고 한다.",
       "choices": [
         {
           "id": "trade",

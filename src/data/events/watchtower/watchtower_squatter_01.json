@@ -43,7 +43,7 @@
       ]
     },
     "fight": {
-      "text": "좁은 계단참에서 칼날이 번뜩인다.",
+      "text": "좁은 계단에서 칼날이 번뜩인다.",
       "onEnter": [
         {
           "type": "startCombat",

@@ -3,7 +3,7 @@
   "id": "forest_goblin_snare_01",
   "category": "explore",
   "region": "forest",
-  "title": "이상한 올무",
+  "title": "이상한 올가미",
   "conditions": [
     {
       "type": "dayRange",
@@ -19,7 +19,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "나뭇가지에 풀줄기를 꼬아 만든 올무가 걸려 있다. 사람이 만든 것치고는 매듭이 낯설다.",
+      "text": "나뭇가지에 풀줄기를 꼬아 만든 올가미가 걸려 있다. 사람이 만든 것치고는 매듭이 낯설다.",
       "choices": [
         {
           "id": "inspect",
@@ -35,7 +35,7 @@
           },
           "outcomes": {
             "success": {
-              "text": "올무 옆에 작은 맨발 자국이 찍혀 있다. 아이 발이라기엔 발가락이 너무 길다.",
+              "text": "올가미 옆에 작은 맨발 자국이 찍혀 있다. 아이 발이라기엔 발가락이 너무 길다.",
               "effects": [
                 {
                   "type": "setFlag",
@@ -50,7 +50,7 @@
               "next": "END"
             },
             "partial": {
-              "text": "두 번째 올무에 발이 걸렸지만 줄을 끊고 빠져나왔다.",
+              "text": "두 번째 올가미에 발이 걸렸지만 줄을 끊고 빠져나왔다.",
               "effects": [
                 {
                   "type": "hp",
@@ -60,7 +60,7 @@
               "next": "END"
             },
             "fail": {
-              "text": "발밑의 두 번째 올무를 보지 못했다. 발목이 올무에 걸려 거꾸로 매달렸다.",
+              "text": "발밑의 두 번째 올가미를 보지 못했다. 발목이 올가미에 걸려 거꾸로 매달렸다.",
               "effects": [
                 {
                   "type": "hp",

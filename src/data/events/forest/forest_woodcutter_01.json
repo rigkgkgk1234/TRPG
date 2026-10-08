@@ -18,7 +18,7 @@
           "label": "약초를 짓이겨 붙여 준다",
           "conditions": [{ "type": "hasItem", "itemId": "herb" }],
           "cost": { "item": { "itemId": "herb", "qty": 1 } },
-          "outcome": { "text": "오스윈이 고맙다며 품삯 몇 푼을 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }, { "type": "reputation", "delta": 3 }], "next": "END" }
+          "outcome": { "text": "오스윈이 고맙다며 수고비 몇 푼을 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }, { "type": "reputation", "delta": 3 }], "next": "END" }
         },
         {
           "id": "bind",

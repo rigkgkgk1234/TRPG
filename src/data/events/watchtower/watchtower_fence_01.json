@@ -3,7 +3,7 @@
   "id": "watchtower_fence_01",
   "category": "explore",
   "region": "watchtower",
-  "title": "장물아비",
+  "title": "수상한 장사꾼",
   "conditions": [
     {
       "type": "dayRange",
@@ -41,12 +41,12 @@
         },
         {
           "id": "chain",
-          "label": "사슬 셔츠를 산다",
+          "label": "사슬 갑옷을 산다",
           "cost": {
             "silver": 34
           },
           "outcome": {
-            "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",
+            "text": "묵직한 사슬 갑옷을 둘러멨다. 핏자국은 보지 않기로 했다.",
             "effects": [
               {
                 "type": "addItem",
@@ -59,12 +59,12 @@
         },
         {
           "id": "tea",
-          "label": "쓴 약차를 산다",
+          "label": "쓴 약초차를 산다",
           "cost": {
             "silver": 3
           },
           "outcome": {
-            "text": "약차 두 봉지를 챙겼다.",
+            "text": "약초차 두 봉지를 챙겼다.",
             "effects": [
               {
                 "type": "addItem",

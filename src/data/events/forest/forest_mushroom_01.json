@@ -30,7 +30,7 @@
           "check": { "stat": "con", "dc": 10 },
           "outcomes": {
             "success": { "text": "멀쩡하다. 나머지도 챙겼다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
-            "fail": { "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 게워 냈다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 2 }], "next": "END" }
+            "fail": { "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 토했다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 2 }], "next": "END" }
           }
         },
         { "id": "leave", "label": "괜한 모험은 하지 않는다", "outcome": { "next": "END" } }

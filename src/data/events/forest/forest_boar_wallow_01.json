@@ -31,7 +31,7 @@
           "outcomes": {
             "success": { "text": "진흙에 빠진 새끼 멧돼지를 찾았다. 고기를 넉넉히 챙겼다.", "effects": [{ "type": "food", "delta": 3 }], "next": "END" },
             "fail": { "text": "어미가 돌아왔다. 간신히 나무 위로 피했지만 정강이를 받혔다.", "effects": [{ "type": "hp", "delta": -2 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
-            "critFail": { "text": "어미의 엄니가 허벅지를 스쳤다.", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -3 }], "next": "END" }
+            "critFail": { "text": "어미의 송곳니가 허벅지를 스쳤다.", "effects": [{ "type": "wound", "steps": 1 }, { "type": "hp", "delta": -3 }], "next": "END" }
           }
         },
         { "id": "back", "label": "왔던 길로 돌아간다", "outcome": { "text": "멧돼지와 씨름할 날은 오늘이 아니다.", "next": "END" } }

@@ -44,7 +44,7 @@ export type Rng = () => number;
 | `agi` | 민첩 | 활 명중, 회피(방어도), 도주, 은신 | 방어도 |
 | `con` | 체력 | 최대 HP, 사망 굴림, 독·질병 저항 | 최대 HP |
 | `per` | 감각 | 추적, 위험·함정 감지, 약초 식별, 소문의 진위 | 탐험 기습 회피 |
-| `cha` | 말솜씨 | 흥정, 설득, 정보 얻기, 민병대 모집 | 평판 상승량 |
+| `cha` | 말솜씨 | 흥정, 설득, 정보 얻기, 자경단 모집 | 평판 상승량 |
 
 - 수치 = **보정치 그 자체**(D&D의 18 → +4 같은 변환 없음). 화면에도 `+2`로 표시.
 - 범위: 최소 `-1`, 자연 성장 상한 `+4`, 장비·흔적 포함 최종 상한 `+5`.
@@ -55,7 +55,7 @@ export type Rng = () => number;
 |------|------|------|
 | 최대 HP | `8 + 체력 × 2` | 12 |
 | 방어도 | `10 + 민첩 + 방어구 + 방패` | 10 (가죽 갑옷 착용 시 12) |
-| 근접 피해 | `무기 주사위 + 근력` (최소 1) | 쇠스랑 1d6+1 |
+| 근접 피해 | `무기 주사위 + 근력` (최소 1) | 쇠갈퀴 1d6+1 |
 | 평판 상승 보정 | 말솜씨 +2 이상이면 평판 획득 +1 | — |
 
 ### 1-3. 숙련 8종 (MVP)
@@ -63,7 +63,7 @@ export type Rng = () => number;
 | ID | 이름 | 연관 능력치 | 쓰이는 곳 |
 |----|------|------------|-----------|
 | `blade` | 검술 | 근력 | 검·칼 공격 |
-| `blunt` | 둔기 | 근력 | 망치·몽둥이·쇠스랑 공격 |
+| `blunt` | 둔기 | 근력 | 망치·몽둥이·쇠갈퀴 공격 |
 | `bow` | 활 | 민첩 | 활 공격, 사냥 |
 | `guard` | 방어 | 체력 | 방어 자세 보너스, 버티기 |
 | `farming` | 농사 | 근력 | 농부의 일하기, 수확 이벤트 |
@@ -224,7 +224,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
 | 12 | 보통 | 늑대 추적, 상인과 흥정 |
 | 14 | 까다로움 | 감시탑 벽 오르기, 도적 설득 |
 | 16 | 어려움 | 고블린 매복 간파 |
-| 20 | 영웅적 | 약탈대장 위협하기 |
+| 20 | 영웅적 | 약탈단 두목 위협하기 |
 
 ### 2-2. 유리함 / 불리함
 - 유리함: D20 2개 중 **높은 값**, 불리함: **낮은 값**.
@@ -241,7 +241,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
 ### 2-3. 보정치 계산 순서
 1. `stat` 능력치 값
 2. `skill` 숙련 등급(지정된 경우)
-3. 장비 보정(예: 사슬 셔츠 → 민첩 판정 -1)
+3. 장비 보정(예: 사슬 갑옷 → 민첩 판정 -1)
 4. 부상 보정: 경상 → `str`·`agi` 판정 -2 / 중상·치명상 → 모든 판정 -4
 5. 이벤트가 지정한 상황 보정(±1~3)
 6. 흔적 보정(예: 늑대 사냥꾼 → `beast` 태그 판정 +1)
@@ -267,7 +267,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
 
 | 상황 | 보정 | DC | 확률 |
 |------|------|----|------|
-| 시작 농부가 늑대에게 쇠스랑 공격 (근력1 + 둔기0) vs 방어도 11 | +1 | 11 | 55% |
+| 시작 농부가 늑대에게 쇠갈퀴 공격 (근력1 + 둔기0) vs 방어도 11 | +1 | 11 | 55% |
 | 시작 사냥꾼의 활 공격 (민첩2 + 활2) | +4 | 11 | 70% |
 | 같은 사냥꾼, 피로 8 (불리함) | +4 | 11 | 49% |
 | 20일차 사냥꾼 (민첩3 + 활4) | +7 | 11 | 85% |
@@ -461,7 +461,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 밀렵꾼 | 6 | 10 | +1 | 1d4 | 3 | 60% | robbed | humanoid |
 | 고블린 정찰병 | 6 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
 | 고블린 전사 | 12 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
-| 약탈대장 | 18 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
+| 약탈단 두목 | 18 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
 
 - **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(전리품 절반).
 
@@ -471,8 +471,8 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 - 20일차(민첩3·활4·가죽 갑옷): 명중 85%, 늑대 명중 45% → 받는 피해가 절반 이하. **성장을 숫자로 체감**.
 
 **최종 습격 전투 보정** (`scripted` 스토리 전투 전용)
-- 민병대 인원 = `floor(평판 / 20)` (최대 5). 1명당 약탈대장 시작 HP -3.
-- 플래그 보정: `palisade_built`(목책) → 플레이어 방어도 +2, `goblin_plan_known`(작전 정보) → 플레이어 선공 + 첫 공격 유리함.
+- 자경단 인원 = `floor(평판 / 20)` (최대 5). 1명당 약탈단 두목 시작 HP -3.
+- 플래그 보정: `palisade_built`(나무 울타리) → 플레이어 방어도 +2, `goblin_plan_known`(작전 정보) → 플레이어 선공 + 첫 공격 유리함.
 
 ```ts
 export type CombatInitiative = "player" | "enemy" | "roll";
@@ -891,7 +891,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `fist` | 맨주먹 | blunt | 1d2 | — | 무기 없을 때 자동 |
 | `club` | 몽둥이 | blunt | 1d4 | 3 | 내구도 12 |
 | `hunting_knife` | 사냥칼 | blade | 1d4 | 5 | |
-| `pitchfork` | 쇠스랑 | blunt | 1d6 | 6 | 양손 |
+| `pitchfork` | 쇠갈퀴 | blunt | 1d6 | 6 | 양손 |
 | `old_hammer` | 낡은 망치 | blunt | 1d6 | 8 | |
 | `hand_axe` | 손도끼 | blade | 1d6 | 11 | 내구도 16 |
 | `rusty_sword` | 녹슨 검 | blade | 1d6 | 15 | |
@@ -899,17 +899,17 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `war_hammer` | 전투 망치 | blunt | 1d8 | 30 | 근력 +2 이상 필요, 내구도 25 |
 | `soldier_sword` | 병사의 검 | blade | 1d8 | 32 | 감시탑 보상으로도 획득 |
 | `goblin_axe` | 고블린 도끼 | blade | 1d8 | — | 고블린 전사 전리품(50%), 판매 8, 내구도 12 |
-| `hunting_bow` | 사냥활 | bow | 1d6 | 12 | 양손, 화살 소모 |
-| `longbow` | 장궁 | bow | 1d8 | 28 | 양손, 근력 +1 이상 필요 |
+| `hunting_bow` | 사냥용 활 | bow | 1d6 | 12 | 양손, 화살 소모 |
+| `longbow` | 긴 활 | bow | 1d8 | 28 | 양손, 근력 +1 이상 필요 |
 
 **방어구 · 방패**
 
 | ID | 이름 | 방어도 | 가격 | 비고 |
 |----|------|------:|----:|------|
-| `padded_coat` | 누빔 옷 | +1 | 10 | |
-| `patched_leather` | 기운 가죽 조끼 | +2 | 16 | 내구도 12 (가죽 갑옷의 절반) |
+| `padded_coat` | 솜옷 | +1 | 10 | |
+| `patched_leather` | 헌 가죽 조끼 | +2 | 16 | 내구도 12 (가죽 갑옷의 절반) |
 | `leather_armor` | 가죽 갑옷 | +2 | 25 | |
-| `chain_shirt` | 사슬 셔츠 | +3 | 45 | 민첩 판정 -1 |
+| `chain_shirt` | 사슬 갑옷 | +3 | 45 | 민첩 판정 -1 |
 | `wooden_shield` | 나무 방패 | +1 | 12 | 한손 무기 전용 |
 | `round_shield` | 쇠 방패 | +2 | 28 | 한손 무기 전용, 내구도 20 |
 
@@ -920,16 +920,16 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `arrow` | 화살 | 활 공격 1회 | 10개 3 | — |
 | `herb` | 약초 | HP +2, 경상이면 50% 확률 치료 | 2 | O |
 | `bandage` | 붕대 | 경상 → 없음 | 3 | X |
-| `bitter_tea` | 쓴 약차 | 피로 -2 | 3 | X |
+| `bitter_tea` | 쓴 약초차 | 피로 -2 | 3 | X |
 | `salve` | 상처 연고 | HP +4 | 4 | X |
-| `vigor_pill` | 기운 환 | HP +3, 피로 -1 | 6 | O |
-| `sleep_herb` | 숙면초 | 피로 -3 | 5 | X |
+| `vigor_pill` | 기력 알약 | HP +3, 피로 -1 | 6 | O |
+| `sleep_herb` | 수면 약초 | 피로 -3 | 5 | X |
 | `splint` | 부목 | 중상 → 경상 (부상이 맞지 않으면 쓸 수 없다) | 10 | X |
 | `hot_stew` | 고기 스튜 (여관) | HP +2, 피로 -1 | 2 | X |
 | `barley_ale` | 보리술 (여관) | 피로 -2, HP -1 | 2 | X |
 | `healing_potion` | 치유 물약 | HP +6, 치명상 → 중상 | 20 | O |
 | `wolf_pelt` | 늑대 가죽 | 판매용 | (판매 4) | — |
-| `boar_tusk` | 멧돼지 엄니 | 판매용, 멧돼지 전리품(70%) | (판매 3) | — |
+| `boar_tusk` | 멧돼지 송곳니 | 판매용, 멧돼지 전리품(70%) | (판매 3) | — |
 | `rare_herb` | 늪 약초 | 판매용 / 물약 재료(확장) | (판매 8) | — |
 | `goblin_token` | 고블린 부적 | 스토리 증거물 | — | — |
 
@@ -1025,11 +1025,11 @@ export const REP_HEAVY_SURCHARGE_THRESHOLD = 5;
 export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
-  { id: "hunting_bow", name: "사냥활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
+  { id: "hunting_bow", name: "사냥용 활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
     skill: "bow", damage: "1d6", twoHanded: true, ammo: "arrow", durabilityMax: 20 },
-  { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "무두질한 소가죽 조끼.", price: 25, sellable: true, stackMax: 1,
+  { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "질긴 소가죽으로 만든 조끼.", price: 25, sellable: true, stackMax: 1,
     defense: 2, durabilityMax: 25 },
-  { id: "chain_shirt", name: "사슬 셔츠", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
+  { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
     defense: 3, checkPenalty: { stat: "agi", value: -1 }, durabilityMax: 25 },
   { id: "herb", name: "약초", category: "consumable", description: "씹으면 쓰지만 상처가 아문다.", price: 2, sellable: true, stackMax: 5,
     use: [{ type: "hp", delta: 2 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },

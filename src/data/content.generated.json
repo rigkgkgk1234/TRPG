@@ -28,7 +28,7 @@
   },
   "pitchfork": {
    "id": "pitchfork",
-   "name": "쇠스랑",
+   "name": "쇠갈퀴",
    "category": "weapon",
    "description": "건초를 뒤집던 농기구. 찌르면 아프다.",
    "price": 6,
@@ -95,7 +95,7 @@
    "id": "war_hammer",
    "name": "전투 망치",
    "category": "weapon",
-   "description": "브록이 벼린 쇠머리 망치. 한 손으로 휘두르려면 힘이 필요하다.",
+   "description": "브록이 만든 쇠망치. 한 손으로 휘두르려면 힘이 필요하다.",
    "price": 30,
    "sellable": true,
    "stackMax": 1,
@@ -136,7 +136,7 @@
   },
   "hunting_bow": {
    "id": "hunting_bow",
-   "name": "사냥활",
+   "name": "사냥용 활",
    "category": "weapon",
    "description": "손때 묻은 짧은 활.",
    "price": 12,
@@ -150,7 +150,7 @@
   },
   "longbow": {
    "id": "longbow",
-   "name": "장궁",
+   "name": "긴 활",
    "category": "weapon",
    "description": "키만 한 활. 당기려면 힘이 필요하다.",
    "price": 28,
@@ -167,9 +167,9 @@
   },
   "padded_coat": {
    "id": "padded_coat",
-   "name": "누빔 옷",
+   "name": "솜옷",
    "category": "armor",
-   "description": "솜을 두껍게 누빈 겉옷.",
+   "description": "솜을 두껍게 넣어 지은 겉옷.",
    "price": 10,
    "sellable": true,
    "stackMax": 1,
@@ -178,9 +178,9 @@
   },
   "patched_leather": {
    "id": "patched_leather",
-   "name": "기운 가죽 조끼",
+   "name": "헌 가죽 조끼",
    "category": "armor",
-   "description": "여러 번 기워 입은 가죽 조끼. 쓸 만하지만 오래가지 못한다.",
+   "description": "여러 번 꿰매 입은 가죽 조끼. 쓸 만하지만 오래가지 못한다.",
    "price": 16,
    "sellable": true,
    "stackMax": 1,
@@ -191,7 +191,7 @@
    "id": "leather_armor",
    "name": "가죽 갑옷",
    "category": "armor",
-   "description": "무두질한 소가죽 조끼.",
+   "description": "질긴 소가죽으로 만든 조끼.",
    "price": 25,
    "sellable": true,
    "stackMax": 1,
@@ -200,7 +200,7 @@
   },
   "chain_shirt": {
    "id": "chain_shirt",
-   "name": "사슬 셔츠",
+   "name": "사슬 갑옷",
    "category": "armor",
    "description": "무겁지만 든든하다.",
    "price": 45,
@@ -217,7 +217,7 @@
    "id": "wooden_shield",
    "name": "나무 방패",
    "category": "shield",
-   "description": "참나무 판자에 쇠테를 둘렀다.",
+   "description": "참나무 판자에 쇠 테두리를 둘렀다.",
    "price": 12,
    "sellable": true,
    "stackMax": 1,
@@ -291,7 +291,7 @@
   },
   "bitter_tea": {
    "id": "bitter_tea",
-   "name": "쓴 약차",
+   "name": "쓴 약초차",
    "category": "consumable",
    "description": "정신이 번쩍 드는 맛.",
    "price": 3,
@@ -309,7 +309,7 @@
    "id": "salve",
    "name": "상처 연고",
    "category": "consumable",
-   "description": "돼지기름에 약초를 갠 연고. 바르면 상처가 금세 아문다.",
+   "description": "돼지기름에 약초를 섞은 연고. 바르면 상처가 금세 아문다.",
    "price": 4,
    "sellable": true,
    "stackMax": 5,
@@ -323,9 +323,9 @@
   },
   "vigor_pill": {
    "id": "vigor_pill",
-   "name": "기운 환",
+   "name": "기력 알약",
    "category": "consumable",
-   "description": "꿀에 갠 약초 환. 싸우는 중에도 삼킬 수 있다.",
+   "description": "꿀에 약초를 섞어 빚은 알약. 싸우는 중에도 삼킬 수 있다.",
    "price": 6,
    "sellable": true,
    "stackMax": 5,
@@ -343,9 +343,9 @@
   },
   "sleep_herb": {
    "id": "sleep_herb",
-   "name": "숙면초",
+   "name": "수면 약초",
    "category": "consumable",
-   "description": "달여 마시고 한숨 자고 나면 몸이 가볍다.",
+   "description": "끓여 마시고 푹 자고 나면 몸이 가볍다.",
    "price": 5,
    "sellable": true,
    "stackMax": 5,
@@ -361,7 +361,7 @@
    "id": "splint",
    "name": "부목",
    "category": "consumable",
-   "description": "다친 팔다리를 고정하는 나무 덧대. 중상을 경상으로 가라앉힌다.",
+   "description": "다친 팔다리에 대고 묶는 나무 막대. 중상을 경상으로 가라앉힌다.",
    "price": 10,
    "sellable": true,
    "stackMax": 3,
@@ -417,7 +417,7 @@
    "id": "healing_potion",
    "name": "치유 물약",
    "category": "consumable",
-   "description": "신전에서 축성한 붉은 물약.",
+   "description": "신전에서 기도를 올려 만든 붉은 물약.",
    "price": 20,
    "sellable": true,
    "stackMax": 3,
@@ -445,7 +445,7 @@
   },
   "boar_tusk": {
    "id": "boar_tusk",
-   "name": "멧돼지 엄니",
+   "name": "멧돼지 송곳니",
    "category": "material",
    "description": "장신구를 만드는 사람들이 값을 쳐준다.",
    "price": 0,
@@ -674,7 +674,7 @@
   },
   "raid_leader": {
    "id": "raid_leader",
-   "name": "약탈대장",
+   "name": "약탈단 두목",
    "hp": 18,
    "defense": 13,
    "attackBonus": 4,
@@ -1121,10 +1121,10 @@
           "job": "hunter"
          }
         ],
-        "text": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 보리울 사냥꾼 중에 이런 화살을 쓰는 사람은 없다."
+        "text": "나무줄기에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 보리울 사냥꾼 중에 이런 화살을 쓰는 사람은 없다."
        }
       ],
-      "fallback": "나무 둥치에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 마을 사냥꾼의 화살은 아닌 것 같다."
+      "fallback": "나무줄기에 부러진 화살이 박혀 있다. 깃은 까마귀 깃털이고 촉은 돌을 쪼아 만들었다. 마을 사냥꾼의 화살은 아닌 것 같다."
      },
      "choices": [
       {
@@ -1389,7 +1389,7 @@
          "next": "END"
         },
         "critFail": {
-         "text": "어미의 엄니가 허벅지를 스쳤다.",
+         "text": "어미의 송곳니가 허벅지를 스쳤다.",
          "effects": [
           {
            "type": "wound",
@@ -1420,7 +1420,7 @@
    "id": "forest_charcoal_01",
    "category": "explore",
    "region": "forest",
-   "title": "숯쟁이의 가마",
+   "title": "숯 굽는 가마",
    "conditions": [],
    "weight": 6,
    "repeat": {
@@ -1431,7 +1431,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "연기가 피어오르는 숯가마 옆에서 숯쟁이가 혼자 땀을 흘린다. 가마를 덮을 흙을 나를 사람이 필요하다고 한다.",
+     "text": "연기가 피어오르는 숯가마 옆에서 숯 굽는 사람이 혼자 땀을 흘린다. 가마를 덮을 흙을 나를 사람이 필요하다고 한다.",
      "choices": [
       {
        "id": "help",
@@ -1442,7 +1442,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "숯쟁이가 고맙다며 은화 두 닢을 주었다.",
+         "text": "숯 굽는 사람이 고맙다며 은화 두 닢을 주었다.",
          "effects": [
           {
            "type": "silver",
@@ -1456,7 +1456,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "흙짐을 지다 비틀거렸다. 숯쟁이가 은화 한 닢을 주며 그만 쉬라고 했다.",
+         "text": "흙짐을 지다 비틀거렸다. 숯 굽는 사람이 은화 한 닢을 주며 그만 쉬라고 했다.",
          "effects": [
           {
            "type": "silver",
@@ -1600,7 +1600,7 @@
    "id": "forest_goblin_cache_01",
    "category": "explore",
    "region": "forest",
-   "title": "고블린의 은닉처",
+   "title": "고블린이 숨긴 짐",
    "conditions": [
     {
      "type": "dayRange",
@@ -1857,7 +1857,7 @@
    "id": "forest_goblin_snare_01",
    "category": "explore",
    "region": "forest",
-   "title": "이상한 올무",
+   "title": "이상한 올가미",
    "conditions": [
     {
      "type": "dayRange",
@@ -1873,7 +1873,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "나뭇가지에 풀줄기를 꼬아 만든 올무가 걸려 있다. 사람이 만든 것치고는 매듭이 낯설다.",
+     "text": "나뭇가지에 풀줄기를 꼬아 만든 올가미가 걸려 있다. 사람이 만든 것치고는 매듭이 낯설다.",
      "choices": [
       {
        "id": "inspect",
@@ -1889,7 +1889,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "올무 옆에 작은 맨발 자국이 찍혀 있다. 아이 발이라기엔 발가락이 너무 길다.",
+         "text": "올가미 옆에 작은 맨발 자국이 찍혀 있다. 아이 발이라기엔 발가락이 너무 길다.",
          "effects": [
           {
            "type": "setFlag",
@@ -1904,7 +1904,7 @@
          "next": "END"
         },
         "partial": {
-         "text": "두 번째 올무에 발이 걸렸지만 줄을 끊고 빠져나왔다.",
+         "text": "두 번째 올가미에 발이 걸렸지만 줄을 끊고 빠져나왔다.",
          "effects": [
           {
            "type": "hp",
@@ -1914,7 +1914,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "발밑의 두 번째 올무를 보지 못했다. 발목이 올무에 걸려 거꾸로 매달렸다.",
+         "text": "발밑의 두 번째 올가미를 보지 못했다. 발목이 올가미에 걸려 거꾸로 매달렸다.",
          "effects": [
           {
            "type": "hp",
@@ -2019,7 +2019,7 @@
    "id": "forest_hermit_01",
    "category": "explore",
    "region": "forest",
-   "title": "숲속의 은자",
+   "title": "숲속 오두막의 노인",
    "conditions": [],
    "weight": 5,
    "repeat": {
@@ -2030,7 +2030,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에 사는 은자라고 한다.",
+     "text": "이끼 낀 오두막 앞에서 수염이 허연 노인이 약초를 말린다. 숲에서 혼자 산다고 한다.",
      "choices": [
       {
        "id": "trade",
@@ -2278,7 +2278,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 게워 냈다.",
+         "text": "속이 뒤집혔다. 나무를 붙잡고 한참을 토했다.",
          "effects": [
           {
            "type": "hp",
@@ -2425,7 +2425,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "봇짐을 진 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
+     "text": "보따리를 멘 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
      "choices": [
       {
        "id": "guide",
@@ -2486,12 +2486,12 @@
       },
       {
        "id": "buy_tea",
-       "label": "쓴 약차를 산다",
+       "label": "쓴 약초차를 산다",
        "cost": {
         "silver": 3
        },
        "outcome": {
-        "text": "피로가 싹 가신다는 약차다. 맛은 장담 못 한다고 한다.",
+        "text": "피로가 싹 가신다는 약초차다. 맛은 장담 못 한다고 한다.",
         "effects": [
          {
           "type": "addItem",
@@ -2741,7 +2741,7 @@
       },
       {
        "id": "snare",
-       "label": "올무를 놓고 기다린다",
+       "label": "올가미를 놓고 기다린다",
        "check": {
         "stat": "per",
         "skill": "tracking",
@@ -2753,7 +2753,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "올무가 조여졌다. 생각보다 묵직하다.",
+         "text": "올가미가 조여졌다. 생각보다 묵직하다.",
          "effects": [
           {
            "type": "food",
@@ -3718,7 +3718,7 @@
         }
        },
        "outcome": {
-        "text": "오스윈이 고맙다며 품삯 몇 푼을 쥐여 주었다.",
+        "text": "오스윈이 고맙다며 수고비 몇 푼을 쥐여 주었다.",
         "effects": [
          {
           "type": "silver",
@@ -4019,7 +4019,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "허리만 삐끗했다. 결국 장정 셋이 붙어서야 바퀴를 끼웠다.",
+         "text": "허리만 삐끗했다. 결국 남자 셋이 붙어서야 바퀴를 끼웠다.",
          "effects": [
           {
            "type": "fatigue",
@@ -4290,7 +4290,7 @@
           "flag": "route_defend"
          }
         ],
-        "text": "밤새 숲 너머로 불빛이 깜박였다. 목책에서 보초를 선 이웃이 하품을 하며 손을 흔든다."
+        "text": "밤새 숲 너머로 불빛이 깜박였다. 나무 울타리에서 보초를 선 이웃이 하품을 하며 손을 흔든다."
        },
        {
         "when": [
@@ -4438,7 +4438,7 @@
        "id": "help",
        "label": "오전 동안 거든다",
        "outcome": {
-        "text": "해가 중천에 뜰 때까지 낫을 휘둘렀다. 노부부가 품삯과 보리 한 자루를 챙겨 주었다.",
+        "text": "해가 중천에 뜰 때까지 낫을 휘둘렀다. 노부부가 수고비와 보리 한 자루를 챙겨 주었다.",
         "effects": [
          {
           "type": "loseNextSlot"
@@ -4584,7 +4584,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "로웬에서 장꾼들이 왔다. 광장에 좌판이 늘어서고 흥정하는 소리가 요란하다.",
+     "text": "로웬에서 장사꾼들이 왔다. 광장에 좌판이 늘어서고 흥정하는 소리가 요란하다.",
      "choices": [
       {
        "id": "sell_herb",
@@ -4596,7 +4596,7 @@
         }
        },
        "outcome": {
-        "text": "장꾼이 로웬 시세라며 은화 세 닢을 쳐주었다.",
+        "text": "장사꾼이 로웬 시세라며 은화 세 닢을 쳐주었다.",
         "effects": [
          {
           "type": "silver",
@@ -4691,7 +4691,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "어머니가 밤새 자은 실타래를 여관에 갖다 달라고 하신다. 토비가 값을 쳐주기로 했다고 한다.",
+     "text": "어머니가 밤새 감아 둔 실타래를 여관에 갖다 달라고 하신다. 토비가 값을 쳐주기로 했다고 한다.",
      "choices": [
       {
        "id": "go",
@@ -4743,7 +4743,7 @@
   "morning_old_veteran": {
    "id": "morning_old_veteran",
    "category": "morning",
-   "title": "늙은 퇴역병",
+   "title": "옛 병사의 이야기",
    "conditions": [],
    "weight": 6,
    "repeat": {
@@ -4752,7 +4752,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "여관 처마 밑에서 늙은 퇴역병이 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
+     "text": "여관 처마 밑에서 나이 든 옛 병사가 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
      "choices": [
       {
        "id": "listen",
@@ -4903,7 +4903,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "옆집 암탉이 우리를 빠져나와 골목을 휘젓고 다닌다. 아낙이 치마를 걷어 올리고 그 뒤를 쫓는다.",
+     "text": "옆집 암탉이 우리를 빠져나와 골목을 휘젓고 다닌다. 아주머니가 치마를 걷어 올리고 그 뒤를 쫓는다.",
      "choices": [
       {
        "id": "catch",
@@ -4915,7 +4915,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "닭을 품에 안겨 주자 아낙이 달걀 두 알을 쥐여 주었다.",
+         "text": "닭을 품에 안겨 주자 아주머니가 달걀 두 알을 쥐여 주었다.",
          "effects": [
           {
            "type": "food",
@@ -4943,7 +4943,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "닭은 울타리 너머로 사라졌다. 아낙이 그래도 고맙다며 웃었다.",
+         "text": "닭은 울타리 너머로 사라졌다. 아주머니가 그래도 고맙다며 웃었다.",
          "next": "END"
         }
        }
@@ -5137,10 +5137,10 @@
           "min": 5
          }
         ],
-        "text": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 은화 다섯 닢은 챙겨 두었다."
+        "text": "촌장 댁 일꾼이 집집마다 돌며 모레가 납세일이라고 알린다. 은화 다섯 닢은 챙겨 두었다."
        }
       ],
-      "fallback": "촌장 댁 머슴이 집집마다 돌며 모레가 납세일이라고 알린다. 주머니를 뒤져 봐도 은화 다섯 닢이 안 된다."
+      "fallback": "촌장 댁 일꾼이 집집마다 돌며 모레가 납세일이라고 알린다. 주머니를 뒤져 봐도 은화 다섯 닢이 안 된다."
      },
      "choices": []
     }
@@ -5163,7 +5163,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "우물가에서 낡은 법복을 입은 떠돌이 사제가 지나가는 사람마다 축복을 빌어 준다.",
+     "text": "우물가에서 낡은 사제복을 입은 떠돌이 사제가 지나가는 사람마다 축복을 빌어 준다.",
      "choices": [
       {
        "id": "offer",
@@ -5210,7 +5210,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "줄이 끊어져 두레박이 우물 바닥에 가라앉았다. 물 길으러 나온 아낙들이 발을 동동 구른다.",
+     "text": "줄이 끊어져 두레박이 우물 바닥에 가라앉았다. 물 길으러 나온 아주머니들이 발을 동동 구른다.",
      "choices": [
       {
        "id": "climb",
@@ -5221,7 +5221,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "차가운 물에 팔을 넣어 두레박을 건져 올렸다. 아낙들이 손뼉을 쳤다.",
+         "text": "차가운 물에 팔을 넣어 두레박을 건져 올렸다. 아주머니들이 손뼉을 쳤다.",
          "effects": [
           {
            "type": "reputation",
@@ -5364,7 +5364,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "목책 아래에서 아이들까지 나무 창을 깎고 있다. 한 아이가 창을 어떻게 쥐는지 묻는다.",
+     "text": "울타리 아래에서 아이들까지 나무 창을 깎고 있다. 한 아이가 창을 어떻게 쥐는지 묻는다.",
      "choices": [
       {
        "id": "show",
@@ -5766,7 +5766,7 @@
         "silver": 3
        },
        "outcome": {
-        "text": "할멈이 투덜대며 와서 탕약을 지어 주었다. 동생의 숨소리가 고르게 돌아왔다.",
+        "text": "할멈이 투덜대며 와서 약을 지어 주었다. 동생의 숨소리가 고르게 돌아왔다.",
         "next": "END"
        }
       },
@@ -5841,11 +5841,11 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "거센 바람에 지붕이 들썩인다. 덧문이 떨어져 나갈 듯 덜컹거린다.",
+     "text": "거센 바람에 지붕이 들썩인다. 창문이 떨어져 나갈 듯 덜컹거린다.",
      "choices": [
       {
        "id": "roof",
-       "label": "지붕에 올라가 이엉을 붙잡아 맨다",
+       "label": "지붕에 올라가 짚을 붙잡아 맨다",
        "check": {
         "stat": "str",
         "dc": 12
@@ -6076,7 +6076,7 @@
    "id": "npc_brock_bellows",
    "category": "npc",
    "npc": "brock",
-   "title": "풀무질",
+   "title": "대장간 불 지피기",
    "conditions": [],
    "weight": 8,
    "repeat": {
@@ -6098,7 +6098,7 @@
         "text": "브록이 오늘은 네가 망치를 잡으라며 자리를 내준다. 쇠가 벌겋게 달아 있다."
        }
       ],
-      "fallback": "브록이 풀무질할 사람을 찾는다. 오늘은 쇠를 많이 녹여야 한다고 한다."
+      "fallback": "브록이 불을 지필 사람을 찾는다. 오늘은 쇠를 많이 녹여야 한다고 한다."
      },
      "choices": [
       {
@@ -6141,14 +6141,14 @@
       },
       {
        "id": "bellows",
-       "label": "풀무를 맡는다",
+       "label": "불을 지핀다",
        "check": {
         "stat": "con",
         "dc": 10
        },
        "outcomes": {
         "success": {
-         "text": "숨이 턱에 닿도록 풀무를 밟았다. 브록이 품삯을 넉넉히 쳐주었다.",
+         "text": "숨이 턱에 닿도록 불에 바람을 불어 넣었다. 브록이 수고비를 넉넉히 쳐주었다.",
          "effects": [
           {
            "type": "silver",
@@ -6163,7 +6163,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "금세 지쳐 버렸다. 브록이 반나절 품삯만 쥐여 주었다.",
+         "text": "금세 지쳐 버렸다. 브록이 반나절 수고비만 쥐여 주었다.",
          "effects": [
           {
            "type": "silver",
@@ -6242,7 +6242,7 @@
    "id": "npc_brock_spearheads",
    "category": "npc",
    "npc": "brock",
-   "title": "창날 벼리기",
+   "title": "창날 만들기",
    "conditions": [
     {
      "type": "flag",
@@ -6260,7 +6260,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "브록이 마을 사람들 몫의 창날을 벼리고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
+     "text": "브록이 마을 사람들 몫의 창날을 만들고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
      "choices": [
       {
        "id": "work",
@@ -6635,13 +6635,13 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "촌장이 목책 보초 순번을 짜고 있다. 다들 밤잠을 설쳐 지쳤다고 한다.",
+     "text": "촌장이 나무 울타리 보초 순번을 짜고 있다. 다들 밤잠을 설쳐 지쳤다고 한다.",
      "choices": [
       {
        "id": "night_watch",
        "label": "오늘 밤 첫 순번을 맡는다",
        "outcome": {
-        "text": "밤바람을 맞으며 목책을 지켰다. 아침에 교대한 이웃이 고맙다고 했다.",
+        "text": "밤바람을 맞으며 나무 울타리를 지켰다. 아침에 교대한 이웃이 고맙다고 했다.",
         "effects": [
          {
           "type": "reputation",
@@ -6699,7 +6699,7 @@
    "id": "npc_lena_militia",
    "category": "npc",
    "npc": "lena",
-   "title": "민병 모으기",
+   "title": "자경단 모으기",
    "conditions": [
     {
      "type": "flag",
@@ -6717,7 +6717,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "레나가 민병을 모으고 있다. 겁먹은 이웃들을 설득하는 데 힘을 보태 달라고 한다.",
+     "text": "레나가 자경단을 모으고 있다. 겁먹은 이웃들을 설득하는 데 힘을 보태 달라고 한다.",
      "choices": [
       {
        "id": "persuade",
@@ -6971,7 +6971,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "할멈이 손놀림을 보더니 품삯에 약초 한 다발을 얹어 주었다.",
+         "text": "할멈이 손놀림을 보더니 수고비에 약초 한 다발을 얹어 주었다.",
          "effects": [
           {
            "type": "silver",
@@ -7012,7 +7012,7 @@
    "id": "npc_magda_checkup",
    "category": "npc",
    "npc": "magda",
-   "title": "할멈의 진맥",
+   "title": "할멈의 진찰",
    "conditions": [],
    "weight": 6,
    "repeat": {
@@ -7038,7 +7038,7 @@
         "silver": 2
        },
        "outcome": {
-        "text": "할멈이 쓴 고약을 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
+        "text": "할멈이 쓴 연고를 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
         "effects": [
          {
           "type": "healWound",
@@ -7054,12 +7054,12 @@
       },
       {
        "id": "tea",
-       "label": "쓴 약차를 지어 달라고 한다",
+       "label": "쓴 약초차를 지어 달라고 한다",
        "cost": {
         "silver": 2
        },
        "outcome": {
-        "text": "할멈이 피로가 쌓였다며 약차 한 봉지를 싸 주었다.",
+        "text": "할멈이 피로가 쌓였다며 약초차 한 봉지를 싸 주었다.",
         "effects": [
          {
           "type": "addItem",
@@ -7179,7 +7179,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "여관 안에서 술 취한 장정 둘이 멱살을 잡았다. 토비가 의자가 부서지겠다며 발을 구른다.",
+     "text": "여관 안에서 술 취한 남자 둘이 멱살을 잡았다. 토비가 의자가 부서지겠다며 발을 구른다.",
      "choices": [
       {
        "id": "separate",
@@ -7276,7 +7276,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "토비가 여관 뒤에 쌓인 통나무를 가리킨다. 장작을 패 주면 품삯에 밥까지 주겠다고 한다.",
+     "text": "토비가 여관 뒤에 쌓인 통나무를 가리킨다. 장작을 패 주면 수고비에 밥까지 주겠다고 한다.",
      "choices": [
       {
        "id": "chop",
@@ -7287,7 +7287,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "장작이 처마 밑까지 쌓였다. 토비가 품삯과 함께 남은 음식을 싸 주었다.",
+         "text": "장작이 처마 밑까지 쌓였다. 토비가 수고비와 함께 남은 음식을 싸 주었다.",
          "effects": [
           {
            "type": "silver",
@@ -7301,7 +7301,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "도끼질이 영 서툴러 반도 못 팼다. 그래도 토비는 품삯을 쳐주었다.",
+         "text": "도끼질이 영 서툴러 반도 못 팼다. 그래도 토비는 수고비를 쳐주었다.",
          "effects": [
           {
            "type": "silver",
@@ -7459,7 +7459,7 @@
           "flag": "reported"
          }
         ],
-        "text": "하몬 촌장이 마을 사람들을 광장에 불러 모았다. 고블린 약탈대가 수확이 끝나는 날 밤에 올 거라고 한다. 사람들의 눈이 하나둘 이쪽으로 쏠린다."
+        "text": "하몬 촌장이 마을 사람들을 광장에 불러 모았다. 고블린 약탈단이 수확이 끝나는 날 밤에 올 거라고 한다. 사람들의 눈이 하나둘 이쪽으로 쏠린다."
        }
       ],
       "fallback": "광장이 웅성거린다. 숲에서 고블린 무리를 봤다는 나무꾼이 나타났다. 수확이 끝나는 날 밤, 놈들이 마을로 올 거라고 한다."
@@ -7469,7 +7469,7 @@
        "id": "defend",
        "label": "마을에 남아 함께 막자고 한다",
        "outcome": {
-        "text": "몇몇이 고개를 끄덕였다. 목책을 세우고 창을 다듬자는 이야기가 오갔다.",
+        "text": "몇몇이 고개를 끄덕였다. 나무 울타리를 세우고 창을 다듬자는 이야기가 오갔다.",
         "effects": [
          {
           "type": "setFlag",
@@ -7968,7 +7968,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "쓰러진 나무 둥치에 칼로 그은 듯한 표시가 나 있다. 누가 일부러 길을 표시해 둔 것 같다.",
+     "text": "쓰러진 나무줄기에 칼로 그은 듯한 표시가 나 있다. 누가 일부러 길을 표시해 둔 것 같다.",
      "choices": [
       {
        "id": "follow",
@@ -8045,7 +8045,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "여관 앞이 시끌벅적하다. 반짝이는 갑옷의 젊은 검사와 지팡이를 든 마법사, 커다란 방패를 멘 성기사, 활을 멘 궁수가 말에서 내린다. 북쪽의 마룡을 잡으러 간다는 용사 일행이다.",
+     "text": "여관 앞이 시끌벅적하다. 반짝이는 갑옷의 젊은 검사와 지팡이를 든 마법사, 커다란 방패를 멘 성기사, 활을 멘 궁수가 말에서 내린다. 북쪽의 용을 잡으러 간다는 용사 일행이다.",
      "onEnter": [
       {
        "type": "setFlag",
@@ -8064,7 +8064,7 @@
        ],
        "hideIfLocked": true,
        "outcome": {
-        "text": "곡식을 찧어 자루에 담느라 한나절이 갔다. 성기사 고드윈이 시세보다 넉넉히 셈해 주고, 떠나기 전에 쇠스랑으로 막고 찌르는 법을 몇 번 보여 주었다.",
+        "text": "곡식을 찧어 자루에 담느라 한나절이 갔다. 성기사 고드윈이 시세보다 넉넉히 셈해 주고, 떠나기 전에 쇠갈퀴로 막고 찌르는 법을 몇 번 보여 주었다.",
         "effects": [
          {
           "type": "silver",
@@ -8353,7 +8353,7 @@
      "autoNext": "ask"
     },
     "ask": {
-     "text": "궁수 미라는 마룡의 불길에 다쳐 로웬 신전에 남았다고 한다. 아델은 다음 원정에 함께할 사람을 찾는다며, 실력을 보여 달라고 한다.",
+     "text": "궁수 미라는 용의 불길에 다쳐 로웬 신전에 남았다고 한다. 아델은 다음 원정에 함께할 사람을 찾는다며, 실력을 보여 달라고 한다.",
      "choices": [
       {
        "id": "blade",
@@ -8701,7 +8701,7 @@
   "story_palisade": {
    "id": "story_palisade",
    "category": "story",
-   "title": "마을 어귀의 목책",
+   "title": "마을 어귀의 나무 울타리",
    "conditions": [
     {
      "type": "flag",
@@ -8720,7 +8720,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "마을 어귀에 목책을 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
+     "text": "마을 어귀에 나무 울타리를 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
      "choices": [
       {
        "id": "work",
@@ -8812,7 +8812,7 @@
           "flag": "route_defend"
          }
         ],
-        "text": "해가 지자 숲에서 횃불이 줄지어 나왔다. 목책 너머로 고블린들의 함성이 들린다. 창을 쥔 이웃들이 이쪽을 본다."
+        "text": "해가 지자 숲에서 횃불이 줄지어 나왔다. 나무 울타리 너머로 고블린들의 함성이 들린다. 창을 쥔 이웃들이 이쪽을 본다."
        },
        {
         "when": [
@@ -8824,12 +8824,12 @@
         "text": "떠날 채비를 마치기도 전에 숲에서 횃불이 줄지어 나왔다. 수레 앞에서 이웃들이 발을 동동 구른다."
        }
       ],
-      "fallback": "해가 지자 숲에서 횃불이 줄지어 나왔다. 고블린 약탈대다. 마을 여기저기서 비명이 터진다."
+      "fallback": "해가 지자 숲에서 횃불이 줄지어 나왔다. 고블린 약탈단이다. 마을 여기저기서 비명이 터진다."
      },
      "choices": [
       {
        "id": "fight",
-       "label": "앞에 나서 약탈대장과 맞선다",
+       "label": "앞에 나서 약탈단 두목과 맞선다",
        "outcome": {
         "next": "fight"
        }
@@ -8858,7 +8858,7 @@
      ]
     },
     "fight": {
-     "text": "약탈대장이 철퇴를 휘두르며 다가온다. 뒤에는 식구들이 있다.",
+     "text": "약탈단 두목이 철퇴를 휘두르며 다가온다. 뒤에는 식구들이 있다.",
      "onEnter": [
       {
        "type": "startCombat",
@@ -9525,7 +9525,7 @@
    "id": "watchtower_armor_cache_01",
    "category": "explore",
    "region": "watchtower",
-   "title": "봉인된 궤짝",
+   "title": "잠긴 상자",
    "conditions": [
     {
      "type": "notFlag",
@@ -9541,7 +9541,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "지휘실 바닥 밑에 쇠 띠를 두른 궤짝이 숨겨져 있다. 자물쇠는 녹이 슬었다.",
+     "text": "지휘실 바닥 밑에 쇠 띠를 두른 상자가 숨겨져 있다. 자물쇠는 녹이 슬었다.",
      "choices": [
       {
        "id": "force",
@@ -9552,7 +9552,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "궤짝 안에 기름 먹인 가죽 갑옷이 고이 개켜져 있었다.",
+         "text": "상자 안에 기름 먹인 가죽 갑옷이 곱게 개어져 있었다.",
          "effects": [
           {
            "type": "addItem",
@@ -9620,7 +9620,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "무너진 선반 밑에서 쇠테를 두른 나무 방패를 찾았다. 아직 튼튼하다.",
+         "text": "무너진 선반 밑에서 쇠 테두리를 두른 나무 방패를 찾았다. 아직 튼튼하다.",
          "effects": [
           {
            "type": "addItem",
@@ -9677,7 +9677,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "탑 지하 창고에서 불빛이 새어 나온다. 도적 하나가 노획물을 세며 콧노래를 부른다.",
+     "text": "탑 지하 창고에서 불빛이 새어 나온다. 도적 하나가 훔친 물건을 세며 콧노래를 부른다.",
      "choices": [
       {
        "id": "sneak",
@@ -10057,7 +10057,7 @@
           "flag": "tower_rumor"
          }
         ],
-        "text": "탑 안쪽 벽에 병사들이 새긴 글씨가 빼곡하다. 그 사이에 봉화대를 가리키는 화살표가 있다. 퇴역병의 이야기가 떠오른다."
+        "text": "탑 안쪽 벽에 병사들이 새긴 글씨가 빼곡하다. 그 사이에 봉화대를 가리키는 화살표가 있다. 여관에서 들은 옛 병사의 이야기가 떠오른다."
        }
       ],
       "fallback": "탑 안쪽 벽에 병사들이 칼끝으로 새긴 글씨가 빼곡하다. 이름과 날짜, 고향 생각이 적혀 있다."
@@ -10133,7 +10133,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 엄니에 흙이 잔뜩 묻었다.",
+     "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 송곳니에 흙이 잔뜩 묻었다.",
      "choices": [
       {
        "id": "fight",
@@ -10228,7 +10228,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "허물어진 성가퀴에 까마귀가 둥지를 틀었다. 둥지 틈으로 반짝이는 것이 보인다.",
+     "text": "허물어진 담장에 까마귀가 둥지를 틀었다. 둥지 틈으로 반짝이는 것이 보인다.",
      "choices": [
       {
        "id": "reach",
@@ -10419,7 +10419,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "바람이 무너진 성가퀴 사이로 휘파람 소리를 낸다. 별다른 것은 보이지 않았다.",
+     "text": "바람이 무너진 담장 사이로 휘파람 소리를 낸다. 별다른 것은 보이지 않았다.",
      "choices": []
     }
    }
@@ -10428,7 +10428,7 @@
    "id": "watchtower_fence_01",
    "category": "explore",
    "region": "watchtower",
-   "title": "장물아비",
+   "title": "수상한 장사꾼",
    "conditions": [
     {
      "type": "dayRange",
@@ -10466,12 +10466,12 @@
       },
       {
        "id": "chain",
-       "label": "사슬 셔츠를 산다",
+       "label": "사슬 갑옷을 산다",
        "cost": {
         "silver": 34
        },
        "outcome": {
-        "text": "묵직한 사슬 셔츠를 둘러멨다. 핏자국은 보지 않기로 했다.",
+        "text": "묵직한 사슬 갑옷을 둘러멨다. 핏자국은 보지 않기로 했다.",
         "effects": [
          {
           "type": "addItem",
@@ -10484,12 +10484,12 @@
       },
       {
        "id": "tea",
-       "label": "쓴 약차를 산다",
+       "label": "쓴 약초차를 산다",
        "cost": {
         "silver": 3
        },
        "outcome": {
-        "text": "약차 두 봉지를 챙겼다.",
+        "text": "약초차 두 봉지를 챙겼다.",
         "effects": [
          {
           "type": "addItem",
@@ -10876,7 +10876,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "탑 지휘실 책상에 곰팡이 핀 지도가 펼쳐져 있다. 옛 순찰로가 꼼꼼히 그려져 있다.",
+     "text": "탑 지휘실 책상에 곰팡이 핀 지도가 펼쳐져 있다. 옛 순찰 길이 꼼꼼히 그려져 있다.",
      "choices": [
       {
        "id": "study",
@@ -10919,7 +10919,7 @@
    "id": "watchtower_pinned_bandit_01",
    "category": "explore",
    "region": "watchtower",
-   "title": "들보에 깔린 도적",
+   "title": "기둥에 깔린 도적",
    "conditions": [],
    "weight": 4,
    "repeat": {
@@ -10930,11 +10930,11 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "무너진 들보 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
+     "text": "무너진 기둥 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
      "choices": [
       {
        "id": "free",
-       "label": "들보를 들어 올려 꺼내 준다",
+       "label": "기둥을 들어 올려 꺼내 준다",
        "check": {
         "stat": "str",
         "dc": 12
@@ -10955,7 +10955,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "들보가 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
+         "text": "기둥이 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
          "effects": [
           {
            "type": "fatigue",
@@ -10975,7 +10975,7 @@
        },
        "outcomes": {
         "success": {
-         "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 들보를 들어 주었다.",
+         "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 기둥을 들어 주었다.",
          "effects": [
           {
            "type": "silver",
@@ -11005,7 +11005,7 @@
    "id": "watchtower_raid_leader_01",
    "category": "explore",
    "region": "watchtower",
-   "title": "약탈대장",
+   "title": "약탈단 두목",
    "conditions": [
     {
      "type": "dayRange",
@@ -11167,7 +11167,7 @@
      "choices": [
       {
        "id": "cross",
-       "label": "들보만 골라 디디며 건넌다",
+       "label": "튼튼한 나무만 골라 디디며 건넌다",
        "check": {
         "stat": "agi",
         "dc": 13,
@@ -11345,7 +11345,7 @@
        "id": "search",
        "label": "그 틈에 아치 안쪽을 살핀다",
        "outcome": {
-        "text": "벽 틈에 누군가 남긴 쓴 약차 봉지가 끼워져 있었다.",
+        "text": "벽 틈에 누군가 남긴 쓴 약초차 봉지가 끼워져 있었다.",
         "effects": [
          {
           "type": "addItem",
@@ -11470,7 +11470,7 @@
          "next": "END"
         },
         "fail": {
-         "text": "손이 미끄러져 유골이 무너졌다. 검집은 썩은 들보 밑으로 굴러 들어갔다.",
+         "text": "손이 미끄러져 유골이 무너졌다. 검집은 썩은 기둥 밑으로 굴러 들어갔다.",
          "effects": [
           {
            "type": "fatigue",
@@ -11548,7 +11548,7 @@
      ]
     },
     "fight": {
-     "text": "좁은 계단참에서 칼날이 번뜩인다.",
+     "text": "좁은 계단에서 칼날이 번뜩인다.",
      "onEnter": [
       {
        "type": "startCombat",

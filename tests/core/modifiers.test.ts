@@ -39,7 +39,7 @@ describe("buildCheckContext", () => {
 
   it("방어구 페널티는 해당 능력치에만", () => {
     const subject = makeSubject({ armor: "chain_shirt" });
-    expect(buildCheckContext(subject, bow, content).modifiers).toContainEqual({ label: "사슬 셔츠", value: -1 });
+    expect(buildCheckContext(subject, bow, content).modifiers).toContainEqual({ label: "사슬 갑옷", value: -1 });
     expect(buildCheckContext(subject, { stat: "str", dc: 10 }, content).modifiers).toHaveLength(1);
   });
 

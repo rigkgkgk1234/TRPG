@@ -3,7 +3,7 @@
   "id": "forest_goblin_cache_01",
   "category": "explore",
   "region": "forest",
-  "title": "고블린의 은닉처",
+  "title": "고블린이 숨긴 짐",
   "conditions": [
     {
       "type": "dayRange",

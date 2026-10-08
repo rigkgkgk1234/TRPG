@@ -14,7 +14,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 엄니에 흙이 잔뜩 묻었다.",
+      "text": "탑 마당을 멧돼지가 파헤치고 있다. 굵은 송곳니에 흙이 잔뜩 묻었다.",
       "choices": [
         {
           "id": "fight",

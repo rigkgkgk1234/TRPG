@@ -2,7 +2,7 @@
   "$schema": "../../../../schemas/event.schema.json",
   "id": "story_palisade",
   "category": "story",
-  "title": "마을 어귀의 목책",
+  "title": "마을 어귀의 나무 울타리",
   "conditions": [
     {
       "type": "flag",
@@ -21,7 +21,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "마을 어귀에 목책을 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
+      "text": "마을 어귀에 나무 울타리를 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
       "choices": [
         {
           "id": "work",

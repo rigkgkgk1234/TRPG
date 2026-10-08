@@ -85,7 +85,7 @@ describe("최종 습격", () => {
     expect(run.ending).toBe("survivor");
   });
 
-  it("마을의 준비가 약탈대장 전투에 보태진다: 민병대·목책·작전 정보", () => {
+  it("마을의 준비가 약탈단 두목 전투에 보태진다: 자경단·나무 울타리·작전 정보", () => {
     const ctx = ctxOf(edit(start(), (s) => {
       s.player.reputation = 65;
       s.flags.palisade_built = true;
@@ -96,10 +96,10 @@ describe("최종 습격", () => {
     expect(c.enemies[0].hp).toBe(18 - 3 * 3);
     expect(c.setup).toMatchObject({ playerDefenseBonus: 2, initiative: "player", firstAttackAdvantage: true });
     expect(c.phase).toBe("playerTurn");
-    expect(texts(ctx.feed)[0]).toBe("마을 사람 3명이 함께 버티며 약탈대장을 몰아붙였다. (약탈대장 HP −9)");
+    expect(texts(ctx.feed)[0]).toBe("마을 사람 3명이 함께 버티며 약탈단 두목을 몰아붙였다. (약탈단 두목 HP −9)");
   });
 
-  it("약탈대장에게 져도 죽지 않고 습격은 실패로 끝난다", () => {
+  it("약탈단 두목에게 져도 죽지 않고 습격은 실패로 끝난다", () => {
     let run = send(raidNight(), { type: "endDay" });
     run = send(run, { type: "chooseChoice", choiceId: "fight" });
     run = edit(run, (s) => { s.player.hp = 1; s.combat!.enemies[0].hp = 99; });

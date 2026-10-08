@@ -14,6 +14,9 @@ import { colors, radius, space, type } from "@/ui/theme";
 
 const SLOT_LABEL: Record<EquipSlot, string> = { weapon: "무기", armor: "방어구", shield: "방패" };
 
+/** "정말 버린다"를 받기 시작하는 시간 */
+const CONFIRM_DELAY_MS = 400;
+
 /**
  * 가방 모달: 걸친 장비(내구도) / 가방 10칸. 걸치기·벗기·쓰기·버리기는 행동 슬롯을 쓰지 않는다.
  * 버리기는 되돌릴 수 없으므로 한 번 더 눌러야 한다.
@@ -22,7 +25,8 @@ export default function InventoryScreen() {
   const insets = useSafeAreaInsets();
   const run = useGame((s) => s.run);
   const send = useGame((s) => s.send);
-  const [confirmDiscard, setConfirmDiscard] = useState<number | null>(null);
+  /** "버리기"를 한 번 누른 칸: 같은 물건일 때만 "정말 버린다"로 바뀐다 (칸이 비거나 바뀌면 풀린다) */
+  const [confirmDiscard, setConfirmDiscard] = useState<{ slot: number; itemId: string; at: number } | null>(null);
   if (!run) return null;
 
   const inv = run.inventory;
@@ -81,13 +85,15 @@ export default function InventoryScreen() {
               actions.push({ label: "쓰기", disabled: locked, onPress: () => send({ type: "useItem", itemId: def.id }) });
             }
             if (def.category !== "quest") {
-              const confirming = confirmDiscard === i;
+              const confirming = confirmDiscard?.slot === i && confirmDiscard.itemId === stack.itemId;
               actions.push({
                 label: confirming ? "정말 버린다" : "버리기",
                 danger: confirming,
                 disabled: locked,
                 onPress: () => {
-                  if (!confirming) return setConfirmDiscard(i);
+                  if (!confirming) return setConfirmDiscard({ slot: i, itemId: stack.itemId, at: Date.now() });
+                  // 두 번 빠르게 누르면 확인 없이 버려지므로, 확인 버튼은 잠깐 뒤부터 받는다
+                  if (Date.now() - confirmDiscard.at < CONFIRM_DELAY_MS) return;
                   setConfirmDiscard(null);
                   send({ type: "discard", slotIndex: i });
                 },

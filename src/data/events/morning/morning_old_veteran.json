@@ -2,7 +2,7 @@
   "$schema": "../../../../schemas/event.schema.json",
   "id": "morning_old_veteran",
   "category": "morning",
-  "title": "늙은 퇴역병",
+  "title": "옛 병사의 이야기",
   "conditions": [],
   "weight": 6,
   "repeat": {
@@ -11,7 +11,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "여관 처마 밑에서 늙은 퇴역병이 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
+      "text": "여관 처마 밑에서 나이 든 옛 병사가 감시탑 이야기를 늘어놓는다. 옛날에는 거기서 봉화를 올렸다고 한다.",
       "choices": [
         {
           "id": "listen",

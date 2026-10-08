@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { canTrade } from "@/core/day/town";
@@ -7,6 +6,7 @@ import { ActionButton } from "@/ui/components/Buttons";
 import { VillageDialog } from "@/ui/components/VillageDialog";
 import { BackpackIcon, StorefrontIcon } from "@/ui/icons";
 import { space } from "@/ui/theme";
+import { pushOnce } from "@/ui/navigate";
 
 /**
  * 허브·저녁 패널의 가방·마을 버튼. 마을은 가운데 창을 열어 가게(행동 소모 없음)나
@@ -19,7 +19,7 @@ export function TownRow({ run }: { run: RunState }) {
   return (
     <View style={styles.row}>
       <View style={styles.cell}>
-        <ActionButton fill icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => router.push("/game/inventory")} />
+        <ActionButton fill icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => pushOnce("/game/inventory")} />
       </View>
       <View style={styles.cell}>
         <ActionButton

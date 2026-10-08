@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,6 +8,7 @@ import {
   BreadIcon, CaretRightIcon, CoinsIcon, HandCoinsIcon, HeartIcon, LightningIcon, MoonStarsIcon, SunHorizonIcon, SunIcon, WarningIcon, type Icon,
 } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
+import { pushOnce } from "@/ui/navigate";
 
 const FATIGUE_TIRED_AT = 4;
 const FLASH_MS = 1200;
@@ -34,9 +34,9 @@ export function RunStatusBar({ run }: { run: RunState }) {
   ].filter(Boolean);
 
   return (
-    // Link asChild는 웹에서 Pressable의 함수형 style을 잃는다 → router.push를 직접 쓴다
+    // Link asChild는 웹에서 Pressable의 함수형 style을 잃는다 → 직접 이동한다 (두 번 눌러도 한 번만)
     <Pressable
-      onPress={() => router.push("/game/status")}
+      onPress={() => pushOnce("/game/status")}
       accessibilityRole="button"
       accessibilityHint="능력치와 숙련 보기"
       style={({ pressed }) => [styles.root, { paddingTop: insets.top + space.md }, pressed && styles.pressed]}

@@ -3,7 +3,7 @@
   "id": "watchtower_raid_leader_01",
   "category": "explore",
   "region": "watchtower",
-  "title": "약탈대장",
+  "title": "약탈단 두목",
   "conditions": [
     {
       "type": "dayRange",

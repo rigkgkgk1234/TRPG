@@ -47,6 +47,12 @@ interface GameStore {
 
 /** 연출 없이 바로 반영하는 명령 (가방·마을 창에서 연달아 누를 수 있게) */
 const INSTANT = new Set<GameCommand["type"]>(["shop", "equip", "unequip", "useItem", "discard"]);
+/**
+ * 연출 없는 명령은 이 간격 안에 다시 들어오면 무시한다: 두 번 눌렀을 때 첫 번째로 버튼이 사라지면
+ * 그 자리로 올라온 다른 버튼(예: 식량 사기 → 빚 갚기)이 눌리는 것을 막는다.
+ */
+const INSTANT_GAP_MS = 350;
+let lastInstantAt = 0;
 
 /** 저장은 순서대로 한 번에 하나씩 (앞 저장이 끝나기 전에 뒤 저장이 끼어들지 않게) */
 let writing: Promise<void> = Promise.resolve();
@@ -68,6 +74,11 @@ export const useGame = create<GameStore>()((set, get) => ({
   send: (cmd) => {
     const { run, log, playing } = get();
     if (!run || playing) return;
+    if (INSTANT.has(cmd.type)) {
+      const now = Date.now();
+      if (now - lastInstantAt < INSTANT_GAP_MS) return;
+      lastInstantAt = now;
+    }
     const result = dispatch(run, cmd, CONTENT);
     // 피드가 비어도(피로 0·HP 가득일 때 휴식) 무엇을 했는지는 카드로 남긴다
     const group: LogGroup = { id: nextLogId++, cmd, before: run, items: result.feed };

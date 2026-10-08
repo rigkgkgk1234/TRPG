@@ -3,7 +3,7 @@
   "id": "npc_brock_spearheads",
   "category": "npc",
   "npc": "brock",
-  "title": "창날 벼리기",
+  "title": "창날 만들기",
   "conditions": [
     {
       "type": "flag",
@@ -21,7 +21,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "브록이 마을 사람들 몫의 창날을 벼리고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
+      "text": "브록이 마을 사람들 몫의 창날을 만들고 있다. 쇠도 손도 모자라다고 한숨을 쉰다.",
       "choices": [
         {
           "id": "work",

@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "cross",
-          "label": "들보만 골라 디디며 건넌다",
+          "label": "튼튼한 나무만 골라 디디며 건넌다",
           "check": {
             "stat": "agi",
             "dc": 13,

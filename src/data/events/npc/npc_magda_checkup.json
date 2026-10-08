@@ -3,7 +3,7 @@
   "id": "npc_magda_checkup",
   "category": "npc",
   "npc": "magda",
-  "title": "할멈의 진맥",
+  "title": "할멈의 진찰",
   "conditions": [],
   "weight": 6,
   "repeat": {
@@ -29,7 +29,7 @@
             "silver": 2
           },
           "outcome": {
-            "text": "할멈이 쓴 고약을 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
+            "text": "할멈이 쓴 연고를 바르고 단단히 싸매 주었다. 상처가 한결 덜 욱신거린다.",
             "effects": [
               {
                 "type": "healWound",
@@ -45,12 +45,12 @@
         },
         {
           "id": "tea",
-          "label": "쓴 약차를 지어 달라고 한다",
+          "label": "쓴 약초차를 지어 달라고 한다",
           "cost": {
             "silver": 2
           },
           "outcome": {
-            "text": "할멈이 피로가 쌓였다며 약차 한 봉지를 싸 주었다.",
+            "text": "할멈이 피로가 쌓였다며 약초차 한 봉지를 싸 주었다.",
             "effects": [
               {
                 "type": "addItem",

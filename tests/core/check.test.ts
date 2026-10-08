@@ -98,7 +98,7 @@ describe("rollCheck", () => {
 
 describe("successChance — SYSTEM_SPEC 2-5 표", () => {
   it.each([
-    [1, 11, "normal", 0.55],   // 시작 농부 쇠스랑 vs 늑대
+    [1, 11, "normal", 0.55],   // 시작 농부 쇠갈퀴 vs 늑대
     [4, 11, "normal", 0.7],    // 시작 사냥꾼 활
     [4, 11, "disadvantage", 0.49],
     [7, 11, "normal", 0.85],   // 20일차 사냥꾼

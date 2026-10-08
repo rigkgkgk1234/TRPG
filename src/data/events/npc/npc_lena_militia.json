@@ -3,7 +3,7 @@
   "id": "npc_lena_militia",
   "category": "npc",
   "npc": "lena",
-  "title": "민병 모으기",
+  "title": "자경단 모으기",
   "conditions": [
     {
       "type": "flag",
@@ -21,7 +21,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "레나가 민병을 모으고 있다. 겁먹은 이웃들을 설득하는 데 힘을 보태 달라고 한다.",
+      "text": "레나가 자경단을 모으고 있다. 겁먹은 이웃들을 설득하는 데 힘을 보태 달라고 한다.",
       "choices": [
         {
           "id": "persuade",

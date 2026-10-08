@@ -110,7 +110,7 @@ describe("조건", () => {
 
   it("잠김 사유는 필요한 값을 말한다", () => {
     expect(conditionReason({ type: "skill", skill: "tracking", min: 2 }, CONTENT)).toBe("추적 2 필요");
-    expect(conditionReason({ type: "equipped", itemId: "hunting_bow" }, CONTENT)).toBe("사냥활 장착 필요");
+    expect(conditionReason({ type: "equipped", itemId: "hunting_bow" }, CONTENT)).toBe("사냥용 활 장착 필요");
     expect(conditionReason({ type: "hasItem", itemId: "herb", qty: 2 }, CONTENT)).toBe("약초 2개 필요");
     expect(conditionReason({ type: "wound", max: "light" }, CONTENT)).toBe("중상 상태로는 무리다");
     expect(conditionReason({ type: "flag", flag: "x" }, CONTENT)).toBeNull();
@@ -204,7 +204,7 @@ describe("선택지", () => {
     const [climb, bow, risky] = view.choices;
     expect(climb).toMatchObject({ lockedReason: null, cost: ["은화 -2"], danger: false });
     expect(climb.chance).toBeCloseTo(0.5); // 근력 1, DC 12 → (21-11)/20
-    expect(bow.lockedReason).toBe("사냥활 장착 필요");
+    expect(bow.lockedReason).toBe("사냥용 활 장착 필요");
     expect(risky.danger).toBe(true); // 실패하면 부상 장면으로
   });
 
@@ -234,7 +234,7 @@ describe("선택지", () => {
 
   it("잠긴·숨은·없는 선택지는 상태를 바꾸지 않고 사유만", () => {
     const run = inEvent(start("farmer"), "test_choice");
-    for (const [choiceId, reason] of [["bow", "사냥활 장착 필요"], ["secret", "그런 선택지는 없다"], ["nope", "그런 선택지는 없다"]]) {
+    for (const [choiceId, reason] of [["bow", "사냥용 활 장착 필요"], ["secret", "그런 선택지는 없다"], ["nope", "그런 선택지는 없다"]]) {
       const res = dispatch(run, { type: "chooseChoice", choiceId }, content);
       expect(res.state).toBe(run);
       expect(res.feed).toEqual([{ kind: "toast", text: reason }]);

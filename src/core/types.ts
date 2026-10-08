@@ -615,11 +615,11 @@ export const REP_HEAVY_SURCHARGE_THRESHOLD = 5;
 export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
-  { id: "hunting_bow", name: "사냥활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
+  { id: "hunting_bow", name: "사냥용 활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
     skill: "bow", damage: "1d6", twoHanded: true, ammo: "arrow", durabilityMax: 20 },
-  { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "무두질한 소가죽 조끼.", price: 25, sellable: true, stackMax: 1,
+  { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "질긴 소가죽으로 만든 조끼.", price: 25, sellable: true, stackMax: 1,
     defense: 2, durabilityMax: 25 },
-  { id: "chain_shirt", name: "사슬 셔츠", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
+  { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
     defense: 3, checkPenalty: { stat: "agi", value: -1 }, durabilityMax: 25 },
   { id: "herb", name: "약초", category: "consumable", description: "씹으면 쓰지만 상처가 아문다.", price: 2, sellable: true, stackMax: 5,
     use: [{ type: "hp", delta: 2 }], chanceEffects: [{ p: 0.5, effects: [{ type: "healWound", to: "none" }] }], usableInCombat: true },

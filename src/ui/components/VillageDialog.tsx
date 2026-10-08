@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { actionStatus } from "@/core/day/actions";
@@ -15,6 +14,7 @@ import { DialogFrame, DialogHead, DialogSectionTitle, InfoDialog } from "@/ui/co
 import { ChatCircleDotsIcon, StorefrontIcon } from "@/ui/icons";
 import { NPC_INFO } from "@/ui/placeInfo";
 import { colors, space, type } from "@/ui/theme";
+import { pushOnce } from "@/ui/navigate";
 
 const SHOP_IDS: ShopId[] = ["smithy", "healer", "inn"];
 
@@ -63,8 +63,7 @@ export function VillageDialog({ run, visible, onClose }: { run: RunState; visibl
 
   const trade = canTrade(run);
   const openShop = (tab: ShopId) => {
-    close();
-    router.push({ pathname: "/game/town", params: { tab } });
+    if (pushOnce({ pathname: "/game/town", params: { tab } })) close();
   };
 
   return (

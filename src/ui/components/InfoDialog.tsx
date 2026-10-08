@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { Icon } from "@/ui/icons";
 import { ActionButton } from "@/ui/components/Buttons";
@@ -71,19 +72,34 @@ export function InfoDialog({ visible, icon, title, subtitle, body, facts, sectio
  * InfoDialog(확인 창)와 마을 창이 같이 쓴다.
  */
 export function DialogFrame({ visible, onClose, actions, children }: { visible: boolean; onClose: () => void; actions: React.ReactNode; children: React.ReactNode }) {
+  const ready = useSettled();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="닫기">
+      <Pressable style={styles.backdrop} onPress={ready ? onClose : undefined} accessibilityLabel="닫기">
         {/* 카드 안을 눌러도 닫히지 않게 */}
         <Pressable style={styles.card} onPress={() => {}} accessible={false}>
           <ScrollView contentContainerStyle={styles.content} bounces={false}>
             {children}
           </ScrollView>
           <View style={styles.actions}>{actions}</View>
+          {/* 막 열린 창은 잠깐 누름을 받지 않는다: 창을 연 버튼을 두 번 누르면 두 번째 누름이 이 창의 버튼에 떨어진다 */}
+          {!ready && <View style={StyleSheet.absoluteFill} />}
         </Pressable>
       </Pressable>
     </Modal>
   );
+}
+
+/** 창이 열리고 나서 누름을 받기까지의 시간 */
+const SETTLE_MS = 350;
+
+function useSettled(): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), SETTLE_MS);
+    return () => clearTimeout(t);
+  }, []);
+  return ready;
 }
 
 /** 창 머리: 아이콘 + 제목 + 한 줄 설명 */

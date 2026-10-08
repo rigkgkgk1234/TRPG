@@ -27,10 +27,10 @@
         },
         {
           "id": "snare",
-          "label": "올무를 놓고 기다린다",
+          "label": "올가미를 놓고 기다린다",
           "check": { "stat": "per", "skill": "tracking", "dc": 12, "allowPartial": true, "tags": ["beast"] },
           "outcomes": {
-            "success": { "text": "올무가 조여졌다. 생각보다 묵직하다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
+            "success": { "text": "올가미가 조여졌다. 생각보다 묵직하다.", "effects": [{ "type": "food", "delta": 1 }], "next": "END" },
             "partial": { "text": "잡긴 했지만 한참을 쭈그려 기다리느라 다리가 저리다.", "effects": [{ "type": "food", "delta": 1 }, { "type": "fatigue", "delta": 1 }], "next": "END" },
             "fail": { "text": "해가 기울도록 기다렸지만 허탕이었다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" }
           }

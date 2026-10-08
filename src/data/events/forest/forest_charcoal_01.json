@@ -3,7 +3,7 @@
   "id": "forest_charcoal_01",
   "category": "explore",
   "region": "forest",
-  "title": "숯쟁이의 가마",
+  "title": "숯 굽는 가마",
   "conditions": [],
   "weight": 6,
   "repeat": {
@@ -14,7 +14,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "연기가 피어오르는 숯가마 옆에서 숯쟁이가 혼자 땀을 흘린다. 가마를 덮을 흙을 나를 사람이 필요하다고 한다.",
+      "text": "연기가 피어오르는 숯가마 옆에서 숯 굽는 사람이 혼자 땀을 흘린다. 가마를 덮을 흙을 나를 사람이 필요하다고 한다.",
       "choices": [
         {
           "id": "help",
@@ -25,7 +25,7 @@
           },
           "outcomes": {
             "success": {
-              "text": "숯쟁이가 고맙다며 은화 두 닢을 주었다.",
+              "text": "숯 굽는 사람이 고맙다며 은화 두 닢을 주었다.",
               "effects": [
                 {
                   "type": "silver",
@@ -39,7 +39,7 @@
               "next": "END"
             },
             "fail": {
-              "text": "흙짐을 지다 비틀거렸다. 숯쟁이가 은화 한 닢을 주며 그만 쉬라고 했다.",
+              "text": "흙짐을 지다 비틀거렸다. 숯 굽는 사람이 은화 한 닢을 주며 그만 쉬라고 했다.",
               "effects": [
                 {
                   "type": "silver",

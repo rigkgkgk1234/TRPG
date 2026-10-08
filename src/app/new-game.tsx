@@ -9,6 +9,7 @@ import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { JOB_ICON } from "@/ui/gameIcons";
 import { colors, fonts, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { once } from "@/ui/navigate";
 
 const NAME_MAX = 8;
 const MVP_JOBS = Object.values(CONTENT.jobs).filter((j): j is JobDef => !!j?.mvp);
@@ -23,10 +24,11 @@ export default function NewGameScreen() {
   const [job, setJob] = useState<JobId>("farmer");
   const [focused, setFocused] = useState(false);
 
-  const start = () => {
+  // 두 번 누르면 회차가 두 번 만들어지고, 첫 회차가 "포기"로 기록된다 → 한 번만
+  const start = () => once(() => {
     startNew(job, name);
     router.replace("/game");
-  };
+  });
 
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : undefined}>

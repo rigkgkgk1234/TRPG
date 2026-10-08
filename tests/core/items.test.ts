@@ -44,7 +44,7 @@ describe("장착", () => {
 
   it("양손 무기를 든 채 방패는 못 들고, 방패를 든 채 양손 무기를 잡으면 방패는 가방으로", () => {
     const farmer = withBag(start("farmer"), gear("wooden_shield"));
-    expect(equipBlock(farmer, CONTENT, 0)).toBe("쇠스랑을 든 채로는 방패를 들 수 없다");
+    expect(equipBlock(farmer, CONTENT, 0)).toBe("쇠갈퀴를 든 채로는 방패를 들 수 없다");
 
     const ctx = ctxOf(withBag(edit(start("smith"), (s) => { s.inventory.equipment.shield = gear("wooden_shield"); }), gear("pitchfork")));
     expect(equip(ctx, 0)).toBeNull();
@@ -52,7 +52,7 @@ describe("장착", () => {
     expect(ctx.draft.inventory.slots.filter(Boolean).map((x) => x!.itemId).sort()).toEqual(["old_hammer", "wooden_shield"]);
   });
 
-  it("장궁은 근력 1이 있어야 든다", () => {
+  it("긴 활은 근력 1이 있어야 든다", () => {
     expect(equipBlock(withBag(start("hunter"), gear("longbow")), CONTENT, 0)).toBe("근력 1 필요");
     expect(equipBlock(withBag(start("farmer"), gear("longbow")), CONTENT, 0)).toBeNull();
   });
@@ -66,7 +66,7 @@ describe("장착", () => {
     expect(ctx.draft.inventory.slots[0]).toBeNull();
   });
 
-  it("전투 밖에서 소모품 쓰기: 쓴 약차 → 피로 −2, 싸우는 중에는 막는다", () => {
+  it("전투 밖에서 소모품 쓰기: 쓴 약초차 → 피로 −2, 싸우는 중에는 막는다", () => {
     const run = withBag(edit(start(), (s) => { s.resources.fatigue = 5; }), { itemId: "bitter_tea", qty: 1 });
     const res = dispatch(run, { type: "useItem", itemId: "bitter_tea" }, CONTENT);
     expect(res.state.resources.fatigue).toBe(3);
@@ -186,9 +186,9 @@ describe("내구도", () => {
     combatStep(ctx, { type: "flee" });
     finishCombat(ctx);
     expect(ctx.draft.inventory.equipment.weapon!.durability).toBe(0);
-    expect(ctx.feed).toContainEqual({ kind: "text", text: "쇠스랑이 망가졌다. 대장간에서 고쳐야 한다." });
+    expect(ctx.feed).toContainEqual({ kind: "text", text: "쇠갈퀴가 망가졌다. 대장간에서 고쳐야 한다." });
 
-    // 망가진 쇠스랑: 1d6(=6) + 근력 1 − 2 = 5
+    // 망가진 쇠갈퀴: 1d6(=6) + 근력 1 − 2 = 5
     // 멧돼지 HP 9 → 4로 절반 이하: 라운드 끝 사기 굴림(0.99: 버팀)
     const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2), 0.99));
     combatStep(hit, { type: "attack", targetId: "boar_1" });

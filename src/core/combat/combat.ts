@@ -52,11 +52,11 @@ const WOUND_ORDER: WoundLevel[] = ["none", "light", "serious", "critical"];
 /** 적이 공격을 맞혔을 때의 문장 (피해 숫자는 뒤에 붙는다) */
 const ENEMY_HIT_TEXT: Record<string, string> = {
   wolf: "늑대가 달려들어 팔을 물었다.",
-  boar: "멧돼지가 엄니로 들이받았다.",
+  boar: "멧돼지가 송곳니로 들이받았다.",
   bandit: "도적의 칼날이 팔을 그었다.",
   goblin_scout: "고블린 정찰병의 단검이 옆구리를 파고들었다.",
   goblin_warrior: "고블린 전사의 도끼가 어깨를 내리찍었다.",
-  raid_leader: "약탈대장의 철퇴가 몸을 강타했다.",
+  raid_leader: "약탈단 두목의 철퇴가 몸을 강타했다.",
 };
 
 // ───────────────────────── 계산 ─────────────────────────
@@ -207,7 +207,7 @@ const signedOrEmpty = (n: number) => (n > 0 ? `+${n}` : n < 0 ? String(n) : "");
 
 // ───────────────────────── 진행 ─────────────────────────
 
-/** 민병대 한 명당 약탈대장 시작 HP −3, 최대 5명 (SYSTEM_SPEC 3-6) */
+/** 자경단원 한 명당 약탈단 두목 시작 HP −3, 최대 5명 (SYSTEM_SPEC 3-6) */
 const MILITIA_PER_REPUTATION = 20;
 const MILITIA_MAX = 5;
 const MILITIA_HP_CUT = 3;
@@ -215,7 +215,7 @@ const PALISADE_DEFENSE = 2;
 
 /**
  * 스토리 전투(패배 규칙이 scripted인 적이 있는 전투)에 마을의 준비를 보탠다. (SYSTEM_SPEC 3-6 최종 습격 보정)
- * 민병대 = 평판 / 20 (최대 5), 목책 → 방어도 +2, 작전 정보 → 선공 + 첫 공격 유리함.
+ * 자경단원 = 평판 / 20 (최대 5), 나무 울타리 → 방어도 +2, 작전 정보 → 선공 + 첫 공격 유리함.
  */
 function withVillagePreparation(ctx: Ctx, setup: CombatSetup): CombatSetup {
   const s = ctx.draft;
@@ -225,13 +225,13 @@ function withVillagePreparation(ctx: Ctx, setup: CombatSetup): CombatSetup {
   const militia = Math.min(MILITIA_MAX, Math.floor(s.player.reputation / MILITIA_PER_REPUTATION));
   if (militia > 0) {
     next.enemyHpModifier = (next.enemyHpModifier ?? 0) - militia * MILITIA_HP_CUT;
-    ctx.feed.push({ kind: "text", text: `마을 사람 ${militia}명이 함께 버티며 약탈대장을 몰아붙였다. (약탈대장 HP −${militia * MILITIA_HP_CUT})` });
+    ctx.feed.push({ kind: "text", text: `마을 사람 ${militia}명이 함께 버티며 약탈단 두목을 몰아붙였다. (약탈단 두목 HP −${militia * MILITIA_HP_CUT})` });
   } else {
     ctx.feed.push({ kind: "text", text: "곁에 선 사람이 아무도 없다. 혼자 맞서야 한다." });
   }
   if (s.flags.palisade_built) {
     next.playerDefenseBonus = (next.playerDefenseBonus ?? 0) + PALISADE_DEFENSE;
-    ctx.feed.push({ kind: "text", text: `세워 둔 목책이 고블린들의 발을 묶었다. (방어도 +${PALISADE_DEFENSE})` });
+    ctx.feed.push({ kind: "text", text: `세워 둔 나무 울타리가 고블린들의 발을 묶었다. (방어도 +${PALISADE_DEFENSE})` });
   }
   if (s.flags.goblin_plan_known) {
     next.initiative = "player";

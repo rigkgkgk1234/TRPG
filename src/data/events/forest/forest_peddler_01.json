@@ -11,7 +11,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "봇짐을 진 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
+      "text": "보따리를 멘 행상이 나무마다 기웃거리며 서성인다. 로웬으로 가는 큰길을 찾는다고 한다.",
       "choices": [
         {
           "id": "guide",
@@ -31,9 +31,9 @@
         },
         {
           "id": "buy_tea",
-          "label": "쓴 약차를 산다",
+          "label": "쓴 약초차를 산다",
           "cost": { "silver": 3 },
-          "outcome": { "text": "피로가 싹 가신다는 약차다. 맛은 장담 못 한다고 한다.", "effects": [{ "type": "addItem", "itemId": "bitter_tea", "qty": 1 }], "next": "END" }
+          "outcome": { "text": "피로가 싹 가신다는 약초차다. 맛은 장담 못 한다고 한다.", "effects": [{ "type": "addItem", "itemId": "bitter_tea", "qty": 1 }], "next": "END" }
         },
         { "id": "leave", "label": "갈 길을 알려 주고 헤어진다", "outcome": { "text": "행상이 손을 흔들며 멀어졌다.", "next": "END" } }
       ]

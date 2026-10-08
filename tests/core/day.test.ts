@@ -29,7 +29,7 @@ function edit(run: RunState, fn: (s: RunState) => void): RunState {
 }
 
 describe("newRun", () => {
-  it("농부: 기획서 시작값과 쇠스랑 장착", () => {
+  it("농부: 기획서 시작값과 쇠갈퀴 장착", () => {
     const r = start("farmer");
     expect(r.player.stats).toEqual({ str: 1, agi: 0, con: 2, per: 1, cha: 0 });
     expect(r.player.hp).toBe(12);

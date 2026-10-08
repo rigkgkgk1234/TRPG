@@ -3,7 +3,7 @@
   "id": "watchtower_pinned_bandit_01",
   "category": "explore",
   "region": "watchtower",
-  "title": "들보에 깔린 도적",
+  "title": "기둥에 깔린 도적",
   "conditions": [],
   "weight": 4,
   "repeat": {
@@ -14,11 +14,11 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "무너진 들보 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
+      "text": "무너진 기둥 밑에 도적 하나가 깔려 신음한다. 살려 주면 숨겨 둔 돈을 주겠다고 한다.",
       "choices": [
         {
           "id": "free",
-          "label": "들보를 들어 올려 꺼내 준다",
+          "label": "기둥을 들어 올려 꺼내 준다",
           "check": {
             "stat": "str",
             "dc": 12
@@ -39,7 +39,7 @@
               "next": "END"
             },
             "fail": {
-              "text": "들보가 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
+              "text": "기둥이 꿈쩍도 하지 않는다. 도적이 욕을 퍼부었다.",
               "effects": [
                 {
                   "type": "fatigue",
@@ -59,7 +59,7 @@
           },
           "outcomes": {
             "success": {
-              "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 들보를 들어 주었다.",
+              "text": "도적이 숨겨 둔 자리를 털어놓았다. 은화를 챙긴 뒤 기둥을 들어 주었다.",
               "effects": [
                 {
                   "type": "silver",
