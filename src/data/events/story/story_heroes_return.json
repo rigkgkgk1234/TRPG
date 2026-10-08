@@ -48,9 +48,24 @@
             {
               "type": "skill",
               "skill": "blade",
-              "min": 3
+              "min": 2
+            },
+            {
+              "type": "any",
+              "of": [
+                {
+                  "type": "skill",
+                  "skill": "blade",
+                  "min": 3
+                },
+                {
+                  "type": "flag",
+                  "flag": "heroes_helped"
+                }
+              ]
             }
           ],
+          "lockedReason": "검술 3 필요 (일행을 도왔다면 2)",
           "check": {
             "stat": "str",
             "skill": "blade",
@@ -74,9 +89,24 @@
             {
               "type": "skill",
               "skill": "blunt",
-              "min": 3
+              "min": 2
+            },
+            {
+              "type": "any",
+              "of": [
+                {
+                  "type": "skill",
+                  "skill": "blunt",
+                  "min": 3
+                },
+                {
+                  "type": "flag",
+                  "flag": "heroes_helped"
+                }
+              ]
             }
           ],
+          "lockedReason": "둔기 3 필요 (일행을 도왔다면 2)",
           "check": {
             "stat": "str",
             "skill": "blunt",
@@ -100,9 +130,24 @@
             {
               "type": "skill",
               "skill": "bow",
-              "min": 3
+              "min": 2
+            },
+            {
+              "type": "any",
+              "of": [
+                {
+                  "type": "skill",
+                  "skill": "bow",
+                  "min": 3
+                },
+                {
+                  "type": "flag",
+                  "flag": "heroes_helped"
+                }
+              ]
             }
           ],
+          "lockedReason": "활 3 필요 (일행을 도왔다면 2)",
           "check": {
             "stat": "agi",
             "skill": "bow",

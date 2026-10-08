@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { canTrade } from "@/core/day/town";
 import { slotOf } from "@/core/items/equipment";
 import {
-  adjustedPrice, entryPrice, repairPrice, sellPrice, SHOPS, stackAt, treatable, TREAT_PRICE, type RepairTarget, type ShopId,
+  adjustedPrice, entryPrice, repairPrice, sellPrice, SHOPS, stackAt, STABILIZE_FATIGUE, STABILIZE_PRICE, treatable, TREAT_PRICE, type RepairTarget, type ShopId,
 } from "@/core/items/shop";
 import { WOUND_LABEL } from "@/core/labels";
 import { FOOD_PRICE, REP_DISCOUNT_THRESHOLD, REP_HEAVY_SURCHARGE_THRESHOLD, REP_SURCHARGE_THRESHOLD, type RunState } from "@/core/types";
@@ -154,10 +154,18 @@ function Healer({ run }: { run: RunState }) {
   const send = useGame((s) => s.send);
   const wound = run.player.wound;
   const price = adjustedPrice(run, TREAT_PRICE);
+  const stabilizePrice = adjustedPrice(run, STABILIZE_PRICE);
   return (
     <>
       <Section title="치료" hint="중상을 치료하면 사흘 뒤 경상으로 낫는다.">
-        {treatable(run) ? (
+        {wound.level === "critical" ? (
+          <ItemRow
+            title="응급 처치"
+            price={`은화 ${stabilizePrice}`}
+            meta={["치명상 → 치료받은 중상", `피로 +${STABILIZE_FATIGUE}`]}
+            actions={[{ label: "처치받기", disabled: run.resources.silver < stabilizePrice, onPress: () => send({ type: "shop", op: "stabilize" }) }]}
+          />
+        ) : treatable(run) ? (
           <ItemRow
             title="중상 치료"
             price={`은화 ${price}`}
@@ -168,7 +176,7 @@ function Healer({ run }: { run: RunState }) {
           <Text style={styles.note}>{healerNote(run)}</Text>
         )}
       </Section>
-      <Section title="마그다 할멈의 약" hint={wound.level === "critical" ? "치명상에는 치유 물약을 써야 한다." : undefined}>
+      <Section title="마그다 할멈의 약" hint={wound.level === "critical" ? "치유 물약을 쓰면 피로 없이 중상으로 가라앉는다." : undefined}>
         <StockList run={run} shop="healer" />
       </Section>
     </>
@@ -178,7 +186,6 @@ function Healer({ run }: { run: RunState }) {
 function healerNote(run: RunState): string {
   const w = run.player.wound;
   if (w.level === "serious") return `치료를 받았다. ${w.treatedDays ?? 0}일째 아물고 있다.`;
-  if (w.level === "critical") return "할멈 손으로는 어렵다. 치유 물약이 필요하다.";
   if (w.level === "light") return `${WOUND_LABEL.light}은 쉬거나 약초·붕대로 낫는다.`;
   return "아픈 데가 없다.";
 }

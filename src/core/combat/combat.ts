@@ -7,7 +7,7 @@ import { gainTrait } from "../day/evening";
 import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "../day/resources";
 import { BROKEN_WEAPON_PENALTY, isBroken, wearEquipment } from "../items/equipment";
 import { addItem, canUseItem, consumeItem, countInBag, removeItem } from "../items/inventory";
-import { josa } from "../labels";
+import { josa, SKILL_LABEL } from "../labels";
 import {
   ARROW_RECOVERY_RATE,
   d,
@@ -16,6 +16,7 @@ import {
   maxHp,
   POWER_ATTACK_DAMAGE_BONUS,
   POWER_ATTACK_HIT_PENALTY,
+  COMBAT_VICTORY_XP,
   SKILL_XP_CAP_PER_COMBAT,
   type CheckSpec,
   type CombatAction,
@@ -457,6 +458,7 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
   switch (c.result) {
     case "victory":
       s.stats.combatsWon += 1;
+      victoryXp(ctx, c);
       loot(ctx, c);
       return c.setup.onVictory;
     case "fled":
@@ -545,6 +547,17 @@ function inVillage(ctx: Ctx): boolean {
   const a = ctx.draft.activeEvent;
   if (!a || a.explore) return false;
   return (ctx.content.events[a.eventId]?.region ?? "village") === "village";
+}
+
+/** 이긴 싸움에서 배운 것: 공격으로 경험을 가장 많이 얻은 무기 숙련에 +1 (전투 상한 밖, 하루 상한 안) */
+function victoryXp(ctx: Ctx, c: CombatState): void {
+  const used = (Object.entries(c.xpThisCombat) as [SkillId, number][])
+    .filter(([skill, n]) => skill !== "guard" && n > 0)
+    .sort((a, b) => b[1] - a[1]);
+  if (used.length === 0) return;
+  const skill = used[0][0];
+  const gained = gainSkillXp(ctx, skill, COMBAT_VICTORY_XP);
+  if (gained > 0) ctx.feed.push({ kind: "text", text: `이긴 싸움에서 배웠다. ${SKILL_LABEL[skill]} 경험 +${gained}` });
 }
 
 function xpRoom(c: CombatState, skill: SkillId): number {

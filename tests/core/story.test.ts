@@ -186,7 +186,7 @@ describe("용사 일행", () => {
     expect(choiceIds(arrive("hunter"))).toEqual(["escort", "talk", "watch"]);
 
     const sold = send(farmer, { type: "chooseChoice", choiceId: "sell_food" });
-    expect(sold.resources).toMatchObject({ food: 4, silver: 16 });
+    expect(sold.resources).toMatchObject({ food: 6, silver: 16 }); // 식구 몫이 아니라 밭의 곡식을 판다
     expect(sold.flags.heroes_helped).toBe(true);
     expect(send(sold, { type: "continue" }).activeEvent).toBeNull();
   });
@@ -199,7 +199,7 @@ describe("용사 일행", () => {
       s.activeEvent = { eventId: "story_heroes_return", sceneId: "ask" };
     });
     const locked = sceneView(back, CONTENT);
-    expect(locked?.kind === "choices" && locked.choices.find((c) => c.id === "bow")?.lockedReason).toBe("활 3 필요");
+    expect(locked?.kind === "choices" && locked.choices.find((c) => c.id === "bow")?.lockedReason).toBe("활 3 필요 (일행을 도왔다면 2)");
 
     const skilled = edit(back, (s) => { s.player.skills.bow.rank = 3; });
     const ctx = ctxOf(skilled, d20Sequence(15)); // 15 + 민첩 2 + 활 3 = 20 ≥ 13
@@ -207,6 +207,30 @@ describe("용사 일행", () => {
     expect(ctx.draft.activeEvent?.sceneId).toBe("offer");
     handleChoice(ctx, "accept");
     expect(ctx.draft.flags).toMatchObject({ route_hero: true, route_rowen: false });
+  });
+
+  it("9일차에 일행을 도왔으면 무기 숙련 2로도 시험을 볼 수 있다", () => {
+    const back = edit(start("farmer"), (s) => {
+      s.time.day = 19;
+      s.flags.heroes_met = true;
+      s.player.skills.blunt.rank = 2;
+      s.activeEvent = { eventId: "story_heroes_return", sceneId: "ask" };
+    });
+    const blunt = (run: typeof back) => {
+      const v = sceneView(run, CONTENT);
+      return v?.kind === "choices" ? v.choices.find((c) => c.id === "blunt") : undefined;
+    };
+    expect(blunt(back)?.lockedReason).toBe("둔기 3 필요 (일행을 도왔다면 2)");
+    expect(blunt(edit(back, (s) => { s.flags.heroes_helped = true; }))?.lockedReason).toBeNull();
+    expect(blunt(edit(back, (s) => { s.flags.heroes_helped = true; s.player.skills.blunt.rank = 1; }))?.lockedReason).not.toBeNull();
+  });
+
+  it("9일차에 곡식을 판 농부는 고드윈에게 둔기를 배운다", () => {
+    const run = edit(start("farmer"), (s) => { s.activeEvent = { eventId: "story_heroes_arrive", sceneId: "start" }; });
+    const ctx = ctxOf(run);
+    handleChoice(ctx, "sell_food");
+    expect(ctx.draft.player.skills.blunt).toEqual({ rank: 1, xp: 0 }); // 경험 3 = 0등급 → 1등급
+    expect(ctx.draft.flags.heroes_helped).toBe(true);
   });
 
   it("26일차에 따라나서면 「용사 일행」, 남으면 방어에 힘을 보탠다", () => {

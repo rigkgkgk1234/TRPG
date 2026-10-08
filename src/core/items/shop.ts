@@ -1,7 +1,7 @@
 import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { canTrade } from "../day/town";
-import { changeSilver } from "../day/resources";
+import { changeFatigue, changeSilver, setWound } from "../day/resources";
 import { josa } from "../labels";
 import {
   REP_DISCOUNT_RATE,
@@ -59,6 +59,9 @@ export const SHOPS: Record<ShopId, ShopDef> = {
 
 /** 의원 치료비 (SYSTEM_SPEC 3-5) */
 export const TREAT_PRICE = 5;
+/** 치명상 응급 처치: 은화 12, 피로 +2 → 치료받은 중상 (SYSTEM_SPEC 3-5) */
+export const STABILIZE_PRICE = 12;
+export const STABILIZE_FATIGUE = 2;
 /** 대장장이 견습은 수리비 반값 (SYSTEM_SPEC 5-3) */
 const SMITH_REPAIR_RATE = 0.5;
 
@@ -171,12 +174,27 @@ export function repair(ctx: Ctx, target: RepairTarget): string | null {
 export function treat(ctx: Ctx): string | null {
   const s = ctx.draft;
   if (!canTrade(s)) return "지금은 치료받을 수 없다";
-  if (!treatable(s)) return s.player.wound.level === "critical" ? "할멈 손으로는 어렵다. 치유 물약이 필요하다" : "치료할 큰 상처가 없다";
+  if (!treatable(s)) return s.player.wound.level === "critical" ? "치명상은 응급 처치부터 받아야 한다" : "치료할 큰 상처가 없다";
   const price = adjustedPrice(s, TREAT_PRICE);
   if (s.resources.silver < price) return "은화가 모자란다";
   changeSilver(ctx, -price);
   s.player.wound.treatedDays = 0;
   ctx.feed.push({ kind: "text", text: "마그다 할멈이 상처를 꿰매고 약을 발라 주었다. 사흘쯤 지나면 한결 나을 거라고 한다." });
+  return null;
+}
+
+/** 치명상 응급 처치: 은화 12, 피로 +2. 치료받은 중상이 되어 사흘 뒤 경상으로 (SYSTEM_SPEC 3-5) */
+export function stabilize(ctx: Ctx): string | null {
+  const s = ctx.draft;
+  if (!canTrade(s)) return "지금은 치료받을 수 없다";
+  if (s.player.wound.level !== "critical") return "응급 처치할 상처가 없다";
+  const price = adjustedPrice(s, STABILIZE_PRICE);
+  if (s.resources.silver < price) return "은화가 모자란다";
+  changeSilver(ctx, -price);
+  setWound(ctx, "serious");
+  s.player.wound.treatedDays = 0;
+  changeFatigue(ctx, STABILIZE_FATIGUE);
+  ctx.feed.push({ kind: "text", text: "마그다 할멈이 밤새 곁을 지키며 피를 멎게 했다. 고비는 넘겼지만 온몸이 녹초가 되었다." });
   return null;
 }
 

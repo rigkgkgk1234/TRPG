@@ -6,7 +6,7 @@ import { runEvening } from "./day/evening";
 import { buyFood, payDebt } from "./day/town";
 import { discard, equip, unequip } from "./items/equipment";
 import { consumeItem } from "./items/inventory";
-import { buy, repair, sell, treat, type RepairTarget } from "./items/shop";
+import { buy, repair, sell, stabilize, treat, type RepairTarget } from "./items/shop";
 import { handleChoice, handleCombat, handleContinue, handleGoDeeper, startPendingStory } from "./events/runner";
 import { createRng, type RunState } from "./types";
 
@@ -84,6 +84,7 @@ function handleShop(ctx: Ctx, cmd: Extract<GameCommand, { type: "shop" }>): bool
     case "sell": return ok(ctx, sell(ctx, Number(cmd.target), cmd.qty ?? 1));
     case "repair": return ok(ctx, repair(ctx, (cmd.target ?? "weapon") as RepairTarget));
     case "treat": return ok(ctx, treat(ctx));
+    case "stabilize": return ok(ctx, stabilize(ctx));
   }
 }
 

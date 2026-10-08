@@ -159,6 +159,7 @@ function shopTitle(cmd: Extract<GameCommand, { type: "shop" }>, run: RunState): 
     case "sell": return `${itemName(run.inventory.slots[Number(cmd.target)]?.itemId)} 팔기`;
     case "repair": return "장비 수리";
     case "treat": return "상처 치료";
+    case "stabilize": return "응급 처치";
   }
 }
 

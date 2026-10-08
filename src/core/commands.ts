@@ -20,7 +20,7 @@ export type GameCommand =
    * 마을 거래. 행동 슬롯을 쓰지 않는다. (SYSTEM_SPEC 5-4)
    * buy: shop + target(아이템 ID) / sell: target(가방 칸 번호) + qty / repair: target("weapon" 또는 "bag:3") / treat / buyFood·payDebt: qty
    */
-  | { type: "shop"; op: "buy" | "sell" | "repair" | "treat" | "buyFood" | "payDebt"; shop?: ShopId; target?: string; qty?: number }
+  | { type: "shop"; op: "buy" | "sell" | "repair" | "treat" | "stabilize" | "buyFood" | "payDebt"; shop?: ShopId; target?: string; qty?: number }
   /** 가방 칸의 장비를 걸친다 */
   | { type: "equip"; slotIndex: number }
   | { type: "unequip"; slot: EquipSlot }

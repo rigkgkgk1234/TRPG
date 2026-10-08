@@ -84,12 +84,26 @@ describe("일하기", () => {
     expect(crit.draft.resources).toMatchObject({ silver: 14, food: 8 });
   });
 
-  it("대장장이 대실패: 경상 + 피로 3+1", () => {
+  it("대장장이 대실패: HP -2, 경상, 피로 3+1. 이미 다쳤으면 부상은 그대로", () => {
     const ctx = withDice(start("smith"), d20Sequence(1));
     handleAction(ctx, "work");
     expect(ctx.draft.player.wound.level).toBe("light");
+    expect(ctx.draft.player.hp).toBe(start("smith").player.hp - 2);
     expect(ctx.draft.resources.fatigue).toBe(4);
     expect(ctx.draft.resources.silver).toBe(8 + 3);
+
+    const hurt = withDice(edit(start("smith"), (s) => { s.player.wound.level = "serious"; }), d20Sequence(1, 1)); // 중상은 불리함
+    handleAction(hurt, "work");
+    expect(hurt.draft.player.wound.level).toBe("serious");
+  });
+
+  it("대장간 일에 성공하면 둔기 경험 +1 (망치질), 실패하면 없다", () => {
+    const ok = withDice(start("smith"), d20Sequence(15)); // 15 + 근력2 + 대장일2 = 19
+    handleAction(ok, "work");
+    expect(ok.draft.player.skills.blunt.xp).toBe(start("smith").player.skills.blunt.xp + 1);
+    const fail = withDice(start("smith"), d20Sequence(3));
+    handleAction(fail, "work");
+    expect(fail.draft.player.skills.blunt.xp).toBe(start("smith").player.skills.blunt.xp);
   });
 
   it("지친 상태(피로 7+)면 불리함으로 굴린다", () => {

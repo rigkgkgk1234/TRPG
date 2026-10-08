@@ -39,7 +39,9 @@ export const STAT_HARD_CAP = 5;
 export const SKILL_MAX_RANK = 5;
 /** index = 현재 등급. 등급 0→1에 3, 1→2에 6 ... */
 export const SKILL_XP_TO_NEXT = [3, 6, 10, 15, 21] as const;
-export const SKILL_XP_CAP_PER_COMBAT = 3;
+export const SKILL_XP_CAP_PER_COMBAT = 4;
+/** 이긴 전투에서 공격에 쓴 무기 숙련에 더 주는 XP (전투 상한과 별개, 하루 상한은 적용) */
+export const COMBAT_VICTORY_XP = 1;
 export const SKILL_XP_CAP_PER_DAY = 6;
 export const STAT_GROWTH_USES = 15;
 export const STAT_GROWTH_RETRY_USES = 10;
@@ -112,9 +114,9 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
     id: "smith", name: "대장장이 견습", mvp: true,
     stats: { str: 2, agi: 0, con: 1, per: 0, cha: 1 },
     startSkills: { smithing: 2, blunt: 1 },
-    silver: 8, food: 3, reputation: 10,
+    silver: 8, food: 5, reputation: 10,
     startItems: [{ itemId: "old_hammer", qty: 1, equip: true }],
-    work: { label: "대장간 일", check: { stat: "str", skill: "smithing", dc: 12 }, baseSilver: 3, bonusSilver: 2, bonusFood: 0, fatigue: 3 },
+    work: { label: "대장간 일", check: { stat: "str", skill: "smithing", dc: 12 }, baseSilver: 3, bonusSilver: 2, bonusFood: 0, fatigue: 3, bonusSkillXp: "blunt" },
   },
   hunter: {
     id: "hunter", name: "사냥꾼", mvp: true,
@@ -679,6 +681,8 @@ export interface WorkDef {
   bonusSilver: number;
   bonusFood: number;
   fatigue: number;
+  /** 성공·대성공이면 이 숙련 XP +1 (대장간 일의 망치질 → 둔기) */
+  bonusSkillXp?: SkillId;
 }
 
 export interface DailyActionDef {

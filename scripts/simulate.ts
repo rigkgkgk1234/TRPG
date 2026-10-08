@@ -10,7 +10,7 @@ import { dispatch } from "@/core/engine";
 import { sceneView, type ChoiceView } from "@/core/events/runner";
 import { countInBag } from "@/core/items/inventory";
 import { treatable } from "@/core/items/shop";
-import { ENDING_LABEL, NPC_IDS, REGION_LABEL } from "@/core/labels";
+import { ENDING_LABEL, NPC_IDS, REGION_LABEL, SKILL_LABEL } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import { makeRecord } from "@/core/story/ending";
 import { FATIGUE_DISADVANTAGE_AT, maxHp, SKILL_STAT, type EndingId, type JobId, type RunState, type SkillId } from "@/core/types";
@@ -117,9 +117,10 @@ function pickChoice(run: RunState, choices: ChoiceView[], ai: Ai): string {
   return open.reduce((best, c) => (score(c) > score(best) ? c : best)).id;
 }
 
-/** 저녁마다 마을에 들른다: 치료(중상은 약초방, 치명상은 물약) → 빚 → 식량 → 화살 (돈이 남으면). */
+/** 저녁마다 마을에 들른다: 치료(치명상은 응급 처치, 안 되면 물약 / 중상은 약초방) → 빚 → 식량 → 화살 (돈이 남으면). */
 function evening(run: RunState): RunState {
   const send = (cmd: GameCommand) => (run = dispatch(run, cmd, CONTENT).state);
+  if (run.player.wound.level === "critical") send({ type: "shop", op: "stabilize" });
   if (treatable(run)) send({ type: "shop", op: "treat" });
   if (run.player.wound.level === "critical") {
     send({ type: "shop", op: "buy", shop: "healer", target: "healing_potion" });
@@ -137,26 +138,29 @@ function evening(run: RunState): RunState {
 
 // ───────────────────────── 한 판 ─────────────────────────
 
-interface Result { run: RunState; silverByDay: Map<number, number>; deathCause?: string; deathRegion?: string }
+interface Result { run: RunState; silverByDay: Map<number, number>; deathCause?: string; deathRegion?: string; deathEvent?: string; rankDay19?: number }
 
 function autoPlay(job: JobId, seed: number): Result {
   const ai: Ai = { rand: aiRng(seed) };
   let run = newRun(CONTENT, job, "시뮬", { seed, now: NOW });
   const silverByDay = new Map<number, number>();
+  let rankDay19: number | undefined;
   let before = run;
   for (let guard = 0; !run.ending && guard < 3000; guard++) {
     if (run.time.phase === "evening" && !run.activeEvent && !run.combat) {
       run = evening(run);
       silverByDay.set(run.time.day, run.resources.silver);
     }
+    if (rankDay19 === undefined && run.time.day >= 19) rankDay19 = run.player.skills[MAIN_SKILL[job]].rank;
     before = run;
     run = dispatch(run, pickCommand(run, ai), CONTENT).state;
   }
-  const result: Result = { run, silverByDay };
+  const result: Result = { run, silverByDay, rankDay19 };
   if (run.ending === "death") {
     const rec = makeRecord(run, CONTENT, NOW, before);
     result.deathCause = rec.death?.cause;
     result.deathRegion = rec.death ? REGION_LABEL[rec.death.region] : undefined;
+    result.deathEvent = before.activeEvent?.eventId ?? "(이벤트 밖)";
   }
   return result;
 }
@@ -171,11 +175,23 @@ const ENDINGS: EndingId[] = ["survivor", "death", "shield_of_village", "flee_tog
 const all: Result[] = [];
 const endingRows: Record<string, Record<string, string>> = {};
 const curveRows: Record<string, Record<string, string>> = {};
+const deathRows: Record<string, Record<string, number>> = {};
+const rankRows: Record<string, Record<string, string>> = {};
 for (const job of JOBS) {
   const results = Array.from({ length: RUNS }, (_, i) => autoPlay(job, i + 1));
   all.push(...results);
   const name = CONTENT.jobs[job]!.name;
   endingRows[name] = endingRow(results);
+  deathRows[name] = countBy(results.filter((r) => r.run.ending === "death"), (r) => `${r.deathCause}`);
+  const ranks = results.map((r) => r.rankDay19).filter((x): x is number => x !== undefined);
+  rankRows[name] = {
+    숙련: SKILL_LABEL[MAIN_SKILL[job]],
+    평균: fmt(avg(ranks)),
+    "3 이상": pct(ranks.filter((x) => x >= 3).length, ranks.length || 1),
+    "2 이상": pct(ranks.filter((x) => x >= 2).length, ranks.length || 1),
+    "일행 도움": pct(results.filter((r) => r.run.flags.heroes_helped).length, results.length),
+    "시험 합격": pct(results.filter((r) => r.run.flags.route_hero !== undefined).length, results.length),
+  };
   curveRows[name] = Object.fromEntries(CURVE_DAYS.map((d) => [`${d}일`, fmt(avg(results.map((r) => r.silverByDay.get(d)).filter((x): x is number => x !== undefined)))]));
 }
 endingRows["전체"] = endingRow(all);
@@ -188,6 +204,12 @@ console.table(curveRows);
 const deaths = all.filter((r) => r.run.ending === "death");
 console.log(`\n사망 ${deaths.length}판 · 평균 사망일 ${fmt(avg(deaths.map((r) => r.run.time.day)))}일차`);
 console.table(countBy(deaths, (r) => `${r.deathCause} @ ${r.deathRegion}`));
+console.log("\n직업별 사망 원인 (판 수)");
+console.table(deathRows);
+console.log("\n사망한 이벤트 (상위 10)");
+console.table(Object.fromEntries(Object.entries(countBy(deaths, (r) => r.deathEvent ?? "-")).slice(0, 10)));
+console.log("\n19일차 주 무기 숙련 (19일차까지 산 판)");
+console.table(rankRows);
 console.log("\n스토리 도달률 (전체)");
 console.table(Object.fromEntries(
   ["goblin_tracks_found", "goblin_scout_seen", "reported", "route_defend", "route_flee", "route_rowen", "route_self", "recruit_passed", "heroes_helped", "route_hero", "palisade_built", "goblin_plan_known", "raid_won"]

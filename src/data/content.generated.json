@@ -8055,7 +8055,7 @@
      "choices": [
       {
        "id": "sell_food",
-       "label": "원정길에 먹을 곡식을 판다",
+       "label": "원정길에 먹을 곡식을 찧어 판다",
        "conditions": [
         {
          "type": "job",
@@ -8063,19 +8063,24 @@
         }
        ],
        "hideIfLocked": true,
-       "cost": {
-        "food": 2
-       },
        "outcome": {
-        "text": "성기사 고드윈이 곡식 자루를 받아 들고 시세보다 넉넉히 셈해 주었다.",
+        "text": "곡식을 찧어 자루에 담느라 한나절이 갔다. 성기사 고드윈이 시세보다 넉넉히 셈해 주고, 떠나기 전에 쇠스랑으로 막고 찌르는 법을 몇 번 보여 주었다.",
         "effects": [
          {
           "type": "silver",
           "delta": 6
          },
          {
+          "type": "skillXp",
+          "skill": "blunt",
+          "amount": 3
+         },
+         {
           "type": "setFlag",
           "flag": "heroes_helped"
+         },
+         {
+          "type": "loseNextSlot"
          }
         ],
         "next": "leave"
@@ -8098,11 +8103,16 @@
        },
        "outcomes": {
         "success": {
-         "text": "이 빠진 날을 한나절 내내 두드렸다. 용사 아델이 검을 휘둘러 보더니 감탄했다.",
+         "text": "이 빠진 날을 한나절 내내 두드렸다. 용사 아델이 검을 휘둘러 보더니 감탄했다. 답례로 망치를 무기처럼 휘두르는 법을 일러 주었다.",
          "effects": [
           {
            "type": "silver",
            "delta": 8
+          },
+          {
+           "type": "skillXp",
+           "skill": "blunt",
+           "amount": 3
           },
           {
            "type": "setFlag",
@@ -8352,9 +8362,24 @@
         {
          "type": "skill",
          "skill": "blade",
-         "min": 3
+         "min": 2
+        },
+        {
+         "type": "any",
+         "of": [
+          {
+           "type": "skill",
+           "skill": "blade",
+           "min": 3
+          },
+          {
+           "type": "flag",
+           "flag": "heroes_helped"
+          }
+         ]
         }
        ],
+       "lockedReason": "검술 3 필요 (일행을 도왔다면 2)",
        "check": {
         "stat": "str",
         "skill": "blade",
@@ -8378,9 +8403,24 @@
         {
          "type": "skill",
          "skill": "blunt",
-         "min": 3
+         "min": 2
+        },
+        {
+         "type": "any",
+         "of": [
+          {
+           "type": "skill",
+           "skill": "blunt",
+           "min": 3
+          },
+          {
+           "type": "flag",
+           "flag": "heroes_helped"
+          }
+         ]
         }
        ],
+       "lockedReason": "둔기 3 필요 (일행을 도왔다면 2)",
        "check": {
         "stat": "str",
         "skill": "blunt",
@@ -8404,9 +8444,24 @@
         {
          "type": "skill",
          "skill": "bow",
-         "min": 3
+         "min": 2
+        },
+        {
+         "type": "any",
+         "of": [
+          {
+           "type": "skill",
+           "skill": "bow",
+           "min": 3
+          },
+          {
+           "type": "flag",
+           "flag": "heroes_helped"
+          }
+         ]
         }
        ],
+       "lockedReason": "활 3 필요 (일행을 도왔다면 2)",
        "check": {
         "stat": "agi",
         "skill": "bow",

@@ -4,7 +4,7 @@ import { combatStep, finishCombat, playerDefense, startCombat } from "@/core/com
 import { dispatch } from "@/core/engine";
 import { discard, equip, equipBlock, unequip } from "@/core/items/equipment";
 import { canUseItem, consumeItem } from "@/core/items/inventory";
-import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, SHOPS, treat } from "@/core/items/shop";
+import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, SHOPS, stabilize, treat } from "@/core/items/shop";
 import { newRun } from "@/core/newRun";
 import type { ItemStack, JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -132,7 +132,17 @@ describe("가게", () => {
     expect(treat(ctx)).toBeNull();
     expect(ctx.draft.player.wound.treatedDays).toBe(0);
     expect(treat(ctx)).toBe("치료할 큰 상처가 없다");
-    expect(treat(ctxOf(edit(run, (s) => { s.player.wound.level = "critical"; })))).toBe("할멈 손으로는 어렵다. 치유 물약이 필요하다");
+    expect(treat(ctxOf(edit(run, (s) => { s.player.wound.level = "critical"; })))).toBe("치명상은 응급 처치부터 받아야 한다");
+  });
+
+  it("응급 처치: 치명상만 은화 12, 피로 +2, 치료받은 중상이 된다", () => {
+    expect(stabilize(ctxOf(start()))).toBe("응급 처치할 상처가 없다");
+    const critical = edit(start(), (s) => { s.player.wound.level = "critical"; s.resources.silver = 15; });
+    const ctx = ctxOf(critical);
+    expect(stabilize(ctx)).toBeNull();
+    expect(ctx.draft.player.wound).toMatchObject({ level: "serious", treatedDays: 0 });
+    expect(ctx.draft.resources).toMatchObject({ silver: 3, fatigue: 2 });
+    expect(stabilize(ctxOf(edit(critical, (s) => { s.resources.silver = 11; })))).toBe("은화가 모자란다");
   });
 
   it("거래는 행동 슬롯을 쓰지 않고, 탐험·전투 중에는 못 한다", () => {

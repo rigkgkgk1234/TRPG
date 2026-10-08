@@ -200,17 +200,35 @@ describe("전투 진행", () => {
     expect(combatStep(ctxOf(down, seq()), { type: "attack", targetId: "wolf_1" })).toBe("그 상대는 이미 싸울 수 없다");
   });
 
-  it("한 전투에서 같은 숙련 경험은 3까지", () => {
+  it("한 전투에서 같은 숙련 경험은 4까지", () => {
     let run = inCombat(start("farmer"), ["boar"]);
     run = edit(run, (s) => { s.combat!.enemies[0].hp = 99; });
-    // 빗나감(경험 2) → 빗나감(경험 1만) → 빗나감(0). 멧돼지는 매번 빗나감
+    // 빗나감(경험 2) → 빗나감(경험 2) → 빗나감(0). 멧돼지는 매번 빗나감
     const ctx = ctxOf(run, seq(f20(3), f20(2), f20(3), f20(2), f20(3), f20(2)));
     for (let i = 0; i < 3; i++) combatStep(ctx, { type: "attack", targetId: "boar_1" });
-    expect(ctx.draft.combat!.xpThisCombat.blunt).toBe(3);
+    expect(ctx.draft.combat!.xpThisCombat.blunt).toBe(4);
   });
 });
 
 describe("전투 끝", () => {
+  it("이기면 공격에 쓴 무기 숙련 경험 +1 (방어 숙련은 아니다)", () => {
+    const run = edit(inCombat(start("farmer"), ["boar"]), (s) => {
+      s.combat!.result = "victory";
+      s.combat!.xpThisCombat = { blunt: 2, guard: 3 };
+    });
+    const ctx = ctxOf(run, seq(0.9));
+    finishCombat(ctx);
+    expect(ctx.draft.player.skills.blunt.xp).toBe(run.player.skills.blunt.xp + 1);
+    expect(ctx.draft.player.skills.guard.xp).toBe(run.player.skills.guard.xp);
+  });
+
+  it("공격하지 않고 이기면 승리 경험은 없다", () => {
+    const run = edit(inCombat(start("farmer"), ["boar"]), (s) => { s.combat!.result = "victory"; });
+    const ctx = ctxOf(run, seq(0.9));
+    finishCombat(ctx);
+    expect(ctx.draft.player.skills.blunt).toEqual(run.player.skills.blunt);
+  });
+
   it("승리: 피로 +1, 쏜 화살 절반 회수, 전리품", () => {
     const run = edit(inCombat(start("hunter"), ["wolf"]), (s) => {
       s.combat!.result = "victory";

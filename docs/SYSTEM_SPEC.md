@@ -81,7 +81,8 @@ export type Rng = () => number;
 | 부분 성공 · 실패 · 대실패 | +2 ("실패에서 더 배운다") |
 | 교습 훈련(은화 3) | +3 (판정 없음) |
 
-  - **남용 방지**: 전투 1회당 같은 숙련 XP 최대 +3, 하루 같은 숙련 XP 최대 +6.
+  - **전투 승리 보너스**: 이긴 전투에서 공격에 쓴 무기 숙련 XP +1 (전투 상한과 별개).
+  - **남용 방지**: 전투 1회당 같은 숙련 XP 최대 +4, 하루 같은 숙련 XP 최대 +6.
 - **능력치**: 해당 능력치를 쓴 판정 횟수(`statUses`)가 15회가 되면 **성장 굴림** `D20 + 현재 능력치 ≤ 15` → 성공 시 +1 후 카운트 0, 실패 시 카운트를 10으로 되돌림(5회 뒤 재도전).
   - 예) 근력 +2: 13 이하가 나와야 하므로 65%. 근력 +3이면 60%. 높을수록 오르기 어렵다.
   - **혼자 훈련(운동)**: 근력 운동(근력)·달리기(민첩)·오래 버티기(체력)·집중 연습(감각) 중 하나. 능력치만으로 DC 10 판정, 판정 1회를 포함해 `statUses` 대성공 +4 / 성공 +3 / 그 밖 +2. 15를 넘겨 쌓지 않으며, 15를 채웠거나 자연 상한(+4)이면 할 수 없다. 말솜씨는 혼자 단련할 수 없다.
@@ -108,7 +109,9 @@ export const STAT_HARD_CAP = 5;
 export const SKILL_MAX_RANK = 5;
 /** index = 현재 등급. 등급 0→1에 3, 1→2에 6 ... */
 export const SKILL_XP_TO_NEXT = [3, 6, 10, 15, 21] as const;
-export const SKILL_XP_CAP_PER_COMBAT = 3;
+export const SKILL_XP_CAP_PER_COMBAT = 4;
+/** 이긴 전투에서 공격에 쓴 무기 숙련에 더 주는 XP (전투 상한과 별개, 하루 상한은 적용) */
+export const COMBAT_VICTORY_XP = 1;
 export const SKILL_XP_CAP_PER_DAY = 6;
 export const STAT_GROWTH_USES = 15;
 export const STAT_GROWTH_RETRY_USES = 10;
@@ -185,9 +188,9 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
     id: "smith", name: "대장장이 견습", mvp: true,
     stats: { str: 2, agi: 0, con: 1, per: 0, cha: 1 },
     startSkills: { smithing: 2, blunt: 1 },
-    silver: 8, food: 3, reputation: 10,
+    silver: 8, food: 5, reputation: 10,
     startItems: [{ itemId: "old_hammer", qty: 1, equip: true }],
-    work: { label: "대장간 일", check: { stat: "str", skill: "smithing", dc: 12 }, baseSilver: 3, bonusSilver: 2, bonusFood: 0, fatigue: 3 },
+    work: { label: "대장간 일", check: { stat: "str", skill: "smithing", dc: 12 }, baseSilver: 3, bonusSilver: 2, bonusFood: 0, fatigue: 3, bonusSkillXp: "blunt" },
   },
   hunter: {
     id: "hunter", name: "사냥꾼", mvp: true,
@@ -420,7 +423,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 없음 | — | — | — |
 | 경상 | `str`·`agi` 판정 -2 | — | 휴식 행동 2회, 또는 붕대·약초 사용 |
 | 중상 | 모든 판정 -4, 불리함 | 탐험·훈련 불가(탐험 중 중상이 되면 남은 카드 없이 귀가), 밤 HP 회복 없음 | 의원 치료(은화 5) 후 3일 → 경상. 방치 5일 → 경상 + 흔적 「오래된 상처」(민첩 -1 영구) |
-| 치명상 | 모든 판정 -4, 불리함 | 마을 볼일·휴식만 가능 | 신전/치유 물약 → 중상. 방치 시 매일 아침 사망 굴림(DC 8) |
+| 치명상 | 모든 판정 -4, 불리함 | 마을 볼일·휴식만 가능 | 신전/치유 물약 → 중상, 또는 약초방 응급 처치(은화 12, 피로 +2) → 치료받은 중상. 방치 시 매일 아침 사망 굴림(DC 8) |
 
 **부상 발생 조건**
 1. 적의 대성공 공격에 맞음 → 부상 1단계 악화
@@ -1062,7 +1065,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 직업 | 판정 | 기본 | 성공 추가 | 대성공 | 실패 |
 |------|------|----:|---------:|--------|------|
 | 농부 | 근력+농사 DC 10 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
-| 대장장이 견습 | 근력+대장일 DC 12 | 은화 3 | +2 | 추가분 2배 | 기본만, 대실패 시 부상 |
+| 대장장이 견습 | 근력+대장일 DC 12 | 은화 3 | +2, 둔기 XP +1 | 추가분 2배 | 기본만, 대실패 시 HP -2·경상(이미 다쳤으면 그대로) |
 | 사냥꾼 | 감각+추적 DC 12 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
 | 공통 잡일 | 근력 DC 10 | 은화 1 | +1 | — | 기본만 |
 
@@ -1173,6 +1176,8 @@ export interface WorkDef {
   bonusSilver: number;
   bonusFood: number;
   fatigue: number;
+  /** 성공·대성공이면 이 숙련 XP +1 (대장간 일의 망치질 → 둔기) */
+  bonusSkillXp?: SkillId;
 }
 
 export interface DailyActionDef {

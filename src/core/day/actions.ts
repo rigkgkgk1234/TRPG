@@ -19,7 +19,7 @@ import {
   type SkillId,
   type StatId,
 } from "../types";
-import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "./resources";
+import { changeFatigue, changeFood, changeHp, changeSilver, setWound } from "./resources";
 import { advanceSlot } from "./time";
 
 /** 레나가 가르치는 숙련 (SYSTEM_SPEC 6-2) */
@@ -32,6 +32,8 @@ export const LESSON_XP = 3;
 export const REST_HP = 2;
 /** 경상은 휴식 2회로 낫는다 */
 export const LIGHT_WOUND_RESTS = 2;
+/** 대장간 일 대실패의 화상: HP -2, 다친 데가 없으면 경상 (SYSTEM_SPEC 6-2) */
+const SMITH_BURN_HP = 2;
 /** 대실패에 별도 분기가 없을 때의 추가 페널티 (SYSTEM_SPEC 2-4) */
 const CRIT_FAIL_FATIGUE = 1;
 
@@ -128,6 +130,11 @@ function work(ctx: Ctx): void {
 
   const success = r.outcome === "success" || r.outcome === "critSuccess";
   const mult = r.outcome === "critSuccess" ? 2 : success ? 1 : 0;
+  // 대장간 망치질은 둔기 연습도 된다
+  if (success && w.bonusSkillXp) {
+    const gained = gainSkillXp(ctx, w.bonusSkillXp, 1);
+    if (gained > 0) ctx.feed.push({ kind: "text", text: `망치질에 손이 익었다. ${SKILL_LABEL[w.bonusSkillXp]} 경험 +${gained}` });
+  }
   const silver = w.baseSilver + w.bonusSilver * mult;
   changeSilver(ctx, silver);
   s.stats.silverEarned += silver;
@@ -137,7 +144,8 @@ function work(ctx: Ctx): void {
     changeFatigue(ctx, CRIT_FAIL_FATIGUE);
     if (job.id === "smith") {
       ctx.feed.push({ kind: "text", text: "달군 쇠가 손등을 스쳤다." });
-      worsenWound(ctx, 1);
+      changeHp(ctx, -SMITH_BURN_HP);
+      if (s.player.wound.level === "none") setWound(ctx, "light");
     }
   }
   changeFatigue(ctx, w.fatigue);
