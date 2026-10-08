@@ -20,6 +20,8 @@ export const colors = {
   accentSoft: "rgba(91, 141, 239, 0.14)",
   success: "#4fc07f",
   partial: "#e2a24c",
+  /** 주황 바탕 위의 글자 (식량 사기처럼 놓치면 안 되는 버튼) */
+  partialText: "#1f1405",
   fail: "#ef5f5a",
   crit: "#f2c94c",
   fumble: "#e0443f",

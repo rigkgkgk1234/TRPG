@@ -25,12 +25,15 @@ interface ActionButtonProps {
   disabled?: boolean;
   selected?: boolean;
   primary?: boolean;
+  /** 주황으로 칠한다: 놓치면 손해인 행동 (식량이 모자랄 때 사기) */
+  warn?: boolean;
   onPress: () => void;
 }
 
 /** 허브·저녁 화면의 큰 버튼. 잠긴 버튼도 사유는 읽을 수 있게 흐리게만 한다. 누르면 살짝 눌린다. */
-export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, onPress }: ActionButtonProps) {
-  const fg = primary ? colors.accentText : colors.text;
+export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, warn, onPress }: ActionButtonProps) {
+  const filled = primary || warn;
+  const fg = primary ? colors.accentText : warn ? colors.partialText : colors.text;
   return (
     <Pressable
       onPress={onPress}
@@ -44,6 +47,7 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
         fill && styles.fill,
         fill && (primary || center || large) && styles.fillCenter,
         primary && styles.primary,
+        warn && styles.warn,
         selected && styles.selected,
         disabled && styles.disabled,
         pressed && styles.pressed,
@@ -52,16 +56,16 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
       <View style={styles.sideRow}>
         <View style={styles.main}>
           <View style={[styles.labelRow, (primary || center) && styles.center]}>
-            {IconC && <IconC size={large ? iconToken.md + 2 : iconToken.md} weight={iconToken.weight} color={iconColor ?? (primary ? fg : selected ? colors.accent : colors.textDim)} />}
+            {IconC && <IconC size={large ? iconToken.md + 2 : iconToken.md} weight={iconToken.weight} color={iconColor ?? (filled ? fg : selected ? colors.accent : colors.textDim)} />}
             <Text style={[styles.label, large && styles.labelLarge, { color: fg }]} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{label}</Text>
           </View>
           {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badge} noteStyle={styles.badgeNote} /> : null}
           {Array.isArray(detail) ? (
             <View style={styles.detailRow}>
-              {detail.map((d) => <Text key={d} style={[styles.detail, primary && { color: fg }]}>{d}</Text>)}
+              {detail.map((d) => <Text key={d} style={[styles.detail, filled && { color: fg }]}>{d}</Text>)}
             </View>
           ) : detail ? (
-            <Text style={[styles.detail, primary && { color: fg }]} numberOfLines={2}>{detail}</Text>
+            <Text style={[styles.detail, filled && { color: fg }]} numberOfLines={2}>{detail}</Text>
           ) : null}
         </View>
         {/* 넓은 버튼의 확률은 오른쪽에, 이름·설명 줄 전체의 세로 가운데에 */}
@@ -96,6 +100,7 @@ const styles = StyleSheet.create({
   fill: { flexGrow: 1, justifyContent: "flex-start" },
   fillCenter: { justifyContent: "center" },
   primary: { backgroundColor: colors.accent, borderColor: colors.accent, minHeight: TOUCH_MIN + 4 },
+  warn: { backgroundColor: colors.partial, borderColor: colors.partial },
   selected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   disabled: { opacity: 0.38 },
   pressed: { transform: [{ scale: motion.press }] },

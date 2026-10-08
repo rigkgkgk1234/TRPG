@@ -11,7 +11,7 @@ import { conditionReason, evalCondition } from "@/core/events/conditions";
 import { applyEffect } from "@/core/events/effects";
 import { dangerTierForDay, EXPLORE_CARDS } from "@/core/events/explore";
 import { handleChoice, sceneView } from "@/core/events/runner";
-import { selectEvent } from "@/core/events/selector";
+import { hasCombat, selectEvent } from "@/core/events/selector";
 import { resolveText } from "@/core/events/text";
 import { addItem, countItem, removeItem } from "@/core/items/inventory";
 import { josa } from "@/core/labels";
@@ -154,6 +154,17 @@ describe("이벤트 추첨", () => {
     expect(selectEvent(ctxOf(seen, content, () => 0), "explore", "forest", true)?.id).toBe("a_tier2");
     const day5 = edit(seen, (s) => { s.time.day = 5; });
     expect(selectEvent(ctxOf(day5, content, () => 0), "explore", "forest")?.id).toBe("b_day5");
+  });
+
+  it("더 깊이 들어간 3장째는 싸움이 나는 카드가 더 자주 나온다", () => {
+    const run = edit(start("hunter"), (s) => { s.time.day = 12; });
+    const combatShare = (deep: boolean) => {
+      const picks = Array.from({ length: 200 }, (_, i) => selectEvent(ctxOf(run, CONTENT, () => (i + 0.5) / 200), "explore", "forest", deep));
+      return picks.filter((ev) => ev && hasCombat(ev)).length / picks.length;
+    };
+    expect(hasCombat(CONTENT.events.forest_wild_dog_01!)).toBe(true);
+    expect(hasCombat(CONTENT.events.forest_herb_01!)).toBe(false);
+    expect(combatShare(true)).toBeGreaterThan(combatShare(false) * 1.5);
   });
 
   it("쿨다운이 지나야 다시 나온다", () => {

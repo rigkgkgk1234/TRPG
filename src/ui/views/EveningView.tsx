@@ -54,6 +54,7 @@ export function EveningPanel({ run }: { run: RunState }) {
         <>
           {canBuy > 0 && (
             <ActionButton
+              warn
               icon={BasketIcon}
               label={`식량 ${canBuy} 사기`}
               detail={[`은화 -${canBuy * FOOD_PRICE}`, `가진 은화 ${silver}`]}

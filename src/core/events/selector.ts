@@ -8,11 +8,25 @@ import { dangerTierForDay } from "./explore";
 const RECENT_DAYS = 3;
 const RECENT_WEIGHT = 0.3;
 const SAME_TIER_WEIGHT = 2;
+/** 더 깊이 들어간 3장째는 싸움이 나는 카드가 이만큼 더 잘 뽑힌다 */
+export const DEEP_COMBAT_WEIGHT = 3;
 const FALLBACK_SUFFIX = "_fallback";
 
 /** 후보가 없을 때 대신 나오는 이벤트 ID: 지역이 있으면 "forest_fallback", 없으면 "npc_fallback" */
 export function fallbackId(category: EventCategory, region?: RegionId): string {
   return `${region ?? category}${FALLBACK_SUFFIX}`;
+}
+
+const combatCache = new WeakMap<EventDef, boolean>();
+
+/** 어느 장면에서든 전투를 시작할 수 있는 이벤트인가 */
+export function hasCombat(ev: EventDef): boolean {
+  let v = combatCache.get(ev);
+  if (v === undefined) {
+    v = JSON.stringify(ev.scenes).includes('"startCombat"');
+    combatCache.set(ev, v);
+  }
+  return v;
 }
 
 export function isFallback(ev: EventDef): boolean {
@@ -36,6 +50,7 @@ export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId
   const weighted = pool.map((ev) => {
     let w = ev.weight;
     if ((ev.dangerTier ?? 1) === tier) w *= SAME_TIER_WEIGHT;
+    if (deep && hasCombat(ev)) w *= DEEP_COMBAT_WEIGHT;
     const last = s.eventHistory[ev.id]?.lastDay;
     if (last !== undefined && s.time.day - last <= RECENT_DAYS) w *= RECENT_WEIGHT;
     return { ev, w };
