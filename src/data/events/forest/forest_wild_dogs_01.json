@@ -1,0 +1,89 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_wild_dogs_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "들개 떼",
+  "conditions": [],
+  "weight": 2,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "덤불 양쪽에서 들개 두 마리가 빙 돌아 나온다. 사냥감을 몰듯 거리를 좁혀 온다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "tree",
+          "label": "나무 위로 올라가 버틴다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "가지에 올라 한참을 버텼다. 개들이 지쳐 돌아갔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "미끄러진 발을 개가 물고 늘어진다!",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "fight"
+            }
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "등을 나무에 붙이고 무기를 고쳐 쥔다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wild_dog",
+              "wild_dog"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "두 마리 모두 물리쳤다. 숨이 턱까지 차오르지만, 몸이 먼저 움직였다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "개들에게 쫓겨 숲을 빠져나왔다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_squatter_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "탑에 숨어든 밀렵꾼",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 이층에 누군가 불을 피운 흔적이 있다. 화살 깃을 다듬던 밀렵꾼이 벌떡 일어나 칼을 뽑는다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "pay",
+          "label": "은화 2닢을 내밀며 길만 지나가겠다고 한다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 2
+            }
+          ],
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "사내가 은화를 낚아채고 손짓으로 길을 비켜 주었다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "좁은 계단참에서 칼날이 번뜩인다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "poacher"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "밀렵꾼이 창문으로 뛰어내려 달아났다. 남은 짐에서 쓸 만한 것을 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "계단을 뛰어 내려와 탑을 벗어났다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

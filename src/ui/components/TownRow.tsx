@@ -26,7 +26,8 @@ export function TownRow({ run }: { run: RunState }) {
           fill
           icon={StorefrontIcon}
           label="마을"
-          detail={trade ? ["가게", "대화"] : "지금은 갈 수 없다"}
+          large
+          detail={trade ? undefined : "지금은 갈 수 없다"}
           disabled={!trade}
           onPress={() => setVillage(true)}
         />

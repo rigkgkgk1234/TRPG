@@ -281,7 +281,7 @@ UI가 할 수 있는 일은 **명령을 보내는 것뿐**이다. 엔진은 새 
 ```ts
 // src/core/commands.ts
 export type GameCommand =
-  | { type: "chooseAction"; action: DailyActionId; region?: RegionId; skill?: SkillId }
+  | { type: "chooseAction"; action: DailyActionId; region?: RegionId; skill?: SkillId; stat?: StatId }
   | { type: "chooseChoice"; choiceId: string }
   | { type: "continue" }                                   // "계속" 버튼
   | { type: "goDeeper"; yes: boolean }                     // 탐험 3번째 카드

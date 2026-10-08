@@ -6,6 +6,8 @@ import type { RegionId } from "@/core/types";
  * 무엇이 나올 수 있는지 감만 잡히게 짧게 쓴다. 실제로 나오는 일은 이벤트 데이터가 정한다.
  */
 export interface PlaceInfo {
+  /** 고르기 칸의 한 줄 */
+  tagline: string;
   /** 한두 문장 소개 */
   summary: string;
   /** 얻을 수 있는 것 */
@@ -16,11 +18,13 @@ export interface PlaceInfo {
 
 export const REGION_INFO: Partial<Record<RegionId, PlaceInfo>> = {
   forest: {
+    tagline: "약초·사냥감이 많다. 늑대와 멧돼지가 산다",
     summary: "마을 바로 뒤의 개암나무 숲. 약초와 버섯, 토끼가 흔하다. 요즘은 숲 동쪽에서 이상한 발자국이 보인다고 한다.",
     gains: ["약초·버섯·사냥감", "나무꾼·행상 돕기", "고블린의 흔적"],
     risks: ["늑대·멧돼지", "도적", "깊은 곳의 고블린"],
   },
   watchtower: {
+    tagline: "옛 병사의 물건이 남았다. 도적과 고블린이 드나든다",
     summary: "숲 너머 언덕의 버려진 감시탑. 옛 병사들의 물건이 남아 있지만, 도적이 숨어들고 날이 갈수록 고블린이 드나든다.",
     gains: ["옛 병사의 장비·은화", "약초·화살", "고블린의 계획"],
     risks: ["무너지는 계단·마루", "도적·늑대", "고블린 전사"],

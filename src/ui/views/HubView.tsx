@@ -6,12 +6,12 @@ import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
-import { josa, REGION_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
-import { SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
+import { EXERCISE_LABEL, EXERCISE_STATS, formatSigned, josa, REGION_LABEL, SKILL_LABEL, STAT_LABEL } from "@/core/labels";
+import { SKILL_MAX_RANK, SKILL_STAT, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId, type StatId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
-import { InfoDialog } from "@/ui/components/InfoDialog";
+import { DialogFrame, DialogHead, DialogSectionTitle, InfoDialog } from "@/ui/components/InfoDialog";
 import { TownRow } from "@/ui/components/TownRow";
 import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
@@ -19,9 +19,8 @@ import { REGION_INFO } from "@/ui/placeInfo";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, radius, space, type } from "@/ui/theme";
 
-type Training = "trainSolo" | "trainLesson";
 /** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
-type Picking = Training | "explore";
+type Picking = "trainSolo" | "trainLesson" | "explore";
 
 const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore";
 
@@ -36,42 +35,43 @@ const REST = MVP_ACTIONS.find((a) => a.id === "rest")!;
 export function HubPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
-  const [picking, setPicking] = useState<Picking | null>(null);
-  /** 갈 곳을 고르면 바로 가지 않고 가운데 창에서 한 번 더 확인한다 */
-  const [confirm, setConfirm] = useState<RegionId | null>(null);
-
-  const choose = (def: DailyActionDef) => {
-    if (isPicking(def.id)) {
-      setPicking(picking === def.id ? null : def.id);
-      return;
-    }
-    setPicking(null);
-    send({ type: "chooseAction", action: def.id });
+  /** 누르면 바로 하지 않고 가운데 창을 여는 행동 (훈련·교습·탐험) */
+  const [open, setOpen] = useState<Picking | null>(null);
+  /** 탐험 창에서 고른 곳: 그곳 안내 창을 거쳐야 간다 */
+  const [region, setRegion] = useState<RegionId | null>(null);
+  const close = () => {
+    setOpen(null);
+    setRegion(null);
   };
 
-  const train = (skill: SkillId) => {
-    if (picking !== "trainSolo" && picking !== "trainLesson") return;
-    send({ type: "chooseAction", action: picking, skill });
-    setPicking(null);
+  const choose = (def: DailyActionDef) => {
+    if (isPicking(def.id)) setOpen(def.id);
+    else send({ type: "chooseAction", action: def.id });
+  };
+
+  const lesson = (skill: SkillId) => {
+    send({ type: "chooseAction", action: "trainLesson", skill });
+    close();
+  };
+
+  const exercise = (stat: StatId) => {
+    send({ type: "chooseAction", action: "trainSolo", stat });
+    close();
   };
 
   const go = () => {
-    if (!confirm) return;
-    send({ type: "chooseAction", action: "explore", region: confirm });
-    setConfirm(null);
-    setPicking(null);
+    if (!region) return;
+    send({ type: "chooseAction", action: "explore", region });
+    close();
   };
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
-      {picking === "explore" ? (
-        <RegionPicker run={run} onPick={setConfirm} />
-      ) : picking ? (
-        <TrainingPicker run={run} kind={picking} onPick={train} />
-      ) : null}
       <ButtonGrid>
         {HUB_ACTIONS.map((def) => {
           const status = isPicking(def.id) ? pickingStatus(run, def.id) : actionStatus(run, CONTENT, def.id);
+          // 일만 확률·보수를 적고, 창을 여는 훈련·교습·탐험은 이름만 크게 (잠기면 사유는 보인다)
+          const plain = def.id !== "work";
           return (
             <GridCell key={def.id}>
               <ActionButton
@@ -80,9 +80,10 @@ export function HubPanel({ run }: { run: RunState }) {
                 label={def.id === "work" ? jobOf(CONTENT, run).work.label : def.label}
                 {...(status.available && def.id === "work" ? workBadge(run, jobOf(CONTENT, run).work.check) : {})}
                 badgeBelow
-                detail={status.available ? actionDetail(run, def) : status.reason}
+                large={plain}
+                detail={!status.available ? status.reason : plain ? undefined : actionDetail(run, def)}
                 disabled={!status.available}
-                selected={picking === def.id}
+                selected={open === def.id}
                 onPress={() => choose(def)}
               />
             </GridCell>
@@ -91,7 +92,11 @@ export function HubPanel({ run }: { run: RunState }) {
       </ButtonGrid>
       <TownRow run={run} />
       <RestButton run={run} onPress={() => choose(REST)} />
-      {confirm && <ExploreDialog run={run} region={confirm} onConfirm={go} onClose={() => setConfirm(null)} />}
+      {open === "explore" && (region
+        ? <ExploreDialog run={run} region={region} onConfirm={go} onClose={() => setRegion(null)} />
+        : <RegionDialog run={run} onPick={setRegion} onClose={close} />)}
+      {open === "trainSolo" && <ExerciseDialog run={run} onPick={exercise} onClose={close} />}
+      {open === "trainLesson" && <LessonDialog run={run} onPick={lesson} onClose={close} />}
     </View>
   );
 }
@@ -132,52 +137,124 @@ function ExploreDialog({ run, region, onConfirm, onClose }: { run: RunState; reg
   );
 }
 
-function TrainingPicker({ run, kind, onPick }: { run: RunState; kind: Training; onPick: (s: SkillId) => void }) {
-  const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;
+/**
+ * 혼자 훈련 창: 운동마다 한 줄 (어느 능력치를 단련하는지, 성장 굴림까지 남은 판정 횟수, 성공 확률).
+ * 운동을 누르면 바로 한다.
+ */
+function ExerciseDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: StatId) => void; onClose: () => void }) {
+  const def = MVP_ACTIONS.find((a) => a.id === "trainSolo")!;
   return (
-    <View style={styles.picker}>
-      <Text style={styles.pickerTitle}>
-        {kind === "trainLesson" ? `레나에게 무엇을 배울까? 경험 +${LESSON_XP}` : `무엇을 연습할까? 목표 ${SOLO_TRAINING_DC}`}
-      </Text>
-      <PickGrid>
-        {skills.map((skill) => {
-          const status = actionStatus(run, CONTENT, kind, { skill });
-          const badge = status.available && kind === "trainSolo" ? workBadge(run, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC }) : {};
-          return (
-            <PickCell
-              key={skill}
-              label={`${SKILL_LABEL[skill]} ${run.player.skills[skill].rank}`}
-              {...badge}
-              reason={status.available ? undefined : status.reason}
-              disabled={!status.available}
-              onPress={() => onPick(skill)}
-            />
-          );
-        })}
-      </PickGrid>
-    </View>
+    <DialogFrame visible onClose={onClose} actions={<ActionButton center label="닫기" onPress={onClose} />}>
+      <DialogHead
+        icon={ACTION_ICON.trainSolo}
+        title={def.label}
+        subtitle={`판정 목표 ${SOLO_TRAINING_DC}, 피로 +${def.fatigue}. 성공할수록 더 단련된다`}
+      />
+      <View style={styles.dialogSection}>
+        <View style={styles.dialogSectionHead}>
+          <DialogSectionTitle>할 운동</DialogSectionTitle>
+          <Text style={styles.dialogNote}>{STAT_GROWTH_USES}번 채우면 저녁에 성장 굴림</Text>
+        </View>
+        <PickGrid>
+          {EXERCISE_STATS.map((stat) => {
+            const status = actionStatus(run, CONTENT, "trainSolo", { stat });
+            return (
+              <PickCell
+                key={stat}
+                wide
+                label={EXERCISE_LABEL[stat]}
+                sub={`${STAT_LABEL[stat]} ${formatSigned(run.player.stats[stat])}, 성장까지 ${Math.min(run.player.statUses[stat], STAT_GROWTH_USES)}/${STAT_GROWTH_USES}`}
+                {...(status.available ? workBadge(run, { stat, dc: SOLO_TRAINING_DC }) : {})}
+                reason={status.available ? undefined : status.reason}
+                disabled={!status.available}
+                onPress={() => onPick(stat)}
+              />
+            );
+          })}
+        </PickGrid>
+      </View>
+    </DialogFrame>
   );
 }
 
-/** 갈 곳 고르기. 고를 수 없는 곳도 눌러서 안내는 볼 수 있다 (안내 창의 확인 버튼이 잠긴다) */
-function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void }) {
+/**
+ * 교습 창: 레나가 가르치는 숙련마다 한 줄 (등급, 어떤 능력치로 굴리는지, 다음 등급까지의 경험).
+ * 숙련을 누르면 바로 배운다.
+ */
+function LessonDialog({ run, onPick, onClose }: { run: RunState; onPick: (s: SkillId) => void; onClose: () => void }) {
+  const def = MVP_ACTIONS.find((a) => a.id === "trainLesson")!;
   return (
-    <View style={styles.picker}>
-      <Text style={styles.pickerTitle}>어디로 갈까?</Text>
-      <PickGrid>
-        {EXPLORE_REGIONS.map((region) => {
-          const status = actionStatus(run, CONTENT, "explore", { region });
-          return (
-            <PickCell
-              key={region}
-              label={REGION_LABEL[region]}
-              reason={status.available ? undefined : status.reason}
-              onPress={() => onPick(region)}
-            />
-          );
-        })}
-      </PickGrid>
-    </View>
+    <DialogFrame visible onClose={onClose} actions={<ActionButton center label="닫기" onPress={onClose} />}>
+      <DialogHead
+        icon={ACTION_ICON.trainLesson}
+        title={def.label}
+        subtitle={`은화 ${def.silverCost}을 내고 판정 없이 경험 +${LESSON_XP}, 피로 +${def.fatigue}`}
+      />
+      <View style={styles.dialogSection}>
+        <View style={styles.dialogSectionHead}>
+          <DialogSectionTitle>레나가 가르치는 숙련</DialogSectionTitle>
+          <Text style={styles.dialogNote}>하루 경험 {SKILL_XP_CAP_PER_DAY}까지</Text>
+        </View>
+        <PickGrid>
+          {LESSON_SKILLS.map((skill) => {
+            const status = actionStatus(run, CONTENT, "trainLesson", { skill });
+            return (
+              <PickCell
+                key={skill}
+                wide
+                label={`${SKILL_LABEL[skill]} ${run.player.skills[skill].rank}등급`}
+                sub={skillLine(run, skill)}
+                reason={status.available ? undefined : status.reason}
+                disabled={!status.available}
+                onPress={() => onPick(skill)}
+              />
+            );
+          })}
+        </PickGrid>
+      </View>
+    </DialogFrame>
+  );
+}
+
+/** "근력 판정, 경험 2/6" (달인이면 경험 대신 "달인") */
+function skillLine(run: RunState, skill: SkillId): string {
+  const { rank, xp } = run.player.skills[skill];
+  const progress = rank >= SKILL_MAX_RANK ? "달인" : `경험 ${xp}/${SKILL_XP_TO_NEXT[rank]}`;
+  return `${STAT_LABEL[SKILL_STAT[skill]]} 판정, ${progress}`;
+}
+
+/** 탐험 창: 갈 곳마다 한 줄. 누르면 그곳 안내 창으로 바뀌고, 고를 수 없는 곳도 안내는 볼 수 있다 */
+function RegionDialog({ run, onPick, onClose }: { run: RunState; onPick: (r: RegionId) => void; onClose: () => void }) {
+  const def = MVP_ACTIONS.find((a) => a.id === "explore")!;
+  return (
+    <DialogFrame visible onClose={onClose} actions={<ActionButton center label="닫기" onPress={onClose} />}>
+      <DialogHead
+        icon={ACTION_ICON.explore}
+        title={def.label}
+        subtitle={`카드 ${EXPLORE_CARDS}장을 보고, 원하면 1장 더. 피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`}
+      />
+      <View style={styles.dialogSection}>
+        <View style={styles.dialogSectionHead}>
+          <DialogSectionTitle>갈 곳</DialogSectionTitle>
+          <Text style={styles.dialogNote}>오늘 위험 등급 {dangerTierForDay(run.time.day)}/3</Text>
+        </View>
+        <PickGrid>
+          {EXPLORE_REGIONS.map((r) => {
+            const status = actionStatus(run, CONTENT, "explore", { region: r });
+            return (
+              <PickCell
+                key={r}
+                wide
+                label={REGION_LABEL[r]}
+                sub={REGION_INFO[r]?.tagline}
+                reason={status.available ? undefined : status.reason}
+                onPress={() => onPick(r)}
+              />
+            );
+          })}
+        </PickGrid>
+      </View>
+    </DialogFrame>
   );
 }
 
@@ -188,26 +265,28 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
       const w = jobOf(CONTENT, run).work;
       return [`은화 ${w.baseSilver}~${w.baseSilver + w.bonusSilver * 2}`, `피로 +${w.fatigue}`];
     }
-    case "trainSolo": return ["숙련 고르기", `피로 +${def.fatigue}`];
-    case "explore": return [`카드 ${EXPLORE_CARDS}~${EXPLORE_CARDS + 1}장`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`];
-    case "trainLesson": return [`은화 -${def.silverCost}`, `경험 +${LESSON_XP}`, `피로 +${def.fatigue}`];
     case "rest": return [`피로 ${def.fatigue}`, `HP +${REST_HP}`];
     default: return [];
   }
 }
 
 /**
- * 훈련·탐험 버튼은 숙련·지역을 고르기 전에 그려진다: 고를 수 있는 것이 하나라도 있으면 열고,
- * 없으면 대표 사유를 보여 준다. 훈련은 오늘 경험을 더 쌓을 수 있는 숙련의 사유(은화·부상 등), 그것도 없으면 하루 상한.
+ * 훈련·교습·탐험 버튼은 운동·숙련·지역을 고르기 전에 그려진다: 고를 수 있는 것이 하나라도 있으면 열고,
+ * 없으면 대표 사유를 보여 준다. 교습은 오늘 경험을 더 쌓을 수 있는 숙련의 사유(은화·부상 등), 그것도 없으면 하루 상한.
  */
 function pickingStatus(run: RunState, kind: Picking): ActionStatus {
   if (kind === "explore") {
     const statuses = EXPLORE_REGIONS.map((region) => actionStatus(run, CONTENT, "explore", { region }));
     return statuses.find((s) => s.available) ?? statuses[0];
   }
-  const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;
-  if (skills.some((skill) => actionStatus(run, CONTENT, kind, { skill }).available)) return { available: true };
-  const withRoom = skills.find((s) => skillXpRoomToday(run.player, s) > 0);
+  if (kind === "trainSolo") {
+    const statuses = EXERCISE_STATS.map((stat) => actionStatus(run, CONTENT, "trainSolo", { stat }));
+    // 모두 같은 사유(부상 등)면 그 사유를, 운동마다 다르면(상한·성장 대기) 한데 묶어 말한다
+    const reasons = new Set(statuses.map((s) => (s.available ? "" : s.reason)));
+    return statuses.find((s) => s.available) ?? (reasons.size === 1 ? statuses[0] : { available: false, reason: "지금은 더 단련할 게 없다" });
+  }
+  if (LESSON_SKILLS.some((skill) => actionStatus(run, CONTENT, kind, { skill }).available)) return { available: true };
+  const withRoom = LESSON_SKILLS.find((s) => skillXpRoomToday(run.player, s) > 0);
   return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없다" };
 }
 
@@ -227,6 +306,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: radius.md,
     borderTopRightRadius: radius.md,
   },
-  picker: { gap: space.md, paddingBottom: space.md },
-  pickerTitle: { ...type.label, color: colors.textDim },
+  dialogSection: { gap: space.sm },
+  dialogSectionHead: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
+  dialogNote: { ...type.caption, color: colors.textFaint },
 });

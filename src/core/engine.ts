@@ -29,7 +29,7 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
     const ctx: Ctx = { draft, content, rng: createRng(draft.rng), feed };
     switch (cmd.type) {
       case "chooseAction":
-        save = handleAction(ctx, cmd.action, { skill: cmd.skill, region: cmd.region, npc: cmd.npc });
+        save = handleAction(ctx, cmd.action, { skill: cmd.skill, stat: cmd.stat, region: cmd.region, npc: cmd.npc });
         break;
       case "chooseChoice":
         save = handleChoice(ctx, cmd.choiceId);

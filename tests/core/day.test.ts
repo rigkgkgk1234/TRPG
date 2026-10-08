@@ -101,21 +101,34 @@ describe("일하기", () => {
 });
 
 describe("훈련·휴식", () => {
-  it("혼자 훈련은 숙련을 골라야 하고, 해당 능력치로 DC 10", () => {
+  it("혼자 훈련은 운동(능력치)을 골라야 하고, 능력치만으로 DC 10. 성공하면 판정 횟수 +3", () => {
     const run = start("hunter");
     expect(actionStatus(run, CONTENT, "trainSolo")).toMatchObject({ available: false });
-    const ctx = withDice(run, d20Sequence(6)); // 6 + 민첩2 + 활2 = 10
-    handleAction(ctx, "trainSolo", { skill: "bow" });
-    expect(ctx.draft.player.skills.bow.xp).toBe(1);
-    expect(ctx.draft.player.statUses.agi).toBe(1);
+    const ctx = withDice(run, d20Sequence(8)); // 8 + 민첩2 = 10
+    handleAction(ctx, "trainSolo", { stat: "agi" });
+    expect(ctx.draft.player.statUses.agi).toBe(3);
+    expect(ctx.draft.player.skills.bow.xp).toBe(0);
     expect(ctx.draft.resources.fatigue).toBe(2);
   });
 
-  it("혼자 훈련 대실패는 피로 +1 추가 (SYSTEM_SPEC 2-4)", () => {
-    const ctx = withDice(start("hunter"), d20Sequence(1));
-    handleAction(ctx, "trainSolo", { skill: "bow" });
-    expect(ctx.draft.resources.fatigue).toBe(3);
-    expect(ctx.draft.player.skills.bow.xp).toBe(2);
+  it("운동은 실패해도 판정 횟수 +2, 대실패는 피로 +1 추가 (SYSTEM_SPEC 2-4)", () => {
+    const fail = withDice(start("hunter"), d20Sequence(5));
+    handleAction(fail, "trainSolo", { stat: "str" });
+    expect(fail.draft.player.statUses.str).toBe(2);
+    const crit = withDice(start("hunter"), d20Sequence(1));
+    handleAction(crit, "trainSolo", { stat: "str" });
+    expect(crit.draft.resources.fatigue).toBe(3);
+    expect(crit.draft.player.statUses.str).toBe(2);
+  });
+
+  it("운동은 성장 굴림 기준(15)을 넘겨 쌓지 않고, 채웠거나 자연 상한이면 막는다. 말솜씨 운동은 없다", () => {
+    const ctx = withDice(edit(start("hunter"), (s) => { s.player.statUses.con = 13; }), d20Sequence(20));
+    handleAction(ctx, "trainSolo", { stat: "con" });
+    expect(ctx.draft.player.statUses.con).toBe(15);
+    expect(actionStatus(ctx.draft, CONTENT, "trainSolo", { stat: "con" })).toEqual({ available: false, reason: "저녁에 성장 기회가 온다" });
+    const capped = edit(start("hunter"), (s) => { s.player.stats.per = 4; });
+    expect(actionStatus(capped, CONTENT, "trainSolo", { stat: "per" }).available).toBe(false);
+    expect(actionStatus(start(), CONTENT, "trainSolo", { stat: "cha" })).toEqual({ available: false, reason: "그런 운동은 없다" });
   });
 
   it("교습: 은화 3, XP +3, 피로 +3, 등급이 오르면 XP 0", () => {
@@ -152,14 +165,15 @@ describe("훈련·휴식", () => {
 
   it("중상이면 훈련·교습 불가, 일하기·휴식은 가능", () => {
     const run = edit(start("farmer"), (s) => { s.player.wound.level = "serious"; });
-    expect(actionStatus(run, CONTENT, "trainSolo", { skill: "blade" }).available).toBe(false);
+    expect(actionStatus(run, CONTENT, "trainSolo", { stat: "str" }).available).toBe(false);
+    expect(actionStatus(run, CONTENT, "trainLesson", { skill: "blade" }).available).toBe(false);
     expect(actionStatus(run, CONTENT, "work").available).toBe(true);
     expect(actionStatus(run, CONTENT, "rest").available).toBe(true);
   });
 
   it("없는 숙련 ID는 크래시 없이 거절", () => {
     const run = start();
-    const res = dispatch(run, { type: "chooseAction", action: "trainSolo", skill: "constructor" as never }, CONTENT);
+    const res = dispatch(run, { type: "chooseAction", action: "trainLesson", skill: "constructor" as never }, CONTENT);
     expect(res.state).toBe(run);
     expect(res.feed).toEqual([{ kind: "toast", text: "그런 기술은 없다" }]);
   });
@@ -368,7 +382,7 @@ describe("dispatch", () => {
       let run = start("smith", 77);
       for (let i = 0; i < 10; i++) {
         run = send(run, { type: "chooseAction", action: "work" }).state;
-        run = send(run, { type: "chooseAction", action: "trainSolo", skill: "blunt" }).state;
+        run = send(run, { type: "chooseAction", action: "trainSolo", stat: "str" }).state;
         run = send(run, { type: "endDay" }).state;
       }
       return run;

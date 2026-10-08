@@ -16,6 +16,22 @@ export const STAT_LABEL: Record<StatId, string> = {
   cha: "말솜씨",
 };
 
+/** 혼자 훈련으로 단련하는 능력치 (말솜씨는 혼자 늘릴 수 없다) */
+export type ExerciseStat = Exclude<StatId, "cha">;
+export const EXERCISE_STATS: readonly ExerciseStat[] = ["str", "agi", "con", "per"];
+
+/** 혼자 훈련의 운동 이름 */
+export const EXERCISE_LABEL: Record<ExerciseStat, string> = {
+  str: "근력 운동",
+  agi: "달리기",
+  con: "오래 버티기",
+  per: "집중 연습",
+};
+
+export function isExerciseStat(s: string): s is ExerciseStat {
+  return (EXERCISE_STATS as readonly string[]).includes(s);
+}
+
 export const SKILL_LABEL: Record<SkillId, string> = {
   blade: "검술",
   blunt: "둔기",

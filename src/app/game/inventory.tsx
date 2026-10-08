@@ -45,7 +45,7 @@ export default function InventoryScreen() {
             const stack = inv.equipment[slot];
             const def = stack ? CONTENT.items[stack.itemId] : undefined;
             if (!stack || !def) {
-              return <ItemRow key={slot} title={`${SLOT_LABEL[slot]}: 없음`} meta={slot === "weapon" ? ["맨주먹, 피해 1d2"] : []} actions={[]} />;
+              return <ItemRow key={slot} dim title={SLOT_LABEL[slot]} meta={slot === "weapon" ? ["비어 있음", "맨주먹, 피해 1d2"] : ["비어 있음"]} actions={[]} />;
             }
             const dur = durabilityText(def, stack);
             return (

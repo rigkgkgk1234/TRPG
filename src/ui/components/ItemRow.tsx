@@ -13,8 +13,10 @@ export interface RowAction {
  * 가방·가게 목록 한 줄: 이름(과 수량) / 성능·상태 / 오른쪽에 작은 버튼들.
  * warn이 있으면 둘째 줄을 경고색으로 (망가짐 등).
  */
-export function ItemRow({ title, meta, warn, price, actions }: {
+export function ItemRow({ title, meta, warn, price, actions, dim }: {
   title: string;
+  /** 빈 장비 칸처럼 물건이 없는 줄: 제목을 흐리게 */
+  dim?: boolean;
   meta?: string[];
   warn?: string | null;
   /** 오른쪽 위 값 표시 ("은화 25") */
@@ -25,7 +27,7 @@ export function ItemRow({ title, meta, warn, price, actions }: {
     <View style={styles.row}>
       <View style={styles.body}>
         <View style={styles.head}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, dim && { color: colors.textDim }]}>{title}</Text>
           {price ? <Text style={styles.price}>{price}</Text> : null}
         </View>
         {(meta?.length || warn) ? (

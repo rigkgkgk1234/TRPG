@@ -578,6 +578,58 @@
    ],
    "silver": 4
   },
+  "wild_dog": {
+   "id": "wild_dog",
+   "name": "들개",
+   "hp": 4,
+   "defense": 10,
+   "attackBonus": 1,
+   "damage": "1d4",
+   "speed": 4,
+   "morale": 0.6,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "giant_rat": {
+   "id": "giant_rat",
+   "name": "큰 쥐",
+   "hp": 3,
+   "defense": 9,
+   "attackBonus": 1,
+   "damage": "1d3",
+   "speed": 3,
+   "morale": 0.5,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "poacher": {
+   "id": "poacher",
+   "name": "밀렵꾼",
+   "hp": 6,
+   "defense": 10,
+   "attackBonus": 1,
+   "damage": "1d4",
+   "speed": 3,
+   "morale": 0.6,
+   "onDefeat": "robbed",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": [
+    {
+     "itemId": "arrow",
+     "qty": 3,
+     "chance": 0.6
+    }
+   ],
+   "silver": 3
+  },
   "goblin_scout": {
    "id": "goblin_scout",
    "name": "고블린 정찰병",
@@ -2545,6 +2597,81 @@
     }
    }
   },
+  "forest_poacher_01": {
+   "id": "forest_poacher_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "덫 앞의 밀렵꾼",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "영주의 숲에 덫을 놓던 밀렵꾼과 눈이 마주쳤다. 사내가 칼을 뽑으며 낮게 말한다. \"본 건 잊어라.\"",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "못 본 척하겠다고 달랜다",
+       "check": {
+        "stat": "cha",
+        "dc": 12,
+        "tags": [
+         "humanoid"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내가 칼을 거두고 덤불 속으로 사라졌다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "\"입이 가벼워 보이는군.\" 사내가 덤벼든다!",
+         "next": "fight"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 칼을 낮게 겨누고 다가온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "poacher"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "밀렵꾼이 덫도 버리고 달아났다. 짐 속에서 쓸 만한 것을 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "등 뒤로 욕설이 들렸지만 따라오지는 않았다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
   "forest_rabbit_01": {
    "id": "forest_rabbit_01",
    "category": "explore",
@@ -2959,6 +3086,187 @@
        }
       }
      ]
+    }
+   }
+  },
+  "forest_wild_dog_01": {
+   "id": "forest_wild_dog_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "길 잃은 들개",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을에서 버려진 개인지, 비쩍 마른 들개 한 마리가 길을 막고 이빨을 드러낸다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "scare",
+       "label": "막대기를 휘두르며 소리친다",
+       "check": {
+        "stat": "cha",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "들개가 깨갱거리며 덤불로 달아났다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "들개가 더 사납게 짖으며 달려든다!",
+         "next": "fight_ambushed"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "들개가 낮게 으르렁거리며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wild_dog"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "발목을 노리고 이빨이 파고든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wild_dog"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "들개가 꼬리를 말고 쓰러졌다. 손이 아직 떨린다. 그래도 무기 쥐는 법은 조금 알 것 같다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "뒤도 안 보고 숲 어귀까지 달렸다. 오늘 숲은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "forest_wild_dogs_01": {
+   "id": "forest_wild_dogs_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "들개 떼",
+   "conditions": [],
+   "weight": 2,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "덤불 양쪽에서 들개 두 마리가 빙 돌아 나온다. 사냥감을 몰듯 거리를 좁혀 온다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "tree",
+       "label": "나무 위로 올라가 버틴다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "가지에 올라 한참을 버텼다. 개들이 지쳐 돌아갔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "미끄러진 발을 개가 물고 늘어진다!",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "fight"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "등을 나무에 붙이고 무기를 고쳐 쥔다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wild_dog",
+         "wild_dog"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "두 마리 모두 물리쳤다. 숨이 턱까지 차오르지만, 몸이 먼저 움직였다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "개들에게 쫓겨 숲을 빠져나왔다. 오늘 숲은 여기까지다.",
+     "choices": []
     }
    }
   },
@@ -10708,6 +11016,83 @@
     }
    }
   },
+  "watchtower_rats_01": {
+   "id": "watchtower_rats_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "곳간의 쥐 떼",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 곳간 문을 열자 개만 한 쥐 두 마리가 썩은 곡식 더미에서 고개를 든다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "smoke",
+       "label": "젖은 풀로 연기를 피워 쫓는다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "매캐한 연기에 쥐들이 벽 틈으로 사라졌다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "연기가 엉뚱한 쪽으로 흩어지고, 놀란 쥐들이 달려든다!",
+         "next": "fight"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "쥐들이 찍찍거리며 발치로 몰려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "giant_rat",
+         "giant_rat"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "쥐들을 모두 쫓아냈다. 곳간 구석은 텅 비어 있었지만, 팔에 힘이 붙는 게 느껴진다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "곳간 문을 걷어차 닫고 탑을 빠져나왔다. 오늘 감시탑은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
   "watchtower_rotten_floor_01": {
    "id": "watchtower_rotten_floor_01",
    "category": "explore",
@@ -11061,6 +11446,77 @@
        }
       }
      ]
+    }
+   }
+  },
+  "watchtower_squatter_01": {
+   "id": "watchtower_squatter_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "탑에 숨어든 밀렵꾼",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 이층에 누군가 불을 피운 흔적이 있다. 화살 깃을 다듬던 밀렵꾼이 벌떡 일어나 칼을 뽑는다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "pay",
+       "label": "은화 2닢을 내밀며 길만 지나가겠다고 한다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 2
+        }
+       ],
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "사내가 은화를 낚아채고 손짓으로 길을 비켜 주었다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "좁은 계단참에서 칼날이 번뜩인다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "poacher"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "밀렵꾼이 창문으로 뛰어내려 달아났다. 남은 짐에서 쓸 만한 것을 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "계단을 뛰어 내려와 탑을 벗어났다. 오늘 감시탑은 여기까지다.",
+     "choices": []
     }
    }
   },

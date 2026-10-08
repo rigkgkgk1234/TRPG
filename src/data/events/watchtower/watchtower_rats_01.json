@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_rats_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "곳간의 쥐 떼",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 곳간 문을 열자 개만 한 쥐 두 마리가 썩은 곡식 더미에서 고개를 든다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "smoke",
+          "label": "젖은 풀로 연기를 피워 쫓는다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "매캐한 연기에 쥐들이 벽 틈으로 사라졌다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "연기가 엉뚱한 쪽으로 흩어지고, 놀란 쥐들이 달려든다!",
+              "next": "fight"
+            }
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "쥐들이 찍찍거리며 발치로 몰려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "giant_rat",
+              "giant_rat"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "쥐들을 모두 쫓아냈다. 곳간 구석은 텅 비어 있었지만, 팔에 힘이 붙는 게 느껴진다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "곳간 문을 걷어차 닫고 탑을 빠져나왔다. 오늘 감시탑은 여기까지다.",
+      "choices": []
+    }
+  }
+}

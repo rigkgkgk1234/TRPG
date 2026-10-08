@@ -6,16 +6,18 @@ import { conditionReason, evalCondition } from "../events/conditions";
 import { EXPLORE_REGIONS } from "../events/explore";
 import { startExplore, startVillageVisit } from "../events/runner";
 import { eventPool } from "../events/selector";
-import { isNpcId, josa, SKILL_LABEL, type NpcId } from "../labels";
+import { EXERCISE_LABEL, isExerciseStat, isNpcId, josa, SKILL_LABEL, STAT_LABEL, type NpcId } from "../labels";
 import {
   DAILY_ACTIONS,
   SKILL_MAX_RANK,
-  SKILL_STAT,
+  STAT_GROWTH_USES,
+  STAT_NATURAL_CAP,
   type DailyActionDef,
   type DailyActionId,
   type RegionId,
   type RunState,
   type SkillId,
+  type StatId,
 } from "../types";
 import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "./resources";
 import { advanceSlot } from "./time";
@@ -23,6 +25,9 @@ import { advanceSlot } from "./time";
 /** 레나가 가르치는 숙련 (SYSTEM_SPEC 6-2) */
 export const LESSON_SKILLS: readonly SkillId[] = ["blade", "blunt", "bow", "guard"];
 export const SOLO_TRAINING_DC = 10;
+/** 혼자 훈련은 몸을 단련하는 운동: 고른 능력치의 판정 횟수(성장 굴림용)를 늘린다. 말솜씨는 혼자 늘릴 수 없다. */
+/** 운동 한 번에 쌓이는 판정 횟수 (판정 자체의 1회 포함): 대성공 4, 성공 3, 그 밖 2 */
+export const EXERCISE_USES = { critSuccess: 4, success: 3, other: 2 } as const;
 export const LESSON_XP = 3;
 export const REST_HP = 2;
 /** 경상은 휴식 2회로 낫는다 */
@@ -35,8 +40,8 @@ const IMPLEMENTED: ReadonlySet<DailyActionId> = new Set(["work", "trainSolo", "t
 
 export const MVP_ACTIONS: readonly DailyActionDef[] = DAILY_ACTIONS.filter((a) => a.mvp);
 
-/** 훈련할 숙련 / 탐험할 지역 / 찾아갈 사람 */
-export interface ActionTarget { skill?: SkillId; region?: RegionId; npc?: string }
+/** 교습받을 숙련 / 운동할 능력치 / 탐험할 지역 / 찾아갈 사람 */
+export interface ActionTarget { skill?: SkillId; stat?: StatId; region?: RegionId; npc?: string }
 
 export type ActionStatus = { available: true } | { available: false; reason: string };
 
@@ -45,7 +50,7 @@ export function actionStatus(
   run: RunState,
   content: Pick<ContentDB, "events" | "items" | "traits">,
   id: DailyActionId,
-  { skill, region, npc }: ActionTarget = {},
+  { skill, stat, region, npc }: ActionTarget = {},
 ): ActionStatus {
   const def = DAILY_ACTIONS.find((a) => a.id === id);
   if (!def || !def.mvp) return locked("아직 갈 수 없다");
@@ -69,10 +74,17 @@ export function actionStatus(
     if (eventPool(content, "npc", undefined, npc).length === 0) return locked("준비 중");
   }
 
-  if (id === "trainSolo" || id === "trainLesson") {
+  if (id === "trainSolo") {
+    if (!stat) return locked("할 운동을 고른다");
+    if (!isExerciseStat(stat)) return locked("그런 운동은 없다");
+    if (run.player.stats[stat] >= STAT_NATURAL_CAP) return locked(`${josa(STAT_LABEL[stat], "은/는")} 더 단련해도 늘지 않는다`);
+    if (run.player.statUses[stat] >= STAT_GROWTH_USES) return locked("저녁에 성장 기회가 온다");
+  }
+
+  if (id === "trainLesson") {
     if (!skill) return locked("훈련할 숙련을 고른다");
     if (!Object.hasOwn(run.player.skills, skill)) return locked("그런 기술은 없다");
-    if (id === "trainLesson" && !LESSON_SKILLS.includes(skill)) return locked("레나는 그건 가르치지 않는다");
+    if (!LESSON_SKILLS.includes(skill)) return locked("레나는 그건 가르치지 않는다");
     if (run.player.skills[skill].rank >= SKILL_MAX_RANK) return locked("더 배울 것이 없다");
     if (skillXpRoomToday(run.player, skill) <= 0) return locked(`오늘은 ${josa(SKILL_LABEL[skill], "을/를")} 더 익힐 수 없다`);
   }
@@ -84,8 +96,8 @@ export function actionStatus(
  * 판정은 행동 전 피로로 굴리고, 피로는 행동 뒤에 쌓인다 (일을 마치고 지친다).
  * @returns 처리했으면 true. 불가능한 행동이면 피드에 사유만 남기고 false.
  */
-export function handleAction(ctx: Ctx, id: DailyActionId, { skill, region, npc }: ActionTarget = {}): boolean {
-  const status = actionStatus(ctx.draft, ctx.content, id, { skill, region, npc });
+export function handleAction(ctx: Ctx, id: DailyActionId, { skill, stat, region, npc }: ActionTarget = {}): boolean {
+  const status = actionStatus(ctx.draft, ctx.content, id, { skill, stat, region, npc });
   if (!status.available) {
     ctx.feed.push({ kind: "toast", text: status.reason });
     return false;
@@ -94,7 +106,7 @@ export function handleAction(ctx: Ctx, id: DailyActionId, { skill, region, npc }
 
   switch (id) {
     case "work": work(ctx); break;
-    case "trainSolo": trainSolo(ctx, skill!); break;
+    case "trainSolo": trainSolo(ctx, stat!); break;
     case "trainLesson": trainLesson(ctx, skill!, def); break;
     case "rest": rest(ctx); break;
   }
@@ -131,8 +143,14 @@ function work(ctx: Ctx): void {
   changeFatigue(ctx, w.fatigue);
 }
 
-function trainSolo(ctx: Ctx, skill: SkillId): void {
-  const r = performCheck(ctx, { stat: SKILL_STAT[skill], skill, dc: SOLO_TRAINING_DC }, `혼자 훈련: ${SKILL_LABEL[skill]}`);
+/** 운동: 능력치만으로 DC 10. 판정이 1회 세고, 결과에 따라 판정 횟수를 더 얹는다 (상한은 성장 굴림 기준치). */
+function trainSolo(ctx: Ctx, stat: StatId): void {
+  if (!isExerciseStat(stat)) return;
+  const r = performCheck(ctx, { stat, dc: SOLO_TRAINING_DC }, EXERCISE_LABEL[stat]);
+  const total = r.outcome === "critSuccess" ? EXERCISE_USES.critSuccess : r.outcome === "success" ? EXERCISE_USES.success : EXERCISE_USES.other;
+  const uses = ctx.draft.player.statUses;
+  uses[stat] = Math.min(STAT_GROWTH_USES, uses[stat] + total - 1);
+  ctx.feed.push({ kind: "text", text: `${josa(STAT_LABEL[stat], "을/를")} 단련했다. 성장까지 ${uses[stat]}/${STAT_GROWTH_USES}` });
   if (r.outcome === "critFail") changeFatigue(ctx, CRIT_FAIL_FATIGUE);
 }
 

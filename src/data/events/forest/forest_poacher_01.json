@@ -1,0 +1,76 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_poacher_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "덫 앞의 밀렵꾼",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "영주의 숲에 덫을 놓던 밀렵꾼과 눈이 마주쳤다. 사내가 칼을 뽑으며 낮게 말한다. \"본 건 잊어라.\"",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "무기를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "talk",
+          "label": "못 본 척하겠다고 달랜다",
+          "check": {
+            "stat": "cha",
+            "dc": 12,
+            "tags": [
+              "humanoid"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "사내가 칼을 거두고 덤불 속으로 사라졌다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "\"입이 가벼워 보이는군.\" 사내가 덤벼든다!",
+              "next": "fight"
+            }
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "사내가 칼을 낮게 겨누고 다가온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "poacher"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "밀렵꾼이 덫도 버리고 달아났다. 짐 속에서 쓸 만한 것을 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "등 뒤로 욕설이 들렸지만 따라오지는 않았다. 오늘 숲은 여기까지다.",
+      "choices": []
+    }
+  }
+}

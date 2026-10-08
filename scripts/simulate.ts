@@ -13,7 +13,7 @@ import { treatable } from "@/core/items/shop";
 import { ENDING_LABEL, NPC_IDS, REGION_LABEL } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import { makeRecord } from "@/core/story/ending";
-import { FATIGUE_DISADVANTAGE_AT, maxHp, type EndingId, type JobId, type RunState, type SkillId } from "@/core/types";
+import { FATIGUE_DISADVANTAGE_AT, maxHp, SKILL_STAT, type EndingId, type JobId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 
 const RUNS = Number(process.argv[process.argv.indexOf("--runs") + 1]) || 1000;
@@ -85,7 +85,7 @@ function pickCommand(run: RunState, ai: Ai): GameCommand {
   if (run.time.phase === "evening") return { type: "endDay" };
 
   const can = (cmd: Extract<GameCommand, { type: "chooseAction" }>) =>
-    actionStatus(run, CONTENT, cmd.action, { skill: cmd.skill, region: cmd.region, npc: cmd.npc }).available;
+    actionStatus(run, CONTENT, cmd.action, { skill: cmd.skill, stat: cmd.stat, region: cmd.region, npc: cmd.npc }).available;
   const options: Extract<GameCommand, { type: "chooseAction" }>[] = [];
   if (run.resources.fatigue >= FATIGUE_DISADVANTAGE_AT || run.player.hp < maxHp(run.player.stats) * HURT_RATIO) options.push({ type: "chooseAction", action: "rest" });
   if (run.resources.silver < SILVER_FLOOR) options.push({ type: "chooseAction", action: "work" });
@@ -95,7 +95,8 @@ function pickCommand(run: RunState, ai: Ai): GameCommand {
   if (ai.rand() < 0.15) options.push({ type: "chooseAction", action: "village", npc: NPC_IDS[Math.floor(ai.rand() * NPC_IDS.length)] });
   if (run.time.phase === "am") {
     if (LESSON_SKILLS.includes(skill) && run.resources.silver >= SILVER_FLOOR + 3) options.push({ type: "chooseAction", action: "trainLesson", skill });
-    options.push({ type: "chooseAction", action: "trainSolo", skill });
+    // 혼자 훈련은 주 무기의 능력치를 단련하고, 그게 막히면 체력
+    options.push({ type: "chooseAction", action: "trainSolo", stat: SKILL_STAT[skill] }, { type: "chooseAction", action: "trainSolo", stat: "con" });
   }
   options.push({ type: "chooseAction", action: "explore", region });
   options.push({ type: "chooseAction", action: "work" }, { type: "chooseAction", action: "rest" });

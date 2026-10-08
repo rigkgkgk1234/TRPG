@@ -75,8 +75,9 @@ export function CombatPanel({ run }: { run: RunState }) {
       )}
 
       <ButtonGrid>
-        {view.actions.map((a) => (
-          <GridCell key={a.type}>
+        {view.actions.map((a, i) => (
+          // 홀수 개면 마지막 칸(보통 도주)이 한 줄을 다 쓴다
+          <GridCell key={a.type} full={i === view.actions.length - 1 && view.actions.length % 2 === 1}>
             <ActionButton
               fill
               badgeBelow

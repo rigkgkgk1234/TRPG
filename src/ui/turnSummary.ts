@@ -1,6 +1,6 @@
 import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
-import { isNpcId, josa, NPC_LABEL, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
+import { EXERCISE_LABEL, isExerciseStat, isNpcId, josa, NPC_LABEL, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { equippedWeapon, isBow } from "@/core/combat/combat";
 import type { CheckOutcome, CheckResult, CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -122,7 +122,7 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
     case "chooseAction": {
       if (cmd.action === "work") return jobOf(CONTENT, run).work.label;
       const skill = cmd.skill ? `(${SKILL_LABEL[cmd.skill]})` : "";
-      if (cmd.action === "trainSolo") return `혼자 훈련${skill}`;
+      if (cmd.action === "trainSolo") return cmd.stat && isExerciseStat(cmd.stat) ? `혼자 훈련(${EXERCISE_LABEL[cmd.stat]})` : "혼자 훈련";
       if (cmd.action === "trainLesson") return `레나의 교습${skill}`;
       if (cmd.action === "rest") return "휴식";
       if (cmd.action === "explore" && cmd.region) return `${REGION_LABEL[cmd.region]} 탐험`;

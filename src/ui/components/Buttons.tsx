@@ -18,6 +18,8 @@ interface ActionButtonProps {
   fill?: boolean;
   /** 글자를 가운데로 (가운데 정렬인 주 버튼과 나란히 둘 때) */
   center?: boolean;
+  /** 설명 줄 없이 이름만 둘 때: 아이콘·이름을 키우고 칸의 세로 가운데에 둔다 */
+  large?: boolean;
   /** 두 번째 줄: 비용·보상 또는 잠김 사유. 배열이면 항목 단위로만 줄을 바꾼다 */
   detail?: string | string[];
   disabled?: boolean;
@@ -27,7 +29,7 @@ interface ActionButtonProps {
 }
 
 /** 허브·저녁 화면의 큰 버튼. 잠긴 버튼도 사유는 읽을 수 있게 흐리게만 한다. 누르면 살짝 눌린다. */
-export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, detail, disabled, selected, primary, onPress }: ActionButtonProps) {
+export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, onPress }: ActionButtonProps) {
   const fg = primary ? colors.accentText : colors.text;
   return (
     <Pressable
@@ -40,26 +42,31 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
       style={({ pressed }) => [
         styles.button,
         fill && styles.fill,
-        fill && (primary || center) && styles.fillCenter,
+        fill && (primary || center || large) && styles.fillCenter,
         primary && styles.primary,
         selected && styles.selected,
         disabled && styles.disabled,
         pressed && styles.pressed,
       ]}
     >
-      <View style={[styles.labelRow, (primary || center) && styles.center]}>
-        {IconC && <IconC size={iconToken.md} weight={iconToken.weight} color={iconColor ?? (primary ? fg : selected ? colors.accent : colors.textDim)} />}
-        <Text style={[styles.label, { color: fg }]} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{label}</Text>
-        {badge && !badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badge} noteStyle={styles.badgeNote} /> : null}
-      </View>
-      {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={{ ...styles.badge, ...styles.badgeBelow }} noteStyle={styles.badgeNote} /> : null}
-      {Array.isArray(detail) ? (
-        <View style={styles.detailRow}>
-          {detail.map((d) => <Text key={d} style={[styles.detail, primary && { color: fg }]}>{d}</Text>)}
+      <View style={styles.sideRow}>
+        <View style={styles.main}>
+          <View style={[styles.labelRow, (primary || center) && styles.center]}>
+            {IconC && <IconC size={large ? iconToken.md + 2 : iconToken.md} weight={iconToken.weight} color={iconColor ?? (primary ? fg : selected ? colors.accent : colors.textDim)} />}
+            <Text style={[styles.label, large && styles.labelLarge, { color: fg }]} numberOfLines={2} lineBreakStrategyIOS="hangul-word">{label}</Text>
+          </View>
+          {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badge} noteStyle={styles.badgeNote} /> : null}
+          {Array.isArray(detail) ? (
+            <View style={styles.detailRow}>
+              {detail.map((d) => <Text key={d} style={[styles.detail, primary && { color: fg }]}>{d}</Text>)}
+            </View>
+          ) : detail ? (
+            <Text style={[styles.detail, primary && { color: fg }]} numberOfLines={2}>{detail}</Text>
+          ) : null}
         </View>
-      ) : detail ? (
-        <Text style={[styles.detail, primary && { color: fg }]} numberOfLines={2}>{detail}</Text>
-      ) : null}
+        {/* 넓은 버튼의 확률은 오른쪽에, 이름·설명 줄 전체의 세로 가운데에 */}
+        {badge && !badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badgeSide} noteStyle={styles.badgeSideNote} /> : null}
+      </View>
     </Pressable>
   );
 }
@@ -95,8 +102,13 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   center: { justifyContent: "center" },
   label: { ...type.bodyStrong, flexShrink: 1 },
-  badge: { ...type.label, marginLeft: "auto", color: colors.accent, fontVariant: ["tabular-nums"] },
-  badgeBelow: { marginLeft: 0 },
+  labelLarge: { fontSize: 17, lineHeight: 24 },
+  sideRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  main: { flex: 1, gap: space.xs },
+  badge: { ...type.label, color: colors.accent, fontVariant: ["tabular-nums"] },
+  // 훈련 창의 확률과 같은 크기: 큰 글씨 16, 괄호 12
+  badgeSide: { ...type.bodyStrong, color: colors.accent, fontVariant: ["tabular-nums"] },
+  badgeSideNote: { fontSize: 12 },
   badgeNote: { fontSize: 11 },
   detailRow: { flexDirection: "row", flexWrap: "wrap", columnGap: space.sm },
   detail: { ...type.caption, color: colors.textDim },

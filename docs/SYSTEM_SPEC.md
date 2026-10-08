@@ -80,11 +80,11 @@ export type Rng = () => number;
 | 성공 | +1 |
 | 부분 성공 · 실패 · 대실패 | +2 ("실패에서 더 배운다") |
 | 교습 훈련(은화 3) | +3 (판정 없음) |
-| 혼자 훈련 | 판정 DC 10 → 결과에 따른 XP |
 
   - **남용 방지**: 전투 1회당 같은 숙련 XP 최대 +3, 하루 같은 숙련 XP 최대 +6.
 - **능력치**: 해당 능력치를 쓴 판정 횟수(`statUses`)가 15회가 되면 **성장 굴림** `D20 + 현재 능력치 ≤ 15` → 성공 시 +1 후 카운트 0, 실패 시 카운트를 10으로 되돌림(5회 뒤 재도전).
   - 예) 근력 +2: 13 이하가 나와야 하므로 65%. 근력 +3이면 60%. 높을수록 오르기 어렵다.
+  - **혼자 훈련(운동)**: 근력 운동(근력)·달리기(민첩)·오래 버티기(체력)·집중 연습(감각) 중 하나. 능력치만으로 DC 10 판정, 판정 1회를 포함해 `statUses` 대성공 +4 / 성공 +3 / 그 밖 +2. 15를 넘겨 쌓지 않으며, 15를 채웠거나 자연 상한(+4)이면 할 수 없다. 말솜씨는 혼자 단련할 수 없다.
 
 ```ts
 export type StatId = "str" | "agi" | "con" | "per" | "cha";
@@ -199,7 +199,7 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
       { itemId: "arrow", qty: 10 },
       { itemId: "hunting_knife", qty: 1 },
     ],
-    work: { label: "덫 손질과 가죽 무두질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
+    work: { label: "덫·가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
   },
 };
 ```
@@ -453,6 +453,9 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 늑대 | 6 | 11 | +3 | 1d6 | 4 | 50% | deathSave | beast |
 | 멧돼지 | 9 | 10 | +3 | 1d6 | 2 | 30% | deathSave | beast |
 | 도적 | 9 | 12 | +3 | 1d6 | 2 | 30% | robbed | humanoid |
+| 들개 | 4 | 10 | +1 | 1d4 | 4 | 60% | deathSave | beast |
+| 큰 쥐 | 3 | 9 | +1 | 1d3 | 3 | 50% | deathSave | beast |
+| 밀렵꾼 | 6 | 10 | +1 | 1d4 | 3 | 60% | robbed | humanoid |
 | 고블린 정찰병 | 6 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
 | 고블린 전사 | 12 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
 | 약탈대장 | 18 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
@@ -1047,7 +1050,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 행동 | 슬롯 | 피로 | 효과 |
 |------|:---:|:---:|------|
 | 일하기 | 1 | +2 (대장장이 +3) | 직업 판정 → 은화 (아래 표) |
-| 혼자 훈련 | 1 | +2 | 선택 숙련 판정 DC 10 → XP |
+| 혼자 훈련 | 1 | +2 | 운동 하나 골라 능력치 판정 DC 10 → 성장 굴림까지의 판정 횟수 (1-4) |
 | 교습 훈련 | 1 | +3 | 은화 3, 선택 숙련 XP +3 (레나: 검술·둔기·활·방어) |
 | 탐험 | 1 | +2 (+1 더 깊이) | 지역 카드 2~3장 |
 | 휴식 | 1 | **-3** | HP +2, 경상 회복 카운트 +1 |

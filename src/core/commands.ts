@@ -5,7 +5,7 @@ import type { CheckResult, CombatAction, DailyActionId, ItemId, RegionId, Rng, R
 
 /** UI가 엔진에 보낼 수 있는 명령. 전투·가방 명령은 4·5주차에 더한다. (ARCHITECTURE 3-1) */
 export type GameCommand =
-  | { type: "chooseAction"; action: DailyActionId; skill?: SkillId; region?: RegionId; npc?: string }
+  | { type: "chooseAction"; action: DailyActionId; skill?: SkillId; stat?: StatId; region?: RegionId; npc?: string }
   /** 이벤트 장면의 선택지 */
   | { type: "chooseChoice"; choiceId: string }
   /** 선택지가 없는 장면의 "계속" */

@@ -21,9 +21,9 @@ export function Chip({ label, selected, disabled, onPress }: { label: string; se
  * 고르기 줄의 한 칸 (숙련·지역·사람). 2열로 너비를 맞춰 줄이 들쭉날쭉하지 않게 한다.
  * 오른쪽에 확률(괄호 안은 작게), 고를 수 없으면 둘째 줄에 사유.
  */
-export function PickCell({ label, sub, badge, badgeNote, reason, disabled, onPress }: {
-  /** sub: 이름 아래 작은 설명 (고를 수 있을 때) */
-  label: string; sub?: string; badge?: string; badgeNote?: string; reason?: string; disabled?: boolean; onPress: () => void;
+export function PickCell({ label, sub, badge, badgeNote, reason, disabled, wide, onPress }: {
+  /** sub: 이름 아래 작은 설명 (고를 수 있을 때), wide: 한 줄을 다 쓴다 (확률처럼 긴 배지가 있을 때) */
+  label: string; sub?: string; badge?: string; badgeNote?: string; reason?: string; disabled?: boolean; wide?: boolean; onPress: () => void;
 }) {
   return (
     <Pressable
@@ -32,13 +32,16 @@ export function PickCell({ label, sub, badge, badgeNote, reason, disabled, onPre
       accessibilityRole="button"
       accessibilityLabel={reason ? `${label}, ${reason}` : label}
       accessibilityState={{ disabled }}
-      style={({ pressed }) => [styles.pick, (disabled || reason) && styles.pickMuted, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.pick, wide && styles.pickWide, (disabled || reason) && styles.pickMuted, pressed && styles.pressed]}
     >
+      {/* 이름·설명은 왼쪽에 쌓고, 확률은 칸 높이의 가운데에 */}
       <View style={styles.pickRow}>
-        <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
+        <View style={styles.pickText}>
+          <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
+          {reason || sub ? <Text style={styles.pickReason} numberOfLines={1}>{reason ?? sub}</Text> : null}
+        </View>
         {badge ? <WithNote main={badge} note={badgeNote} style={styles.pickBadge} noteStyle={styles.pickNote} /> : null}
       </View>
-      {reason || sub ? <Text style={styles.pickReason} numberOfLines={1}>{reason ?? sub}</Text> : null}
     </Pressable>
   );
 }
@@ -108,20 +111,23 @@ const styles = StyleSheet.create({
   chipTextSelected: { color: colors.accentText },
   chipRow: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
   pickGrid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
+  // 두 칸씩 채우고 남는 폭은 나눠 가진다: 홀수 개면 마지막 칸이 한 줄을 다 쓴다
   pick: {
-    width: "48.5%",
+    flexBasis: "40%",
+    flexGrow: 1,
     minHeight: 40,
     justifyContent: "center",
-    gap: 2,
     paddingHorizontal: space.md,
     paddingVertical: space.sm,
     borderRadius: radius.md,
     backgroundColor: colors.surfaceRaised,
   },
+  pickWide: { flexBasis: "100%", minHeight: 52 },
   pickMuted: { opacity: 0.45 },
-  pickRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.xs },
-  pickBadge: { ...type.label, color: colors.accent, fontVariant: ["tabular-nums"] },
-  pickNote: { fontSize: 11 },
+  pickRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space.sm },
+  pickText: { flexShrink: 1, gap: 2 },
+  pickBadge: { ...type.bodyStrong, color: colors.accent, fontVariant: ["tabular-nums"] },
+  pickNote: { fontSize: 12 },
   pickReason: { ...type.caption, color: colors.textDim },
   pressed: { transform: [{ scale: motion.press }] },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
