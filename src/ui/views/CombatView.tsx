@@ -10,7 +10,7 @@ import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
 import { chanceBadgeProps } from "@/ui/rollText";
-import { colors, icon, radius, space, type } from "@/ui/theme";
+import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
 
 const ACTION_ICON: Record<CombatActionView["type"], Icon> = {
   attack: SwordIcon,
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     gap: space.md,
     justifyContent: "space-between",
     backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.md,
-    borderTopRightRadius: radius.md,
+    borderTopWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   header: { flexDirection: "row", alignItems: "center", gap: space.sm },
   body: { flexGrow: 0, flexShrink: 1, minHeight: ENEMY_ROW - space.sm },
@@ -173,11 +173,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.sm + 2,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.surfaceRaised,
+    borderWidth: hairline,
+    borderColor: colors.border,
   },
-  enemySelected: { borderColor: colors.accent },
+  enemySelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   enemyOut: { opacity: 0.45 },
   enemyName: { ...type.bodyStrong, color: colors.text, flexShrink: 1, maxWidth: "45%" },
   enemyHp: { ...type.label, color: colors.textDim, fontVariant: ["tabular-nums"], minWidth: 56, textAlign: "right" },

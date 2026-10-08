@@ -17,7 +17,7 @@ import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
 import { REGION_INFO } from "@/ui/placeInfo";
 import { chanceBadgeProps } from "@/ui/rollText";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 
 /** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
 type Picking = "trainSolo" | "trainLesson" | "explore";
@@ -311,8 +311,8 @@ const styles = StyleSheet.create({
     paddingTop: space.lg,
     gap: space.sm,
     backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.md,
-    borderTopRightRadius: radius.md,
+    borderTopWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   dialogSection: { gap: space.sm },
   dialogSectionHead: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },

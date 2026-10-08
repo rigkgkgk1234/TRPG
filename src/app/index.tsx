@@ -2,7 +2,7 @@ import type { Href } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
-import { colors, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { colors, hairline, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
 
 /** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 설정은 8주차. */
@@ -57,11 +57,12 @@ const styles = StyleSheet.create({
   button: {
     minHeight: TOUCH_MIN + 4,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceRaised,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
     alignItems: "center",
     justifyContent: "center",
   },
-  primary: { backgroundColor: colors.accent },
+  primary: { backgroundColor: colors.accent, borderColor: colors.accent },
   pressed: { transform: [{ scale: motion.press }] },
   buttonText: { ...type.bodyStrong, color: colors.text },
   primaryText: { color: colors.accentText },

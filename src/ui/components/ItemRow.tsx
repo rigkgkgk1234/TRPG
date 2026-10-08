@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, motion, radius, space, type } from "@/ui/theme";
+import { colors, hairline, motion, radius, space, type } from "@/ui/theme";
 
 export interface RowAction {
   label: string;
@@ -77,12 +77,13 @@ const styles = StyleSheet.create({
     minHeight: 36,
     minWidth: 52,
     paddingHorizontal: space.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceRaised,
+    borderRadius: radius.sm,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
     alignItems: "center",
     justifyContent: "center",
   },
-  danger: { backgroundColor: colors.badBg },
+  danger: { backgroundColor: colors.badBg, borderColor: colors.fail },
   disabled: { opacity: 0.35 },
   pressed: { transform: [{ scale: motion.press }] },
   buttonText: { ...type.label, color: colors.text },

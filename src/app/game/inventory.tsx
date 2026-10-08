@@ -10,7 +10,7 @@ import { useGame } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
 import { ItemRow, type RowAction } from "@/ui/components/ItemRow";
 import { durabilityText, itemSummary } from "@/ui/itemText";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 
 const SLOT_LABEL: Record<EquipSlot, string> = { weapon: "무기", armor: "방어구", shield: "방패" };
 
@@ -129,7 +129,7 @@ function Figure({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   content: { padding: space.lg, gap: space.xl },
-  figures: { flexDirection: "row", padding: space.lg, borderRadius: radius.md, backgroundColor: colors.surface },
+  figures: { flexDirection: "row", paddingVertical: space.lg, borderTopWidth: hairline, borderBottomWidth: hairline, borderColor: colors.border },
   figure: { flex: 1, gap: 2, alignItems: "center" },
   figureValue: { ...type.number, color: colors.text },
   figureLabel: { ...type.caption, color: colors.textFaint },

@@ -7,7 +7,7 @@ import type { RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
 import { ActionButton } from "@/ui/components/Buttons";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 import { once, pushOnce } from "@/ui/navigate";
 
 /**
@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
     paddingTop: space.lg + 4,
     gap: space.md,
     backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.md,
-    borderTopRightRadius: radius.md,
+    borderTopWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   stats: { flexDirection: "row", gap: space.sm },
   figure: { flex: 1, gap: 2 },

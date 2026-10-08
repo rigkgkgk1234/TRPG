@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Icon } from "@/ui/icons";
 import { WithNote } from "@/ui/components/RollFormula";
-import { colors, icon as iconToken, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { colors, hairline, icon as iconToken, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 
 interface ActionButtonProps {
   label: string;
@@ -91,9 +91,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.md - 2,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.surfaceRaised,
+    backgroundColor: "transparent",
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
     justifyContent: "center",
     gap: space.xs,
   },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   warn: { backgroundColor: colors.partial, borderColor: colors.partial },
   selected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   disabled: { opacity: 0.38 },
-  pressed: { transform: [{ scale: motion.press }] },
+  pressed: { transform: [{ scale: motion.press }], backgroundColor: colors.surfaceRaised },
   labelRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   center: { justifyContent: "center" },
   label: { ...type.bodyStrong, flexShrink: 1 },

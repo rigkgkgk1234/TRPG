@@ -9,7 +9,7 @@ import { ActionButton } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { TownRow } from "@/ui/components/TownRow";
 import { BasketIcon, HandCoinsIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
-import { colors, icon, radius, space, type } from "@/ui/theme";
+import { colors, hairline, icon, space, type } from "@/ui/theme";
 
 /** 저녁 패널: 정산을 미리 알려 주고, 모자란 식량을 사거나 먹일 순서를 정한 뒤 잠자리에 든다. */
 export function EveningPanel({ run }: { run: RunState }) {
@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
     paddingTop: space.lg + 4,
     gap: space.md,
     backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.md,
-    borderTopRightRadius: radius.md,
+    borderTopWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   titleRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
   title: { ...type.title, color: colors.text },

@@ -6,7 +6,7 @@ import type { EndingId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
 import { Section } from "@/ui/components/Controls";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, radius, space, type } from "@/ui/theme";
 
 const ENDINGS: EndingId[] = ["shield_of_village", "flee_together", "rowen_spearman", "hero_party", "survivor", "debtor", "death"];
 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   content: { padding: space.lg, gap: space.xxl },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
-  tile: { width: "48.5%", minHeight: 56, justifyContent: "center", padding: space.md, borderRadius: radius.md, backgroundColor: colors.surface },
+  tile: { width: "48.5%", minHeight: 56, justifyContent: "center", padding: space.md, borderRadius: radius.md, borderWidth: hairline, borderColor: colors.border },
   unseen: { opacity: 0.5 },
   unseenText: { color: colors.textDim },
   traitRow: { gap: 2 },

@@ -5,7 +5,7 @@ import { SKILL_MAX_RANK, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USE
 import { CONTENT } from "@/data";
 import { useShownRun } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, radius, space, type } from "@/ui/theme";
 
 /** 상태 모달: 능력치(성장까지 남은 사용 횟수), 숙련 XP, 흔적. 2주차에는 읽기 전용. */
 export default function StatusScreen() {
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   head: { gap: 2 },
   title: { ...type.title, color: colors.text },
   dim: { ...type.caption, color: colors.textDim },
-  figures: { flexDirection: "row", padding: space.lg, borderRadius: radius.md, backgroundColor: colors.surface },
+  figures: { flexDirection: "row", paddingVertical: space.lg, borderTopWidth: hairline, borderBottomWidth: hairline, borderColor: colors.border },
   figure: { flex: 1, gap: 2, alignItems: "center" },
   figureValue: { ...type.number, color: colors.text },
   traitRow: { gap: 2 },

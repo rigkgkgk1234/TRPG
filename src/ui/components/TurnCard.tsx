@@ -140,22 +140,22 @@ export function FadeIn({ animate, style, children }: { animate: boolean; style?:
 }
 
 const styles = StyleSheet.create({
+  // 상자 없이 여백과 왼쪽 가는 줄로만 묶는다 (지난 기록과 같은 바탕 위에 놓인 장부 한 장)
   card: {
-    padding: space.lg + 4,
+    paddingVertical: space.xs,
+    paddingLeft: space.lg,
     gap: space.lg,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.accent,
   },
-  when: { ...type.caption, color: colors.textFaint },
+  when: { ...type.overline, color: colors.textFaint },
   title: { ...type.title, color: colors.text },
   rollRow: { flexDirection: "row", alignItems: "center", gap: space.lg },
   rollText: { flex: 1, minHeight: 64, justifyContent: "center" },
   rolling: { ...type.body, color: colors.textDim },
   rollResult: { gap: space.xs },
   outcomeRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
-  badge: { paddingHorizontal: space.md, paddingVertical: 2, borderRadius: radius.pill },
+  badge: { paddingHorizontal: space.md, paddingVertical: 2, borderRadius: radius.sm },
   badgeText: { ...type.heading },
   xp: { ...type.label, color: colors.textDim },
   math: { ...type.body, color: colors.text, fontVariant: ["tabular-nums"] },
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   dc: { ...type.body, color: colors.textFaint },
   small: { ...type.caption, color: colors.textFaint },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
-  chip: { flexDirection: "row", alignItems: "center", gap: space.xs + 2, paddingHorizontal: space.md, paddingVertical: space.xs + 2, borderRadius: radius.pill },
+  chip: { flexDirection: "row", alignItems: "center", gap: space.xs + 2, paddingHorizontal: space.md, paddingVertical: space.xs + 2, borderRadius: radius.sm },
   chipLabel: { ...type.label, color: colors.textDim },
   chipValue: { ...type.number, fontSize: 16, lineHeight: 20 },
   events: { gap: space.sm },

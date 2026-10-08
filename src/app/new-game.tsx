@@ -8,7 +8,7 @@ import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { JOB_ICON } from "@/ui/gameIcons";
-import { colors, fonts, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { colors, fonts, hairline, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { once } from "@/ui/navigate";
 
 const NAME_MAX = 8;
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     minHeight: TOUCH_MIN + 4,
     paddingHorizontal: space.lg,
     borderRadius: radius.md,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
     backgroundColor: colors.surface,
     color: colors.text,
     fontFamily: fonts.semibold,
@@ -142,11 +142,10 @@ const styles = StyleSheet.create({
     padding: space.lg,
     gap: space.lg,
     borderRadius: radius.md,
-    borderWidth: 1.5,
-    borderColor: colors.surface,
-    backgroundColor: colors.surface,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
   },
-  cardSelected: { borderColor: colors.accent },
+  cardSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   pressed: { transform: [{ scale: 0.99 }] },
   cardHead: { flexDirection: "row", alignItems: "center", gap: space.md },
   jobIcon: {

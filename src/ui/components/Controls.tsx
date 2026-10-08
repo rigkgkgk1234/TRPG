@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatSigned } from "@/core/labels";
 import { WithNote } from "@/ui/components/RollFormula";
-import { colors, motion, radius, space, type } from "@/ui/theme";
+import { colors, hairline, motion, radius, space, type } from "@/ui/theme";
 
 export function Chip({ label, selected, disabled, onPress }: { label: string; selected: boolean; disabled?: boolean; onPress: () => void }) {
   return (
@@ -102,9 +102,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: space.md + 2,
     borderRadius: radius.pill,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.surfaceRaised,
+    backgroundColor: "transparent",
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   chipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
   chipText: { ...type.label, color: colors.text, fontVariant: ["tabular-nums"] },
@@ -120,7 +120,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.sm,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceRaised,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   pickWide: { flexBasis: "100%", minHeight: 52 },
   pickMuted: { opacity: 0.45 },

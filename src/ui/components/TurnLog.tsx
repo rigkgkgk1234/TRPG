@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   introTitle: { ...type.display, fontSize: 28, lineHeight: 36, color: colors.text },
   introBody: { ...type.body, color: colors.textDim },
   history: { gap: space.lg, paddingHorizontal: space.xs },
-  historyTitle: { ...type.label, color: colors.textFaint },
+  historyTitle: { ...type.overline, color: colors.textFaint },
   row: { gap: 2 },
   rowHead: { flexDirection: "row", alignItems: "baseline", gap: space.sm },
   rowTitle: { ...type.bodyStrong, color: colors.textDim, flexShrink: 1 },

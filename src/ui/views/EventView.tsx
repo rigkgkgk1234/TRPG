@@ -11,7 +11,7 @@ import { ActionButton } from "@/ui/components/Buttons";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, SwordIcon, TreeIcon, type Icon } from "@/ui/icons";
-import { colors, icon, radius, space, type } from "@/ui/theme";
+import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
 
 /**
  * 이벤트 패널: 장면 글 → 선택지. 선택지마다 성공 확률·비용·잠김 사유·위험 표시를 붙인다. (SYSTEM_SPEC 4-2)
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
     paddingTop: space.sm,
     gap: space.md,
     backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.md,
-    borderTopRightRadius: radius.md,
+    borderTopWidth: hairline,
+    borderColor: colors.borderStrong,
   },
   // 내용이 짧으면 내용만큼, 길면 남은 자리까지만 차지하고 스크롤한다
   scroll: { flexGrow: 0, flexShrink: 1 },

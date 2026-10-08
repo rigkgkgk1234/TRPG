@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { Icon } from "@/ui/icons";
 import { ActionButton } from "@/ui/components/Buttons";
-import { colors, icon as iconToken, radius, space, type } from "@/ui/theme";
+import { colors, hairline, icon as iconToken, radius, space, type } from "@/ui/theme";
 
 export interface InfoSection {
   title: string;
@@ -123,7 +123,7 @@ export function DialogSectionTitle({ children }: { children: string }) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.66)",
     justifyContent: "center",
     alignItems: "center",
     padding: space.lg,
@@ -133,9 +133,9 @@ const styles = StyleSheet.create({
     maxWidth: 420,
     maxHeight: "86%",
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderWidth: hairline,
+    borderColor: colors.borderStrong,
     overflow: "hidden",
   },
   content: { padding: space.lg, gap: space.md },
@@ -148,14 +148,15 @@ const styles = StyleSheet.create({
   fact: {
     ...type.label,
     color: colors.textDim,
-    backgroundColor: colors.surfaceRaised,
-    borderRadius: radius.pill,
+    borderWidth: hairline,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
     paddingHorizontal: space.md,
     paddingVertical: space.xs,
     overflow: "hidden",
   },
   section: { gap: space.xs },
-  sectionTitle: { ...type.label, color: colors.textFaint },
+  sectionTitle: { ...type.overline, color: colors.textFaint },
   item: { ...type.body, color: colors.textDim },
   actions: { padding: space.lg, paddingTop: 0, gap: space.sm },
 });

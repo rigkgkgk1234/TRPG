@@ -15,7 +15,7 @@ import { Section } from "@/ui/components/Controls";
 import { ItemRow } from "@/ui/components/ItemRow";
 import { durabilityText, itemSummary } from "@/ui/itemText";
 import { summarizeTurn } from "@/ui/turnSummary";
-import { colors, radius, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 
 const TABS: ShopId[] = ["smithy", "healer", "inn"];
 
@@ -243,9 +243,9 @@ function Inn({ run }: { run: RunState }) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   top: { paddingHorizontal: space.lg, paddingTop: space.md, gap: space.md },
-  tabs: { flexDirection: "row", padding: 4, borderRadius: radius.pill, backgroundColor: colors.surface },
-  tab: { flex: 1, minHeight: 40, alignItems: "center", justifyContent: "center", borderRadius: radius.pill },
-  tabSelected: { backgroundColor: colors.surfaceRaised },
+  tabs: { flexDirection: "row", borderBottomWidth: hairline, borderColor: colors.border },
+  tab: { flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center", borderBottomWidth: 2, borderColor: "transparent", marginBottom: -hairline },
+  tabSelected: { borderColor: colors.accent },
   tabText: { ...type.label, color: colors.textDim },
   tabTextSelected: { color: colors.text },
   purse: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" },
