@@ -1,4 +1,6 @@
-import { checksum, SAVE_KEYS, SAVE_VERSION, type MetaSave, type RunRecord } from "../types";
+import { ENDING_LABEL } from "../labels";
+import { SAVE_KEYS, SAVE_VERSION, type MetaSave, type RunRecord } from "../types";
+import { seal, unseal } from "./seal";
 import type { KeyValueStore } from "./serialize";
 
 /** 회차 기록은 최근 이만큼만 남긴다 */
@@ -30,22 +32,34 @@ export function addRecord(meta: MetaSave, r: RunRecord): MetaSave {
   };
 }
 
-interface MetaFile { version: number; checksum: string; data: MetaSave }
+interface MetaFile { version: number; data: MetaSave }
 
+/** 기록도 진행 저장처럼 봉인한다 (본 엔딩을 고쳐 넣지 못하게) */
 export async function saveMeta(kv: KeyValueStore, meta: MetaSave): Promise<void> {
-  const file: MetaFile = { version: SAVE_VERSION, checksum: checksum(JSON.stringify(meta)), data: meta };
-  await kv.setItem(SAVE_KEYS.meta, JSON.stringify(file));
+  const file: MetaFile = { version: SAVE_VERSION, data: meta };
+  await kv.setItem(SAVE_KEYS.meta, seal(JSON.stringify(file)));
 }
 
-/** 없거나 깨졌으면 빈 기록 (기록이 깨졌다고 게임을 못 하게 하지는 않는다) */
+/** 없거나 깨졌거나 조작됐으면 빈 기록 (기록이 깨졌다고 게임을 못 하게 하지는 않는다) */
 export async function loadMeta(kv: KeyValueStore): Promise<MetaSave> {
   try {
     const raw = await kv.getItem(SAVE_KEYS.meta);
-    if (!raw) return emptyMeta();
-    const file = JSON.parse(raw) as MetaFile;
-    if (file.version !== SAVE_VERSION || checksum(JSON.stringify(file.data)) !== file.checksum) return emptyMeta();
+    const text = raw ? unseal(raw) : null;
+    if (!text) return emptyMeta();
+    const file = JSON.parse(text) as MetaFile;
+    if (file.version !== SAVE_VERSION || !plausibleMeta(file.data)) return emptyMeta();
     return { ...emptyMeta(), ...file.data };
   } catch {
     return emptyMeta();
   }
+}
+
+/** 본 엔딩은 실제 엔딩 ID이고, 기록에 남은 회차에서 본 것이어야 한다 */
+function plausibleMeta(m: MetaSave): boolean {
+  if (!Array.isArray(m.endingsSeen) || !Array.isArray(m.history)) return false;
+  if (!m.endingsSeen.every((e) => Object.hasOwn(ENDING_LABEL, e))) return false;
+  if (!Number.isInteger(m.totalRuns) || m.totalRuns < m.history.length) return false;
+  // 기록은 최근 HISTORY_MAX판만 남으므로, 기록이 꽉 차지 않았다면 본 엔딩은 모두 기록 안에 있어야 한다
+  if (m.history.length < HISTORY_MAX && !m.endingsSeen.every((e) => m.history.some((h) => h.ending === e))) return false;
+  return true;
 }

@@ -161,7 +161,13 @@ describe("기록", () => {
     const meta = addRecord(emptyMeta(), makeRecord(edit(start(), (s) => { s.ending = "debtor"; }), CONTENT, NOW));
     await saveMeta(kv, meta);
     expect(await loadMeta(kv)).toEqual(meta);
-    data.set(SAVE_KEYS.meta, data.get(SAVE_KEYS.meta)!.replace("debtor", "survivor"));
+    // 봉인이라 글자로 찾아 고칠 수 없다. 한 글자라도 바뀌면 빈 기록
+    const sealed = data.get(SAVE_KEYS.meta)!;
+    expect(sealed).not.toContain("debtor");
+    data.set(SAVE_KEYS.meta, sealed.slice(0, 30) + (sealed[30] === "A" ? "B" : "A") + sealed.slice(31));
+    expect(await loadMeta(kv)).toEqual(emptyMeta());
+    // 기록에 없는 엔딩을 본 것처럼 꾸민 기록도 버린다
+    await saveMeta(kv, { ...meta, endingsSeen: ["debtor", "hero_party"] });
     expect(await loadMeta(kv)).toEqual(emptyMeta());
   });
 });

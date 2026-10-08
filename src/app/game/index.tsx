@@ -21,6 +21,7 @@ export default function GameScreen() {
   const run = useGame((s) => s.run);
   const shown = useShownRun();
   const busy = useGame((s) => s.playing !== null);
+  const notice = useGame((s) => s.notice);
   // 저장 기능(5주차) 전에는 앱을 새로 고치면 회차가 사라진다 → 타이틀로
   if (!run || !shown) return <Redirect href="/" />;
 
@@ -28,7 +29,7 @@ export default function GameScreen() {
   return (
     <View style={styles.root}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
-      <TurnLog intro={introFor(run)} />
+      <TurnLog intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)} />
       {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다 (나머지 패널은 내용 높이 그대로) */}
       <View style={[view === "event" && styles.shrink, busy && styles.busy]}>
         <Panel view={view} run={shown} />

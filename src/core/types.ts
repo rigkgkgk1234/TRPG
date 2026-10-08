@@ -706,7 +706,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",
@@ -753,10 +753,10 @@ export interface RunStats {
   lowestHp: { hp: number; day: number } | null;
 }
 
+/** 봉인(seal) 안에 들어가는 내용. 서명이 손상·조작을 함께 막으므로 따로 체크섬을 두지 않는다 */
 export interface RunSaveFile {
   version: number;
   savedAt: string;
-  checksum: string;
   data: RunState;
 }
 

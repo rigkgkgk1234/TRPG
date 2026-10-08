@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { FeedItem, GameCommand } from "@/core/commands";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
-import type { JobId, RunState } from "@/core/types";
+import { checksum, type JobId, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { makeRecord } from "@/core/story/ending";
 import { useMeta } from "./metaStore";
@@ -54,6 +54,16 @@ const INSTANT = new Set<GameCommand["type"]>(["shop", "equip", "unequip", "useIt
 const INSTANT_GAP_MS = 350;
 let lastInstantAt = 0;
 
+/**
+ * 실행 중 조작 막기: 스토어가 상태를 바꿀 때마다 지문을 남기고, 다음 명령·저장 전에 맞춰 본다.
+ * 메모리 조작 도구로 은화·HP 같은 값을 바꾸면 지문이 어긋나므로 그 상태를 버리고 마지막 저장으로 되돌린다.
+ */
+let fingerprint: string | null = null;
+const SALT = "brw:" + (0x1e).toString(36);
+const stamp = (run: RunState | null) => (run ? checksum(SALT + JSON.stringify(run)) : null);
+const intact = (run: RunState | null) => stamp(run) === fingerprint;
+export const TAMPER_NOTICE = "게임 값이 바깥에서 바뀐 것을 발견해 마지막 저장으로 되돌렸다.";
+
 /** 저장은 순서대로 한 번에 하나씩 (앞 저장이 끝나기 전에 뒤 저장이 끼어들지 않게) */
 let writing: Promise<void> = Promise.resolve();
 function persist(task: () => Promise<void>): void {
@@ -74,6 +84,7 @@ export const useGame = create<GameStore>()((set, get) => ({
   send: (cmd) => {
     const { run, log, playing } = get();
     if (!run || playing) return;
+    if (!intact(run)) return void restoreAfterTamper();
     if (INSTANT.has(cmd.type)) {
       const now = Date.now();
       if (now - lastInstantAt < INSTANT_GAP_MS) return;
@@ -85,9 +96,12 @@ export const useGame = create<GameStore>()((set, get) => ({
     // 거절(토스트)만 있는 묶음은 연출할 것이 없다
     const animate = !INSTANT.has(cmd.type) && (result.feed.length === 0 || result.feed.some((f) => f.kind !== "toast"));
     // 한 번의 set으로: 새 기록과 새 상태가 따로 보이는 순간이 없게
+    fingerprint = stamp(result.state);
     set({
       run: result.state,
       log: [...log, group].slice(-LOG_MAX),
+      // 되돌렸다는 안내는 다음 행동을 하면 거둔다
+      notice: null,
       playing: animate ? { id: group.id, before: run } : null,
     });
     const next = result.state;
@@ -110,6 +124,7 @@ export const useGame = create<GameStore>()((set, get) => ({
     const seed = (now.getTime() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0;
     const previous = get().run;
     const run = newRun(CONTENT, job, name, { seed, now: now.toISOString() });
+    fingerprint = stamp(run);
     set({ run, log: [], playing: null });
     // 끝나지 않은 회차를 버리면 포기 기록을 남기고, 이전 회차의 백업이 새 회차로 되살아나지 않게 지운다
     persist(async () => {
@@ -123,6 +138,7 @@ export const useGame = create<GameStore>()((set, get) => ({
     try {
       const loaded = await loadRun();
       if (loaded && !loaded.run.ending) {
+        fingerprint = stamp(loaded.run);
         set({
           run: loaded.run,
           log: [],
@@ -138,6 +154,7 @@ export const useGame = create<GameStore>()((set, get) => ({
 
   flush: () => {
     const run = get().run;
+    if (!intact(run)) return void restoreAfterTamper();
     if (run && !run.ending) persist(() => saveRun(run));
   },
 
@@ -146,3 +163,16 @@ export const useGame = create<GameStore>()((set, get) => ({
 
 /** 화면이 그릴 상태: 연출 중이면 명령 전 상태, 아니면 현재 상태 */
 export const useShownRun = () => useGame((s) => s.playing?.before ?? s.run);
+
+/** 조작된 상태는 저장하지 않고 버린다: 마지막 저장(봉인·규칙 검사를 통과한 것)으로 되돌리고, 없으면 타이틀로 */
+async function restoreAfterTamper(): Promise<void> {
+  let loaded: Awaited<ReturnType<typeof loadRun>> = null;
+  try {
+    loaded = await loadRun();
+  } catch {
+    loaded = null;
+  }
+  const run = loaded && !loaded.run.ending ? loaded.run : null;
+  fingerprint = stamp(run);
+  useGame.setState({ run, log: [], playing: null, notice: TAMPER_NOTICE });
+}

@@ -1227,7 +1227,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 
 | 저장 키 | 내용 | MVP |
 |---------|------|:---:|
-| `brw.run.v1` | 진행 중인 회차 1개 | O |
+| `brw.run.v1` | 진행 중인 회차 1개 (봉인, 7-4) | O |
 | `brw.run.v1.bak` | 전날 아침 체크포인트 백업 (손상 복구용) | O |
 | `brw.meta.v1` | 회차 간 기록: 본 엔딩, 사망 기록, 획득 흔적 도감, 설정 | O |
 | `brw.run.v1.slot2~3` | 진행 슬롯 추가 | 확장 |
@@ -1238,11 +1238,14 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 
 ### 7-4. 무결성과 버전
 - 쓰기: `brw.run.v1.tmp`에 기록 → 성공 시 본 키로 교체(원자적 쓰기 흉내).
-- 읽기: `version` 확인 → 낮으면 `migrations[version]` 순서대로 적용. `checksum` 불일치 시 `.bak`에서 복구 후 안내 문구.
-- 체크섬: JSON 문자열의 간단한 해시(FNV-1a 32bit 등). 보안이 아닌 **손상 감지** 목적.
+- **봉인**(버전 2부터): 저장 파일은 `BRW2.<뒤섞은 본문>.<서명>` 한 줄이다. 본문은 열쇠로 뒤섞어 글자로 읽을 수 없고, 서명(HMAC-SHA256)이 맞지 않으면 읽지 않는다. 진행 저장·백업·기록(meta) 모두 같다.
+- 읽기: 봉인 확인 → `version` 확인 → 낮으면 `migrations[version]` 순서대로 적용 → **규칙 검사**(날짜 1~30, 능력치 −3~+4, 숙련 0~5, HP ≤ 최대, 은화 ≤ 9999, 아이템·흔적·이벤트가 실제로 있는지, 끝난 회차가 아닌지). 하나라도 어긋나면 그 저장은 버리고 `.tmp` → `.bak` 순서로 복구 후 안내 문구.
+- 버전 1(봉인 없는 JSON) 저장은 읽지 않는다. 봉인 없는 파일을 받으면 조작한 파일과 구별할 수 없기 때문이다.
+- **실행 중 조작**: 스토어가 명령을 처리할 때마다 상태의 지문(해시)을 남기고, 다음 명령·저장 전에 지문이 맞는지 본다. 메모리 조작 도구로 값을 바꿔 지문이 어긋나면 그 상태를 버리고 마지막 저장으로 되돌린다.
+- 한계: 열쇠가 앱 안에 있으므로 앱을 뜯어 분석하는 사람까지 막지는 못한다. 흔한 저장 편집기·메모리 조작 도구로 수치를 바꾸거나 엔딩으로 건너뛰는 것을 막는다.
 
 ```ts
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",
@@ -1289,10 +1292,10 @@ export interface RunStats {
   lowestHp: { hp: number; day: number } | null;
 }
 
+/** 봉인(seal) 안에 들어가는 내용. 서명이 손상·조작을 함께 막으므로 따로 체크섬을 두지 않는다 */
 export interface RunSaveFile {
   version: number;
   savedAt: string;
-  checksum: string;
   data: RunState;
 }
 

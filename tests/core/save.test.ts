@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
 import { MIGRATIONS } from "@/core/save/migrations";
+import { seal, unseal } from "@/core/save/seal";
 import { clearRun, decodeSave, encodeSave, loadRun, saveCheckpoint, saveRun, type KeyValueStore } from "@/core/save/serialize";
+import { validateRun } from "@/core/save/validate";
 import { SAVE_KEYS, SAVE_VERSION, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 
@@ -29,22 +31,58 @@ describe("저장 파일", () => {
     expect(decodeSave(encodeSave(run, NOW))).toEqual(run);
   });
 
-  it("한 글자라도 바뀌면 체크섬이 맞지 않아 버린다", () => {
-    const text = encodeSave(start(), NOW).replace('"silver":5', '"silver":500');
-    expect(decodeSave(text)).toBeNull();
+  it("저장 파일은 봉인되어 있어 글자로 읽을 수 없다 (이름·수치가 그대로 보이지 않는다)", () => {
+    const text = encodeSave(start(), NOW);
+    expect(text.startsWith("BRW2.")).toBe(true);
+    expect(text).not.toContain("하람");
+    expect(text).not.toContain("silver");
+  });
+
+  it("봉인을 한 글자라도 고치거나, 봉인 없는 옛 JSON을 넣으면 읽지 않는다", () => {
+    const text = encodeSave(start(), NOW);
+    const [magic, body, mac] = text.split(".");
+    const flipped = body.slice(0, 40) + (body[40] === "A" ? "B" : "A") + body.slice(41);
+    expect(decodeSave(`${magic}.${flipped}.${mac}`)).toBeNull();
+    expect(decodeSave(`${magic}.${body}.${"0".repeat(64)}`)).toBeNull();
+    // 서명을 다시 계산하지 못하는 편집: 풀어서 고친 뒤 다른 열쇠 없이 붙이면 안 맞는다
+    const plain = JSON.stringify({ version: SAVE_VERSION, savedAt: NOW, checksum: "x", data: { ...start(), resources: { ...start().resources, silver: 999 } } });
+    expect(decodeSave(plain)).toBeNull();
     expect(decodeSave("{망가진 json")).toBeNull();
   });
 
+  it("서명이 맞아도 게임에서 나올 수 없는 상태는 버린다 (수치 조작·엔딩 건너뛰기)", () => {
+    const forged = (fn: (s: RunState) => void) => {
+      const run = structuredClone(start());
+      fn(run);
+      return seal(JSON.stringify({ version: SAVE_VERSION, savedAt: NOW, data: run }));
+    };
+    expect(decodeSave(forged(() => {}), CONTENT)).toEqual(start());
+    expect(decodeSave(forged((s) => { s.resources.silver = 99999; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.player.stats.str = 9; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.player.hp = 99; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.player.skills.blade.rank = 9; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.ending = "hero_party"; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.time.day = 31; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.inventory.slots[0] = { itemId: "healing_potion", qty: 99 }; }), CONTENT)).toBeNull();
+    expect(decodeSave(forged((s) => { s.player.traits.push("없는 흔적"); }), CONTENT)).toBeNull();
+    expect(validateRun(start(), CONTENT)).toBeNull();
+  });
+
+  it("봉인은 한글·이모지도 그대로 되돌린다", () => {
+    for (const t of ["", "보리울의 30일", "🐺 늑대", "x".repeat(1000)]) expect(unseal(seal(t))).toBe(t);
+  });
+
   it("더 새 버전 파일은 읽지 않고, 옛 버전은 변환을 차례로 적용한다", () => {
-    const file = JSON.parse(encodeSave(start(), NOW));
-    expect(decodeSave(JSON.stringify({ ...file, version: SAVE_VERSION + 1 }))).toBeNull();
+    const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    const sealed = (version: number) => seal(JSON.stringify({ ...file, version }));
+    expect(decodeSave(sealed(SAVE_VERSION + 1))).toBeNull();
     // 변환이 없는 옛 버전은 읽을 수 없다
-    expect(decodeSave(JSON.stringify({ ...file, version: 0 }))).toBeNull();
-    MIGRATIONS[0] = (old) => ({ ...(old as object), version: 1 });
+    expect(decodeSave(sealed(SAVE_VERSION - 1))).toBeNull();
+    MIGRATIONS[SAVE_VERSION - 1] = (old) => ({ ...(old as object), version: SAVE_VERSION });
     try {
-      expect(decodeSave(JSON.stringify({ ...file, version: 0 }))).toEqual(start());
+      expect(decodeSave(sealed(SAVE_VERSION - 1))).toEqual(start());
     } finally {
-      delete MIGRATIONS[0];
+      delete MIGRATIONS[SAVE_VERSION - 1];
     }
   });
 });
