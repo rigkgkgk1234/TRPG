@@ -6,7 +6,7 @@ import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, jobOf, type ActionStatus, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, REST_HP, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
-import { josa, NPC_IDS, NPC_LABEL, REGION_LABEL, SKILL_IDS, SKILL_LABEL, type NpcId } from "@/core/labels";
+import { josa, REGION_LABEL, SKILL_IDS, SKILL_LABEL } from "@/core/labels";
 import { SKILL_STAT, type CheckSpec, type DailyActionDef, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
@@ -15,26 +15,30 @@ import { InfoDialog } from "@/ui/components/InfoDialog";
 import { TownRow } from "@/ui/components/TownRow";
 import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { ACTION_ICON, JOB_ICON, REGION_ICON } from "@/ui/gameIcons";
-import { ChatCircleDotsIcon } from "@/ui/icons";
-import { NPC_INFO, REGION_INFO } from "@/ui/placeInfo";
+import { REGION_INFO } from "@/ui/placeInfo";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, radius, space, type } from "@/ui/theme";
 
 type Training = "trainSolo" | "trainLesson";
 /** 누르면 바로 실행하지 않고 아래 고르기 줄을 여는 행동 */
-type Picking = Training | "explore" | "village";
+type Picking = Training | "explore";
 
-const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore" || id === "village";
+const isPicking = (id: string): id is Picking => id === "trainSolo" || id === "trainLesson" || id === "explore";
 
-/** 갈 곳·찾아갈 사람을 고르면 바로 가지 않고 가운데 창에서 한 번 더 확인한다 */
-type Confirm = { kind: "explore"; region: RegionId } | { kind: "village"; npc: NpcId };
+/**
+ * 허브 격자의 행동. 마을 볼일은 "마을" 창에서 고르고(가게와 한곳에), 휴식은 맨 아래 한 줄을 따로 쓴다.
+ * 순서: [일][훈련] [교습][탐험] / [가방][마을] / [휴식]
+ */
+const HUB_ACTIONS = MVP_ACTIONS.filter((a) => a.id !== "village" && a.id !== "rest");
+const REST = MVP_ACTIONS.find((a) => a.id === "rest")!;
 
 /** 오전·오후 행동을 고르는 아래 패널. 버튼은 엄지가 닿는 아래쪽에 모은다. */
 export function HubPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
   const [picking, setPicking] = useState<Picking | null>(null);
-  const [confirm, setConfirm] = useState<Confirm | null>(null);
+  /** 갈 곳을 고르면 바로 가지 않고 가운데 창에서 한 번 더 확인한다 */
+  const [confirm, setConfirm] = useState<RegionId | null>(null);
 
   const choose = (def: DailyActionDef) => {
     if (isPicking(def.id)) {
@@ -53,9 +57,7 @@ export function HubPanel({ run }: { run: RunState }) {
 
   const go = () => {
     if (!confirm) return;
-    send(confirm.kind === "explore"
-      ? { type: "chooseAction", action: "explore", region: confirm.region }
-      : { type: "chooseAction", action: "village", npc: confirm.npc });
+    send({ type: "chooseAction", action: "explore", region: confirm });
     setConfirm(null);
     setPicking(null);
   };
@@ -63,14 +65,12 @@ export function HubPanel({ run }: { run: RunState }) {
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
       {picking === "explore" ? (
-        <RegionPicker run={run} onPick={(region) => setConfirm({ kind: "explore", region })} />
-      ) : picking === "village" ? (
-        <NpcPicker run={run} onPick={(npc) => setConfirm({ kind: "village", npc })} />
+        <RegionPicker run={run} onPick={setConfirm} />
       ) : picking ? (
         <TrainingPicker run={run} kind={picking} onPick={train} />
       ) : null}
       <ButtonGrid>
-        {MVP_ACTIONS.map((def) => {
+        {HUB_ACTIONS.map((def) => {
           const status = isPicking(def.id) ? pickingStatus(run, def.id) : actionStatus(run, CONTENT, def.id);
           return (
             <GridCell key={def.id}>
@@ -90,49 +90,41 @@ export function HubPanel({ run }: { run: RunState }) {
         })}
       </ButtonGrid>
       <TownRow run={run} />
-      {confirm && <ConfirmDialog run={run} confirm={confirm} onConfirm={go} onClose={() => setConfirm(null)} />}
+      <RestButton run={run} onPress={() => choose(REST)} />
+      {confirm && <ExploreDialog run={run} region={confirm} onConfirm={go} onClose={() => setConfirm(null)} />}
     </View>
   );
 }
 
-/** 갈 곳·찾아갈 사람 안내 창: 어떤 곳(사람)인지, 무엇을 얻고 무엇을 조심할지, 지금 나올 수 있는 일이 몇 가지인지 */
-function ConfirmDialog({ run, confirm, onConfirm, onClose }: { run: RunState; confirm: Confirm; onConfirm: () => void; onClose: () => void }) {
-  if (confirm.kind === "explore") {
-    const { region } = confirm;
-    const info = REGION_INFO[region];
-    const status = actionStatus(run, CONTENT, "explore", { region });
-    const tier = dangerTierForDay(run.time.day);
-    const def = MVP_ACTIONS.find((a) => a.id === "explore")!;
-    return (
-      <InfoDialog
-        visible
-        icon={REGION_ICON[region]}
-        title={REGION_LABEL[region]}
-        subtitle={`위험 등급 ${tier}/3, 더 깊이 들어가면 ${Math.min(3, tier + 1)}`}
-        body={info?.summary ?? ""}
-        facts={[`카드 ${EXPLORE_CARDS}장, 원하면 1장 더`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`, `지금 나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`]}
-        sections={info ? [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }] : []}
-        confirmLabel={`${josa(REGION_LABEL[region], "으로/로")} 간다`}
-        lockedReason={status.available ? null : status.reason}
-        onConfirm={onConfirm}
-        onClose={onClose}
-      />
-    );
-  }
-  const { npc } = confirm;
-  const info = NPC_INFO[npc];
-  const status = actionStatus(run, CONTENT, "village", { npc });
-  const talks = possibleEvents(run, CONTENT, "npc", undefined, npc).length;
+function RestButton({ run, onPress }: { run: RunState; onPress: () => void }) {
+  const status = actionStatus(run, CONTENT, "rest");
+  return (
+    <ActionButton
+      icon={ACTION_ICON.rest}
+      label={REST.label}
+      detail={status.available ? actionDetail(run, REST) : status.reason}
+      disabled={!status.available}
+      onPress={onPress}
+    />
+  );
+}
+
+/** 갈 곳 안내 창: 어떤 곳인지, 무엇을 얻고 무엇을 조심할지, 지금 나올 수 있는 일이 몇 가지인지 */
+function ExploreDialog({ run, region, onConfirm, onClose }: { run: RunState; region: RegionId; onConfirm: () => void; onClose: () => void }) {
+  const info = REGION_INFO[region];
+  const status = actionStatus(run, CONTENT, "explore", { region });
+  const tier = dangerTierForDay(run.time.day);
+  const def = MVP_ACTIONS.find((a) => a.id === "explore")!;
   return (
     <InfoDialog
       visible
-      icon={ChatCircleDotsIcon}
-      title={NPC_LABEL[npc]}
-      subtitle={info.role}
-      body={info.summary}
-      facts={["행동 1칸", "피로 없음", talks > 0 ? `오늘 나눌 이야기 ${talks}가지` : "오늘은 바빠 보인다"]}
-      sections={[{ title: "이야기하면", items: info.gains }, { title: "조심할 것", items: info.risks }]}
-      confirmLabel="찾아간다"
+      icon={REGION_ICON[region]}
+      title={REGION_LABEL[region]}
+      subtitle={`위험 등급 ${tier}/3, 더 깊이 들어가면 ${Math.min(3, tier + 1)}`}
+      body={info?.summary ?? ""}
+      facts={[`카드 ${EXPLORE_CARDS}장, 원하면 1장 더`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`, `지금 나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`]}
+      sections={info ? [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }] : []}
+      confirmLabel={`${josa(REGION_LABEL[region], "으로/로")} 간다`}
       lockedReason={status.available ? null : status.reason}
       onConfirm={onConfirm}
       onClose={onClose}
@@ -189,27 +181,6 @@ function RegionPicker({ run, onPick }: { run: RunState; onPick: (r: RegionId) =>
   );
 }
 
-function NpcPicker({ run, onPick }: { run: RunState; onPick: (n: NpcId) => void }) {
-  return (
-    <View style={styles.picker}>
-      <Text style={styles.pickerTitle}>누구를 찾아갈까?</Text>
-      <PickGrid>
-        {NPC_IDS.map((npc) => {
-          const status = actionStatus(run, CONTENT, "village", { npc });
-          return (
-            <PickCell
-              key={npc}
-              label={NPC_LABEL[npc]}
-              reason={status.available ? undefined : status.reason}
-              onPress={() => onPick(npc)}
-            />
-          );
-        })}
-      </PickGrid>
-    </View>
-  );
-}
-
 /** 행동 버튼의 두 번째 줄: 비용·보상·피로 (항목 단위로 줄을 바꾼다) */
 function actionDetail(run: RunState, def: DailyActionDef): string[] {
   switch (def.id) {
@@ -221,7 +192,6 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
     case "explore": return [`카드 ${EXPLORE_CARDS}~${EXPLORE_CARDS + 1}장`, `피로 +${def.fatigue}~${def.fatigue + DEEP_FATIGUE}`];
     case "trainLesson": return [`은화 -${def.silverCost}`, `경험 +${LESSON_XP}`, `피로 +${def.fatigue}`];
     case "rest": return [`피로 ${def.fatigue}`, `HP +${REST_HP}`];
-    case "village": return ["사람 고르기", "피로 없음"];
     default: return [];
   }
 }
@@ -233,10 +203,6 @@ function actionDetail(run: RunState, def: DailyActionDef): string[] {
 function pickingStatus(run: RunState, kind: Picking): ActionStatus {
   if (kind === "explore") {
     const statuses = EXPLORE_REGIONS.map((region) => actionStatus(run, CONTENT, "explore", { region }));
-    return statuses.find((s) => s.available) ?? statuses[0];
-  }
-  if (kind === "village") {
-    const statuses = NPC_IDS.map((npc) => actionStatus(run, CONTENT, "village", { npc }));
     return statuses.find((s) => s.available) ?? statuses[0];
   }
   const skills = kind === "trainLesson" ? LESSON_SKILLS : SKILL_IDS;

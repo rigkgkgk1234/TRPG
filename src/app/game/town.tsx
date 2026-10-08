@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,7 +26,9 @@ const TABS: ShopId[] = ["smithy", "healer", "inn"];
 export default function TownScreen() {
   const insets = useSafeAreaInsets();
   const run = useGame((s) => s.run);
-  const [tab, setTab] = useState<ShopId>("smithy");
+  // 마을 창에서 고른 가게로 연다
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const [tab, setTab] = useState<ShopId>(TABS.find((t) => t === params.tab) ?? "smithy");
   if (!run) return null;
 
   return (

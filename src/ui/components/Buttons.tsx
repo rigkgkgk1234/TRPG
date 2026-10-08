@@ -69,8 +69,9 @@ export function ButtonGrid({ children }: { children: React.ReactNode }) {
   return <View style={styles.grid}>{children}</View>;
 }
 
-export function GridCell({ children }: { children: React.ReactNode }) {
-  return <View style={styles.cell}>{children}</View>;
+/** full: 한 줄을 다 쓰는 칸 (홀수 개의 마지막 칸) */
+export function GridCell({ full, children }: { full?: boolean; children: React.ReactNode }) {
+  return <View style={[styles.cell, full && styles.cellFull]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -101,4 +102,5 @@ const styles = StyleSheet.create({
   detail: { ...type.caption, color: colors.textDim },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
   cell: { width: "48.5%", flexDirection: "column" },
+  cellFull: { width: "100%" },
 });

@@ -21,8 +21,9 @@ export function Chip({ label, selected, disabled, onPress }: { label: string; se
  * 고르기 줄의 한 칸 (숙련·지역·사람). 2열로 너비를 맞춰 줄이 들쭉날쭉하지 않게 한다.
  * 오른쪽에 확률(괄호 안은 작게), 고를 수 없으면 둘째 줄에 사유.
  */
-export function PickCell({ label, badge, badgeNote, reason, disabled, onPress }: {
-  label: string; badge?: string; badgeNote?: string; reason?: string; disabled?: boolean; onPress: () => void;
+export function PickCell({ label, sub, badge, badgeNote, reason, disabled, onPress }: {
+  /** sub: 이름 아래 작은 설명 (고를 수 있을 때) */
+  label: string; sub?: string; badge?: string; badgeNote?: string; reason?: string; disabled?: boolean; onPress: () => void;
 }) {
   return (
     <Pressable
@@ -37,7 +38,7 @@ export function PickCell({ label, badge, badgeNote, reason, disabled, onPress }:
         <Text style={styles.chipText} numberOfLines={1}>{label}</Text>
         {badge ? <WithNote main={badge} note={badgeNote} style={styles.pickBadge} noteStyle={styles.pickNote} /> : null}
       </View>
-      {reason ? <Text style={styles.pickReason} numberOfLines={1}>{reason}</Text> : null}
+      {reason || sub ? <Text style={styles.pickReason} numberOfLines={1}>{reason ?? sub}</Text> : null}
     </Pressable>
   );
 }
