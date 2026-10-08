@@ -3,14 +3,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatSigned, SKILL_IDS, SKILL_LABEL, STAT_IDS, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { SKILL_MAX_RANK, SKILL_XP_CAP_PER_DAY, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, maxHp } from "@/core/types";
 import { CONTENT } from "@/data";
-import { useGame } from "@/store/gameStore";
+import { useShownRun } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
 import { colors, radius, space, type } from "@/ui/theme";
 
 /** 상태 모달: 능력치(성장까지 남은 사용 횟수), 숙련 XP, 흔적. 2주차에는 읽기 전용. */
 export default function StatusScreen() {
   const insets = useSafeAreaInsets();
-  const run = useGame((s) => s.run);
+  // 주사위가 구르는 동안 열어도 결과가 먼저 보이지 않게, 화면에 그려진 상태를 쓴다
+  const run = useShownRun();
   if (!run) return null;
   const { player: p, resources: r } = run;
   const job = CONTENT.jobs[p.job];
