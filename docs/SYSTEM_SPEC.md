@@ -28,8 +28,11 @@ export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "rowen";
 /** "1d6", "2d4+1", "1d8-1" 형태의 주사위 표기 */
 export type DiceExpr = `${number}d${number}` | `${number}d${number}+${number}` | `${number}d${number}-${number}`;
 
-/** 0 이상 1 미만의 실수를 반환하는 난수 함수 */
-export type Rng = () => number;
+/**
+ * 0 이상 1 미만의 실수를 반환하는 난수 함수.
+ * memory가 있으면(게임 RNG) d20은 직전 d20과 같은 눈이 나오지 않는다 (테스트용 고정 주사위에는 없다).
+ */
+export type Rng = (() => number) & { memory?: RngState };
 ```
 
 ---
@@ -331,7 +334,14 @@ export function resolveMode(ctx: CheckContext, force?: RollMode): RollMode {
 }
 
 export function d(sides: number, rng: Rng): number {
-  return Math.floor(rng() * sides) + 1;
+  const memory = rng.memory;
+  if (sides !== 20 || !memory) return Math.floor(rng() * sides) + 1;
+  // 직전 d20 눈을 뺀 19개 중 하나 (난수는 한 번만 쓴다). 눈마다 나올 확률은 길게 보면 그대로 1/20
+  const last = memory.lastD20;
+  let face = Math.floor(rng() * (last ? 19 : 20)) + 1;
+  if (last && face >= last) face += 1;
+  memory.lastD20 = face;
+  return face;
 }
 
 export function rollCheck(spec: CheckSpec, ctx: CheckContext, rng: Rng): CheckResult {
@@ -1255,6 +1265,8 @@ export interface RngState {
   seed: number;
   /** mulberry32 내부 상태 */
   state: number;
+  /** 직전에 굴린 d20 눈: 같은 눈이 연달아 나오지 않게 한다 */
+  lastD20?: number;
 }
 
 export interface RunState {
@@ -1339,13 +1351,15 @@ export type Migration = (old: unknown) => unknown;
 
 /** 시드 기반 RNG. 상태를 RngState.state에 저장/복원한다. */
 export function createRng(rngState: RngState): Rng {
-  return () => {
+  const rng: Rng = () => {
     rngState.state = (rngState.state + 0x6d2b79f5) | 0;
     let t = rngState.state;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  rng.memory = rngState;
+  return rng;
 }
 
 /** FNV-1a 32bit — 저장 파일 손상 감지용 */

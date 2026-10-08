@@ -1,7 +1,7 @@
 import { neededRoll } from "@/core/check/modifiers";
 import { chanceBadge, chanceBadgeProps, rollFormula, rollModeNote } from "@/ui/rollText";
 import { describe, expect, it } from "vitest";
-import { createRng, resolveMode, rollCheck, successChance, type CheckContext, type CheckSpec } from "@/core/types";
+import { createRng, d, resolveMode, rollCheck, successChance, type CheckContext, type CheckSpec } from "@/core/types";
 import { d20Sequence } from "./fixtures";
 
 const ctx = (value: number, adv: string[] = [], dis: string[] = []): CheckContext => ({
@@ -10,6 +10,36 @@ const ctx = (value: number, adv: string[] = [], dis: string[] = []): CheckContex
   disadvantageSources: dis,
 });
 const spec = (dc: number, extra: Partial<CheckSpec> = {}): CheckSpec => ({ stat: "agi", dc, ...extra });
+
+describe("d20 연속 방지", () => {
+  it("게임 RNG의 d20은 직전 눈과 같은 눈이 나오지 않고, 길게 보면 눈마다 고르게 나온다", () => {
+    const rng = createRng({ seed: 7, state: 7 });
+    const counts = new Array(21).fill(0);
+    let last = 0;
+    for (let i = 0; i < 40000; i++) {
+      const face = d(20, rng);
+      expect(face).not.toBe(last);
+      expect(face).toBeGreaterThanOrEqual(1);
+      expect(face).toBeLessThanOrEqual(20);
+      counts[face]++;
+      last = face;
+    }
+    for (let f = 1; f <= 20; f++) expect(counts[f]).toBeGreaterThan(1800);
+  });
+
+  it("전투·이벤트처럼 명령이 바뀌어도 직전 d20을 기억한다 (저장되는 상태에 남는다)", () => {
+    const state = { seed: 3, state: 3 };
+    const first = d(20, createRng(state));
+    expect(state).toMatchObject({ lastD20: first });
+    expect(d(20, createRng(state))).not.toBe(first);
+  });
+
+  it("d20이 아닌 주사위는 막지 않는다", () => {
+    const state = { seed: 3, state: 3, lastD20: 5 };
+    d(6, createRng(state));
+    expect(state.lastD20).toBe(5);
+  });
+});
 
 describe("createRng", () => {
   it("같은 상태에서 시작하면 같은 수열", () => {

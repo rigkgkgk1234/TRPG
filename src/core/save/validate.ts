@@ -27,6 +27,7 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
   if (!content.jobs[p.job]) return "직업";
   if (!int(t.day, 1, LAST_DAY) || !["morning", "am", "pm", "evening"].includes(t.phase)) return "날짜";
   if (!int(t.restsToday, 0, 3)) return "휴식 횟수";
+  if (run.rng.lastD20 !== undefined && !int(run.rng.lastD20, 1, 20)) return "주사위";
 
   for (const s of STAT_IDS) {
     // 시작 능력치는 -1~+2, 자연 성장 상한 +4, 오래된 상처로 -1
