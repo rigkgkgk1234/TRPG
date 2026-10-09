@@ -879,9 +879,12 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 ### 5-1. 분류
 | 분류 | 설명 | 겹침 |
 |------|------|------|
-| `weapon` | 무기. 장착 1개 | 1 |
-| `armor` | 몸 방어구. 장착 1개 | 1 |
-| `shield` | 방패. 장착 1개, **양손 무기·활과 동시 사용 불가** | 1 |
+| `weapon` | 무기. 오른손, 한손 무기는 왼손에도 | 1 |
+| `armor` | 상체 방어구 | 1 |
+| `head` | 머리 방어구 | 1 |
+| `legs` | 하체 방어구 | 1 |
+| `feet` | 발 방어구 | 1 |
+| `shield` | 방패. 왼손, **양손 무기·활과 동시 사용 불가** | 1 |
 | `consumable` | 사용 시 소멸 | 3~20 |
 | `material` | 판매·제작용 (가죽, 약초) | 5 |
 | `quest` | 스토리 증거물. 판매·버리기 불가 | 1 |
@@ -932,7 +935,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `hunting_bow` | 사냥용 활 | bow | 1d6 | 12 | 양손, 화살 소모 |
 | `longbow` | 긴 활 | bow | 1d8 | 32 | 양손, 근력 +1 이상 필요 |
 
-**방어구 · 방패**
+**방어구 · 방패** (상체·머리·하체·발, 방패)
 
 | ID | 이름 | 방어도 | 가격 | 비고 |
 |----|------|------:|----:|------|
@@ -942,6 +945,17 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `chain_shirt` | 사슬 갑옷 | +3 | 45 | 민첩 판정 -1 |
 | `wooden_shield` | 나무 방패 | +1 | 8 | 한손 무기 전용, 내구도 15 |
 | `round_shield` | 쇠 방패 | +2 | 24 | 한손 무기 전용, 내구도 20 |
+| `leather_cap` | 가죽 모자 (머리) | +1 | 8 | 내구도 15 |
+| `iron_helm` | 쇠 투구 (머리) | +2 | 22 | 감각 판정 -1 |
+| `leather_trousers` | 가죽 바지 (하체) | +1 | 9 | 내구도 20 |
+| `chain_greaves` | 사슬 각반 (하체) | +2 | 22 | 민첩 판정 -1 |
+| `leather_boots` | 가죽 장화 (발) | +1 | 9 | 내구도 20 |
+
+**장비 칸** (가방 화면: 왼쪽 사람 그림, 오른쪽 칸을 누르면 고르기·벗기)
+- 머리 · 상체 · 하체 · 오른손 · 왼손 · 발. 방어도 = 10 + 민첩 + 왼손 방패 + 머리·상체·하체·발 방어구.
+- 오른손은 무기, 왼손은 방패나 한손 무기. 양손 무기·활을 들면 왼손은 비어야 한다 (들고 있던 것은 가방으로).
+- **두 손에 한손 무기**: 공격(강타 포함)할 때마다 왼손으로 한 번 더 친다. 왼손 공격은 따로 굴리고 명중 −2, 근력 피해 보정이 없다(왼손 무기의 숙련을 쓴다). 상대가 쓰러졌으면 다음 상대에게.
+- 내구도: 맞으면 걸친 방어구·방패가 모두 −1, 왼손 무기는 공격한 전투마다 −1.
 
 **소모품 · 재료**
 
@@ -964,7 +978,9 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `goblin_token` | 고블린 부적 | 스토리 증거물 | — | — |
 
 ```ts
-export type ItemCategory = "weapon" | "armor" | "shield" | "consumable" | "material" | "quest";
+export type ItemCategory = "weapon" | "armor" | "head" | "legs" | "feet" | "shield" | "consumable" | "material" | "quest";
+/** 몸에 걸치는 방어구 분류: 상체(armor)·머리·하체·발 */
+export type WearCategory = "armor" | "head" | "legs" | "feet";
 export type WeaponSkill = Extract<SkillId, "blade" | "blunt" | "bow">;
 
 interface ItemDefBase {
@@ -991,7 +1007,7 @@ export interface WeaponDef extends ItemDefBase {
 }
 
 export interface ArmorDef extends ItemDefBase {
-  category: "armor";
+  category: WearCategory;
   defense: number;
   /** 특정 능력치 판정 페널티 */
   checkPenalty?: { stat: StatId; value: number };
@@ -1031,10 +1047,17 @@ export interface ItemStack {
   durability?: number;
 }
 
+/**
+ * 몸에 걸친 것. 오른손(weapon)은 무기, 왼손(offHand)은 방패나 한손 무기.
+ * 양손 무기를 들면 왼손은 비어야 한다. 두 손에 한손 무기를 들면 공격할 때 왼손으로 한 번 더 친다 (근력 피해 보정 없음).
+ */
 export interface Equipment {
   weapon: ItemStack | null;
+  offHand: ItemStack | null;
+  head: ItemStack | null;
   armor: ItemStack | null;
-  shield: ItemStack | null;
+  legs: ItemStack | null;
+  feet: ItemStack | null;
 }
 
 export interface Inventory {
@@ -1298,7 +1321,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 - 한계: 열쇠가 앱 안에 있으므로 앱을 뜯어 분석하는 사람까지 막지는 못한다. 흔한 저장 편집기·메모리 조작 도구로 수치를 바꾸거나 엔딩으로 건너뛰는 것을 막는다.
 
 ```ts
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

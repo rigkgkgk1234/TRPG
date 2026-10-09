@@ -23,4 +23,15 @@ export const MIGRATIONS: Record<number, Migration> = {
     double(file.data?.stats?.lowestHp, ["hp"]);
     return { ...file, version: 4 };
   },
+  // 5: 장비 칸 6개 (방패 칸 → 왼손, 머리·하체·발 추가)
+  4: (old) => {
+    const file = old as { version: number; data?: { inventory?: { equipment?: Record<string, unknown> } } };
+    const eq = file.data?.inventory?.equipment;
+    if (eq) {
+      file.data!.inventory!.equipment = {
+        weapon: eq.weapon ?? null, offHand: eq.shield ?? null, head: null, armor: eq.armor ?? null, legs: null, feet: null,
+      };
+    }
+    return { ...file, version: 5 };
+  },
 };

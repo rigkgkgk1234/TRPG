@@ -132,8 +132,7 @@
           "type": "string"
         },
         "category": {
-          "type": "string",
-          "const": "armor"
+          "$ref": "#/definitions/WearCategory"
         },
         "description": {
           "type": "string"
@@ -188,6 +187,16 @@
         "stackMax"
       ],
       "additionalProperties": false
+    },
+    "WearCategory": {
+      "type": "string",
+      "enum": [
+        "armor",
+        "head",
+        "legs",
+        "feet"
+      ],
+      "description": "몸에 걸치는 방어구 분류: 상체(armor)·머리·하체·발"
     },
     "StatId": {
       "type": "string",

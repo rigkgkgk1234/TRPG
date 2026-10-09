@@ -14,6 +14,10 @@ import {
 } from "../types";
 import type { CheckSubject } from "./subject";
 
+
+/** 판정 페널티가 있을 수 있는 칸 */
+const WEAR_SLOTS = ["head", "armor", "legs", "feet"] as const;
+
 export type { CheckSubject } from "./subject";
 
 /** 이벤트·상황이 추가로 주는 유리/불리 출처 (예: 사전 정보 플래그 → "정찰 정보") */
@@ -45,11 +49,13 @@ export function buildCheckContext(
     modifiers.push({ label: SKILL_LABEL[spec.skill], value: player.skills[spec.skill].rank });
   }
 
-  // 판정 페널티는 현재 방어구에만 있다 (SYSTEM_SPEC 5-5). 방패·무기에 생기면 여기에 추가한다.
-  const armorStack = inventory.equipment.armor;
-  const armor = armorStack ? content.items[armorStack.itemId] : undefined;
-  if (armor?.category === "armor" && armor.checkPenalty?.stat === spec.stat) {
-    modifiers.push({ label: armor.name, value: armor.checkPenalty.value });
+  // 판정 페널티는 몸에 걸친 방어구(머리·상체·하체·발)에만 있다 (SYSTEM_SPEC 5-5). 방패·무기에 생기면 여기에 추가한다.
+  for (const slot of WEAR_SLOTS) {
+    const stack = inventory.equipment[slot];
+    const wear = stack ? content.items[stack.itemId] : undefined;
+    if (wear && "checkPenalty" in wear && wear.checkPenalty?.stat === spec.stat) {
+      modifiers.push({ label: wear.name, value: wear.checkPenalty.value });
+    }
   }
 
   const wound = player.wound.level;

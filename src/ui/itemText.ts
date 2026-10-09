@@ -10,6 +10,9 @@ export function itemSummary(def: ItemDef): string[] {
       return [`${SKILL_LABEL[def.skill]}`, `피해 ${def.damage}`, ...(def.twoHanded ? ["양손"] : []), ...req];
     }
     case "armor":
+    case "head":
+    case "legs":
+    case "feet":
       return [`방어도 +${def.defense}`, ...(def.checkPenalty ? [`${STAT_LABEL[def.checkPenalty.stat]} 판정 ${def.checkPenalty.value}`] : [])];
     case "shield":
       return [`방어도 +${def.defense}`, "한손 무기만"];

@@ -213,6 +213,69 @@
    },
    "durabilityMax": 25
   },
+  "leather_cap": {
+   "id": "leather_cap",
+   "name": "가죽 모자",
+   "category": "head",
+   "description": "귀까지 덮는 질긴 가죽 모자.",
+   "price": 8,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 1,
+   "durabilityMax": 15
+  },
+  "iron_helm": {
+   "id": "iron_helm",
+   "name": "쇠 투구",
+   "category": "head",
+   "description": "머리를 통째로 감싸는 쇠 투구. 든든하지만 시야가 좁다.",
+   "price": 22,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 2,
+   "checkPenalty": {
+    "stat": "per",
+    "value": -1
+   },
+   "durabilityMax": 25
+  },
+  "leather_trousers": {
+   "id": "leather_trousers",
+   "name": "가죽 바지",
+   "category": "legs",
+   "description": "무릎에 가죽을 덧댄 바지.",
+   "price": 9,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 1,
+   "durabilityMax": 20
+  },
+  "chain_greaves": {
+   "id": "chain_greaves",
+   "name": "사슬 각반",
+   "category": "legs",
+   "description": "다리를 감싸는 쇠사슬. 걸을 때마다 철컥거린다.",
+   "price": 22,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 2,
+   "checkPenalty": {
+    "stat": "agi",
+    "value": -1
+   },
+   "durabilityMax": 25
+  },
+  "leather_boots": {
+   "id": "leather_boots",
+   "name": "가죽 장화",
+   "category": "feet",
+   "description": "밑창을 두 겹으로 댄 장화. 덤불 가시도 거뜬하다.",
+   "price": 9,
+   "sellable": true,
+   "stackMax": 1,
+   "defense": 1,
+   "durabilityMax": 20
+  },
   "wooden_shield": {
    "id": "wooden_shield",
    "name": "나무 방패",

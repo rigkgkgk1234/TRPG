@@ -37,7 +37,7 @@ export function blankSubject(opts: SubjectOptions = {}): CheckSubject {
     inventory: {
       slots: Array(INVENTORY_CAPACITY).fill(null),
       capacity: INVENTORY_CAPACITY,
-      equipment: { weapon: null, armor: opts.armor ? { itemId: opts.armor, qty: 1, durability: 25 } : null, shield: null },
+      equipment: { weapon: null, offHand: null, head: null, armor: opts.armor ? { itemId: opts.armor, qty: 1, durability: 25 } : null, legs: null, feet: null },
     },
   };
 }

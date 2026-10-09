@@ -1,13 +1,42 @@
 import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { STAT_LABEL, josa } from "../labels";
-import type { Equipment, ItemDef, ItemStack, RunState, StatId } from "../types";
+import type { ArmorDef, Equipment, ItemDef, ItemStack, RunState, StatId } from "../types";
 
 export type EquipSlot = keyof Equipment;
 
-/** 장비 칸에 들어갈 수 있는 아이템 분류 */
+/** 화면에 보이는 순서 (머리 → 상체 → 하체 → 오른손 → 왼손 → 발) */
+export const EQUIP_SLOTS: readonly EquipSlot[] = ["head", "armor", "legs", "weapon", "offHand", "feet"];
+
+export const EQUIP_SLOT_LABEL: Record<EquipSlot, string> = {
+  head: "머리", armor: "상체", legs: "하체", weapon: "오른손", offHand: "왼손", feet: "발",
+};
+
+/** 걸칠 때 쓰는 동사 */
+export function wearVerb(slot: EquipSlot): string {
+  if (slot === "head") return "썼다";
+  if (slot === "feet") return "신었다";
+  if (slot === "armor" || slot === "legs") return "입었다";
+  return "들었다";
+}
+
+/** 몸에 걸치는 방어구(상체·머리·하체·발)인지 */
+export function isWear(def: ItemDef | undefined): def is ArmorDef {
+  return def?.category === "armor" || def?.category === "head" || def?.category === "legs" || def?.category === "feet";
+}
+
+/** 이 물건이 들어갈 수 있는 칸들. 첫 칸이 기본 (가방에서 "들기"를 누르면 이 칸으로) */
+export function slotsFor(def: ItemDef | undefined): EquipSlot[] {
+  if (!def) return [];
+  if (def.category === "weapon") return def.twoHanded ? ["weapon"] : ["weapon", "offHand"];
+  if (def.category === "shield") return ["offHand"];
+  if (isWear(def)) return [def.category];
+  return [];
+}
+
+/** 장비 칸에 들어갈 수 있는 기본 칸 */
 export function slotOf(def: ItemDef | undefined): EquipSlot | null {
-  return def && (def.category === "weapon" || def.category === "armor" || def.category === "shield") ? def.category : null;
+  return slotsFor(def)[0] ?? null;
 }
 
 /** 내구도가 0이면 망가진 것 (SYSTEM_SPEC 5-3). 내구도가 없는 물건은 망가지지 않는다. */
@@ -20,50 +49,54 @@ export const BROKEN_WEAPON_PENALTY = 2;
 
 /**
  * 가방 칸의 장비를 몸에 걸친다. 같은 칸에 걸친 것은 그 가방 칸으로 돌아간다(맞바꿈).
- * 양손 무기·활과 방패는 같이 쓸 수 없다: 방패를 든 채 양손 무기를 잡으면 방패를 가방에 넣고(자리가 있으면),
- * 양손 무기를 든 채 방패를 들려고 하면 거절한다.
+ * 양손 무기·활을 들면 왼손은 비어야 한다: 왼손에 든 것이 있으면 가방에 넣고(자리가 있으면),
+ * 양손 무기를 든 채 왼손에 무언가를 들려고 하면 거절한다.
+ * @param to 넣을 칸 (생략하면 기본 칸)
  * @returns 거절 사유, 성공이면 null
  */
-export function equipBlock(run: RunState, content: Pick<ContentDB, "items">, slotIndex: number): string | null {
+export function equipBlock(run: RunState, content: Pick<ContentDB, "items">, slotIndex: number, to?: EquipSlot): string | null {
   const stack = run.inventory.slots[slotIndex];
   const def = stack ? content.items[stack.itemId] : undefined;
-  const slot = slotOf(def);
-  if (!stack || !def || !slot) return "몸에 걸칠 수 있는 물건이 아니다";
+  const slots = slotsFor(def);
+  if (!stack || !def || slots.length === 0) return "몸에 걸칠 수 있는 물건이 아니다";
+  const slot = to ?? slots[0];
+  if (!slots.includes(slot)) return `${EQUIP_SLOT_LABEL[slot]}에는 걸칠 수 없다`;
   if (def.category === "weapon" && def.requires) {
     for (const [stat, min] of Object.entries(def.requires) as [StatId, number][]) {
       if (run.player.stats[stat] < min) return `${STAT_LABEL[stat]} ${min}레벨 필요`;
     }
   }
-  const weapon = run.inventory.equipment.weapon;
-  const weaponDef = weapon ? content.items[weapon.itemId] : undefined;
-  if (slot === "shield" && weaponDef?.category === "weapon" && weaponDef.twoHanded) {
-    return `${josa(weaponDef.name, "을/를")} 든 채로는 방패를 들 수 없다`;
+  const eq = run.inventory.equipment;
+  const mainDef = eq.weapon ? content.items[eq.weapon.itemId] : undefined;
+  if (slot === "offHand" && mainDef?.category === "weapon" && mainDef.twoHanded) {
+    return `${josa(mainDef.name, "을/를")} 든 채로는 왼손에 들 수 없다`;
   }
-  if (def.category === "weapon" && def.twoHanded && run.inventory.equipment.shield) {
-    // 무기 칸이 비어 있었다면 꺼낸 가방 칸이 빈다 → 방패가 그 칸으로 간다
-    const freed = run.inventory.equipment.weapon ? 0 : 1;
+  if (def.category === "weapon" && def.twoHanded && eq.offHand) {
+    // 오른손이 비어 있었다면 꺼낸 가방 칸이 빈다 → 왼손에 든 것이 그 칸으로 간다
+    const freed = eq.weapon ? 0 : 1;
     const empty = run.inventory.slots.filter((s) => s === null).length + freed;
-    if (empty === 0) return "방패를 넣을 자리가 가방에 없다";
+    if (empty === 0) return "왼손에 든 것을 넣을 자리가 가방에 없다";
   }
   return null;
 }
 
-export function equip(ctx: Ctx, slotIndex: number): string | null {
-  const blocked = equipBlock(ctx.draft, ctx.content, slotIndex);
+export function equip(ctx: Ctx, slotIndex: number, to?: EquipSlot): string | null {
+  const blocked = equipBlock(ctx.draft, ctx.content, slotIndex, to);
   if (blocked) return blocked;
   const inv = ctx.draft.inventory;
   const stack = inv.slots[slotIndex]!;
   const def = ctx.content.items[stack.itemId]!;
-  const slot = slotOf(def)!;
+  const slot = to ?? slotOf(def)!;
 
   inv.slots[slotIndex] = inv.equipment[slot];
   inv.equipment[slot] = stack;
-  if (def.category === "weapon" && def.twoHanded && inv.equipment.shield) {
+  if (def.category === "weapon" && def.twoHanded && inv.equipment.offHand) {
     const free = inv.slots.indexOf(null);
-    inv.slots[free] = inv.equipment.shield;
-    inv.equipment.shield = null;
+    inv.slots[free] = inv.equipment.offHand;
+    inv.equipment.offHand = null;
   }
-  ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} ${slot === "armor" ? "입었다" : "들었다"}.` });
+  const where = slot === "offHand" ? "왼손에 " : slot === "weapon" && def.category === "weapon" && !def.twoHanded ? "오른손에 " : "";
+  ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} ${where}${wearVerb(slot)}.` });
   return null;
 }
 

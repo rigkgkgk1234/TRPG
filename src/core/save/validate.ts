@@ -1,4 +1,5 @@
 import type { ContentDB } from "../content";
+import { EQUIP_SLOTS, slotsFor, type EquipSlot } from "../items/equipment";
 import { isVisitId, SKILL_IDS, STAT_IDS } from "../labels";
 import {
   FAME_MAX,
@@ -57,7 +58,7 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
     if (!s) return true;
     const def = content.items[s.itemId];
     if (!def || !int(s.qty, 1, def.stackMax)) return false;
-    if (slot && def.category !== slot) return false;
+    if (slot && !slotsFor(def).includes(slot as EquipSlot)) return false;
     if (s.durability !== undefined) {
       const max = "durabilityMax" in def ? def.durabilityMax : 0;
       if (!int(s.durability, 0, max)) return false;
@@ -65,7 +66,9 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
     return true;
   };
   if (!inv.slots.every((s) => stackOk(s))) return "가방 물건";
-  for (const slot of ["weapon", "armor", "shield"] as const) if (!stackOk(inv.equipment[slot], slot)) return `장비 ${slot}`;
+  for (const slot of EQUIP_SLOTS) if (!stackOk(inv.equipment[slot] ?? null, slot)) return `장비 ${slot}`;
+  const main = inv.equipment.weapon ? content.items[inv.equipment.weapon.itemId] : undefined;
+  if (main?.category === "weapon" && main.twoHanded && inv.equipment.offHand) return "양손 무기와 왼손";
 
   for (const v of Object.values(run.flags)) if (typeof v !== "boolean" && typeof v !== "number") return "플래그";
   for (const [id, h] of Object.entries(run.eventHistory)) {

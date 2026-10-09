@@ -17,7 +17,7 @@ import {
   type ItemStack,
   type RunState,
 } from "../types";
-import { slotOf } from "./equipment";
+import { slotOf, wearVerb, type EquipSlot } from "./equipment";
 import { addItem } from "./inventory";
 
 export type ShopId = "smithy" | "healer" | "inn";
@@ -44,7 +44,9 @@ export const SHOPS: Record<ShopId, ShopDef> = {
     stock: [
       "club", "pitchfork", "old_hammer", "hunting_knife", "hand_axe", "rusty_sword", "short_spear", "war_hammer", "soldier_sword",
       "hunting_bow", "longbow",
-      "padded_coat", "patched_leather", "leather_armor", "chain_shirt", "wooden_shield", "round_shield",
+      "padded_coat", "patched_leather", "leather_armor", "chain_shirt",
+      "leather_cap", "iron_helm", "leather_trousers", "chain_greaves", "leather_boots",
+      "wooden_shield", "round_shield",
     ].map((itemId) => ({ itemId, qty: 1 })),
   },
   healer: {
@@ -101,11 +103,11 @@ export function repairPrice(run: RunState, content: Pick<ContentDB, "items">, st
 }
 
 /** 수리할 물건을 가리키는 표기: 장비 칸 이름("weapon") 또는 가방 칸 번호("bag:3") */
-export type RepairTarget = "weapon" | "armor" | "shield" | `bag:${number}`;
+export type RepairTarget = EquipSlot | `bag:${number}`;
 
 export function stackAt(run: RunState, target: RepairTarget): ItemStack | null {
   if (target.startsWith("bag:")) return run.inventory.slots[Number(target.slice(4))] ?? null;
-  return run.inventory.equipment[target as "weapon" | "armor" | "shield"];
+  return run.inventory.equipment[target as EquipSlot] ?? null;
 }
 
 export function treatable(run: RunState): boolean {
@@ -126,14 +128,14 @@ export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId): string | null {
   if (s.resources.silver < price) return "은화가 모자란다";
 
   const slot = slotOf(def);
-  const wearNow = slot && !s.inventory.equipment[slot] && !(slot === "shield" && twoHandedEquipped(s, ctx.content));
+  const wearNow = slot && !s.inventory.equipment[slot] && !(slot === "offHand" && twoHandedEquipped(s, ctx.content));
   if (!wearNow && !hasRoom(s, def, entry.qty)) return "가방에 자리가 없다";
 
   changeSilver(ctx, -price);
   if (wearNow) {
     s.inventory.equipment[slot] = "durabilityMax" in def ? { itemId, qty: 1, durability: def.durabilityMax } : { itemId, qty: 1 };
     ctx.feed.push({ kind: "item", itemId, name: def.name, delta: 1 });
-    ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} 사서 바로 ${slot === "armor" ? "입었다" : "들었다"}.` });
+    ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} 사서 바로 ${wearVerb(slot)}.` });
   } else {
     addItem(ctx, itemId, entry.qty);
     ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} 사서 가방에 넣었다.` });

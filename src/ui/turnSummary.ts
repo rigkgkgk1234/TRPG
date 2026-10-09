@@ -144,7 +144,7 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
       const name = itemName(run.inventory.slots[cmd.slotIndex]?.itemId);
       return `${name} 장착`;
     }
-    case "unequip": return `${itemName(run.inventory.equipment[cmd.slot]?.itemId)} ${cmd.slot === "armor" ? "벗기" : "내려놓기"}`;
+    case "unequip": return `${itemName(run.inventory.equipment[cmd.slot]?.itemId)} ${cmd.slot === "weapon" || cmd.slot === "offHand" ? "내려놓기" : "벗기"}`;
     case "useItem": return `${itemName(cmd.itemId)} 사용`;
     case "discard": return `${itemName(run.inventory.slots[cmd.slotIndex]?.itemId)} 버리기`;
   }

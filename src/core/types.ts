@@ -546,7 +546,9 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
   },
 };
 
-export type ItemCategory = "weapon" | "armor" | "shield" | "consumable" | "material" | "quest";
+export type ItemCategory = "weapon" | "armor" | "head" | "legs" | "feet" | "shield" | "consumable" | "material" | "quest";
+/** 몸에 걸치는 방어구 분류: 상체(armor)·머리·하체·발 */
+export type WearCategory = "armor" | "head" | "legs" | "feet";
 export type WeaponSkill = Extract<SkillId, "blade" | "blunt" | "bow">;
 
 interface ItemDefBase {
@@ -573,7 +575,7 @@ export interface WeaponDef extends ItemDefBase {
 }
 
 export interface ArmorDef extends ItemDefBase {
-  category: "armor";
+  category: WearCategory;
   defense: number;
   /** 특정 능력치 판정 페널티 */
   checkPenalty?: { stat: StatId; value: number };
@@ -613,10 +615,17 @@ export interface ItemStack {
   durability?: number;
 }
 
+/**
+ * 몸에 걸친 것. 오른손(weapon)은 무기, 왼손(offHand)은 방패나 한손 무기.
+ * 양손 무기를 들면 왼손은 비어야 한다. 두 손에 한손 무기를 들면 공격할 때 왼손으로 한 번 더 친다 (근력 피해 보정 없음).
+ */
 export interface Equipment {
   weapon: ItemStack | null;
+  offHand: ItemStack | null;
+  head: ItemStack | null;
   armor: ItemStack | null;
-  shield: ItemStack | null;
+  legs: ItemStack | null;
+  feet: ItemStack | null;
 }
 
 export interface Inventory {
@@ -728,7 +737,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

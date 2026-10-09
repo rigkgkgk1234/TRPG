@@ -6,6 +6,8 @@ import { discard, equip, equipBlock, unequip } from "@/core/items/equipment";
 import { canUseItem, consumeItem } from "@/core/items/inventory";
 import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, SHOPS, stabilize, treat } from "@/core/items/shop";
 import { newRun } from "@/core/newRun";
+import { seal, unseal } from "@/core/save/seal";
+import { decodeSave, encodeSave } from "@/core/save/serialize";
 import type { ItemStack, JobId, Rng, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 
@@ -39,16 +41,16 @@ describe("장착", () => {
     expect(equip(ctx, 0)).toBeNull();
     expect(ctx.draft.inventory.equipment.weapon?.itemId).toBe("rusty_sword");
     expect(ctx.draft.inventory.slots[0]?.itemId).toBe("pitchfork");
-    expect(ctx.feed).toContainEqual({ kind: "text", text: "녹슨 검을 들었다." });
+    expect(ctx.feed).toContainEqual({ kind: "text", text: "녹슨 검을 오른손에 들었다." });
   });
 
-  it("양손 무기를 든 채 방패는 못 들고, 방패를 든 채 양손 무기를 잡으면 방패는 가방으로", () => {
+  it("양손 무기를 든 채 왼손에는 못 들고, 왼손에 든 채 양손 무기를 잡으면 왼손 것은 가방으로", () => {
     const farmer = withBag(start("farmer"), gear("wooden_shield"));
-    expect(equipBlock(farmer, CONTENT, 0)).toBe("쇠갈퀴를 든 채로는 방패를 들 수 없다");
+    expect(equipBlock(farmer, CONTENT, 0)).toBe("쇠갈퀴를 든 채로는 왼손에 들 수 없다");
 
-    const ctx = ctxOf(withBag(edit(start("smith"), (s) => { s.inventory.equipment.shield = gear("wooden_shield"); }), gear("pitchfork")));
+    const ctx = ctxOf(withBag(edit(start("smith"), (s) => { s.inventory.equipment.offHand = gear("wooden_shield"); }), gear("pitchfork")));
     expect(equip(ctx, 0)).toBeNull();
-    expect(ctx.draft.inventory.equipment).toMatchObject({ weapon: { itemId: "pitchfork" }, shield: null });
+    expect(ctx.draft.inventory.equipment).toMatchObject({ weapon: { itemId: "pitchfork" }, offHand: null });
     expect(ctx.draft.inventory.slots.filter(Boolean).map((x) => x!.itemId).sort()).toEqual(["old_hammer", "wooden_shield"]);
   });
 
@@ -252,6 +254,9 @@ describe("아이템 값과 쓸모", () => {
           return { group: d.ammo ? "bow" : "melee", v: [avg(d.damage), d.twoHanded ? 0 : 1, d.durabilityMax, -req] };
         }
         case "armor":
+        case "head":
+        case "legs":
+        case "feet":
         case "shield":
           return { group: d.category, v: [d.defense, d.durabilityMax, "checkPenalty" in d && d.checkPenalty ? d.checkPenalty.value : 0] };
         case "consumable": {
@@ -278,5 +283,59 @@ describe("아이템 값과 쓸모", () => {
     for (const a of onSale) for (const b of onSale) {
       if (a !== b && key(a) === key(b)) expect(a.price, `${a.name}·${b.name}`).toBe(b.price);
     }
+  });
+});
+
+describe("장비 칸 6개와 두 손", () => {
+  const fd = (face: number, sides: number) => (face - 1) / sides + 0.001;
+  const inCombat = (run: RunState, enemies: string[]) => {
+    const ctx = ctxOf(run, () => 0.5);
+    startCombat(ctx, { enemies, initiative: "player", canFlee: true, onVictory: "win", onFled: "fled" });
+    return ctx.draft;
+  };
+  it("머리·하체·발 방어구는 제 칸에 걸치고 방어도에 더한다, 판정 페널티도 붙는다", () => {
+    let run = withBag(start("farmer"), gear("leather_cap"));
+    const base = playerDefense(run, CONTENT, null);
+    let ctx = ctxOf(run);
+    expect(equip(ctx, 0)).toBeNull();
+    expect(ctx.draft.inventory.equipment.head?.itemId).toBe("leather_cap");
+    expect(ctx.feed).toContainEqual({ kind: "text", text: "가죽 모자를 썼다." });
+    run = edit(ctx.draft, (s) => {
+      s.inventory.equipment.legs = gear("chain_greaves");
+      s.inventory.equipment.feet = gear("leather_boots");
+    });
+    expect(playerDefense(run, CONTENT, null)).toBe(base + 1 + 2 + 1);
+    ctx = ctxOf(withBag(run, gear("leather_cap")));
+    expect(equipBlock(ctx.draft, CONTENT, 0, "feet")).toBe("발에는 걸칠 수 없다");
+  });
+
+  it("한손 무기는 왼손에도 들 수 있고, 양손 무기를 든 채로는 왼손에 못 든다", () => {
+    const smith = withBag(start("smith"), gear("hand_axe"));
+    const ctx = ctxOf(smith);
+    expect(equip(ctx, 0, "offHand")).toBeNull();
+    expect(ctx.draft.inventory.equipment).toMatchObject({ weapon: { itemId: "old_hammer" }, offHand: { itemId: "hand_axe" } });
+    expect(equipBlock(withBag(start("farmer"), gear("hand_axe")), CONTENT, 0, "offHand")).toBe("쇠갈퀴를 든 채로는 왼손에 들 수 없다");
+  });
+
+  it("두 손에 한손 무기를 들면 공격할 때 왼손으로 한 번 더 친다 (명중 −2, 근력 피해 보정 없음)", () => {
+    // 대장장이 견습: 근력 2, 둔기 1. 오른손 낡은 망치 1d6, 왼손 손도끼 1d6
+    const run = edit(inCombat(start("smith"), ["boar"]), (s) => {
+      s.inventory.equipment.offHand = gear("hand_axe");
+      s.combat!.enemies[0].hp = 99;
+    });
+    // 오른손 명중(15) 피해 3+2, 왼손 명중(15) 피해 4, 멧돼지 빗나감(2)
+    const ctx = ctxOf(run, seq(f20(15), fd(3, 6), f20(15), fd(4, 6), f20(2)));
+    combatStep(ctx, { type: "attack", targetId: "boar_1" });
+    expect(ctx.draft.combat!.enemies[0].hp).toBe(99 - 5 - 4);
+    expect(ctx.feed.filter((f) => f.kind === "roll").map((f) => (f as { label: string }).label)).toEqual(["공격", "왼손 공격"]);
+  });
+
+  it("버전 4 저장은 방패 칸을 왼손으로 옮기고 머리·하체·발 칸을 비워 둔다", () => {
+    const file = JSON.parse(unseal(encodeSave(start("smith"), NOW))!);
+    file.data.inventory.equipment = { weapon: file.data.inventory.equipment.weapon, armor: null, shield: gear("wooden_shield") };
+    const back = decodeSave(seal(JSON.stringify({ ...file, version: 4 })), CONTENT);
+    expect(back?.inventory.equipment).toEqual({
+      weapon: start("smith").inventory.equipment.weapon, offHand: gear("wooden_shield"), head: null, armor: null, legs: null, feet: null,
+    });
   });
 });

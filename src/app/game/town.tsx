@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { canTrade } from "@/core/day/town";
-import { slotOf } from "@/core/items/equipment";
+import { EQUIP_SLOTS } from "@/core/items/equipment";
 import {
   adjustedPrice, entryPrice, repairPrice, sellPrice, SHOPS, stackAt, STABILIZE_FATIGUE, STABILIZE_PRICE, treatable, TREAT_PRICE, type RepairTarget, type ShopId,
 } from "@/core/items/shop";
@@ -96,8 +96,7 @@ function StockList({ run, shop }: { run: RunState; shop: ShopId }) {
         const def = CONTENT.items[e.itemId];
         if (!def) return null;
         const price = entryPrice(run, CONTENT, e);
-        const slot = slotOf(def);
-        const owned = slot && run.inventory.equipment[slot]?.itemId === def.id;
+        const owned = EQUIP_SLOTS.some((slot) => run.inventory.equipment[slot]?.itemId === def.id);
         return (
           <ItemRow
             key={e.itemId}
@@ -115,7 +114,7 @@ function StockList({ run, shop }: { run: RunState; shop: ShopId }) {
 function Smithy({ run }: { run: RunState }) {
   const send = useGame((s) => s.send);
   const targets: { target: RepairTarget; where: string }[] = [
-    ...(["weapon", "armor", "shield"] as const).map((slot) => ({ target: slot as RepairTarget, where: "걸친 것" })),
+    ...EQUIP_SLOTS.map((slot) => ({ target: slot as RepairTarget, where: "걸친 것" })),
     ...run.inventory.slots.map((_, i) => ({ target: `bag:${i}` as RepairTarget, where: "가방" })),
   ];
   const repairs = targets.flatMap(({ target, where }) => {

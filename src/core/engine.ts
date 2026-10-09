@@ -55,7 +55,7 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         save = handleShop(ctx, cmd);
         break;
       case "equip":
-        save = ok(ctx, equip(ctx, cmd.slotIndex));
+        save = ok(ctx, equip(ctx, cmd.slotIndex, cmd.to));
         break;
       case "unequip":
         save = ok(ctx, unequip(ctx, cmd.slot));

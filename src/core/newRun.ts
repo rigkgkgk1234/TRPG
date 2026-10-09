@@ -1,5 +1,6 @@
-import { SKILL_IDS, STAT_IDS } from "./labels";
 import type { ContentDB } from "./content";
+import { slotOf } from "./items/equipment";
+import { SKILL_IDS, STAT_IDS } from "./labels";
 import {
   INVENTORY_CAPACITY,
   maxHp,
@@ -69,7 +70,7 @@ function startInventory(content: ContentDB, items: { itemId: string; qty: number
   const inv: Inventory = {
     slots: Array(INVENTORY_CAPACITY).fill(null),
     capacity: INVENTORY_CAPACITY,
-    equipment: { weapon: null, armor: null, shield: null },
+    equipment: { weapon: null, offHand: null, head: null, armor: null, legs: null, feet: null },
   };
   let next = 0;
   for (const { itemId, qty, equip } of items) {
@@ -77,8 +78,9 @@ function startInventory(content: ContentDB, items: { itemId: string; qty: number
     if (!def) throw new Error(`시작 아이템이 콘텐츠에 없음: ${itemId}`);
     const stack: ItemStack = { itemId, qty };
     if ("durabilityMax" in def) stack.durability = def.durabilityMax;
-    if (equip && (def.category === "weapon" || def.category === "armor" || def.category === "shield")) {
-      inv.equipment[def.category] = stack;
+    const slot = slotOf(def);
+    if (equip && slot) {
+      inv.equipment[slot] = stack;
     } else {
       // 시작 아이템은 몇 개뿐이라 칸이 모자랄 일도, 겹칠 일도 없다. 겹치기는 items/inventory.ts의 addItem.
       inv.slots[next++] = stack;

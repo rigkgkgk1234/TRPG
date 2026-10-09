@@ -22,7 +22,7 @@ export type GameCommand =
    */
   | { type: "shop"; op: "buy" | "sell" | "repair" | "treat" | "stabilize" | "buyFood" | "payDebt"; shop?: ShopId; target?: string; qty?: number }
   /** 가방 칸의 장비를 걸친다 */
-  | { type: "equip"; slotIndex: number }
+  | { type: "equip"; slotIndex: number; to?: EquipSlot }
   | { type: "unequip"; slot: EquipSlot }
   /** 전투 밖에서 소모품 쓰기 (전투 중에는 combat 명령의 useItem) */
   | { type: "useItem"; itemId: ItemId }

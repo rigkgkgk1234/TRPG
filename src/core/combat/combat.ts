@@ -87,28 +87,45 @@ export function activeEnemies(c: CombatState): EnemyInstance[] {
   return c.enemies.filter((e) => e.hp > 0 && !e.routed);
 }
 
-/** 방어도 = 10 + 민첩 + 방어구 + 방패 (+ 방어 자세, 스토리 보정, − 대실패 페널티) */
+/** 왼손 공격은 서툰 손이라 명중 −2 (방패와 견줄 만하게) */
+export const OFF_HAND_HIT_PENALTY = -2;
+
+/** 왼손에 든 무기: 오른손도 근접 한손 무기일 때만 왼손으로 한 번 더 친다 (활·맨주먹이면 없음) */
+export function offHandWeapon(run: RunState, content: Pick<ContentDB, "items">): WeaponDef | null {
+  const main = attackWeapon(run, content);
+  if (main === FIST || isBow(main) || main.twoHanded) return null;
+  const stack = run.inventory.equipment.offHand;
+  const def = stack ? content.items[stack.itemId] : undefined;
+  return def?.category === "weapon" && !def.twoHanded ? def : null;
+}
+
+/** 방어도에 보태는 칸: 왼손(방패일 때), 머리, 상체, 하체, 발 */
+const DEFENSE_SLOTS = ["offHand", "head", "armor", "legs", "feet"] as const;
+
+/** 방어도 = 10 + 민첩 + 방어구(머리·상체·하체·발) + 방패 (+ 방어 자세, 스토리 보정, − 대실패 페널티) */
 export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, c: CombatState | null): number {
   const eq = run.inventory.equipment;
   // 망가진 방어구·방패는 방어도에 보태지 않는다 (SYSTEM_SPEC 5-3)
-  const gear = [eq.armor, eq.shield].reduce((sum, stack) => {
+  const gear = DEFENSE_SLOTS.reduce((sum, slot) => {
+    const stack = eq[slot];
     const def = stack && !isBroken(stack) ? content.items[stack.itemId] : undefined;
-    return sum + (def && (def.category === "armor" || def.category === "shield") ? def.defense : 0);
+    return sum + (def && "defense" in def ? def.defense : 0);
   }, 0);
   const extra = c ? c.defendBonus - c.defensePenalty + (c.setup.playerDefenseBonus ?? 0) : 0;
   return BASE_DEFENSE + run.player.stats.agi + gear + extra;
 }
 
 /** 공격 판정 명세: 근접은 근력, 활은 민첩 + 무기 숙련 vs 적 방어도. 강타는 −2. */
-export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean): CheckSpec {
-  const w = attackWeapon(run, content);
+export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean, weapon?: WeaponDef, offHand = false): CheckSpec {
+  const w = weapon ?? attackWeapon(run, content);
   const def = enemyDef(content, target);
+  const situational = (power ? POWER_ATTACK_HIT_PENALTY : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
   return {
     stat: isBow(w) ? "agi" : "str",
     skill: w.skill,
     dc: def.defense,
     tags: def.tags,
-    situational: power ? POWER_ATTACK_HIT_PENALTY : undefined,
+    situational: situational || undefined,
   };
 }
 
@@ -153,6 +170,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const w = attackWeapon(run, content);
   const bow = isBow(w);
   const outOfArrows = w === FIST && isBow(equippedWeapon(run, content));
+  const off = offHandWeapon(run, content);
   const brokenPenalty = w !== FIST && isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
   const dmg = (bonus: number) => `피해 ${w.damage}${signedOrEmpty((bow ? 0 : run.player.stats.str) + bonus + brokenPenalty)}`;
 
@@ -173,7 +191,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const actions: CombatActionView[] = [
     {
       type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false),
-      detail: [dmg(0), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
+      detail: [dmg(0), ...(off ? [`왼손 ${off.damage}`] : []), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
       lockedReason: null,
     },
     {
@@ -339,7 +357,16 @@ function playerAct(ctx: Ctx, c: CombatState, a: CombatAction): void {
 
 function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean): void {
   const s = ctx.draft;
-  const w = attackWeapon(s, ctx.content);
+  strike(ctx, c, target, attackWeapon(s, ctx.content), power, false);
+  // 두 손에 한손 무기를 들었으면 왼손으로 한 번 더 (같은 상대가 쓰러졌으면 다음 상대)
+  const off = offHandWeapon(s, ctx.content);
+  const next = target.hp > 0 && !target.routed ? target : activeEnemies(c)[0];
+  if (off && next) strike(ctx, c, next, off, false, true);
+}
+
+/** 공격 한 번. 왼손 공격은 근력 피해 보정이 없다 */
+function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, power: boolean, offHand: boolean): void {
+  const s = ctx.draft;
   const bow = isBow(w);
   const def = enemyDef(ctx.content, target);
   if (bow) {
@@ -348,26 +375,29 @@ function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean)
   }
   if (power) changeFatigue(ctx, COMBAT_FATIGUE);
 
-  const spec = attackSpec(s, ctx.content, target, power);
-  const label = power ? (bow ? "조준 사격" : "강타") : bow ? "활 쏘기" : "공격";
+  const spec = attackSpec(s, ctx.content, target, power, w, offHand);
+  const label = offHand ? "왼손 공격" : power ? (bow ? "조준 사격" : "강타") : bow ? "활 쏘기" : "공격";
   const r = performCheck(ctx, spec, label, { advantage: firstStrikeSources(c) }, xpRoom(c, w.skill));
   addCombatXp(c, w.skill, r.xpGained);
 
   if (r.outcome === "success" || r.outcome === "critSuccess") {
     const crit = r.outcome === "critSuccess";
-    const broken = w !== FIST && isBroken(s.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
-    const bonus = (bow ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
+    const stack = offHand ? s.inventory.equipment.offHand : s.inventory.equipment.weapon;
+    const broken = w !== FIST && isBroken(stack) ? -BROKEN_WEAPON_PENALTY : 0;
+    const bonus = (bow || offHand ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
     const dmg = Math.max(1, rollDice(w.damage, ctx.rng, crit) + bonus);
     target.hp -= dmg;
     const hitText = crit
       ? `급소를 정확히 노렸다! ${def.name}에게 피해 ${dmg}.`
-      : bow ? `화살이 ${def.name}에게 꽂혔다. 피해 ${dmg}.` : `${def.name}에게 일격을 먹였다. 피해 ${dmg}.`;
+      : bow ? `화살이 ${def.name}에게 꽂혔다. 피해 ${dmg}.`
+      : offHand ? `왼손의 ${josa(w.name, "으로/로")} 한 번 더 휘둘렀다. ${def.name}에게 피해 ${dmg}.`
+      : `${def.name}에게 일격을 먹였다. 피해 ${dmg}.`;
     say(ctx, c, "player", hitText, r, dmg);
     if (target.hp <= 0) say(ctx, c, "player", `${josa(def.name, "이/가")} 쓰러졌다.`);
     return;
   }
 
-  say(ctx, c, "player", bow ? "화살이 빗나갔다." : "공격이 빗나갔다.", r);
+  say(ctx, c, "player", bow ? "화살이 빗나갔다." : offHand ? "왼손 공격이 빗나갔다." : "공격이 빗나갔다.", r);
   if (r.outcome === "critFail") {
     if (bow) {
       if (removeItem(ctx, ARROW, 1) > 0) say(ctx, c, "player", "시위가 엉키면서 화살 하나를 부러뜨렸다.");
@@ -471,14 +501,16 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
 }
 
 /**
- * 내구도: 공격에 쓴 무기 −1(대실패가 있었으면 −2), 한 번이라도 맞았으면 방어구·방패 −1. 전투 한 번 단위로 깎는다. (SYSTEM_SPEC 5-3)
+ * 내구도: 공격에 쓴 무기 −1(대실패가 있었으면 −2, 왼손 무기 −1), 한 번이라도 맞았으면 걸친 방어구·방패 −1씩. 전투 한 번 단위로 깎는다. (SYSTEM_SPEC 5-3)
  */
 function wearAfterCombat(ctx: Ctx, c: CombatState): void {
   const attacks = c.log.filter((l) => l.actor === "player" && l.check);
-  if (attacks.length > 0) wearEquipment(ctx, "weapon", attacks.some((l) => l.check!.outcome === "critFail") ? 2 : 1);
+  if (attacks.length > 0) {
+    wearEquipment(ctx, "weapon", attacks.some((l) => l.check!.outcome === "critFail") ? 2 : 1);
+    if (offHandWeapon(ctx.draft, ctx.content)) wearEquipment(ctx, "offHand", 1);
+  }
   if (c.log.some((l) => l.actor !== "player" && l.damage)) {
-    wearEquipment(ctx, "armor", 1);
-    wearEquipment(ctx, "shield", 1);
+    for (const slot of DEFENSE_SLOTS) wearEquipment(ctx, slot, 1);
   }
 }
 
