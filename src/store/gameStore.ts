@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { FeedItem, GameCommand } from "@/core/commands";
+import type { CombatFx, FeedItem, GameCommand } from "@/core/commands";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
 import { checksum, type JobId, type RunState } from "@/core/types";
@@ -31,12 +31,19 @@ interface GameStore {
    * 명령 전 상태(shownRun)를 그리고 입력을 잠근다. (ARCHITECTURE 3-4의 단순한 형태)
    */
   playing: { id: number; before: RunState } | null;
+  /** 지금 재생할 전투 연출 (결과 카드가 박자에 맞춰 넣는다). seq가 바뀌면 효과를 처음부터 다시 */
+  fx: { seq: number; fx: CombatFx } | null;
+  /** 연출 중에 이미 보여 준 피해: 전투 칸은 명령 전 HP에서 이만큼 빼서 그린다 (적 instanceId → 피해) */
+  hpCut: Record<string, number>;
+  /** 플레이어가 연출 중에 이미 받은 피해 (상태 바 HP) */
+  hurt: number;
   /** 앱을 켠 뒤 저장을 읽어 봤는지 (읽기 전에는 타이틀의 "이어하기"를 정할 수 없다) */
   hydrated: boolean;
   /** 저장이 깨져 백업에서 되살렸을 때 한 번 보여 줄 안내 */
   notice: string | null;
   send: (cmd: GameCommand) => void;
   finishPlaying: () => void;
+  playFx: (fx: CombatFx) => void;
   startNew: (job: JobId, name: string) => void;
   /** 저장된 회차를 불러온다. 앱을 켤 때 한 번 */
   hydrate: () => Promise<void>;
@@ -53,6 +60,7 @@ const INSTANT = new Set<GameCommand["type"]>(["shop", "equip", "unequip", "useIt
  */
 const INSTANT_GAP_MS = 350;
 let lastInstantAt = 0;
+let fxSeq = 1;
 
 /**
  * 실행 중 조작 막기: 스토어가 상태를 바꿀 때마다 지문을 남기고, 다음 명령·저장 전에 맞춰 본다.
@@ -78,6 +86,9 @@ export const useGame = create<GameStore>()((set, get) => ({
   run: null,
   log: [],
   playing: null,
+  fx: null,
+  hpCut: {},
+  hurt: 0,
   hydrated: false,
   notice: null,
 
@@ -103,6 +114,9 @@ export const useGame = create<GameStore>()((set, get) => ({
       // 되돌렸다는 안내는 다음 행동을 하면 거둔다
       notice: null,
       playing: animate ? { id: group.id, before: run } : null,
+      fx: null,
+      hpCut: {},
+      hurt: 0,
     });
     const next = result.state;
     if (next.ending) {
@@ -117,7 +131,16 @@ export const useGame = create<GameStore>()((set, get) => ({
     else if (result.save) persist(() => saveRun(next));
   },
 
-  finishPlaying: () => set({ playing: null }),
+  finishPlaying: () => set({ playing: null, fx: null, hpCut: {}, hurt: 0 }),
+
+  playFx: (fx) => {
+    const { hpCut, hurt } = get();
+    set({
+      fx: { seq: fxSeq++, fx },
+      ...(fx.side === "player" && fx.hit ? { hpCut: { ...hpCut, [fx.targetId]: (hpCut[fx.targetId] ?? 0) + fx.damage } } : {}),
+      ...(fx.side === "foe" && fx.hit ? { hurt: hurt + fx.damage } : {}),
+    });
+  },
 
   startNew: (job, name) => {
     const now = new Date();
@@ -125,7 +148,7 @@ export const useGame = create<GameStore>()((set, get) => ({
     const previous = get().run;
     const run = newRun(CONTENT, job, name, { seed, now: now.toISOString() });
     fingerprint = stamp(run);
-    set({ run, log: [], playing: null });
+    set({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0 });
     // 끝나지 않은 회차를 버리면 포기 기록을 남기고, 이전 회차의 백업이 새 회차로 되살아나지 않게 지운다
     persist(async () => {
       if (previous && !previous.ending) await useMeta.getState().record(makeRecord(previous, CONTENT, now.toISOString(), undefined, true));
@@ -174,5 +197,5 @@ async function restoreAfterTamper(): Promise<void> {
   }
   const run = loaded && !loaded.run.ending ? loaded.run : null;
   fingerprint = stamp(run);
-  useGame.setState({ run, log: [], playing: null, notice: TAMPER_NOTICE });
+  useGame.setState({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, notice: TAMPER_NOTICE });
 }

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
+import type { CombatFx } from "@/core/commands";
 import { OUTCOME_LABEL } from "@/core/labels";
 import type { CheckResult } from "@/core/types";
+import { useGame } from "@/store/gameStore";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { BandaidsIcon, TrendUpIcon, WarningIcon, type Icon } from "@/ui/icons";
 import { OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line, type Tone, type TurnSummary } from "@/ui/turnSummary";
@@ -12,6 +14,9 @@ import { Text } from "@/ui/Text";
 
 const TONE_BG: Record<Tone, string> = { good: colors.goodBg, bad: colors.badBg, crit: colors.critBg, neutral: colors.neutralBg };
 const MARK_ICON: Record<NonNullable<Line["mark"]>, Icon> = { levelUp: TrendUpIcon, wound: WarningIcon, heal: BandaidsIcon };
+
+/** 전투 연출이 붙은 박자 앞에 두는 틈 (앞 연출이 끝날 시간, ms) */
+const FX_GAP = 260;
 
 /** 결과 카드가 차례로 드러내는 한 박자 */
 type Beat = { kind: "roll" } | { kind: "offRoll" } | { kind: "changes" } | { kind: "event"; i: number };
@@ -44,11 +49,17 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
   const [shown, setShown] = useState(animate ? 0 : steps);
   const done = !rolling && !offRolling && shown >= steps;
 
+  // 박자마다 재생할 전투 연출: 굴림 결과가 드러날 때 내 공격, 글 줄이 드러날 때 상대 공격
+  const fxOf = (b: Beat): CombatFx[] =>
+    b.kind === "roll" ? summary.rollFx ?? [] : b.kind === "offRoll" ? summary.offRollFx ?? [] : b.kind === "event" ? summary.lineFx?.[b.i] ?? [] : [];
+  const skipped = useRef(false);
+
   useEffect(() => {
     if (!animate) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     let t = 0;
     beats.forEach((b, i) => {
+      const fx = fxOf(b);
       if (b.kind === "roll") {
         t += motion.dice;
         timers.push(setTimeout(() => setRolling(false), t));
@@ -60,9 +71,13 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
         timers.push(setTimeout(() => setOffRolling(false), t));
         t += motion.settle;
       } else {
-        t += motion.stagger;
+        // 상대 공격처럼 연출이 붙은 줄은 앞 연출이 끝날 틈을 둔다
+        t += motion.stagger + (fx.length > 0 ? FX_GAP : 0);
       }
-      timers.push(setTimeout(() => setShown(i + 1), t));
+      timers.push(setTimeout(() => {
+        setShown(i + 1);
+        if (!skipped.current) fx.forEach((f) => useGame.getState().playFx(f));
+      }, t));
     });
     return () => timers.forEach(clearTimeout);
     // beats는 summary에서 정해지므로 steps로 충분하다
@@ -77,6 +92,7 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
   }, [done, onDone]);
 
   const skip = () => {
+    skipped.current = true;
     setRolling(false);
     setOffRolling(false);
     setOffPending(false);

@@ -219,6 +219,33 @@ describe("전투 진행", () => {
   });
 });
 
+describe("전투 연출(fx) 피드", () => {
+  const fxs = (ctx: Ctx) => ctx.feed.filter((f) => f.kind === "fx").map((f) => (f as { fx: unknown }).fx);
+
+  it("내 공격은 무기 종류·대상·명중·피해를, 적의 공격은 누가 쳤는지와 피해를 남긴다", () => {
+    // 농부 쇠갈퀴(둔기): 15 명중, 피해 5 + 근력 1 = 6. 늑대 18 명중, 피해 3
+    const run = edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 99; });
+    const ctx = ctxOf(run, seq(f20(15), fd(5, 6), f20(18), fd(3, 6)));
+    combatStep(ctx, { type: "attack", targetId: "wolf_1" });
+    expect(fxs(ctx)).toEqual([
+      { side: "player", targetId: "wolf_1", weapon: "blunt", hand: "main", hit: true, crit: false, damage: 6 },
+      { side: "foe", enemyId: "wolf_1", hit: true, crit: false, damage: 3 },
+    ]);
+  });
+
+  it("빗나감도 남기고, 활은 bow, 무기가 없으면 fist", () => {
+    const hunter = ctxOf(edit(inCombat(start("hunter"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 99; }), seq(f20(2), f20(2)));
+    combatStep(hunter, { type: "attack", targetId: "wolf_1" });
+    expect(fxs(hunter)).toEqual([
+      { side: "player", targetId: "wolf_1", weapon: "bow", hand: "main", hit: false, crit: false, damage: 0 },
+      { side: "foe", enemyId: "wolf_1", hit: false, crit: false, damage: 0 },
+    ]);
+    const bare = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.inventory.equipment.weapon = null; s.combat!.enemies[0].hp = 99; }), seq(f20(2), f20(2)));
+    combatStep(bare, { type: "attack", targetId: "wolf_1" });
+    expect(fxs(bare)[0]).toMatchObject({ weapon: "fist", hit: false });
+  });
+});
+
 describe("전투 끝", () => {
   it("이기면 공격에 쓴 무기 숙련 경험 +1 (방어 숙련은 아니다)", () => {
     const run = edit(inCombat(start("farmer"), ["boar"]), (s) => {

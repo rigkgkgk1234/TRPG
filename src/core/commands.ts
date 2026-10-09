@@ -39,7 +39,14 @@ export type FeedItem =
   | { kind: "item"; itemId: ItemId; name: string; delta: number }
   | { kind: "levelUp"; skill?: SkillId; stat?: StatId; newValue: number }
   | { kind: "wound"; level: WoundLevel }
-  | { kind: "toast"; text: string };
+  | { kind: "toast"; text: string }
+  /** 전투 연출: 누가 무엇으로 쳤고 맞았는지 (화면이 맞은 줄 위에 효과를 띄운다). 게임 결과에는 쓰지 않는다 */
+  | { kind: "fx"; fx: CombatFx };
+
+/** 공격 연출 정보. weapon: 베기(blade)·타격(blunt, fist)·화살(bow) */
+export type CombatFx =
+  | { side: "player"; targetId: string; weapon: "blade" | "blunt" | "bow" | "fist"; hand: "main" | "off"; hit: boolean; crit: boolean; damage: number }
+  | { side: "foe"; enemyId: string; hit: boolean; crit: boolean; damage: number };
 
 export type ResourceKey = "silver" | "food" | "hp" | "fatigue" | "reputation" | "fame" | "debt";
 

@@ -8,6 +8,7 @@ import {
   BreadIcon, CaretRightIcon, CoinsIcon, HandCoinsIcon, HeartIcon, LightningIcon, MoonStarsIcon, SunHorizonIcon, SunIcon, WarningIcon, type Icon,
 } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
+import { useGame } from "@/store/gameStore";
 import { pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
 
@@ -27,6 +28,9 @@ export function RunStatusBar({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const { player: p, resources: r, time } = run;
   const hpMax = maxHp(p.stats);
+  // 전투 연출 중 적에게 맞은 만큼 바로 깎아 보여 준다 (값이 바뀌니 HP 칸이 빨갛게 번쩍인다)
+  const hurt = useGame((s) => s.hurt);
+  const hp = Math.max(0, p.hp - hurt);
   const PhaseIcon = PHASE_ICON[time.phase];
   const warnings = [
     p.wound.level !== "none" && `부상: ${WOUND_LABEL[p.wound.level]}`,
@@ -59,8 +63,8 @@ export function RunStatusBar({ run }: { run: RunState }) {
       </View>
 
       <View style={styles.stats}>
-        <Stat icon={HeartIcon} label="HP" value={p.hp} suffix={`/${hpMax}`} higherIsGood
-          color={p.hp <= hpMax / 3 ? colors.fail : undefined} />
+        <Stat icon={HeartIcon} label="HP" value={hp} suffix={`/${hpMax}`} higherIsGood
+          color={hp <= hpMax / 3 ? colors.fail : undefined} />
         <Stat icon={LightningIcon} label="피로" value={r.fatigue} suffix={`/${FATIGUE_MAX}`} color={fatigueColor(r.fatigue)} />
         <Stat icon={CoinsIcon} label="은화" value={r.silver} higherIsGood />
         <Stat icon={BreadIcon} label="식량" value={r.food} higherIsGood color={r.food < FOOD_PER_DAY ? colors.partial : undefined} />

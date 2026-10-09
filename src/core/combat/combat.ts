@@ -382,6 +382,10 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
   const label = offHand ? "왼손 공격" : power ? (bow ? "조준 사격" : "강타") : bow ? "활 쏘기" : "공격";
   const r = performCheck(ctx, spec, label, { advantage: firstStrikeSources(c) }, xpRoom(c, w.skill));
   addCombatXp(c, w.skill, r.xpGained);
+  const fx = (hit: boolean, crit: boolean, damage: number) => ctx.feed.push({
+    kind: "fx",
+    fx: { side: "player", targetId: target.instanceId, weapon: w === FIST ? "fist" : w.skill, hand: offHand ? "off" : "main", hit, crit, damage },
+  });
 
   if (r.outcome === "success" || r.outcome === "critSuccess") {
     const crit = r.outcome === "critSuccess";
@@ -390,6 +394,7 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
     const bonus = (bow || offHand ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
     const dmg = Math.max(1, rollDice(w.damage, ctx.rng, crit) + bonus);
     target.hp -= dmg;
+    fx(true, crit, dmg);
     const hitText = crit
       ? `급소를 정확히 노렸다! ${def.name}에게 피해 ${dmg}.`
       : bow ? `화살이 ${def.name}에게 꽂혔다. 피해 ${dmg}.`
@@ -400,6 +405,7 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
     return;
   }
 
+  fx(false, false, 0);
   say(ctx, c, "player", bow ? "화살이 빗나갔다." : offHand ? "왼손 공격이 빗나갔다." : "공격이 빗나갔다.", r);
   if (r.outcome === "critFail") {
     if (bow) {
@@ -424,6 +430,7 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
     const hit = crit || (roll !== 1 && roll + def.attackBonus >= defense);
 
     if (!hit) {
+      ctx.feed.push({ kind: "fx", fx: { side: "foe", enemyId: e.instanceId, hit: false, crit: false, damage: 0 } });
       if (c.defendBonus > 0) {
         say(ctx, c, e.instanceId, `${def.name}의 공격을 막아 냈다.`);
         addCombatXp(c, "guard", gainSkillXp(ctx, "guard", Math.min(1, xpRoom(c, "guard"))));
@@ -435,6 +442,7 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
 
     const dual = offHandWeapon(s, ctx.content) ? DUAL_WIELD_DAMAGE_TAKEN : 0;
     const dmg = Math.max(1, rollDice(def.damage, ctx.rng) * (crit ? 2 : 1) + dual);
+    ctx.feed.push({ kind: "fx", fx: { side: "foe", enemyId: e.instanceId, hit: true, crit, damage: dmg } });
     changeHp(ctx, -dmg);
     const hitText = ENEMY_HIT_TEXT[def.id] ?? `${def.name}의 공격에 맞았다.`;
     say(ctx, c, e.instanceId, crit ? `${def.name}의 공격이 급소에 들어왔다! 피해 ${dmg}.` : `${hitText} 피해 ${dmg}.`, undefined, dmg);

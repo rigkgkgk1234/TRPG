@@ -1,9 +1,11 @@
 import { Redirect } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Animated, StyleSheet, View } from "react-native";
 import { josa, PHASE_LABEL } from "@/core/labels";
 import type { RunState } from "@/core/types";
 import { selectView, type GameView } from "@/store/selectors";
 import { useGame, useShownRun } from "@/store/gameStore";
+import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { RunStatusBar } from "@/ui/components/RunStatusBar";
 import { TurnLog } from "@/ui/components/TurnLog";
 import { colors } from "@/ui/theme";
@@ -22,20 +24,36 @@ export default function GameScreen() {
   const shown = useShownRun();
   const busy = useGame((s) => s.playing !== null);
   const notice = useGame((s) => s.notice);
+  const shake = useHurtShake();
   // 저장 기능(5주차) 전에는 앱을 새로 고치면 회차가 사라진다 → 타이틀로
   if (!run || !shown) return <Redirect href="/" />;
 
   const view = selectView(shown);
   return (
-    <View style={styles.root}>
+    <Animated.View style={[styles.root, { transform: [{ translateX: shake }] }]}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
       <TurnLog compact={view === "combat"} intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)} />
       {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
-      <View style={[(view === "event" || view === "combat") && styles.shrink, busy && styles.busy]}>
+      {/* 연출 중에는 누를 수 없게. 전투 칸은 맞는 효과가 보여야 하므로 흐리게 하지 않는다 */}
+      <View style={[(view === "event" || view === "combat") && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
         <Panel view={view} run={shown} />
       </View>
-    </View>
+    </Animated.View>
   );
+}
+
+/** 적에게 맞으면 화면 전체가 짧게 좌우로 흔들린다 (급소면 더 세게). "동작 줄이기"면 연출 자체가 오지 않는다 */
+function useHurtShake(): Animated.Value {
+  const fx = useGame((s) => s.fx);
+  const [x] = useState(() => new Animated.Value(0));
+  const hurtSeq = fx?.fx.side === "foe" && fx.fx.hit ? fx.seq : null;
+  const crit = fx?.fx.side === "foe" && fx.fx.crit;
+  useEffect(() => {
+    if (hurtSeq === null) return;
+    const a = crit ? 9 : 5;
+    Animated.sequence([a, -a, a * 0.6, -a * 0.4, 0].map((v) => Animated.timing(x, { toValue: v, duration: 45, useNativeDriver: NATIVE_DRIVER }))).start();
+  }, [hurtSeq, crit, x]);
+  return x;
 }
 
 /** 기록이 없을 때 위쪽에 보여 줄 글: 첫날 아침이면 시작 안내, 이어서 들어왔으면 어디서 멈췄는지 */
@@ -66,4 +84,5 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   shrink: { flexShrink: 1 },
   busy: { opacity: 0.55, pointerEvents: "none" },
+  locked: { pointerEvents: "none" },
 });

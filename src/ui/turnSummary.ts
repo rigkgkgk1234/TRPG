@@ -1,4 +1,4 @@
-import type { FeedItem, GameCommand, ResourceKey } from "@/core/commands";
+import type { CombatFx, FeedItem, GameCommand, ResourceKey } from "@/core/commands";
 import { jobOf } from "@/core/day/actions";
 import { EXERCISE_LABEL, isExerciseStat, isVisitId, josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, VISIT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { equippedWeapon, isBow } from "@/core/combat/combat";
@@ -66,6 +66,10 @@ export interface TurnSummary {
   /** 두 손 무기의 왼손 굴림: 오른손 굴림과 그 결과 글(offRollAt개) 다음에 굴린다 */
   offRoll?: CheckResult;
   offRollAt?: number;
+  /** 전투 연출: 오른손·왼손 굴림 결과가 드러날 때, 글 줄(번호)이 드러날 때 재생할 효과 */
+  rollFx?: CombatFx[];
+  offRollFx?: CombatFx[];
+  lineFx?: Record<number, CombatFx[]>;
   /** 전투처럼 내 행동 뒤에 상대의 행동이 이어지면 바뀐 것(HP 등)은 일어난 일을 다 보여 준 뒤에 */
   changesLast?: boolean;
   /** 자원별로 합친 변화 (0은 뺀다) */
@@ -85,6 +89,9 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
   let roll: CheckResult | undefined;
   let offRoll: CheckResult | undefined;
   let offRollAt: number | undefined;
+  const rollFx: CombatFx[] = [];
+  const offRollFx: CombatFx[] = [];
+  const lineFx: Record<number, CombatFx[]> = {};
 
   for (const item of group.items) {
     switch (item.kind) {
@@ -101,6 +108,11 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
         } else roll ??= item.result;
         break;
       case "toast": notices.push(item.text); break;
+      // 내 공격 효과는 바로 앞 굴림에, 상대 공격 효과는 바로 뒤에 나올 글 줄에 붙인다
+      case "fx":
+        if (item.fx.side === "player") (item.fx.hand === "off" && offRoll ? offRollFx : rollFx).push(item.fx);
+        else (lineFx[events.length] ??= []).push(item.fx);
+        break;
       default: events.push(eventLine(item));
     }
   }
@@ -122,7 +134,7 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
 
   const when = `${run.time.day}일차 ${PHASE_LABEL[run.time.phase]}`;
   const event = eventTitle(group.cmd, run);
-  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, offRoll, offRollAt, changesLast: group.cmd.type === "combat", changes, events, notices };
+  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, offRoll, offRollAt, rollFx, offRollFx, lineFx, changesLast: group.cmd.type === "combat", changes, events, notices };
 }
 
 /** 지난 기록용 변화 요약: "은화 +3, 식량 +1, 피로 +2" (없으면 첫 사건이나 거절 사유) */
@@ -205,7 +217,7 @@ function eventTitle(cmd: GameCommand, run: RunState): string | null {
   return (a && CONTENT.events[a.eventId]?.title) ?? null;
 }
 
-function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" }>): Line {
+function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" | "fx" }>): Line {
   switch (item.kind) {
     case "text":
       return item.foe ? { text: item.text, tone: "neutral", foe: true } : { text: item.text, tone: "neutral" };
