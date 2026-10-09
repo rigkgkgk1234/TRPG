@@ -15,24 +15,26 @@ const FACE_INTERVAL = 60;
  * 연출용 Math.random()은 게임 결과와 무관하다 (결과는 이미 result에 확정). (ARCHITECTURE 8주차)
  * 유리/불리면 두 개를 굴리고 버린 쪽은 흐리게 둔다.
  */
-export function DiceRoll({ result, rolling }: { result: CheckResult; rolling: boolean }) {
+export function DiceRoll({ result, rolling, pending = false }: { result: CheckResult; rolling: boolean; pending?: boolean }) {
   const keptIndex = result.dice.indexOf(result.kept);
   return (
     <View style={styles.row}>
       {result.dice.map((value, i) => (
-        <Die key={i} value={value} rolling={rolling} kept={i === keptIndex}
+        <Die key={i} value={value} rolling={rolling} pending={pending} kept={i === keptIndex}
           color={i === keptIndex ? OUTCOME_COLOR[result.outcome] : colors.textFaint} />
       ))}
     </View>
   );
 }
 
-function Die({ value, rolling, kept, color }: { value: number; rolling: boolean; kept: boolean; color: string }) {
+/** pending: 아직 굴릴 차례가 아니다 (두 손 무기의 왼손 주사위). "?"로 흐리게 기다린다 */
+function Die({ value, rolling, pending, kept, color }: { value: number; rolling: boolean; pending: boolean; kept: boolean; color: string }) {
   const [fakeFace, setFakeFace] = useState(randomFace);
   const [spin] = useState(() => new Animated.Value(0));
   const [pop] = useState(() => new Animated.Value(1));
 
   useEffect(() => {
+    if (pending) return;
     if (!rolling) {
       spin.stopAnimation();
       spin.setValue(0);
@@ -46,21 +48,22 @@ function Die({ value, rolling, kept, color }: { value: number; rolling: boolean;
     spin.setValue(0);
     Animated.timing(spin, { toValue: 1, duration: motion.dice, easing: Easing.out(Easing.cubic), useNativeDriver: NATIVE_DRIVER }).start();
     return () => clearInterval(timer);
-  }, [rolling, kept, spin, pop]);
+  }, [rolling, pending, kept, spin, pop]);
 
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "540deg"] });
-  const settled = !rolling;
+  const settled = !rolling && !pending;
   return (
     <Animated.View
-      accessibilityLabel={rolling ? "주사위를 굴리는 중" : `주사위 ${value}`}
+      accessibilityLabel={pending ? "굴릴 차례를 기다리는 주사위" : rolling ? "주사위를 굴리는 중" : `주사위 ${value}`}
       style={[
         styles.die,
         settled && kept && { backgroundColor: tint(color), borderColor: color },
         { transform: [{ rotate }, { scale: pop }] },
         settled && !kept && styles.discarded,
+        pending && styles.discarded,
       ]}
     >
-      <Text style={[styles.face, { color: rolling ? colors.textDim : color }]}>{rolling ? fakeFace : value}</Text>
+      <Text style={[styles.face, { color: rolling || pending ? colors.textDim : color }]}>{pending ? "?" : rolling ? fakeFace : value}</Text>
     </Animated.View>
   );
 }

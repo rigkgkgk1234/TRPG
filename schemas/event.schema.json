@@ -1187,6 +1187,10 @@
           "type": "number",
           "description": "상황 보정 (이벤트 고정값)"
         },
+        "situationalLabel": {
+          "type": "string",
+          "description": "상황 보정의 이름 (계산식에 \"−2(왼손)\"처럼 나온다. 없으면 \"상황\")"
+        },
         "allowPartial": {
           "type": "boolean",
           "description": "부분 성공 허용 여부 (기본 false)"

@@ -67,7 +67,7 @@ export function buildCheckContext(
   }
 
   if (spec.situational) {
-    modifiers.push({ label: "상황", value: spec.situational });
+    modifiers.push({ label: spec.situationalLabel ?? "상황", value: spec.situational });
   }
 
   // 같은 흔적이 두 번 기록돼도 효과는 한 번만

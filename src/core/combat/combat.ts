@@ -128,6 +128,7 @@ export function attackSpec(run: RunState, content: ContentDB, target: EnemyInsta
     dc: def.defense,
     tags: def.tags,
     situational: situational || undefined,
+    situationalLabel: situational ? [power && "강타", offHand && "왼손"].filter(Boolean).join(", ") : undefined,
   };
 }
 

@@ -299,6 +299,8 @@ export interface CheckSpec {
   dc: number;
   /** 상황 보정 (이벤트 고정값) */
   situational?: number;
+  /** 상황 보정의 이름 (계산식에 "−2(왼손)"처럼 나온다. 없으면 "상황") */
+  situationalLabel?: string;
   /** 부분 성공 허용 여부 (기본 false) */
   allowPartial?: boolean;
   /** 흔적 보정 매칭용 태그: "beast", "fear", "goblin" ... */

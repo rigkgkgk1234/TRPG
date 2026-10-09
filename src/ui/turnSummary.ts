@@ -54,12 +54,20 @@ export interface Change { key: string; label: string; delta: number; tone: Tone 
 export interface Line { text: string; tone: Tone; mark?: "levelUp" | "wound" | "heal" }
 
 /** 명령 하나의 결과를 "무엇을 했고 → 판정이 어땠고 → 무엇이 바뀌었고 → 무슨 일이 있었나"로 정리한 것 */
+/** 왼손 공격 굴림의 이름 (core/combat/combat.ts의 strike와 같은 문자열) */
+const OFF_HAND_LABEL = "왼손 공격";
+
 export interface TurnSummary {
   /** "3일차 오전" */
   when: string;
   /** "밭일", "혼자 훈련(활)", "하루 정산" */
   title: string;
   roll?: CheckResult;
+  /** 두 손 무기의 왼손 굴림: 오른손 굴림과 그 결과 글(offRollAt개) 다음에 굴린다 */
+  offRoll?: CheckResult;
+  offRollAt?: number;
+  /** 전투처럼 내 행동 뒤에 상대의 행동이 이어지면 바뀐 것(HP 등)은 일어난 일을 다 보여 준 뒤에 */
+  changesLast?: boolean;
   /** 자원별로 합친 변화 (0은 뺀다) */
   changes: Change[];
   /** 문장·레벨 상승·부상을 일어난 순서대로 */
@@ -75,6 +83,8 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
   const events: Line[] = [];
   const notices: string[] = [];
   let roll: CheckResult | undefined;
+  let offRoll: CheckResult | undefined;
+  let offRollAt: number | undefined;
 
   for (const item of group.items) {
     switch (item.kind) {
@@ -84,7 +94,12 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
         items.set(item.itemId, { name: item.name, delta: (prev?.delta ?? 0) + item.delta });
         break;
       }
-      case "roll": roll ??= item.result; break;
+      case "roll":
+        if (item.label === OFF_HAND_LABEL && roll && !offRoll) {
+          offRoll = item.result;
+          offRollAt = events.length;
+        } else roll ??= item.result;
+        break;
       case "toast": notices.push(item.text); break;
       default: events.push(eventLine(item));
     }
@@ -107,7 +122,7 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
 
   const when = `${run.time.day}일차 ${PHASE_LABEL[run.time.phase]}`;
   const event = eventTitle(group.cmd, run);
-  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, changes, events, notices };
+  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, offRoll, offRollAt, changesLast: group.cmd.type === "combat", changes, events, notices };
 }
 
 /** 지난 기록용 변화 요약: "은화 +3, 식량 +1, 피로 +2" (없으면 첫 사건이나 거절 사유) */
