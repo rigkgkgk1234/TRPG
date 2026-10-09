@@ -633,5 +633,5 @@ function enemyNames(ctx: Ctx, c: CombatState): string {
 function say(ctx: Ctx, c: CombatState, actor: string, text: string, check?: CombatState["log"][number]["check"], damage?: number): void {
   c.log.push({ round: c.round, actor, text, check, damage });
   if (c.log.length > LOG_MAX) c.log.shift();
-  ctx.feed.push({ kind: "text", text });
+  ctx.feed.push(actor === "player" ? { kind: "text", text } : { kind: "text", text, foe: true });
 }

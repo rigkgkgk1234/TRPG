@@ -51,7 +51,7 @@ const COST_KEYS = new Set<ResourceKey>(["fatigue", "debt"]);
 /** key: 자원 이름, 아이템이면 "item:herb" */
 export interface Change { key: string; label: string; delta: number; tone: Tone }
 /** mark: 문장 앞에 붙일 아이콘 종류 */
-export interface Line { text: string; tone: Tone; mark?: "levelUp" | "wound" | "heal" }
+export interface Line { text: string; tone: Tone; mark?: "levelUp" | "wound" | "heal"; /** 전투에서 상대가 한 일 */ foe?: boolean }
 
 /** 명령 하나의 결과를 "무엇을 했고 → 판정이 어땠고 → 무엇이 바뀌었고 → 무슨 일이 있었나"로 정리한 것 */
 /** 왼손 공격 굴림의 이름 (core/combat/combat.ts의 strike와 같은 문자열) */
@@ -208,7 +208,7 @@ function eventTitle(cmd: GameCommand, run: RunState): string | null {
 function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" }>): Line {
   switch (item.kind) {
     case "text":
-      return { text: item.text, tone: "neutral" };
+      return item.foe ? { text: item.text, tone: "neutral", foe: true } : { text: item.text, tone: "neutral" };
     case "levelUp":
       return item.skill
         ? { text: `${SKILL_LABEL[item.skill]} ${item.newValue}레벨이 되었다`, tone: "crit", mark: "levelUp" }

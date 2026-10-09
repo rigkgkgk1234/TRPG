@@ -21,9 +21,13 @@ type Beat = { kind: "roll" } | { kind: "offRoll" } | { kind: "changes" } | { kin
  * animate면 주사위를 굴린 뒤 한 줄씩 드러내고, 다 보이면 onDone. 카드를 누르면 바로 끝까지 보여 준다.
  * 두 손 무기면 주사위 두 개(오른손·왼손)를 나란히 두고, 오른손 굴림과 그 피해가 나온 뒤에 왼손 주사위를 굴린다.
  */
-export function TurnCard({ summary, animate, onDone }: { summary: TurnSummary; animate: boolean; onDone?: () => void }) {
+/** dense: 전투 중처럼 결과 칸이 낮을 때. 날짜 줄을 빼고 주사위·글자를 줄여 한 화면에 담는다 */
+export function TurnCard({ summary, animate, dense = false, onDone }: { summary: TurnSummary; animate: boolean; dense?: boolean; onDone?: () => void }) {
   const { roll, offRoll, changes, events, notices } = summary;
   const offAt = offRoll ? Math.min(summary.offRollAt ?? 0, events.length) : events.length;
+  // 왼손 공격 글: 왼손 굴림 뒤부터 상대가 한 일이 나오기 전까지
+  const firstFoe = events.findIndex((e, i) => i >= offAt && e.foe);
+  const offEnd = offRoll ? (firstFoe < 0 ? events.length : firstFoe) : offAt;
   const beats: Beat[] = [
     ...(roll ? [{ kind: "roll" } as const] : []),
     ...(offRoll ? events.slice(0, offAt).map((_, i) => ({ kind: "event", i }) as const) : []),
@@ -82,10 +86,10 @@ export function TurnCard({ summary, animate, onDone }: { summary: TurnSummary; a
   const visible = (b: Beat) => beats.indexOf(b) < shown;
   const eventBeats = (from: number, to: number) => beats.filter((b): b is Extract<Beat, { kind: "event" }> => b.kind === "event" && b.i >= from && b.i < to);
   const renderEvents = (list: Extract<Beat, { kind: "event" }>[]) => list.some(visible) && (
-    <View style={styles.events}>
+    <View style={[styles.events, dense && styles.eventsDense]}>
       {list.map((b) => visible(b) && (
         <FadeIn key={b.i} animate={animate}>
-          <EventLine line={events[b.i]} />
+          <EventLine line={events[b.i]} dense={dense} />
         </FadeIn>
       ))}
     </View>
@@ -93,56 +97,63 @@ export function TurnCard({ summary, animate, onDone }: { summary: TurnSummary; a
   const changesBeat = beats.find((b) => b.kind === "changes");
   const chips = changesBeat && visible(changesBeat) && (
     <FadeIn animate={animate} style={styles.chips}>
-      {changes.map((c) => <ChangeChip key={c.key} change={c} />)}
+      {changes.map((c) => <ChangeChip key={c.key} change={c} dense={dense} />)}
     </FadeIn>
   );
 
   return (
-    <Pressable onPress={skip} disabled={done} accessibilityHint={done ? undefined : "눌러서 결과 바로 보기"} style={styles.card}>
-      <View>
-        <Text style={styles.when}>{summary.when}</Text>
-        <Text style={styles.title}>{summary.title}</Text>
-      </View>
+    <Pressable onPress={skip} disabled={done} accessibilityHint={done ? undefined : "눌러서 결과 바로 보기"} style={[styles.card, dense && styles.cardDense]}>
+      {dense ? (
+        // 좁은 칸: 바뀐 것(HP 등)은 제목 줄 오른쪽에 둬서 한 줄을 아낀다
+        <View style={styles.titleRow}>
+          <Text style={styles.titleDense}>{summary.title}</Text>
+          {chips}
+        </View>
+      ) : (
+        <View>
+          <Text style={styles.when}>{summary.when}</Text>
+          <Text style={styles.title}>{summary.title}</Text>
+        </View>
+      )}
 
       {roll && !offRoll && (
         <View style={styles.rollRow}>
-          <DiceRoll result={roll} rolling={rolling} />
-          <View style={styles.rollText}>
+          <DiceRoll result={roll} rolling={rolling} small={dense} />
+          <View style={[styles.rollText, dense && styles.rollTextDense]}>
             {rolling
               ? <Text style={styles.rolling}>굴리는 중</Text>
-              : visible(beats[0]) && <FadeIn animate={animate}><RollResult r={roll} /></FadeIn>}
+              : visible(beats[0]) && <FadeIn animate={animate}><RollResult r={roll} dense={dense} /></FadeIn>}
           </View>
         </View>
       )}
 
       {roll && offRoll && (
-        <>
-          {/* 오른손·왼손을 나란히: 칸마다 주사위 → 이름 → 결과. 공격 글은 그 아래에 일어난 순서대로 */}
-          <View style={styles.dualRow}>
-            <View style={styles.handCol}>
-              <DiceRoll result={roll} rolling={rolling} />
-              <Text style={styles.handLabel}>오른손</Text>
-              {rolling
-                ? <Text style={styles.rolling}>굴리는 중</Text>
-                : visible(beats[0]) && <FadeIn animate={animate}><RollResult r={roll} compact /></FadeIn>}
-            </View>
-            <View style={styles.handCol}>
-              <DiceRoll result={offRoll} rolling={offRolling} pending={offPending} />
-              <Text style={styles.handLabel}>왼손</Text>
-              {offRolling
-                ? <Text style={styles.rolling}>굴리는 중</Text>
-                : beats.some((b) => b.kind === "offRoll" && visible(b)) && <FadeIn animate={animate}><RollResult r={offRoll} compact /></FadeIn>}
-            </View>
+        // 오른손·왼손을 나란히: 칸마다 주사위 → 결과 → 그 손의 공격 글. 상대가 한 일과 바뀐 것은 그 아래에
+        <View style={styles.dualRow}>
+          <View style={styles.handCol}>
+            <DiceRoll result={roll} rolling={rolling} small={dense} />
+            {!dense && <Text style={styles.handLabel}>오른손</Text>}
+            {rolling
+              ? <Text style={styles.rolling}>{dense ? "오른손 굴리는 중" : "굴리는 중"}</Text>
+              : visible(beats[0]) && <FadeIn animate={animate}><RollResult r={roll} compact dense={dense} hand={dense ? "오른손" : undefined} /></FadeIn>}
+            {renderEvents(eventBeats(0, offAt))}
           </View>
-          {renderEvents(eventBeats(0, offAt))}
-        </>
+          <View style={styles.handCol}>
+            <DiceRoll result={offRoll} rolling={offRolling} pending={offPending} small={dense} />
+            {!dense && <Text style={styles.handLabel}>왼손</Text>}
+            {offRolling
+              ? <Text style={styles.rolling}>{dense ? "왼손 굴리는 중" : "굴리는 중"}</Text>
+              : beats.some((b) => b.kind === "offRoll" && visible(b)) && <FadeIn animate={animate}><RollResult r={offRoll} compact dense={dense} hand={dense ? "왼손" : undefined} /></FadeIn>}
+            {renderEvents(eventBeats(offAt, offEnd))}
+          </View>
+        </View>
       )}
 
-      {!summary.changesLast && chips}
+      {!dense && !summary.changesLast && chips}
 
-      {renderEvents(eventBeats(offRoll ? offAt : 0, events.length))}
+      {renderEvents(eventBeats(offRoll ? offEnd : 0, events.length))}
 
-      {summary.changesLast && chips}
+      {!dense && summary.changesLast && chips}
 
       {notices.map((n) => <Text key={n} style={styles.notice}>{n}</Text>)}
     </Pressable>
@@ -150,9 +161,28 @@ export function TurnCard({ summary, animate, onDone }: { summary: TurnSummary; a
 }
 
 /** 판정 결과: 성패, 계산식(9(D20) + 1(근력) = 합계), 목표, 유리·불리면 어느 주사위를 썼는지. compact: 두 손 무기처럼 반 폭에 놓일 때 (작은 글씨) */
-function RollResult({ r, compact }: { r: CheckResult; compact?: boolean }) {
+function RollResult({ r, compact, dense, hand }: { r: CheckResult; compact?: boolean; dense?: boolean; hand?: string }) {
   const note = rollModeNote(r);
   const color = OUTCOME_COLOR[r.outcome];
+  if (dense) {
+    // 한 줄: [성공] 목표 11 경험 +2 / 아래 작은 계산식. 유리·불리는 흐린 주사위로 보이므로 설명은 뺀다.
+    // 반 폭(두 손)이면 계산식 대신 "합계 12 / 목표 11" 한 줄 (계산식은 지난 기록을 눌러 보던 것처럼 넓은 화면에서)
+    return (
+      <View style={styles.rollResultDense}>
+        <View style={styles.outcomeRow}>
+          {hand && <Text style={styles.handTag}>{hand}</Text>}
+          <View style={[styles.badgeDense, { backgroundColor: TONE_BG[OUTCOME_TONE[r.outcome]] }]}>
+            <Text style={[styles.badgeTextDense, { color }]}>{OUTCOME_LABEL[r.outcome]}</Text>
+          </View>
+          {!compact && <Text style={styles.dcCompact}>목표 {r.spec.dc}</Text>}
+          {r.xpGained > 0 && <Text style={styles.xp}>경험 +{r.xpGained}</Text>}
+        </View>
+        {compact
+          ? <Text style={styles.mathDense}>합계 <Text style={styles.mathTotal}>{r.total}</Text> / 목표 {r.spec.dc}</Text>
+          : <RollFormula r={r} style={styles.mathDense} noteStyle={styles.mathNote} totalStyle={styles.mathTotal} />}
+      </View>
+    );
+  }
   return (
     <View style={styles.rollResult}>
       <View style={styles.outcomeRow}>
@@ -168,20 +198,20 @@ function RollResult({ r, compact }: { r: CheckResult; compact?: boolean }) {
   );
 }
 
-function EventLine({ line }: { line: Line }) {
+function EventLine({ line, dense }: { line: Line; dense?: boolean }) {
   const MarkIcon = line.mark ? MARK_ICON[line.mark] : null;
   const color = TONE_COLOR[line.tone];
   return (
     <View style={styles.eventRow}>
       {MarkIcon && <MarkIcon size={icon.sm} weight={icon.weight} color={color} style={styles.eventIcon} />}
-      <Text style={[styles.event, { color }]}>{line.text}</Text>
+      <Text style={[dense ? styles.eventDense : styles.event, { color }]}>{line.text}</Text>
     </View>
   );
 }
 
-function ChangeChip({ change: c }: { change: Change }) {
+function ChangeChip({ change: c, dense }: { change: Change; dense?: boolean }) {
   return (
-    <View style={[styles.chip, { backgroundColor: TONE_BG[c.tone] }]}>
+    <View style={[styles.chip, dense && styles.chipDense, { backgroundColor: TONE_BG[c.tone] }]}>
       <Text style={styles.chipLabel}>{c.label}</Text>
       <Text style={[styles.chipValue, { color: TONE_COLOR[c.tone] }]}>{signed(c.delta)}</Text>
     </View>
@@ -207,6 +237,17 @@ const styles = StyleSheet.create({
     borderLeftWidth: 2,
     borderLeftColor: colors.accent,
   },
+  cardDense: { gap: space.xs + 2 },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  titleDense: { ...type.heading, color: colors.text, flexShrink: 1, marginRight: "auto" },
+  rollTextDense: { minHeight: 44 },
+  rollResultDense: { gap: 2 },
+  badgeDense: { paddingHorizontal: space.sm, paddingVertical: 1, borderRadius: radius.sm },
+  badgeTextDense: { ...type.label },
+  mathDense: { ...type.caption, color: colors.text, fontVariant: ["tabular-nums"] },
+  eventsDense: { gap: 2 },
+  eventDense: { ...type.caption, fontSize: 14, lineHeight: 20, flex: 1 },
+  chipDense: { paddingVertical: 2, paddingHorizontal: space.sm },
   when: { ...type.overline, color: colors.textFaint },
   title: { ...type.title, color: colors.text },
   rollRow: { flexDirection: "row", alignItems: "center", gap: space.lg },
@@ -214,6 +255,7 @@ const styles = StyleSheet.create({
   rolling: { ...type.body, color: colors.textDim },
   dualRow: { flexDirection: "row", gap: space.md },
   handCol: { flex: 1, gap: space.sm },
+  handTag: { ...type.label, color: colors.textDim },
   handLabel: { ...type.caption, color: colors.textFaint },
   rollResult: { gap: space.xs },
   outcomeRow: { flexDirection: "row", alignItems: "center", gap: space.sm },

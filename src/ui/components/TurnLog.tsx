@@ -31,12 +31,13 @@ export function TurnLog({ intro, compact }: { intro?: { title: string; body: str
 
   const playing = latest !== undefined && latest.id === playingId;
   return (
-    <ScrollView ref={scroll} style={compact ? styles.scrollCompact : styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView ref={scroll} style={compact ? styles.scrollCompact : styles.scroll} contentContainerStyle={compact ? styles.contentCompact : styles.content}>
       {latest ? (
         <TurnCard
           key={latest.id}
           summary={summarizeTurn(latest)}
           animate={playing && !reduced}
+          dense={compact}
           onDone={playing ? finishPlaying : undefined}
         />
       ) : intro ? (
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   // 글 길이와 상관없이 남는 자리를 그대로 쓴다 → 글이 바뀌어도 아래 전투 패널이 움직이지 않는다
   scrollCompact: { flex: 1, minHeight: 120 },
   content: { padding: space.lg, gap: space.xxl },
+  contentCompact: { paddingHorizontal: space.lg, paddingVertical: space.sm },
   intro: { gap: space.sm, paddingTop: space.xl, paddingRight: space.xl },
   introTitle: { ...type.display, fontSize: 28, lineHeight: 36, color: colors.text },
   introBody: { ...type.body, color: colors.textDim },

@@ -32,7 +32,8 @@ export type FeedOrder = "selfFirst" | "familyFirst";
 
 /** 화면이 순서대로 보여 줄 결과. 상태는 이미 확정된 뒤다. */
 export type FeedItem =
-  | { kind: "text"; text: string }
+  /** foe: 전투에서 상대가 한 일 (결과 카드가 내 공격과 나눠 보여 준다) */
+  | { kind: "text"; text: string; foe?: true }
   | { kind: "roll"; label: string; result: CheckResult }
   | { kind: "resource"; key: ResourceKey; delta: number }
   | { kind: "item"; itemId: ItemId; name: string; delta: number }

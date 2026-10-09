@@ -15,12 +15,12 @@ const FACE_INTERVAL = 60;
  * 연출용 Math.random()은 게임 결과와 무관하다 (결과는 이미 result에 확정). (ARCHITECTURE 8주차)
  * 유리/불리면 두 개를 굴리고 버린 쪽은 흐리게 둔다.
  */
-export function DiceRoll({ result, rolling, pending = false }: { result: CheckResult; rolling: boolean; pending?: boolean }) {
+export function DiceRoll({ result, rolling, pending = false, small = false }: { result: CheckResult; rolling: boolean; pending?: boolean; small?: boolean }) {
   const keptIndex = result.dice.indexOf(result.kept);
   return (
     <View style={styles.row}>
       {result.dice.map((value, i) => (
-        <Die key={i} value={value} rolling={rolling} pending={pending} kept={i === keptIndex}
+        <Die key={i} value={value} rolling={rolling} pending={pending} small={small} kept={i === keptIndex}
           color={i === keptIndex ? OUTCOME_COLOR[result.outcome] : colors.textFaint} />
       ))}
     </View>
@@ -28,7 +28,7 @@ export function DiceRoll({ result, rolling, pending = false }: { result: CheckRe
 }
 
 /** pending: 아직 굴릴 차례가 아니다 (두 손 무기의 왼손 주사위). "?"로 흐리게 기다린다 */
-function Die({ value, rolling, pending, kept, color }: { value: number; rolling: boolean; pending: boolean; kept: boolean; color: string }) {
+function Die({ value, rolling, pending, small, kept, color }: { value: number; rolling: boolean; pending: boolean; small: boolean; kept: boolean; color: string }) {
   const [fakeFace, setFakeFace] = useState(randomFace);
   const [spin] = useState(() => new Animated.Value(0));
   const [pop] = useState(() => new Animated.Value(1));
@@ -57,13 +57,14 @@ function Die({ value, rolling, pending, kept, color }: { value: number; rolling:
       accessibilityLabel={pending ? "굴릴 차례를 기다리는 주사위" : rolling ? "주사위를 굴리는 중" : `주사위 ${value}`}
       style={[
         styles.die,
+        small && styles.dieSmall,
         settled && kept && { backgroundColor: tint(color), borderColor: color },
         { transform: [{ rotate }, { scale: pop }] },
         settled && !kept && styles.discarded,
         pending && styles.discarded,
       ]}
     >
-      <Text style={[styles.face, { color: rolling || pending ? colors.textDim : color }]}>{pending ? "?" : rolling ? fakeFace : value}</Text>
+      <Text style={[styles.face, small && styles.faceSmall, { color: rolling || pending ? colors.textDim : color }]}>{pending ? "?" : rolling ? fakeFace : value}</Text>
     </Animated.View>
   );
 }
@@ -85,6 +86,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  dieSmall: { width: 44, height: 44 },
+  faceSmall: { fontSize: 20, lineHeight: 24 },
   discarded: { opacity: 0.4 },
   face: { fontFamily: fonts.bold, fontSize: 28, lineHeight: 34, fontVariant: ["tabular-nums"] },
 });
