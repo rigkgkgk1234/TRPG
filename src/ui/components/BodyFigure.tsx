@@ -1,32 +1,23 @@
-import Svg, { Circle, Path, Rect } from "react-native-svg";
-import type { EquipSlot } from "@/core/items/equipment";
+import Svg, { Circle, Path } from "react-native-svg";
 import { colors } from "@/ui/theme";
 
 /**
- * 가방 화면 왼쪽의 사람 그림. 무언가를 걸친 부위는 강조색으로 칠한다.
- * 정면을 보고 서 있으므로 오른손은 그림의 왼쪽, 왼손은 그림의 오른쪽에 있다.
+ * 가방 화면 왼쪽의 사람 모양. 채움 없이 같은 굵기의 선 하나로: 머리는 원, 몸은 어깨·팔·다리를 한 번에 잇는 윤곽선.
+ * 좌우 대칭, 모서리는 모두 둥글게. 색은 테두리 색 하나만 쓴다.
  */
-export function BodyFigure({ worn, width = 112 }: { worn: Partial<Record<EquipSlot, boolean>>; width?: number }) {
-  const fill = (slot: EquipSlot) => (worn[slot] ? colors.accentSoft : "transparent");
-  const stroke = (slot: EquipSlot) => (worn[slot] ? colors.accent : colors.borderStrong);
-  const part = (slot: EquipSlot) => ({ fill: fill(slot), stroke: stroke(slot), strokeWidth: 2 });
+export function BodyFigure({ width = 112 }: { width?: number }) {
+  const line = { fill: "none", stroke: colors.borderStrong, strokeWidth: 2.5, strokeLinejoin: "round" as const, strokeLinecap: "round" as const };
   return (
-    <Svg width={width} height={width * 2} viewBox="0 0 100 200" accessibilityLabel="몸에 걸친 것">
-      {/* 머리 */}
-      <Circle cx={50} cy={22} r={15} {...part("head")} />
-      {/* 상체 */}
-      <Path d="M30 44 Q50 38 70 44 L68 102 L32 102 Z" {...part("armor")} />
-      {/* 팔: 오른팔(그림 왼쪽) · 왼팔(그림 오른쪽) */}
-      <Path d="M28 48 L16 96" stroke={colors.borderStrong} strokeWidth={6} strokeLinecap="round" />
-      <Path d="M72 48 L84 96" stroke={colors.borderStrong} strokeWidth={6} strokeLinecap="round" />
-      {/* 손 */}
-      <Circle cx={14} cy={104} r={8} {...part("weapon")} />
-      <Circle cx={86} cy={104} r={8} {...part("offHand")} />
-      {/* 하체 */}
-      <Path d="M32 106 L68 106 L66 168 L53 168 L50 126 L47 168 L34 168 Z" {...part("legs")} />
-      {/* 발 */}
-      <Rect x={26} y={174} width={20} height={10} rx={4} {...part("feet")} />
-      <Rect x={54} y={174} width={20} height={10} rx={4} {...part("feet")} />
+    <Svg width={width} height={width * 2} viewBox="0 0 120 240" accessibilityLabel="사람 모양">
+      <Circle cx={60} cy={32} r={16} {...line} />
+      <Path
+        d={[
+          "M48 56 L72 56 Q90 56 92 72 L98 128 Q99 137 90 137 Q83 137 82 129 L79 92",
+          "L79 136 L78 212 Q78 220 70 220 Q62 220 62 212 L61 150 Q60 146 59 150 L58 212 Q58 220 50 220 Q42 220 42 212 L41 136",
+          "L41 92 L38 129 Q37 137 30 137 Q21 137 22 128 L28 72 Q30 56 48 56 Z",
+        ].join(" ")}
+        {...line}
+      />
     </Svg>
   );
 }

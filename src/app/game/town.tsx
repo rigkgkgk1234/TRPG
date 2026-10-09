@@ -13,7 +13,7 @@ import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
 import { ItemRow } from "@/ui/components/ItemRow";
-import { durabilityText, itemSummary } from "@/ui/itemText";
+import { durabilityLabel, durabilityText, itemSummary } from "@/ui/itemText";
 import { summarizeTurn } from "@/ui/turnSummary";
 import { colors, hairline, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
@@ -102,7 +102,7 @@ function StockList({ run, shop }: { run: RunState; shop: ShopId }) {
             key={e.itemId}
             title={e.qty > 1 ? `${def.name} ${e.qty}개` : def.name}
             price={`은화 ${price}`}
-            meta={[...itemSummary(def), ...(owned ? ["지금 쓰는 것"] : [])]}
+            meta={[...itemSummary(def), ...(durabilityLabel(def) ? [durabilityLabel(def)!] : []), ...(owned ? ["지금 쓰는 것"] : [])]}
             actions={[{ label: "사기", disabled: run.resources.silver < price, onPress: () => send({ type: "shop", op: "buy", shop, target: e.itemId }) }]}
           />
         );
@@ -138,8 +138,8 @@ function Smithy({ run }: { run: RunState }) {
                 key={r.target}
                 title={r.def.name}
                 price={`은화 ${r.price}`}
-                meta={[r.where]}
-                warn={durabilityText(r.def, r.stack)}
+                meta={[r.where, durabilityLabel(r.def, r.stack)!]}
+                warn={durabilityText(r.def, r.stack) === "망가짐" ? "망가짐" : null}
                 actions={[{ label: "수리", disabled: run.resources.silver < r.price, onPress: () => send({ type: "shop", op: "repair", target: r.target }) }]}
               />
             ))}
@@ -226,6 +226,7 @@ function Inn({ run }: { run: RunState }) {
                 key={i}
                 title={stack!.qty > 1 ? `${def!.name} ${stack!.qty}개` : def!.name}
                 price={`개당 ${sellPrice(def)}`}
+                meta={durabilityLabel(def!, stack) ? [durabilityLabel(def!, stack)!] : undefined}
                 warn={durabilityText(def!, stack!) === "망가짐" ? "망가짐" : null}
                 actions={[
                   { label: "1개", onPress: () => send({ type: "shop", op: "sell", target: String(i), qty: 1 }) },

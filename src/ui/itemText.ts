@@ -47,3 +47,13 @@ export function durabilityText(def: ItemDef, stack: ItemStack): string | null {
   if (!("durabilityMax" in def) || stack.durability === undefined) return null;
   return isBroken(stack) ? "망가짐" : `내구도 ${stack.durability}/${def.durabilityMax}`;
 }
+
+/**
+ * 내구도가 있는 물건이면 언제나 보여 줄 한 칸: "내구도 9/25" (망가졌어도 "내구도 0/25").
+ * 가지고 있지 않은 물건(가게 진열)은 새것의 내구도 "내구도 25".
+ */
+export function durabilityLabel(def: ItemDef, stack?: ItemStack | null): string | null {
+  if (!("durabilityMax" in def)) return null;
+  if (!stack || stack.durability === undefined) return `내구도 ${def.durabilityMax}`;
+  return `내구도 ${stack.durability}/${def.durabilityMax}`;
+}

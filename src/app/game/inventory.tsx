@@ -10,10 +10,10 @@ import type { RunState } from "@/core/types";
 import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { BodyFigure } from "@/ui/components/BodyFigure";
-import { PickCell, PickGrid, Section } from "@/ui/components/Controls";
+import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { DialogFrame, DialogHead, DialogSectionTitle } from "@/ui/components/InfoDialog";
 import { ItemRow, type RowAction } from "@/ui/components/ItemRow";
-import { durabilityText, itemSummary } from "@/ui/itemText";
+import { durabilityLabel, durabilityText, itemSummary } from "@/ui/itemText";
 import { colors, hairline, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
@@ -40,12 +40,11 @@ export default function InventoryScreen() {
   const used = inv.slots.filter(Boolean).length;
   const weapon = equippedWeapon(run, CONTENT);
   const off = offHandWeapon(run, CONTENT);
-  const worn = Object.fromEntries(EQUIP_SLOTS.map((slot) => [slot, !!inv.equipment[slot]])) as Record<EquipSlot, boolean>;
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + space.xl }]}>
       <View style={styles.doll}>
-        <BodyFigure worn={worn} />
+        <BodyFigure />
         <View style={styles.slotList}>
           {EQUIP_SLOTS.map((slot) => <SlotCell key={slot} run={run} slot={slot} onPress={() => setPicking(slot)} />)}
         </View>
@@ -58,50 +57,48 @@ export default function InventoryScreen() {
         <Figure label="가방" value={`${used}/${INVENTORY_CAPACITY}`} />
       </View>
 
-      <Section title="가방" hint={`${INVENTORY_CAPACITY}칸. 같은 물건은 한 칸에 겹친다.`}>
-        <View>
-          {inv.slots.every((s) => s === null) && <Text style={styles.note}>비어 있다.</Text>}
-          {inv.slots.map((stack, i) => {
-            if (!stack) return null;
-            const def = CONTENT.items[stack.itemId];
-            if (!def) return null;
-            const actions: RowAction[] = [];
-            if (slotOf(def)) {
-              const blocked = equipBlock(run, CONTENT, i);
-              actions.push({ label: def.category === "armor" ? "입기" : "들기", disabled: locked || !!blocked, onPress: () => send({ type: "equip", slotIndex: i }) });
-            }
-            if (canUseItem(run, CONTENT, def.id, false)) {
-              actions.push({ label: "쓰기", disabled: locked, onPress: () => send({ type: "useItem", itemId: def.id }) });
-            }
-            if (def.category !== "quest") {
-              const confirming = confirmDiscard?.slot === i && confirmDiscard.itemId === stack.itemId;
-              actions.push({
-                label: confirming ? "정말 버린다" : "버리기",
-                danger: confirming,
-                disabled: locked,
-                onPress: () => {
-                  if (!confirming) return setConfirmDiscard({ slot: i, itemId: stack.itemId, at: Date.now() });
-                  // 두 번 빠르게 누르면 확인 없이 버려지므로, 확인 버튼은 잠깐 뒤부터 받는다
-                  if (Date.now() - confirmDiscard.at < CONFIRM_DELAY_MS) return;
-                  setConfirmDiscard(null);
-                  send({ type: "discard", slotIndex: i });
-                },
-              });
-            }
-            const dur = durabilityText(def, stack);
-            const blocked = slotOf(def) ? equipBlock(run, CONTENT, i) : null;
-            return (
-              <ItemRow
-                key={i}
-                title={stack.qty > 1 ? `${def.name} ${stack.qty}개` : def.name}
-                meta={[...itemSummary(def), ...(dur && dur !== "망가짐" ? [dur] : [])]}
-                warn={dur === "망가짐" ? "망가짐" : blocked && blocked !== "몸에 걸칠 수 있는 물건이 아니다" ? blocked : null}
-                actions={actions}
-              />
-            );
-          })}
-        </View>
-      </Section>
+      <View>
+        {inv.slots.every((s) => s === null) && <Text style={styles.note}>비어 있다.</Text>}
+        {inv.slots.map((stack, i) => {
+          if (!stack) return null;
+          const def = CONTENT.items[stack.itemId];
+          if (!def) return null;
+          const actions: RowAction[] = [];
+          if (slotOf(def)) {
+            const blocked = equipBlock(run, CONTENT, i);
+            actions.push({ label: def.category === "armor" ? "입기" : "들기", disabled: locked || !!blocked, onPress: () => send({ type: "equip", slotIndex: i }) });
+          }
+          if (canUseItem(run, CONTENT, def.id, false)) {
+            actions.push({ label: "쓰기", disabled: locked, onPress: () => send({ type: "useItem", itemId: def.id }) });
+          }
+          if (def.category !== "quest") {
+            const confirming = confirmDiscard?.slot === i && confirmDiscard.itemId === stack.itemId;
+            actions.push({
+              label: confirming ? "정말 버린다" : "버리기",
+              danger: confirming,
+              disabled: locked,
+              onPress: () => {
+                if (!confirming) return setConfirmDiscard({ slot: i, itemId: stack.itemId, at: Date.now() });
+                // 두 번 빠르게 누르면 확인 없이 버려지므로, 확인 버튼은 잠깐 뒤부터 받는다
+                if (Date.now() - confirmDiscard.at < CONFIRM_DELAY_MS) return;
+                setConfirmDiscard(null);
+                send({ type: "discard", slotIndex: i });
+              },
+            });
+          }
+          const dur = durabilityText(def, stack);
+          const blocked = slotOf(def) ? equipBlock(run, CONTENT, i) : null;
+          return (
+            <ItemRow
+              key={i}
+              title={stack.qty > 1 ? `${def.name} ${stack.qty}개` : def.name}
+              meta={[...itemSummary(def), ...(durabilityLabel(def, stack) ? [durabilityLabel(def, stack)!] : [])]}
+              warn={dur === "망가짐" ? "망가짐" : blocked && blocked !== "몸에 걸칠 수 있는 물건이 아니다" ? blocked : null}
+              actions={actions}
+            />
+          );
+        })}
+      </View>
 
       {picking && <SlotDialog run={run} slot={picking} locked={locked} onClose={() => setPicking(null)} />}
     </ScrollView>
@@ -113,7 +110,11 @@ function SlotCell({ run, slot, onPress }: { run: RunState; slot: EquipSlot; onPr
   const stack = run.inventory.equipment[slot];
   const def = stack ? CONTENT.items[stack.itemId] : undefined;
   const dur = def && stack ? durabilityText(def, stack) : null;
-  const sub = def ? (dur === "망가짐" ? "망가짐" : itemSummary(def).slice(0, 2).join(", ")) : slot === "weapon" ? "맨주먹, 피해 1d2" : null;
+  // 성능 한 가지 + 내구도 (망가졌으면 망가짐을 먼저)
+  const durLabel = def ? durabilityLabel(def, stack) : null;
+  const sub = def
+    ? [...(dur === "망가짐" ? ["망가짐"] : []), itemSummary(def).find((x) => x.startsWith("피해") || x.startsWith("방어도")) ?? itemSummary(def)[0], ...(durLabel ? [durLabel] : [])].filter(Boolean).join(", ")
+    : slot === "weapon" ? "맨주먹, 피해 1d2" : null;
   return (
     <Pressable
       onPress={onPress}
@@ -124,7 +125,7 @@ function SlotCell({ run, slot, onPress }: { run: RunState; slot: EquipSlot; onPr
       <Text style={styles.slotLabel}>{EQUIP_SLOT_LABEL[slot]}</Text>
       <View style={styles.slotText}>
         <Text style={[styles.slotName, !def && styles.slotEmpty]} numberOfLines={1}>{def?.name ?? "비어 있음"}</Text>
-        {sub ? <Text style={[styles.slotSub, dur === "망가짐" && styles.slotBroken]} numberOfLines={1}>{sub}</Text> : null}
+        {sub ? <Text style={[styles.slotSub, dur === "망가짐" && styles.slotBroken]} numberOfLines={2}>{sub}</Text> : null}
       </View>
     </Pressable>
   );
@@ -151,7 +152,7 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
           <PickCell
             wide
             label={`${def.name} ${takeOff}`}
-            sub={[...itemSummary(def), ...(durabilityText(def, stack) ? [durabilityText(def, stack)!] : [])].join(", ")}
+            sub={[...itemSummary(def), ...(durabilityLabel(def, stack) ? [durabilityLabel(def, stack)!] : [])].join(", ")}
             reason={locked ? "싸우는 중에는 바꿀 수 없다" : bagFull ? "가방에 자리가 없다" : undefined}
             disabled={locked || bagFull}
             onPress={() => {
@@ -161,15 +162,13 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
           />
         </View>
       ) : null}
-      <View style={styles.dialogSection}>
-        <DialogSectionTitle>가방에서 고르기</DialogSectionTitle>
-        {candidates.length === 0 ? (
-          <Text style={styles.note}>가방에 {EQUIP_SLOT_LABEL[slot]}에 걸칠 만한 것이 없다.</Text>
-        ) : (
+      {candidates.length > 0 && (
+        <View style={styles.dialogSection}>
+          <DialogSectionTitle>가방에서 고르기</DialogSectionTitle>
           <PickGrid>
             {candidates.map(({ i, d, s }) => {
               const blocked = locked ? "싸우는 중에는 바꿀 수 없다" : equipBlock(run, CONTENT, i, slot);
-              const dur = durabilityText(d, s);
+              const dur = durabilityLabel(d, s);
               return (
                 <PickCell
                   key={i}
@@ -186,8 +185,8 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
               );
             })}
           </PickGrid>
-        )}
-      </View>
+        </View>
+      )}
     </DialogFrame>
   );
 }
@@ -210,12 +209,13 @@ const styles = StyleSheet.create({
   figureLabel: { ...type.number, fontVariant: undefined, color: colors.text, textAlign: "center" },
   figureValue: { ...type.caption, color: colors.text, textAlign: "center" },
   note: { ...type.caption, color: colors.textDim },
-  doll: { flexDirection: "row", alignItems: "center", gap: space.lg },
-  slotList: { flex: 1, gap: space.xs + 2 },
+  // 그림과 칸을 가운데로 모은다 (칸이 화면 끝까지 늘어나지 않게)
+  doll: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.xl },
+  slotList: { width: 200, gap: space.xs + 2 },
   slot: {
     flexDirection: "row",
     alignItems: "center",
-    gap: space.md,
+    gap: space.sm,
     minHeight: 48,
     paddingHorizontal: space.md,
     paddingVertical: space.xs + 2,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
   },
   slotPressed: { backgroundColor: colors.surfaceRaised },
-  slotLabel: { ...type.label, color: colors.textFaint, width: 40 },
+  slotLabel: { ...type.label, color: colors.textFaint, width: 38 },
   slotText: { flex: 1, gap: 1 },
   slotName: { ...type.bodyStrong, color: colors.text },
   slotEmpty: { color: colors.textFaint, fontFamily: type.body.fontFamily },
