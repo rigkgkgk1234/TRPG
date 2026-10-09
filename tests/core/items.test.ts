@@ -330,6 +330,21 @@ describe("장비 칸 6개와 두 손", () => {
     expect(ctx.feed.filter((f) => f.kind === "roll").map((f) => (f as { label: string }).label)).toEqual(["공격", "왼손 공격"]);
   });
 
+  it("두 손에 무기를 들면 맞을 때마다 피해 +1", () => {
+    const hit = (offHand: boolean) => {
+      const run = edit(inCombat(start("smith"), ["wolf"]), (s) => {
+        if (offHand) s.inventory.equipment.offHand = gear("hand_axe");
+        s.combat!.enemies[0].hp = 99;
+      });
+      // 방어 자세 → 늑대 명중(18) 피해 3
+      const ctx = ctxOf(run, seq(f20(18), fd(3, 6)));
+      combatStep(ctx, { type: "defend" });
+      return run.player.hp - ctx.draft.player.hp;
+    };
+    expect(hit(false)).toBe(3);
+    expect(hit(true)).toBe(4);
+  });
+
   it("버전 4 저장은 방패 칸을 왼손으로 옮기고 머리·하체·발 칸을 비워 둔다", () => {
     const file = JSON.parse(unseal(encodeSave(start("smith"), NOW))!);
     file.data.inventory.equipment = { weapon: file.data.inventory.equipment.weapon, armor: null, shield: gear("wooden_shield") };

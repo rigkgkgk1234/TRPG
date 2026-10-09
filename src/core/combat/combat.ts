@@ -89,6 +89,8 @@ export function activeEnemies(c: CombatState): EnemyInstance[] {
 
 /** 왼손 공격은 서툰 손이라 명중 −2 (방패와 견줄 만하게) */
 export const OFF_HAND_HIT_PENALTY = -2;
+/** 두 손에 무기를 들면 막을 것이 없어 맞을 때마다 피해 +1 (쇠 방패와 비슷한 승률이 되게 맞춘 값) */
+export const DUAL_WIELD_DAMAGE_TAKEN = 1;
 
 /** 왼손에 든 무기: 오른손도 근접 한손 무기일 때만 왼손으로 한 번 더 친다 (활·맨주먹이면 없음) */
 export function offHandWeapon(run: RunState, content: Pick<ContentDB, "items">): WeaponDef | null {
@@ -191,7 +193,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const actions: CombatActionView[] = [
     {
       type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false),
-      detail: [dmg(0), ...(off ? [`왼손 ${off.damage}`] : []), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
+      detail: [dmg(0), ...(off ? [`왼손 ${off.damage}`, `받는 피해 +${DUAL_WIELD_DAMAGE_TAKEN}`] : []), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
       lockedReason: null,
     },
     {
@@ -430,7 +432,8 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
       continue;
     }
 
-    const dmg = Math.max(1, rollDice(def.damage, ctx.rng) * (crit ? 2 : 1));
+    const dual = offHandWeapon(s, ctx.content) ? DUAL_WIELD_DAMAGE_TAKEN : 0;
+    const dmg = Math.max(1, rollDice(def.damage, ctx.rng) * (crit ? 2 : 1) + dual);
     changeHp(ctx, -dmg);
     const hitText = ENEMY_HIT_TEXT[def.id] ?? `${def.name}의 공격에 맞았다.`;
     say(ctx, c, e.instanceId, crit ? `${def.name}의 공격이 급소에 들어왔다! 피해 ${dmg}.` : `${hitText} 피해 ${dmg}.`, undefined, dmg);
