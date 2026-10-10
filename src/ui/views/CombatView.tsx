@@ -92,7 +92,7 @@ export function CombatPanel({ run }: { run: RunState }) {
         </View>
 
         {/* 적 칸은 높이 고정(넘치면 스크롤). 아이템을 고르는 동안은 그 자리에 고를 것을 보여 준다 */}
-        <ScrollView style={[styles.body, { height: bodyHeight + FX_OUT_Y * 2 }]} contentContainerStyle={styles.bodyContent} bounces={false}>
+        <EnemyBody scroll={view.enemies.length > MAX_VISIBLE_ENEMIES} height={bodyHeight + FX_OUT_Y * 2}>
           {!pickingItem ? (
             <View onLayout={(e) => setEnemyListHeight(Math.ceil(e.nativeEvent.layout.height))}>
               <Enemies view={view} onSelect={setTargetId} />
@@ -107,7 +107,7 @@ export function CombatPanel({ run }: { run: RunState }) {
               </ChipRow>
             </View>
           )}
-        </ScrollView>
+        </EnemyBody>
       </View>
 
       <ButtonGrid>
@@ -130,6 +130,15 @@ export function CombatPanel({ run }: { run: RunState }) {
       </ButtonGrid>
     </View>
   );
+}
+
+/**
+ * 적 칸을 담는 틀. 적이 MAX_VISIBLE_ENEMIES를 넘을 때만 스크롤한다.
+ * 스크롤 칸은 안쪽을 잘라 내므로, 스크롤이 필요 없으면 자르지 않는 칸에 담아 화살이 패널 밖에서부터 날아오게 한다
+ */
+function EnemyBody({ scroll, height, children }: { scroll: boolean; height: number; children: React.ReactNode }) {
+  if (!scroll) return <View style={[styles.body, styles.bodyContent, { height }]}>{children}</View>;
+  return <ScrollView style={[styles.body, { height }]} contentContainerStyle={styles.bodyContent} bounces={false}>{children}</ScrollView>;
 }
 
 function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) => void }) {

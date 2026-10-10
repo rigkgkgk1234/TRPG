@@ -19,7 +19,7 @@ export const HP_BAR_HEIGHT = 6;
  * 맞으면 깎인 만큼의 막대 조각이 남았다가 떨어져 나가고, 효과는 막대가 깎인 자리(맞은 곳)에서 터진다.
  * - 베기(검): 양 끝이 가는 칼자국이 막대를 비스듬히 가르고, 잘린 조각이 아래로 떨어진다 (대성공이면 X자)
  * - 타격(둔기·맨주먹): 맞은 자리에서 섬광과 충격파, 조각은 부풀며 부서진다 (대성공이면 두 겹)
- * - 화살(활): 왼쪽에서 날아와 맞은 자리에 꽂히고, 조각이 떨어진다
+ * - 화살(활): 오른쪽 위에서 비스듬히 날아와 맞은 자리에 꽂히고, 조각이 떨어진다
  * - 빗나감: "- _" 모양 속도선이 막대 위를 슉 지나간다
  * 적 칸 밖으로 넘쳐도 자르지 않는다. from·to: 맞기 전·후 HP 비율(0~1). transform·opacity만 움직인다.
  */
@@ -107,20 +107,33 @@ function Impact({ t, crit }: { t: T; crit: boolean }) {
 }
 
 const ARROW_W = 90;
+/** 화살이 막대에 꽂히는 기울기: 오른쪽 위에서 왼쪽 아래로 */
+const ARROW_TILT = -35;
+/** 화살이 날아오는 거리 (화살 방향으로) */
+const ARROW_FLIGHT = 420;
+/** 화살촉이 막대에 박히는 깊이 */
+const ARROW_SINK = 4;
 
 function Arrow({ t, crit }: { t: T; crit: boolean }) {
-  // 화살촉 끝이 맞은 자리에 닿도록 화살 전체를 왼쪽으로 둔다
-  const fly = t.interpolate({ inputRange: [0, 0.2, 1], outputRange: [-300, 0, 0] });
-  const shake = t.interpolate({ inputRange: [0, 0.2, 0.26, 0.32, 0.38, 1], outputRange: ["0deg", "0deg", "-6deg", "4deg", "0deg", "0deg"] });
+  // 너비 2배 칸의 가운데가 맞은 자리이고, 화살은 오른쪽 절반에 왼쪽을 보고 놓인다.
+  // 칸을 돌리면 가운데(화살촉)를 축으로 돌므로, 기울인 뒤 화살 방향으로 밀었다가 당겨 오면 오른쪽 위에서 날아와 꽂힌다
+  // 화면 오른쪽 밖, 전투 패널 위쪽에서 출발한다
+  const fly = t.interpolate({ inputRange: [0, 0.2, 1], outputRange: [ARROW_FLIGHT, 0, 0] });
+  const shake = t.interpolate({
+    inputRange: [0, 0.2, 0.26, 0.32, 0.38, 1],
+    outputRange: [0, 0, -6, 4, 0, 0].map((d) => `${ARROW_TILT + d}deg`),
+  });
   const shown = t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] });
   const hit = t.interpolate({ inputRange: [0, 0.18, 0.24, 1], outputRange: [0, 0, 0.85, 0] });
   const hitScale = t.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0.3, 0.3, crit ? 2.6 : 2] });
   return (
     <>
-      <Animated.View style={[styles.arrow, { opacity: shown, transform: [{ translateX: fly }, { rotate: shake }] }]}>
-        <View style={styles.fletch} />
-        <View style={styles.shaft} />
-        <Svg width={13} height={11} viewBox="0 0 9 8"><Path d="M0 0 L9 4 L0 8 Z" fill={colors.text} /></Svg>
+      <Animated.View style={[styles.arrowFrame, { opacity: shown, transform: [{ rotate: shake }, { translateX: fly }] }]}>
+        <View style={styles.arrow}>
+          <Svg width={13} height={11} viewBox="0 0 9 8"><Path d="M9 0 L0 4 L9 8 Z" fill={colors.text} /></Svg>
+          <View style={styles.shaft} />
+          <View style={styles.fletch} />
+        </View>
       </Animated.View>
       <Animated.View style={[styles.spark, { opacity: hit, transform: [{ scale: hitScale }] }]} />
     </>
@@ -155,7 +168,8 @@ const styles = StyleSheet.create({
   cut: { position: "absolute", width: CUT_W, height: CUT_H },
   burst: { position: "absolute", width: 40, height: 40, borderRadius: 20, backgroundColor: colors.text },
   ring: { position: "absolute", width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: colors.text },
-  arrow: { position: "absolute", width: ARROW_W, left: -ARROW_W + 2, flexDirection: "row", alignItems: "center" },
+  arrowFrame: { position: "absolute", width: ARROW_W * 2, left: -ARROW_W, flexDirection: "row", alignItems: "center" },
+  arrow: { width: ARROW_W, marginLeft: ARROW_W - ARROW_SINK, flexDirection: "row", alignItems: "center" },
   fletch: { width: 14, height: 8, borderRadius: 1, backgroundColor: colors.textDim },
   shaft: { flex: 1, height: 3, backgroundColor: colors.text },
   spark: { position: "absolute", width: 28, height: 28, borderRadius: 14, backgroundColor: colors.text },
