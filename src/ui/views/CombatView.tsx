@@ -156,7 +156,7 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
         const mine = fx?.fx.side === "player" && fx.fx.targetId === e.id ? { seq: fx.seq, fx: fx.fx } : null;
         const attacking = fx?.fx.side === "foe" && fx.fx.enemyId === e.id ? fx.seq : null;
         return (
-          <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} lungeSeq={attacking} front={mine !== null}>
+          <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} heavy={mine?.fx.weapon === "blunt"} lungeSeq={attacking} front={mine !== null}>
             <EnemyCard
               name={e.name}
               hp={hp}
@@ -196,18 +196,32 @@ function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; 
   );
 }
 
-/** 적 줄 하나: 맞으면 좌우로 흔들리고(shakeSeq), 나를 공격하면 아래로 살짝 달려든다(lungeSeq) */
-function EnemyRow({ shakeSeq, lungeSeq, front, children }: { shakeSeq: number | null; lungeSeq: number | null; front: boolean; children: React.ReactNode }) {
+/**
+ * 적 줄 하나: 맞으면 좌우로 흔들리고(shakeSeq), 나를 공격하면 아래로 살짝 달려든다(lungeSeq).
+ * heavy(둔기): 맞는 즉시 아래로 꺼졌다 튀어 오르고, 더 크게 흔들린다
+ */
+function EnemyRow({ shakeSeq, heavy, lungeSeq, front, children }: { shakeSeq: number | null; heavy?: boolean; lungeSeq: number | null; front: boolean; children: React.ReactNode }) {
   const [x] = useState(() => new Animated.Value(0));
   const [y] = useState(() => new Animated.Value(0));
   useEffect(() => {
     if (shakeSeq === null) return;
+    if (heavy) {
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(y, { toValue: 12, duration: 55, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+          Animated.timing(y, { toValue: -4, duration: 120, useNativeDriver: NATIVE_DRIVER }),
+          Animated.timing(y, { toValue: 0, duration: 90, useNativeDriver: NATIVE_DRIVER }),
+        ]),
+        Animated.sequence([18, -16, 13, -10, 7, -4, 2, 0].map((v) => Animated.timing(x, { toValue: v, duration: 42, useNativeDriver: NATIVE_DRIVER }))),
+      ]).start();
+      return;
+    }
     // 맞은 순간(효과가 그어진 뒤) 흔든다
     Animated.sequence([
       Animated.delay(HIT_FX_MS * 0.25),
       ...[7, -6, 4, -2, 0].map((v) => Animated.timing(x, { toValue: v, duration: 45, useNativeDriver: NATIVE_DRIVER })),
     ]).start();
-  }, [shakeSeq, x]);
+  }, [shakeSeq, heavy, x, y]);
   useEffect(() => {
     if (lungeSeq === null) return;
     Animated.sequence([

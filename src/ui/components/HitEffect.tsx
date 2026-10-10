@@ -18,7 +18,8 @@ export const HP_BAR_HEIGHT = 6;
  * HP 막대를 적으로 보고 그 위에 겹치는 공격 효과. 누르기는 막지 않는다 (pointerEvents none).
  * 맞으면 깎인 만큼의 막대 조각이 남았다가 떨어져 나가고, 효과는 막대가 깎인 자리(맞은 곳)에서 터진다.
  * - 베기(검): 양 끝이 가는 칼자국이 막대를 비스듬히 가르고, 잘린 조각이 아래로 떨어진다 (대성공이면 X자)
- * - 타격(둔기·맨주먹): 맞은 자리에서 섬광과 충격파, 조각은 부풀며 부서진다 (대성공이면 두 겹)
+ * - 타격(둔기): 큰 섬광, 두꺼운 충격파 두 겹, 사방으로 튀는 충격선과 파편. 조각은 크게 부풀며 부서지고, 적 줄이 아래로 꺼지며 크게 흔들린다 (대성공이면 더 크게)
+ * - 타격(맨주먹): 맞은 자리에서 섬광과 충격파, 조각은 부풀며 부서진다 (대성공이면 두 겹)
  * - 화살(활): 오른쪽 위에서 비스듬히 날아와 맞은 자리에 꽂히고, 조각이 떨어진다
  * - 빗나감: "- _" 모양 속도선이 막대 위를 슉 지나간다
  * 적 칸 밖으로 넘쳐도 자르지 않는다. from·to: 맞기 전·후 HP 비율(0~1). transform·opacity만 움직인다.
@@ -40,22 +41,25 @@ export function HitEffect({ fx, from, to }: { fx: PlayerFx; from: number; to: nu
   const at = `${to * 100}%` as const;
   return (
     <View pointerEvents="none" style={styles.layer}>
-        <Chunk t={t} left={to} width={Math.max(0, from - to)} shatter={fx.weapon === "blunt" || fx.weapon === "fist"} />
+        <Chunk t={t} left={to} width={Math.max(0, from - to)} shatter={fx.weapon === "blunt" ? "heavy" : fx.weapon === "fist" ? "light" : null} />
         {/* 맞은 자리: 너비 0인 기준점에 효과를 가운데 맞춘다 */}
         <View style={[styles.point, { left: at }]}>
           {fx.weapon === "blade" ? <Slash t={t} crit={fx.crit} />
             : fx.weapon === "bow" ? <Arrow t={t} crit={fx.crit} />
+            : fx.weapon === "blunt" ? <Smash t={t} crit={fx.crit} />
             : <Impact t={t} crit={fx.crit} />}
         </View>
     </View>
   );
 }
 
-/** 깎인 막대 조각: 하얗게 번쩍인 뒤 떨어지거나(베기·화살) 부풀며 부서진다(타격) */
-function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number; shatter: boolean }) {
+/** 깎인 막대 조각: 하얗게 번쩍인 뒤 떨어지거나(베기·화살) 부풀며 부서진다(타격, 둔기는 더 크게) */
+function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number; shatter: "heavy" | "light" | null }) {
   if (width <= 0) return null;
   const opacity = t.interpolate({ inputRange: [0, 0.15, 0.55, 1], outputRange: [1, 1, 0.8, 0] });
-  const transform = shatter
+  const transform = shatter === "heavy"
+    ? [{ scaleY: t.interpolate({ inputRange: [0, 0.08, 0.4, 1], outputRange: [1, 3.8, 2, 0.3] }) }, { scaleX: t.interpolate({ inputRange: [0, 0.08, 1], outputRange: [1, 1.3, 1.7] }) }]
+    : shatter
     ? [{ scaleY: t.interpolate({ inputRange: [0, 0.15, 0.5, 1], outputRange: [1, 2.6, 1.6, 0.4] }) }, { scaleX: t.interpolate({ inputRange: [0, 0.15, 1], outputRange: [1, 1.15, 1.4] }) }]
     : [
         { translateY: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 0, 24] }) },
@@ -102,6 +106,51 @@ function Impact({ t, crit }: { t: T; crit: boolean }) {
     <>
       <Animated.View style={[styles.burst, { opacity: burstOpacity, transform: [{ scale: burstScale }] }]} />
       {crit ? [ring(3, 0, "a"), ring(2.1, 0.16, "b")] : ring(2.6, 0, "a")}
+    </>
+  );
+}
+
+/** 둔기 충격선: 맞은 자리에서 사방으로 뻗는 짧은 막대 (각도) */
+const SMASH_SPIKES = [0, 45, 90, 135, 180, 225, 270, 315];
+const SMASH_SPIKES_CRIT = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+/** 둔기 파편: [가로로 날아가는 거리, 솟구치는 높이, 회전] — 솟았다가 아래로 떨어진다 */
+const SMASH_DEBRIS: [number, number, number][] = [[-86, 34, -260], [-58, 56, 200], [-24, 64, -160], [22, 60, 220], [56, 50, -200], [88, 30, 180], [-40, 20, 120], [44, 22, -140]];
+
+/** 둔기: 큰 섬광 + 두꺼운 충격파 두 겹(대성공은 세 겹) + 사방으로 튀는 충격선 + 솟았다 떨어지는 파편 */
+function Smash({ t, crit }: { t: T; crit: boolean }) {
+  // 섬광은 크게 번쩍이고 금방 사라진다 (회색 원으로 남지 않게)
+  const flashScale = t.interpolate({ inputRange: [0, 0.05, 0.2], outputRange: [0.3, crit ? 1.9 : 1.5, crit ? 2.2 : 1.8], extrapolate: "clamp" });
+  const flashOpacity = t.interpolate({ inputRange: [0, 0.02, 0.08, 0.2], outputRange: [0, 1, 0.85, 0], extrapolate: "clamp" });
+  // 충격파: 빠르게 크게 퍼지며 엷어진다
+  const ring = (to: number, delay: number, key: string) => {
+    const scale = t.interpolate({ inputRange: [0, delay, delay + 0.3], outputRange: [0.5, 0.5, to], extrapolate: "clamp" });
+    const opacity = t.interpolate({ inputRange: [0, delay, delay + 0.02, delay + 0.3], outputRange: [0, 0, 1, 0], extrapolate: "clamp" });
+    return <Animated.View key={key} style={[styles.smashRing, { opacity, transform: [{ scale }] }]} />;
+  };
+  const spike = (deg: number) => {
+    const out = t.interpolate({ inputRange: [0, 0.03, 0.28], outputRange: [16, 22, crit ? 96 : 80], extrapolate: "clamp" });
+    const opacity = t.interpolate({ inputRange: [0, 0.02, 0.18, 0.3], outputRange: [0, 1, 0.9, 0], extrapolate: "clamp" });
+    const scaleX = t.interpolate({ inputRange: [0, 0.03, 0.28], outputRange: [0.5, 1.4, 0.2], extrapolate: "clamp" });
+    return (
+      <View key={deg} style={[styles.spikeArm, { transform: [{ rotate: `${deg}deg` }] }]}>
+        <Animated.View style={[styles.spike, { opacity, transform: [{ translateX: out }, { scaleX }] }]} />
+      </View>
+    );
+  };
+  const debris = ([dx, up, spin]: [number, number, number], i: number) => {
+    // 솟구쳤다가 무겁게 떨어진다
+    const x = t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, dx * 0.7 * (crit ? 1.3 : 1), dx * (crit ? 1.3 : 1)] });
+    const y = t.interpolate({ inputRange: [0, 0.18, 0.4, 1], outputRange: [0, -up, -up * 0.7, up * 1.4] });
+    const rotate = t.interpolate({ inputRange: [0, 1], outputRange: ["0deg", `${spin}deg`] });
+    const opacity = t.interpolate({ inputRange: [0, 0.02, 0.75, 1], outputRange: [0, 1, 1, 0] });
+    return <Animated.View key={i} style={[styles.debris, i % 2 === 0 && styles.debrisRed, { opacity, transform: [{ translateX: x }, { translateY: y }, { rotate }] }]} />;
+  };
+  return (
+    <>
+      <Animated.View style={[styles.smashFlash, { opacity: flashOpacity, transform: [{ scale: flashScale }] }]} />
+      {crit ? [ring(6, 0, "a"), ring(4.4, 0.08, "b"), ring(3, 0.16, "c")] : [ring(5, 0, "a"), ring(3.4, 0.1, "b")]}
+      {(crit ? SMASH_SPIKES_CRIT : SMASH_SPIKES).map(spike)}
+      {SMASH_DEBRIS.map(debris)}
     </>
   );
 }
@@ -168,6 +217,13 @@ const styles = StyleSheet.create({
   cut: { position: "absolute", width: CUT_W, height: CUT_H },
   burst: { position: "absolute", width: 40, height: 40, borderRadius: 20, backgroundColor: colors.text },
   ring: { position: "absolute", width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: colors.text },
+  smashFlash: { position: "absolute", width: 64, height: 64, borderRadius: 32, backgroundColor: colors.text },
+  smashRing: { position: "absolute", width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: colors.text },
+  /** 충격선 하나를 돌리는 너비 0 기준점 (회전 중심이 맞은 자리) */
+  spikeArm: { position: "absolute", width: 0, height: 0, alignItems: "flex-start", justifyContent: "center" },
+  spike: { position: "absolute", width: 30, height: 4, borderRadius: 2, backgroundColor: colors.text },
+  debris: { position: "absolute", width: 8, height: 8, borderRadius: 1, backgroundColor: colors.text },
+  debrisRed: { backgroundColor: colors.fail },
   arrowFrame: { position: "absolute", width: ARROW_W * 2, left: -ARROW_W, flexDirection: "row", alignItems: "center" },
   arrow: { width: ARROW_W, marginLeft: ARROW_W - ARROW_SINK, flexDirection: "row", alignItems: "center" },
   fletch: { width: 14, height: 8, borderRadius: 1, backgroundColor: colors.textDim },

@@ -52,17 +52,22 @@ export default function GameScreen() {
   );
 }
 
-/** 적에게 맞으면 화면 전체가 짧게 좌우로 흔들린다 (급소면 더 세게). "동작 줄이기"면 연출 자체가 오지 않는다 */
+/**
+ * 적에게 맞으면 화면 전체가 짧게 좌우로 흔들린다 (급소면 더 세게). 내가 둔기로 내리쳐도 묵직하게 조금 흔들린다.
+ * "동작 줄이기"면 연출 자체가 오지 않는다
+ */
 function useHurtShake(): Animated.Value {
   const fx = useGame((s) => s.fx);
   const [x] = useState(() => new Animated.Value(0));
-  const hurtSeq = fx?.fx.side === "foe" && fx.fx.hit ? fx.seq : null;
-  const crit = fx?.fx.side === "foe" && fx.fx.crit;
+  const hurt = fx?.fx.side === "foe" && fx.fx.hit;
+  const smash = fx?.fx.side === "player" && fx.fx.hit && fx.fx.weapon === "blunt";
+  const hurtSeq = hurt || smash ? fx!.seq : null;
+  const crit = !!fx?.fx.crit;
   useEffect(() => {
     if (hurtSeq === null) return;
-    const a = crit ? 9 : 5;
+    const a = smash ? (crit ? 11 : 7) : crit ? 9 : 5;
     Animated.sequence([a, -a, a * 0.6, -a * 0.4, 0].map((v) => Animated.timing(x, { toValue: v, duration: 45, useNativeDriver: NATIVE_DRIVER }))).start();
-  }, [hurtSeq, crit, x]);
+  }, [hurtSeq, smash, crit, x]);
   return x;
 }
 
