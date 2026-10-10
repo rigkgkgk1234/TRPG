@@ -1,8 +1,8 @@
-import type { ExerciseStat } from "@/core/labels";
+import type { ExerciseStat, NpcId } from "@/core/labels";
 import type { DailyActionId, JobId, RegionId, SkillId } from "@/core/types";
 import {
-  BarbellIcon, BedIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, HammerIcon, HeartbeatIcon, HouseLineIcon, MountainsIcon, PersonSimpleRunIcon,
-  PlantIcon, ShieldIcon, StorefrontIcon, SwordIcon, TargetIcon, TreeIcon, WavesIcon, type Icon,
+  BarbellIcon, BedIcon, BreadIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, FirstAidKitIcon, HammerIcon, HeartbeatIcon, HouseLineIcon, MountainsIcon, PersonSimpleRunIcon,
+  PlantIcon, ScalesIcon, ShieldIcon, StorefrontIcon, SwordIcon, TargetIcon, TreeIcon, WavesIcon, type Icon,
 } from "@/ui/icons";
 
 /** 직업·행동마다 쓰는 아이콘. 같은 대상은 어느 화면에서나 같은 아이콘. */
@@ -36,6 +36,15 @@ export const SKILL_ICON: Partial<Record<SkillId, Icon>> = {
   blunt: HammerIcon,
   bow: CrosshairIcon,
   guard: ShieldIcon,
+};
+
+/** 대화할 주민: 촌장 저울, 대장장이 망치, 경비대장 방패, 의원 약상자, 여관 주인 빵 */
+export const NPC_ICON: Record<NpcId, Icon> = {
+  hamon: ScalesIcon,
+  brock: HammerIcon,
+  lena: ShieldIcon,
+  magda: FirstAidKitIcon,
+  toby: BreadIcon,
 };
 
 export const REGION_ICON: Partial<Record<RegionId, Icon>> = {

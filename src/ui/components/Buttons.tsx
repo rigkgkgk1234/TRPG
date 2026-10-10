@@ -26,8 +26,8 @@ interface ActionButtonProps {
   disabled?: boolean;
   selected?: boolean;
   primary?: boolean;
-  /** 확률 배지와 설명 줄을 1포인트 키우고 위아래 여백을 줄인다 (고르기 패널 선택지) */
-  roomy?: boolean;
+  /** 위아래 여백을 줄인다 (고르기 패널 선택지) */
+  tight?: boolean;
   /** 낮은 버튼: 위아래 여백을 줄이고 최소 높이를 터치 최소치로 (고르기 패널의 "뒤로") */
   compact?: boolean;
   /** 주황으로 칠한다: 놓치면 손해인 행동 (식량이 모자랄 때 사기) */
@@ -36,7 +36,7 @@ interface ActionButtonProps {
 }
 
 /** 허브·저녁 화면의 큰 버튼. 잠긴 버튼도 사유는 읽을 수 있게 흐리게만 한다. 누르면 살짝 눌린다. */
-export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, warn, roomy, compact, onPress }: ActionButtonProps) {
+export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, warn, tight, compact, onPress }: ActionButtonProps) {
   const filled = primary || warn;
   const fg = primary ? colors.accentText : warn ? colors.partialText : colors.text;
   return (
@@ -52,7 +52,7 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
         fill && styles.fill,
         fill && (primary || center || large) && styles.fillCenter,
         primary && styles.primary,
-        (roomy || compact) && styles.tight,
+        (tight || compact) && styles.tight,
         compact && styles.compact,
         warn && styles.warn,
         selected && styles.selected,
@@ -66,13 +66,13 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
             {IconC && <IconC size={large ? iconToken.md + 2 : iconToken.md} weight={iconToken.weight} color={iconColor ?? (filled ? fg : selected ? colors.accent : colors.textDim)} />}
             <Text style={[styles.label, large && styles.labelLarge, { color: fg }]} numberOfLines={2}>{label}</Text>
           </View>
-          {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={roomy ? { ...styles.badge, ...styles.badgeRoomy } : styles.badge} noteStyle={roomy ? styles.badgeNoteRoomy : styles.badgeNote} /> : null}
+          {badge && badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badge} noteStyle={styles.badgeNote} /> : null}
           {Array.isArray(detail) ? (
             <View style={styles.detailRow}>
-              {detail.map((d) => <Text key={d} style={[styles.detail, roomy && styles.detailRoomy, filled && { color: fg }]}>{d}</Text>)}
+              {detail.map((d) => <Text key={d} style={[styles.detail, filled && { color: fg }]}>{d}</Text>)}
             </View>
           ) : detail ? (
-            <Text style={[styles.detail, roomy && styles.detailRoomy, filled && { color: fg }]} numberOfLines={2}>{detail}</Text>
+            <Text style={[styles.detail, filled && { color: fg }]} numberOfLines={2}>{detail}</Text>
           ) : null}
         </View>
         {/* 넓은 버튼의 확률은 오른쪽에, 이름·설명 줄 전체의 세로 가운데에 */}
@@ -124,11 +124,8 @@ const styles = StyleSheet.create({
   badgeSide: { ...type.bodyStrong, color: colors.accent, fontVariant: ["tabular-nums"] },
   badgeSideNote: { fontSize: 12 },
   badgeNote: { fontSize: 11 },
-  badgeRoomy: { fontSize: 14, lineHeight: 19 },
-  badgeNoteRoomy: { fontSize: 12 },
   detailRow: { flexDirection: "row", flexWrap: "wrap", columnGap: space.sm },
   detail: { ...type.caption, color: colors.textDim },
-  detailRoomy: { fontSize: 14, lineHeight: 19 },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
   cell: { width: "48.5%", flexDirection: "column" },
   cellFull: { width: "100%" },

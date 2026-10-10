@@ -12,8 +12,7 @@ import type { RegionId, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
-import { PickCell, PickGrid } from "@/ui/components/Controls";
-import { ACTION_ICON, EXERCISE_ICON, REGION_ICON, SKILL_ICON } from "@/ui/gameIcons";
+import { ACTION_ICON, EXERCISE_ICON, NPC_ICON, REGION_ICON, SKILL_ICON } from "@/ui/gameIcons";
 import { exerciseDetail, skillDetail, workBadge } from "@/ui/hubText";
 import { ChatCircleDotsIcon, StorefrontIcon, type Icon } from "@/ui/icons";
 import { pushOnce } from "@/ui/navigate";
@@ -187,7 +186,7 @@ function Exercises({ run, onPick }: { run: RunState; onPick: (cmd: GameCommand) 
             <ActionButton
               fill
               large
-              roomy
+              tight
               icon={EXERCISE_ICON[stat]}
               label={EXERCISE_LABEL[stat]}
               {...(status.available ? workBadge(run, { stat, dc: SOLO_TRAINING_DC }) : {})}
@@ -214,7 +213,7 @@ function Lessons({ run, onPick }: { run: RunState; onPick: (cmd: GameCommand) =>
             <ActionButton
               fill
               large
-              roomy
+              tight
               icon={SKILL_ICON[skill]}
               label={`${SKILL_LABEL[skill]} 훈련`}
               detail={status.available ? skillDetail(run, skill) : status.reason}
@@ -239,7 +238,7 @@ function Regions({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void
             <ActionButton
               fill
               large
-              roomy
+              tight
               icon={REGION_ICON[r]}
               label={REGION_LABEL[r]}
               detail={status.available ? [`위험 ${dangerTierFor(r, run.time.day)}/3`, ...(REGION_INFO[r] ? [REGION_INFO[r].gains[0]] : [])] : status.reason}
@@ -286,7 +285,7 @@ function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) 
             <ActionButton
               fill
               large
-              roomy
+              tight
               icon={PLACE_ICON[id]}
               label={PLACE_LABEL[id]}
               detail={status.available ? "행동 1칸" : status.reason}
@@ -299,22 +298,27 @@ function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) 
   );
 }
 
+/** 주민: 마을 메뉴와 같은 2열 버튼 (아이콘 + 이름 / 하는 일). 대화할 수 없는 사람도 안내는 볼 수 있다 (사유를 설명 줄에) */
 function Talk({ run, onPick }: { run: RunState; onPick: (id: VisitId) => void }) {
   return (
-    <PickGrid>
+    <ButtonGrid>
       {NPC_IDS.map((id) => {
         const status = actionStatus(run, CONTENT, "village", { npc: id });
         return (
-          <PickCell
-            key={id}
-            label={NPC_LABEL[id]}
-            sub={NPC_INFO[id].role}
-            reason={status.available ? undefined : status.reason}
-            onPress={() => onPick(id)}
-          />
+          <GridCell key={id} minHeight={PICK_CELL_HEIGHT}>
+            <ActionButton
+              fill
+              large
+              tight
+              icon={NPC_ICON[id]}
+              label={NPC_LABEL[id]}
+              detail={status.available ? NPC_INFO[id].role : status.reason}
+              onPress={() => onPick(id)}
+            />
+          </GridCell>
         );
       })}
-    </PickGrid>
+    </ButtonGrid>
   );
 }
 

@@ -25,7 +25,8 @@ export function TurnLog({ intro, compact, cover }: { intro?: { title: string; bo
   const scroll = useRef<ScrollView>(null);
 
   const latest = log.at(-1);
-  const older = compact ? [] : log.slice(0, -1).reverse();
+  // 전투 중이거나 아래 패널에서 무언가를 고르는 동안은 지난 기록을 숨긴다
+  const older = compact || cover ? [] : log.slice(0, -1).reverse();
 
   // 새 결과가 오거나 고르는 것이 바뀌면 맨 위(최신 카드·설명)로
   const coverKey = cover?.key;
