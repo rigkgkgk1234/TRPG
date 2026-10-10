@@ -322,7 +322,7 @@ export interface CombatState {
   defensePenalty: number;
   /** 도주 실패 → 이번 적 턴 유리함 */
   enemyAdvantageThisRound: boolean;
-  /** 전투 중 HP 1/3 이하 부상이 이미 적용됐는지 */
+  /** 전투 중 HP 1/4 이하 부상이 이미 적용됐는지 */
   lowHpWoundApplied: boolean;
   xpThisCombat: Partial<Record<SkillId, number>>;
   log: CombatLogEntry[];
@@ -337,7 +337,6 @@ export interface DeathSaveResult {
 
 export const DEATH_SAVE_DC = 10;
 export const DEATH_SAVE_VILLAGE_BONUS = 2;
-export const CRITICAL_WOUND_MORNING_DC = 8;
 export const POWER_ATTACK_HIT_PENALTY = -2;
 export const POWER_ATTACK_DAMAGE_BONUS = 3;
 

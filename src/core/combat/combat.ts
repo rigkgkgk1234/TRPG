@@ -1,6 +1,6 @@
 import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
-import { buildCheckContext, previewCheck } from "../check/modifiers";
+import { buildCheckContext, neededRoll, previewCheck } from "../check/modifiers";
 import { performCheck } from "../check/perform";
 import { gainSkillXp } from "../check/progress";
 import { gainTrait } from "../day/evening";
@@ -32,7 +32,7 @@ import {
   type WeaponDef,
   type WoundLevel,
 } from "../types";
-import { rollDice } from "./dice";
+import { damageFromRoll, damageRange, rollDice } from "./dice";
 
 /** 무기가 없을 때 (SYSTEM_SPEC 5-5) */
 export const FIST: WeaponDef = {
@@ -46,6 +46,11 @@ const COMBAT_FATIGUE = 1;
 const ROBBED_SILVER_RATE = 0.5;
 const RESCUED_SILVER_LOSS = 0.3;
 const LOG_MAX = 30;
+/** 적이 이 눈 이상을 굴리면 급소 공격 (피해 ENEMY_CRIT_MULTIPLIER배) */
+const ENEMY_CRIT_ROLL = 19;
+const ENEMY_CRIT_MULTIPLIER = 3;
+/** 한 전투에서 HP가 처음으로 최대의 이 비율 이하가 되면 부상 한 단계 */
+const LOW_HP_WOUND_RATIO = 1 / 4;
 const WOUND_ORDER: WoundLevel[] = ["none", "light", "serious", "critical"];
 
 /** 적이 공격을 맞혔을 때의 문장 (피해 숫자는 뒤에 붙는다) */
@@ -174,7 +179,12 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const bow = isBow(w);
   const off = offHandWeapon(run, content);
   const brokenPenalty = w !== FIST && isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
-  const dmg = (bonus: number) => `피해 ${w.damage}${signedOrEmpty((bow ? 0 : run.player.stats.str) + bonus + brokenPenalty)}`;
+  // 피해 범위: 겨우 맞히면 왼쪽, 19면 오른쪽 (대성공은 더 크다)
+  const dmg = (bonus: number) => {
+    const add = (bow ? 0 : run.player.stats.str) + bonus + brokenPenalty;
+    const [lo, hi] = damageRange(w.damage);
+    return `피해 ${Math.max(1, lo + add)}~${Math.max(1, hi + add)}`;
+  };
 
   const chanceOf = (power: boolean) => {
     if (!target) return {};
@@ -223,8 +233,6 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
     items,
   };
 }
-
-const signedOrEmpty = (n: number) => (n > 0 ? `+${n}` : n < 0 ? String(n) : "");
 
 // ───────────────────────── 진행 ─────────────────────────
 
@@ -387,7 +395,8 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
     const stack = offHand ? s.inventory.equipment.offHand : s.inventory.equipment.weapon;
     const broken = w !== FIST && isBroken(stack) ? -BROKEN_WEAPON_PENALTY : 0;
     const bonus = (bow || offHand ? 0 : s.player.stats.str) + (power ? POWER_ATTACK_DAMAGE_BONUS : 0) + broken;
-    const dmg = Math.max(1, rollDice(w.damage, ctx.rng, crit) + bonus);
+    // 피해는 따로 굴리지 않는다: 명중 굴림이 높을수록 세게 들어간다
+    const dmg = Math.max(1, damageFromRoll(w.damage, r.kept, neededRoll(r.modifierTotal, spec.dc), crit) + bonus);
     target.hp -= dmg;
     fx(true, crit, dmg);
     const hitText = crit
@@ -417,7 +426,8 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
     const defense = playerDefense(s, ctx.content, c);
     const dice = c.enemyAdvantageThisRound ? [d(20, ctx.rng), d(20, ctx.rng)] : [d(20, ctx.rng)];
     const roll = Math.max(...dice);
-    const crit = roll === 20;
+    // 적의 급소 공격: 19~20이면 피해 3배 (상처가 아니라 크게 맞아서 죽게, SYSTEM_SPEC 3-3)
+    const crit = roll >= ENEMY_CRIT_ROLL;
     const hit = crit || (roll !== 1 && roll + def.attackBonus >= defense);
 
     if (!hit) {
@@ -432,7 +442,7 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
     }
 
     const dual = offHandWeapon(s, ctx.content) ? DUAL_WIELD_DAMAGE_TAKEN : 0;
-    const dmg = Math.max(1, rollDice(def.damage, ctx.rng) * (crit ? 2 : 1) + dual);
+    const dmg = Math.max(1, rollDice(def.damage, ctx.rng) * (crit ? ENEMY_CRIT_MULTIPLIER : 1) + dual);
     ctx.feed.push({ kind: "fx", fx: { side: "foe", enemyId: e.instanceId, hit: true, crit, damage: dmg } });
     changeHp(ctx, -dmg);
     const hitText = ENEMY_HIT_TEXT[def.id] ?? `${def.name}의 공격에 맞았다.`;
@@ -442,12 +452,12 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
       c.phase = "ended";
       return;
     }
-    // 부상: 적의 대성공, 또는 한 전투에서 처음으로 HP가 1/3 이하 (SYSTEM_SPEC 3-5).
-    // 한 번 맞아서 두 조건이 겹쳐도 부상은 한 단계만 (한 방에 중상이 되면 그 뒤 판정 −4·불리함으로 손쓸 수 없게 된다)
-    const lowHp = !c.lowHpWoundApplied && s.player.hp <= maxHp(s.player.stats) / 3;
-    if (lowHp) c.lowHpWoundApplied = true;
-    if (crit || lowHp) {
-      if (lowHp && !crit) say(ctx, c, "player", "피를 너무 많이 흘렸다.");
+    // 부상: 한 전투에서 처음으로 HP가 최대의 1/4 이하가 되면 한 단계 (SYSTEM_SPEC 3-5).
+    // 적의 급소 공격은 피해 3배뿐이다 (부상까지 붙이면 전투마다 다칠 확률이 너무 높았다)
+    const lowHp = !c.lowHpWoundApplied && s.player.hp <= maxHp(s.player.stats) * LOW_HP_WOUND_RATIO;
+    if (lowHp) {
+      c.lowHpWoundApplied = true;
+      say(ctx, c, "player", "피를 너무 많이 흘렸다.");
       worsenWound(ctx, 1);
     }
   }

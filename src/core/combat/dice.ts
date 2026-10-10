@@ -17,6 +17,30 @@ export function rollDice(expr: DiceExpr, rng: Rng, doubleDice = false): number {
   return sum;
 }
 
+/** 대성공 전에 피해가 가장 큰 눈 (자연 20은 대성공) */
+const TOP_ROLL = 19;
+
+/**
+ * 명중 굴림 하나로 피해까지 정한다 (플레이어 공격, SYSTEM_SPEC 3-3).
+ * 맞히는 데 필요한 최소 눈(need)이면 무기 주사위의 최소 피해, 19면 최대 피해, 그 사이는 고르게 오른다 → 평균은 주사위를 굴린 것과 같다.
+ * 대성공(자연 20)은 주사위 두 배를 굴린 평균(올림)이라 최대 피해보다 크다 (1d6 → 7, 1d8 → 9). 보정(+1 등)은 한 번만.
+ */
+export function damageFromRoll(expr: DiceExpr, kept: number, need: number, crit: boolean): number {
+  const { count, sides, mod } = parseDice(expr);
+  if (crit) return Math.ceil(count * (sides + 1)) + mod;
+  const min = count + mod;
+  const max = count * sides + mod;
+  if (need >= TOP_ROLL) return max;
+  const frac = Math.min(1, Math.max(0, (kept - need) / (TOP_ROLL - need)));
+  return min + Math.round((max - min) * frac);
+}
+
+/** 무기 피해의 범위 [최소, 최대] (화면 표시용) */
+export function damageRange(expr: DiceExpr): [number, number] {
+  const { count, sides, mod } = parseDice(expr);
+  return [count + mod, count * sides + mod];
+}
+
 /** 평균 피해 (화면 표시용) */
 export function averageDice(expr: DiceExpr): number {
   const { count, sides, mod } = parseDice(expr);

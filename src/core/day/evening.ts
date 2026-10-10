@@ -3,8 +3,6 @@ import { growStats } from "../check/progress";
 import { startRandomEvent, startStoryEvent } from "../events/runner";
 import { eventPool } from "../events/selector";
 import {
-  CRITICAL_WOUND_MORNING_DC,
-  d,
   DEBT_ENDING_THRESHOLD,
   DEBT_INTEREST,
   FATIGUE_AFTER_COLLAPSE,
@@ -98,8 +96,8 @@ export function runEvening(ctx: Ctx, order: FeedOrder = "selfFirst"): boolean {
 export function beginDay(ctx: Ctx): boolean {
   // 밤 이벤트에서 탈진했으면 수면 회복이 이미 지나갔으므로 여기서 피로를 맞춘다 (낮에 탈진했으면 sleep이 이미 6으로 맞췄다)
   if (ctx.draft.time.collapsedToday) changeFatigue(ctx, FATIGUE_AFTER_COLLAPSE - ctx.draft.resources.fatigue);
+  feverIfCritical(ctx);
   startNextDay(ctx);
-  if (!survivesCriticalWound(ctx)) return endRun(ctx, "death", "상처가 끝내 아물지 않았다. 다시는 일어나지 못했다.");
   startRandomEvent(ctx, "morning");
   return true;
 }
@@ -143,7 +141,7 @@ function regenHp(ctx: Ctx): void {
   else if (s.player.wound.level === "none" || s.player.wound.level === "light") changeHp(ctx, SLEEP_HP);
 }
 
-/** 중상: 치료 후 3일 → 경상, 방치 5일 → 경상 + 「오래된 상처」. 치명상은 아침마다 사망 굴림(survivesCriticalWound). */
+/** 중상: 치료 후 3일 → 경상, 방치 5일 → 경상 + 「오래된 상처」. 치명상은 아침마다 열에 시달려 오전을 잃는다(feverIfCritical). */
 function tickWound(ctx: Ctx): void {
   const w = ctx.draft.player.wound;
   if (w.level !== "serious") return;
@@ -185,16 +183,14 @@ export function gainTrait(ctx: Ctx, traitId: string): void {
   }
 }
 
-/** 치명상을 방치하면 아침마다 D20 + 체력 ≥ 8을 굴려 버텨야 한다 (SYSTEM_SPEC 3-5) */
-function survivesCriticalWound(ctx: Ctx): boolean {
-  const p = ctx.draft.player;
-  if (p.wound.level !== "critical") return true;
-  const roll = d(20, ctx.rng);
-  const total = roll + p.stats.con;
-  ctx.feed.push({ kind: "text", text: `밤새 열에 시달렸다. 사망 굴림: 주사위 ${roll}, 합계 ${total} (목표 ${CRITICAL_WOUND_MORNING_DC})` });
-  const ok = roll !== 1 && total >= CRITICAL_WOUND_MORNING_DC;
-  if (ok) ctx.feed.push({ kind: "text", text: "간신히 아침을 맞았다. 이대로 두면 위험하다." });
-  return ok;
+/**
+ * 치명상을 방치하면 밤새 열에 시달려 다음 날 오전을 누워 지낸다 (SYSTEM_SPEC 3-5).
+ * 상처로 죽지는 않는다: 죽음은 싸움에서 크게 맞았을 때만 온다.
+ */
+function feverIfCritical(ctx: Ctx): void {
+  if (ctx.draft.player.wound.level !== "critical") return;
+  ctx.feed.push({ kind: "text", text: "밤새 열에 시달렸다. 상처를 치료하지 않으면 매일 이렇게 앓을 것이다." });
+  ctx.draft.time.skipNextAm = true;
 }
 
 function startNextDay(ctx: Ctx): void {

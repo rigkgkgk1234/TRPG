@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Ctx } from "@/core/commands";
 import type { ContentDB } from "@/core/content";
 import { attackSpec, combatStep, combatView, finishCombat, playerDefense, startCombat } from "@/core/combat/combat";
-import { parseDice, rollDice } from "@/core/combat/dice";
+import { damageFromRoll, parseDice, rollDice } from "@/core/combat/dice";
 import { runEvening } from "@/core/day/evening";
 import { dispatch } from "@/core/engine";
 import { handleCombat } from "@/core/events/runner";
@@ -57,6 +57,21 @@ describe("주사위 표기", () => {
     expect(rollDice("1d6+1", seq(fd(6, 6)))).toBe(7);
     expect(rollDice("1d6+1", seq(fd(6, 6), fd(3, 6)), true)).toBe(10);
   });
+
+  it("명중 굴림으로 피해: 겨우 맞히면 최소, 19면 최대, 사이는 고르게. 대성공은 주사위 2배의 평균", () => {
+    expect(damageFromRoll("1d6", 10, 10, false)).toBe(1);
+    expect(damageFromRoll("1d6", 19, 10, false)).toBe(6);
+    expect(damageFromRoll("1d6", 14, 10, false)).toBe(1 + Math.round(5 * 4 / 9));
+    expect(damageFromRoll("1d4+1", 19, 2, false)).toBe(5);
+    expect(damageFromRoll("1d6", 20, 10, true)).toBe(7);
+    expect(damageFromRoll("1d8", 20, 10, true)).toBe(9);
+    // 19 이상이어야 맞는 상대: 맞히면 최대
+    expect(damageFromRoll("1d6", 19, 19, false)).toBe(6);
+    // 맞힐 수 있는 눈 전체의 평균은 주사위 평균과 거의 같다
+    const faces = Array.from({ length: 10 }, (_, i) => 10 + i);
+    const avg = faces.reduce((a, k) => a + damageFromRoll("1d6", k, 10, false), 0) / faces.length;
+    expect(avg).toBeCloseTo(3.5, 0);
+  });
 });
 
 describe("전투 수치", () => {
@@ -88,7 +103,7 @@ describe("전투 수치", () => {
     const v = combatView(run, CONTENT)!;
     const attack = v.actions.find((a) => a.type === "attack")!;
     expect(attack).toMatchObject({ label: "활 쏘기", lockedReason: null });
-    expect(attack.detail).toEqual(["피해 1d6"]);
+    expect(attack.detail).toEqual(["피해 1~6"]);
     expect(attackSpec(run, CONTENT, run.combat!.enemies[0], false)).toMatchObject({ stat: "agi", skill: "bow" });
     expect(v.actions.find((a) => a.type === "flee")!.lockedReason).toBe("등 뒤에 가족이 있다");
   });
@@ -109,26 +124,27 @@ describe("전투 진행", () => {
     expect(late.draft.combat).toMatchObject({ round: 2, phase: "playerTurn" });
   });
 
-  it("공격 명중 → 피해 = 무기 주사위 + 근력, 쓰러뜨리면 승리", () => {
-    // 농부: 근력 1 + 둔기 0, 15 + 1 = 16 ≥ 11, 쇠갈퀴 1d6 → 5 + 1 = 6 → 남은 HP 6인 늑대가 쓰러진다
-    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(5, 6)));
+  it("공격 명중 → 피해는 명중 눈이 높을수록 세다 (무기 피해 범위 + 근력), 쓰러뜨리면 승리", () => {
+    // 농부: 근력 1 + 둔기 0 → 10 이상이면 늑대(방어도 11)를 맞힌다. 10이면 쇠갈퀴(1d6) 최소 1, 19면 최대 6
+    // 18 → 1 + round(5 × 8/9) = 5, 근력 +1 = 6 → 남은 HP 6인 늑대가 쓰러진다
+    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(18)));
     expect(combatStep(ctx, { type: "attack", targetId: "wolf_1" })).toBeNull();
     expect(ctx.draft.combat!.result).toBe("victory");
     expect(texts(ctx)).toEqual(["늑대에게 일격을 먹였다. 피해 6.", "늑대가 쓰러졌다."]);
   });
 
   it("강타는 피로 +1, 맞히면 피해 +3", () => {
-    // 멧돼지 HP 18 → 13 (절반 9보다 많아 사기 굴림 없음)
-    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(18), fd(1, 6), f20(1)));
+    // 강타는 명중 −2라 11 이상이면 맞는다. 딱 11이면 최소 피해 1 + 근력 1 + 강타 3 → 멧돼지 HP 18 → 13 (절반 9보다 많아 사기 굴림 없음)
+    const ctx = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(11), f20(1)));
     combatStep(ctx, { type: "powerAttack", targetId: "boar_1" });
     expect(ctx.draft.combat!.enemies[0].hp).toBe(18 - (1 + 1 + 3));
     expect(ctx.draft.resources.fatigue).toBe(1);
   });
 
-  it("대성공은 피해 주사위 2배, 근접 대실패는 그 라운드 방어도 −2", () => {
-    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), fd(3, 6), fd(4, 6), f20(1)));
+  it("대성공은 주사위 2배의 평균(1d6 → 7)으로 최대 피해보다 세다, 근접 대실패는 그 라운드 방어도 −2", () => {
+    const crit = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(20), f20(1)));
     combatStep(crit, { type: "attack", targetId: "boar_1" });
-    expect(crit.draft.combat!.enemies[0].hp).toBe(18 - (3 + 4 + 1));
+    expect(crit.draft.combat!.enemies[0].hp).toBe(18 - (7 + 1));
 
     // 대실패 뒤 멧돼지 굴림 7 + 3 = 10: 평소 방어도 10이면 맞지만, −2라 8 → 역시 명중. 6 + 3 = 9는 −2일 때만 명중
     const fumble = ctxOf(inCombat(start("farmer"), ["boar"]), seq(f20(1), f20(6), fd(2, 6)));
@@ -157,23 +173,24 @@ describe("전투 진행", () => {
     expect(fail.draft.player.hp).toBe(20 - 2);
   });
 
-  it("적의 대성공: 피해 2배 + 부상 한 단계", () => {
-    const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(2), f20(20), fd(2, 6)));
+  it("적의 급소 공격(19~20): 피해 3배 (부상은 붙지 않는다)", () => {
+    const ctx = ctxOf(inCombat(start("farmer"), ["wolf"]), seq(f20(2), f20(19), fd(2, 6)));
     combatStep(ctx, { type: "attack", targetId: "wolf_1" });
-    expect(ctx.draft.player.hp).toBe(24 - 4);
-    expect(ctx.draft.player.wound.level).toBe("light");
+    expect(ctx.draft.player.hp).toBe(24 - 6);
+    expect(ctx.draft.player.wound.level).toBe("none");
   });
 
-  it("HP가 처음 1/3 이하가 되면 부상 한 단계, 한 번 맞아 두 조건이 겹쳐도 한 단계", () => {
+  it("HP가 처음 최대의 1/4 이하가 되면 부상 한 단계 (농부 24 → 6 이하), 급소 공격으로 떨어져도 한 단계", () => {
     const low = ctxOf(inCombat(edit(start("farmer"), (s) => { s.player.hp = 6; }), ["wolf"]), seq(f20(2), f20(15), fd(3, 6)));
     combatStep(low, { type: "attack", targetId: "wolf_1" });
     expect(low.draft.player.hp).toBe(3);
     expect(low.draft.player.wound.level).toBe("light");
     expect(texts(low)).toContain("피를 너무 많이 흘렸다.");
 
-    const both = ctxOf(inCombat(edit(start("farmer"), (s) => { s.player.hp = 8; }), ["wolf"]), seq(f20(2), f20(20), fd(3, 6)));
+    // 급소 공격 3 × 3 = 9 → HP 10에서 1, 부상은 한 단계
+    const both = ctxOf(inCombat(edit(start("farmer"), (s) => { s.player.hp = 10; }), ["wolf"]), seq(f20(2), f20(20), fd(3, 6)));
     combatStep(both, { type: "attack", targetId: "wolf_1" });
-    expect(both.draft.player.hp).toBe(2);
+    expect(both.draft.player.hp).toBe(1);
     expect(both.draft.player.wound.level).toBe("light");
   });
 
@@ -186,7 +203,8 @@ describe("전투 진행", () => {
   });
 
   it("고블린 정찰병이 달아나면 플래그", () => {
-    const ctx = ctxOf(edit(inCombat(start("smith"), ["goblin_scout"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(1, 6), f20(2), 0.1));
+    // 대장장이: 근력 2 + 둔기 1 → 9면 정찰병(방어도 12)을 겨우 맞혀 최소 피해 1 + 2 = 3 → HP 3, 사기 굴림 0.1에 달아난다
+    const ctx = ctxOf(edit(inCombat(start("smith"), ["goblin_scout"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(9), f20(2), 0.1));
     combatStep(ctx, { type: "attack", targetId: "goblin_scout_1" });
     expect(ctx.draft.flags.goblin_alerted).toBe(true);
   });
@@ -222,9 +240,9 @@ describe("전투 연출(fx) 피드", () => {
   const fxs = (ctx: Ctx) => ctx.feed.filter((f) => f.kind === "fx").map((f) => (f as { fx: unknown }).fx);
 
   it("내 공격은 무기 종류·대상·명중·피해를, 적의 공격은 누가 쳤는지와 피해를 남긴다", () => {
-    // 농부 쇠갈퀴(둔기): 15 명중, 피해 5 + 근력 1 = 6. 늑대 18 명중, 피해 3
+    // 농부 쇠갈퀴(둔기): 18 명중, 피해 5 + 근력 1 = 6. 늑대 18 명중, 피해 3
     const run = edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 99; });
-    const ctx = ctxOf(run, seq(f20(15), fd(5, 6), f20(18), fd(3, 6)));
+    const ctx = ctxOf(run, seq(f20(18), f20(18), fd(3, 6)));
     combatStep(ctx, { type: "attack", targetId: "wolf_1" });
     expect(fxs(ctx)).toEqual([
       { side: "player", targetId: "wolf_1", weapon: "blunt", hand: "main", hit: true, crit: false, damage: 6 },
@@ -336,15 +354,13 @@ describe("전투 끝", () => {
     expect(ctx.feed.some((f) => f.kind === "item" && f.delta === -1)).toBe(true);
   });
 
-  it("치명상을 방치하면 아침마다 사망 굴림 (D20 + 체력 ≥ 8)", () => {
+  it("치명상을 방치하면 상처로 죽지는 않고, 열에 시달려 다음 날 오전을 누워 지낸다", () => {
     const run = edit(start("hunter"), (s) => { s.time.phase = "evening"; s.player.wound.level = "critical"; s.resources.food = 2; });
-    // 사냥꾼 체력 +1: 7 + 1 = 8 버팀, 6 + 1 = 7 사망
-    const quiet = withoutDailyEvents(CONTENT);
-    const live = { ...ctxOf(run, d20Sequence(7)), content: quiet };
-    expect(runEvening(live)).toBe(true);
-    const die = { ...ctxOf(run, d20Sequence(6)), content: quiet };
-    expect(runEvening(die)).toBe(false);
-    expect(die.draft.ending).toBe("death");
+    const ctx = { ...ctxOf(run, d20Sequence(1)), content: withoutDailyEvents(CONTENT) };
+    expect(runEvening(ctx)).toBe(true);
+    expect(ctx.draft.ending).toBeNull();
+    expect(ctx.draft.time).toMatchObject({ day: 2, phase: "pm" });
+    expect(texts(ctx)).toContain("밤새 열에 시달렸다. 상처를 치료하지 않으면 매일 이렇게 앓을 것이다.");
   });
 });
 
@@ -389,8 +405,8 @@ describe("이벤트와 전투", () => {
     const res = dispatch(exploring("farmer"), { type: "chooseChoice", choiceId: "go" }, content);
     expect(res.feed).toContainEqual({ kind: "text", text: "늑대가 튀어나왔다!" });
     expect(res.state.combat).not.toBeNull();
-    // 15 + 1 ≥ 11, 피해 5 + 1 = 6 → 남은 HP 6인 늑대를 쓰러뜨림, 전리품 굴림 0.1
-    const ctx = ctxOf(edit(res.state, (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(15), fd(5, 6), 0.1), content);
+    // 18 + 1 ≥ 11, 피해 5 + 1 = 6 → 남은 HP 6인 늑대를 쓰러뜨림, 전리품 굴림 0.1
+    const ctx = ctxOf(edit(res.state, (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(18), 0.1), content);
     expect(handleCombat(ctx, { type: "attack", targetId: "wolf_1" })).toBe(true);
     expect(ctx.draft.combat).toBeNull();
     expect(ctx.draft.activeEvent).toMatchObject({ sceneId: "win", explore: { cardsDrawn: 1 } });

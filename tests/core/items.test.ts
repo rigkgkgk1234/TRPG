@@ -189,9 +189,9 @@ describe("내구도", () => {
     expect(ctx.draft.inventory.equipment.weapon!.durability).toBe(0);
     expect(ctx.feed).toContainEqual({ kind: "text", text: "쇠갈퀴가 망가졌다. 대장간에서 고쳐야 한다." });
 
-    // 망가진 쇠갈퀴: 1d6(=6) + 근력 1 − 2 = 5
+    // 망가진 쇠갈퀴: 19면 최대 6 + 근력 1 − 2 = 5
     // 멧돼지 HP 18 → 13 (절반 9보다 많아 사기 굴림 없음)
-    const hit = fight(ctx.draft, seq(f20(15), 0.99, f20(2)));
+    const hit = fight(ctx.draft, seq(f20(19), f20(2)));
     combatStep(hit, { type: "attack", targetId: "boar_1" });
     expect(hit.draft.combat!.enemies[0].hp).toBe(18 - 5);
   });
@@ -323,10 +323,11 @@ describe("장비 칸 6개와 두 손", () => {
       s.inventory.equipment.offHand = gear("hand_axe");
       s.combat!.enemies[0].hp = 99;
     });
-    // 오른손 명중(15) 피해 3+2, 왼손 명중(15) 피해 4, 멧돼지 빗나감(2)
-    const ctx = ctxOf(run, seq(f20(15), fd(3, 6), f20(15), fd(4, 6), f20(2)));
+    // 오른손: 근력 2 + 둔기 1 → 7 이상 명중. 15 → 1 + round(5 × 8/12) = 4, 근력 +2 = 6
+    // 왼손: 근력 2 + 검술 0 − 2 → 10 이상 명중. 15 → 1 + round(5 × 5/9) = 4 (근력 보정 없음). 멧돼지 빗나감(2)
+    const ctx = ctxOf(run, seq(f20(15), f20(15), f20(2)));
     combatStep(ctx, { type: "attack", targetId: "boar_1" });
-    expect(ctx.draft.combat!.enemies[0].hp).toBe(99 - 5 - 4);
+    expect(ctx.draft.combat!.enemies[0].hp).toBe(99 - 6 - 4);
     expect(ctx.feed.filter((f) => f.kind === "roll").map((f) => (f as { label: string }).label)).toEqual(["공격", "왼손 공격"]);
   });
 
