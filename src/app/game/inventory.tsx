@@ -13,7 +13,7 @@ import { BodyFigure } from "@/ui/components/BodyFigure";
 import { PickCell, PickGrid } from "@/ui/components/Controls";
 import { DialogFrame, DialogHead, DialogSectionTitle } from "@/ui/components/InfoDialog";
 import { ItemRow, type RowAction } from "@/ui/components/ItemRow";
-import { durabilityLabel, durabilityText, itemSummary } from "@/ui/itemText";
+import { durabilityLabel, durabilityText, INFO_SEP, itemSummary } from "@/ui/itemText";
 import { colors, hairline, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
@@ -132,7 +132,7 @@ function SlotCell({ run, slot, onPress }: { run: RunState; slot: EquipSlot; onPr
   // 성능 한 가지 + 내구도 (망가졌으면 망가짐을 먼저)
   const durLabel = def ? durabilityLabel(def, stack) : null;
   const sub = def
-    ? [...(dur === "망가짐" ? ["망가짐"] : []), itemSummary(def).find((x) => x.startsWith("피해") || x.startsWith("방어도")) ?? itemSummary(def)[0], ...(durLabel ? [durLabel] : [])].filter(Boolean).join(", ")
+    ? [...(dur === "망가짐" ? ["망가짐"] : []), itemSummary(def).find((x) => x.startsWith("피해") || x.startsWith("방어도")) ?? itemSummary(def)[0], ...(durLabel ? [durLabel] : [])].filter(Boolean).join(INFO_SEP)
     : slot === "weapon" ? "맨주먹, 피해 1d2" : null;
   return (
     <Pressable
@@ -171,7 +171,7 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
           <PickCell
             wide
             label={`${def.name} ${takeOff}`}
-            sub={[...itemSummary(def), ...(durabilityLabel(def, stack) ? [durabilityLabel(def, stack)!] : [])].join(", ")}
+            sub={[...itemSummary(def), ...(durabilityLabel(def, stack) ? [durabilityLabel(def, stack)!] : [])].join(INFO_SEP)}
             reason={locked ? "싸우는 중에는 바꿀 수 없다" : bagFull ? "가방에 자리가 없다" : undefined}
             disabled={locked || bagFull}
             onPress={() => {
@@ -193,7 +193,7 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
                   key={i}
                   wide
                   label={d.name}
-                  sub={[...itemSummary(d), ...(dur ? [dur] : [])].join(", ")}
+                  sub={[...itemSummary(d), ...(dur ? [dur] : [])].join(INFO_SEP)}
                   reason={blocked ?? undefined}
                   disabled={!!blocked}
                   onPress={() => {

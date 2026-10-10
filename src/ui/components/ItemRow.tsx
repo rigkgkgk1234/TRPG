@@ -11,7 +11,7 @@ export interface RowAction {
 }
 
 /**
- * 가방·가게 목록 한 줄: 이름(과 수량) / 성능·상태 / 오른쪽에 작은 버튼들.
+ * 가방·가게 목록 한 줄: 이름(과 수량) / 성능·상태("|"로 나눈다) / 오른쪽에 작은 버튼들.
  * warn이 있으면 둘째 줄을 경고색으로 (망가짐 등).
  */
 export function ItemRow({ title, meta, warn, price, actions, dim }: {
@@ -33,8 +33,13 @@ export function ItemRow({ title, meta, warn, price, actions, dim }: {
         </View>
         {(meta?.length || warn) ? (
           <View style={styles.meta}>
-            {warn ? <Text style={[styles.metaText, { color: colors.fail }]}>{warn}</Text> : null}
-            {meta?.map((m) => <Text key={m} style={styles.metaText}>{m}</Text>)}
+            {/* 칸 사이에 "|"를 넣는다. 줄이 바뀌어도 구분선이 줄 앞에 오지 않게 앞 칸에 붙인다 */}
+            {[...(warn ? [warn] : []), ...(meta ?? [])].map((m, i, all) => (
+              <Text key={m} style={[styles.metaText, i === 0 && warn ? { color: colors.fail } : null]}>
+                {m}
+                {i < all.length - 1 ? <Text style={styles.metaSep}>{"  |"}</Text> : null}
+              </Text>
+            ))}
           </View>
         ) : null}
       </View>
@@ -73,6 +78,7 @@ const styles = StyleSheet.create({
   price: { ...type.label, color: colors.textDim, fontVariant: ["tabular-nums"] },
   meta: { flexDirection: "row", flexWrap: "wrap", columnGap: space.sm },
   metaText: { ...type.caption, color: colors.textFaint },
+  metaSep: { color: colors.textFaint },
   actions: { flexDirection: "row", gap: space.xs },
   button: {
     minHeight: 36,

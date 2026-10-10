@@ -2,7 +2,11 @@ import { isBroken } from "@/core/items/equipment";
 import { SKILL_LABEL, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
 import type { Effect, ItemDef, ItemStack, StatId } from "@/core/types";
 
-/** 아이템 성능 한 줄: "피해 1d6, 양손", "방어도 +2", "HP +2, 경상 50% 치료" */
+/** 아이템 성능·상태를 한 줄로 이을 때 사이에 넣는 구분선: "검술 | 피해 1d6 | 내구도 20" */
+export const INFO_SEP = " | ";
+export const joinInfo = (parts: string[]) => parts.join(INFO_SEP);
+
+/** 아이템 성능 칸들: ["피해 1d6", "양손"], ["방어도 +2"], ["HP +2", "50% 경상 치료"] */
 export function itemSummary(def: ItemDef): string[] {
   switch (def.category) {
     case "weapon": {
