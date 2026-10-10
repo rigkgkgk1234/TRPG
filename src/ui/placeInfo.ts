@@ -1,8 +1,9 @@
 import type { NpcId, PlaceId } from "@/core/labels";
 import type { RegionId } from "@/core/types";
+import { ScrollIcon, SwordIcon, type Icon } from "@/ui/icons";
 
 /**
- * 탐험·마을 볼일을 고르기 전에 보여 줄 안내 (화면 가운데 창).
+ * 탐험·마을 볼일을 고르기 전에 보여 줄 안내 (고르기 패널 PickPanel의 안내 단계).
  * 무엇이 나올 수 있는지 감만 잡히게 짧게 쓴다. 실제로 나오는 일은 이벤트 데이터가 정한다.
  */
 export interface PlaceInfo {
@@ -91,3 +92,6 @@ export const PLACE_INFO: Record<PlaceId, VillagePlaceInfo> = {
     risks: ["의뢰 전투는 진짜 싸움이다", "도망치면 명성 -1"],
   },
 };
+
+/** 결투장·의뢰 중개소 아이콘 */
+export const PLACE_ICON: Record<PlaceId, Icon> = { arena: SwordIcon, guild: ScrollIcon };

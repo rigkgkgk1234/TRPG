@@ -14,6 +14,7 @@ import { CombatPanel } from "@/ui/views/CombatView";
 import { EventPanel } from "@/ui/views/EventView";
 import { EveningPanel } from "@/ui/views/EveningView";
 import { HubPanel } from "@/ui/views/HubView";
+import { PickIntro, PickPanel, type PickStep } from "@/ui/views/PickPanel";
 
 /**
  * 게임 본 화면: 상태 바 / 결과 기록 / 아래 패널. 허브·이벤트·전투·저녁·엔딩은 라우터 이동 없이 상태에서 고른다. (ARCHITECTURE 3-3)
@@ -25,18 +26,27 @@ export default function GameScreen() {
   const busy = useGame((s) => s.playing !== null);
   const notice = useGame((s) => s.notice);
   const shake = useHurtShake();
+  /** 훈련·교습·탐험·마을을 누르면 아래 패널 자리에 펼치는 고르기 단계. 그때의 날·때·뷰를 같이 적어 두고, 바뀌면 버린다 */
+  const [pick, setPick] = useState<{ step: PickStep; at: string } | null>(null);
   // 저장 기능(5주차) 전에는 앱을 새로 고치면 회차가 사라진다 → 타이틀로
   if (!run || !shown) return <Redirect href="/" />;
 
   const view = selectView(shown);
+  const at = `${shown.time.day}-${shown.time.phase}-${view}`;
+  const step = (view === "hub" || view === "evening") && pick?.at === at ? pick.step : null;
+  const onPick = (s: PickStep | null) => setPick(s ? { step: s, at } : null);
   return (
     <Animated.View style={[styles.root, { transform: [{ translateX: shake }] }]}>
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
-      <TurnLog compact={view === "combat"} intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)} />
-      {/* 이벤트 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
+      <TurnLog
+        compact={view === "combat"}
+        intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)}
+        cover={step ? { key: JSON.stringify(step), node: <PickIntro run={shown} step={step} /> } : undefined}
+      />
+      {/* 이벤트 패널과 고르기 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
       {/* 연출 중에는 누를 수 없게. 전투 칸은 맞는 효과가 보여야 하므로 흐리게 하지 않는다 */}
-      <View style={[(view === "event" || view === "combat") && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
-        <Panel view={view} run={shown} />
+      <View style={[(view === "event" || view === "combat" || step) && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
+        {step ? <PickPanel run={shown} step={step} onStep={onPick} /> : <Panel view={view} run={shown} onPick={onPick} />}
       </View>
     </Animated.View>
   );
@@ -70,13 +80,13 @@ function introFor(run: RunState): { title: string; body: string } {
   };
 }
 
-function Panel({ view, run }: { view: GameView; run: RunState }) {
+function Panel({ view, run, onPick }: { view: GameView; run: RunState; onPick: (s: PickStep) => void }) {
   switch (view) {
     case "ending": return <EndingPanel run={run} />;
     case "combat": return <CombatPanel run={run} />;
     case "event": return <EventPanel run={run} />;
-    case "evening": return <EveningPanel run={run} />;
-    case "hub": return <HubPanel run={run} />;
+    case "evening": return <EveningPanel run={run} onVillage={() => onPick({ kind: "village" })} />;
+    case "hub": return <HubPanel run={run} onPick={onPick} />;
   }
 }
 

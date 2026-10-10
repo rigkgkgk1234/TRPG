@@ -13,7 +13,7 @@ import { colors, hairline, icon, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
 /** 저녁 패널: 정산을 미리 알려 주고, 모자란 식량을 사거나 먹일 순서를 정한 뒤 잠자리에 든다. */
-export function EveningPanel({ run }: { run: RunState }) {
+export function EveningPanel({ run, onVillage }: { run: RunState; onVillage: () => void }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
   const [order, setOrder] = useState<FeedOrder>("selfFirst");
@@ -81,7 +81,7 @@ export function EveningPanel({ run }: { run: RunState }) {
         />
       )}
 
-      <TownRow run={run} />
+      <TownRow run={run} onVillage={onVillage} />
       <ActionButton primary icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
     </View>
   );
