@@ -1,0 +1,86 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_trapped_youth_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "돌무더기 너머의 목소리",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 돌무더기 너머에서 사람 목소리가 들린다. 이웃 마을 청년이 은을 캐러 들어왔다가 갇혔다고 한다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "돌을 치워 꺼내 준다",
+          "check": {
+            "stat": "str",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "돌을 들어내자 청년이 기어 나왔다. 몇 번이나 고개를 숙이고, 캐 둔 은 부스러기를 나눠 주었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "돌이 너무 무거웠다. 한참을 애쓴 끝에 겨우 틈을 내어 청년을 끌어냈다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "tell",
+          "label": "갱도 입구에서 도울 사람을 부르겠다고 하고 떠난다",
+          "outcome": {
+            "text": "입구에서 마주친 나무꾼에게 청년 일을 알렸다. 나무꾼이 동료들을 데리러 갔다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "모른 척한다",
+          "outcome": {
+            "text": "목소리를 뒤로하고 걸었다. 발걸음이 무거웠다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

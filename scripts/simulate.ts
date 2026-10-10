@@ -13,7 +13,7 @@ import { treatable } from "@/core/items/shop";
 import { ENDING_LABEL, NPC_IDS, REGION_LABEL, SKILL_LABEL } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import { makeRecord } from "@/core/story/ending";
-import { FATIGUE_DISADVANTAGE_AT, maxHp, SKILL_STAT, type EndingId, type JobId, type RunState, type SkillId } from "@/core/types";
+import { FATIGUE_DISADVANTAGE_AT, maxHp, SKILL_STAT, type EndingId, type JobId, type RegionId, type RunState, type SkillId } from "@/core/types";
 import { CONTENT } from "@/data";
 
 const RUNS = Number(process.argv[process.argv.indexOf("--runs") + 1]) || 1000;
@@ -90,7 +90,9 @@ function pickCommand(run: RunState, ai: Ai): GameCommand {
   if (run.resources.fatigue >= FATIGUE_DISADVANTAGE_AT || run.player.hp < maxHp(run.player.stats) * HURT_RATIO) options.push({ type: "chooseAction", action: "rest" });
   if (run.resources.silver < SILVER_FLOOR) options.push({ type: "chooseAction", action: "work" });
 
-  const region = run.time.day < 11 ? "forest" : ai.rand() < 0.5 ? "watchtower" : "forest";
+  // 10일차까지는 숲만, 그 뒤로는 다섯 곳 중에서 (숲·감시탑 30%씩, 새 지역(위험 2) 늪·은광·폐허 13%쯤씩)
+  const r = ai.rand();
+  const region: RegionId = run.time.day < 11 ? "forest" : r < 0.3 ? "forest" : r < 0.6 ? "watchtower" : r < 0.73 ? "marsh" : r < 0.87 ? "mine" : "hamlet";
   const skill = MAIN_SKILL[run.player.job];
   if (ai.rand() < 0.15) options.push({ type: "chooseAction", action: "village", npc: NPC_IDS[Math.floor(ai.rand() * NPC_IDS.length)] });
   // 다치지 않았으면 가끔 결투장·의뢰 중개소 (명성)

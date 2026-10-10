@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_black_reed_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "검은 갈대 뿌리",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "뿌리가 검은 갈대가 무성하다. 마그다 할멈은 이 뿌리를 말려 상처약을 만든다고 했다. 다만 즙이 살에 닿으면 따끔거린다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "뿌리를 조심스레 캔다",
+          "check": {
+            "stat": "agi",
+            "skill": "herbalism",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "즙이 묻지 않게 뿌리를 캐서 이파리로 쌌다. 약초로 쓸 만하다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "즙이 손등에 튀었다. 한참을 물에 씻었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "손대지 않는다",
+          "outcome": {
+            "text": "갈대밭을 비켜 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

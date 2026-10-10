@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_foreman_hut_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "감독관의 오두막",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 입구 옆에 감독관이 쓰던 판잣집이 있다. 책상 서랍은 이미 다 털렸다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "숨겨 둔 곳이 없는지 샅샅이 뒤진다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "마룻장 하나가 들뜬 것을 찾았다. 밑에 은화 주머니가 있었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "먼지만 잔뜩 뒤집어썼다. 구석에서 동전 하나를 주웠다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "rest",
+          "label": "의자에 앉아 잠시 쉰다",
+          "outcome": {
+            "text": "삐걱거리는 의자에서 숨을 돌렸다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

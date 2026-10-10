@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_burnt_bridge_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "불탄 다리",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 가운데 개울 위 다리가 반쯤 타 버렸다. 남은 들보 하나가 건너편까지 걸쳐 있다.",
+      "choices": [
+        {
+          "id": "cross",
+          "label": "들보 위를 건넌다",
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "팔을 벌리고 들보를 건넜다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "들보가 꺾이며 개울에 빠졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "wade",
+          "label": "개울을 걸어서 건넌다",
+          "outcome": {
+            "text": "무릎까지 젖으며 건넜다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_cellar_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "여관의 지하 창고",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "불탄 여관 바닥에 지하 창고 문이 있다. 문 위에 무너진 들보가 걸쳐 있다.",
+      "choices": [
+        {
+          "id": "lift",
+          "label": "들보를 들어 올리고 내려간다",
+          "check": {
+            "stat": "str",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "창고에는 보리술 단지와 소금에 절인 고기가 그대로 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "barley_ale",
+                  "qty": 2
+                },
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "들보가 꿈쩍도 하지 않는다. 틈으로 손을 넣어 단지 하나만 꺼냈다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "barley_ale",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 둔다",
+          "outcome": {
+            "text": "여관 터를 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

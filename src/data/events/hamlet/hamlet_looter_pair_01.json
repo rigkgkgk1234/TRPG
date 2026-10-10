@@ -1,0 +1,100 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_looter_pair_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "약탈자 패거리",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "약탈자 둘이 성당 문을 부수고 있다. 하나가 망을 보다 이쪽을 발견했다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "둘을 상대한다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "talk",
+          "label": "성당만은 건드리지 말라고 설득한다",
+          "check": {
+            "stat": "cha",
+            "dc": 14
+          },
+          "outcomes": {
+            "success": {
+              "text": "둘이 서로 눈치를 보더니 투덜대며 떠났다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "\"설교는 무덤에서 해.\" 둘이 몽둥이를 들었다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "물러난다",
+          "outcome": {
+            "text": "둘이 쫓아오기 전에 골목으로 빠졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "약탈자 둘이 양쪽에서 다가온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "ruin_looter",
+              "ruin_looter"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "약탈자들이 달아났다. 성당 문간에 떨어진 자루에서 은화를 챙겼다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

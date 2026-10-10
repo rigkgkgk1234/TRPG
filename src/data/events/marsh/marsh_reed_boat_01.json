@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_reed_boat_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "버려진 갈대배",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물길 가에 갈대를 엮어 만든 작은 배가 매여 있다. 물길을 따라가면 늪 깊은 곳의 섬에 닿을 것 같다.",
+      "choices": [
+        {
+          "id": "row",
+          "label": "배를 타고 섬으로 간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "섬에는 사람 손이 닿지 않은 늪 약초와, 누군가 숨겨 둔 은화 단지가 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 1
+                },
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "배가 뒤집혔다. 물을 잔뜩 먹고 겨우 기슭으로 기어 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "물길이 깊어 보여 그만둔다",
+          "outcome": {
+            "text": "배를 그대로 두고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

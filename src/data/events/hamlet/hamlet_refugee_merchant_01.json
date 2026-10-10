@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_refugee_merchant_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "피난 가는 상인",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "짐수레를 끄는 상인 부부가 폐허를 지나간다. 짐을 줄이려고 물건을 싸게 판다고 한다.",
+      "choices": [
+        {
+          "id": "potion",
+          "label": "은화 14닢에 치유 물약을 산다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 14
+            }
+          ],
+          "cost": {
+            "silver": 14
+          },
+          "outcome": {
+            "text": "붉은 물약 한 병을 받았다. 약초방보다 훨씬 싸다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "healing_potion",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "bandage",
+          "label": "은화 2닢에 붕대를 산다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 2
+            }
+          ],
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "붕대 한 묶음을 샀다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bandage",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "push",
+          "label": "수레 미는 것을 돕는다",
+          "outcome": {
+            "text": "둑길까지 수레를 밀어 주었다. 부부가 말린 빵을 나눠 주었다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 1
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 한다",
+          "outcome": {
+            "text": "부부의 수레가 둑길 너머로 멀어졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

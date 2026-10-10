@@ -1,0 +1,89 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_granary_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "타다 남은 곡식 창고",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "지붕이 내려앉은 곡식 창고에서 그을린 보리 냄새가 난다. 잿더미 아래에 성한 자루가 남아 있을지도 모른다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "잿더미를 파헤친다",
+          "check": {
+            "stat": "str",
+            "dc": 11,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "서까래 밑에서 성한 보리 자루를 끌어냈다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "그을린 자루 두 개를 건졌다. 쓸 만한 것만 골라 담았다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "서까래가 무너져 팔을 찧었다. 한 줌만 건졌다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "grab",
+          "label": "보이는 것만 챙긴다",
+          "outcome": {
+            "text": "문간에 흘러나온 보리를 쓸어 담았다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

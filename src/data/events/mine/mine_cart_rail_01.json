@@ -1,0 +1,83 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_cart_rail_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "비탈진 광차 레일",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "녹슨 광차가 비탈진 레일 꼭대기에 멈춰 있다. 레일은 어둠 속 깊은 갱도로 이어진다.",
+      "choices": [
+        {
+          "id": "ride",
+          "label": "광차에 올라타 내려간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "광차가 덜컹거리며 깊은 갱도에 멈췄다. 아무도 손대지 않은 광석 더미가 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "광차가 모퉁이에서 뒤집혔다. 바닥에 내동댕이쳐졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "walk",
+          "label": "레일을 따라 걸어 내려간다",
+          "outcome": {
+            "text": "한참을 걸어 내려갔지만 쓸 만한 것은 이미 다 털려 있었다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그만둔다",
+          "outcome": {
+            "text": "광차를 그대로 두고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

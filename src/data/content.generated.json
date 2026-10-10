@@ -134,6 +134,20 @@
    "twoHanded": false,
    "durabilityMax": 12
   },
+  "old_pickaxe": {
+   "id": "old_pickaxe",
+   "name": "낡은 곡괭이",
+   "category": "weapon",
+   "description": "광부가 두고 간 곡괭이. 날이 무뎌졌지만 두 손으로 내리찍으면 묵직하다.",
+   "price": 0,
+   "sellPrice": 6,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d8",
+   "twoHanded": true,
+   "durabilityMax": 12
+  },
   "hunting_bow": {
    "id": "hunting_bow",
    "name": "사냥용 활",
@@ -513,6 +527,16 @@
    "sellable": true,
    "stackMax": 5
   },
+  "silver_scrap": {
+   "id": "silver_scrap",
+   "name": "은 부스러기",
+   "category": "material",
+   "description": "버려진 은광에서 긁어모은 은 조각. 여관에서 값을 쳐준다.",
+   "price": 0,
+   "sellPrice": 5,
+   "sellable": true,
+   "stackMax": 5
+  },
   "goblin_token": {
    "id": "goblin_token",
    "name": "고블린 부적",
@@ -787,6 +811,153 @@
     "humanoid"
    ],
    "loot": []
+  },
+  "giant_leech": {
+   "id": "giant_leech",
+   "name": "거대 거머리",
+   "hp": 12,
+   "defense": 10,
+   "attackBonus": 3,
+   "damage": "1d4+1",
+   "speed": 2,
+   "morale": 0,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "marsh_goblin": {
+   "id": "marsh_goblin",
+   "name": "늪 고블린",
+   "hp": 14,
+   "defense": 12,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 3,
+   "morale": 0.4,
+   "onDefeat": "deathSave",
+   "tags": [
+    "goblin"
+   ],
+   "loot": [
+    {
+     "itemId": "goblin_token",
+     "qty": 1,
+     "chance": 0.3
+    }
+   ],
+   "silver": 2
+  },
+  "marsh_snake": {
+   "id": "marsh_snake",
+   "name": "늪 뱀",
+   "hp": 10,
+   "defense": 12,
+   "attackBonus": 4,
+   "damage": "1d4+1",
+   "speed": 4,
+   "morale": 0.5,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "bat_swarm": {
+   "id": "bat_swarm",
+   "name": "박쥐 떼",
+   "hp": 10,
+   "defense": 13,
+   "attackBonus": 3,
+   "damage": "1d4",
+   "speed": 5,
+   "morale": 0.5,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "cave_spider": {
+   "id": "cave_spider",
+   "name": "동굴 거미",
+   "hp": 14,
+   "defense": 11,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 3,
+   "morale": 0.3,
+   "onDefeat": "deathSave",
+   "tags": [
+    "beast"
+   ],
+   "loot": []
+  },
+  "tunnel_bandit": {
+   "id": "tunnel_bandit",
+   "name": "갱도 도적",
+   "hp": 16,
+   "defense": 12,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 2,
+   "morale": 0.4,
+   "onDefeat": "robbed",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": [
+    {
+     "itemId": "silver_scrap",
+     "qty": 1,
+     "chance": 0.6
+    }
+   ],
+   "silver": 3
+  },
+  "goblin_raider": {
+   "id": "goblin_raider",
+   "name": "고블린 약탈병",
+   "hp": 14,
+   "defense": 12,
+   "attackBonus": 3,
+   "damage": "1d6",
+   "speed": 3,
+   "morale": 0.4,
+   "onDefeat": "deathSave",
+   "tags": [
+    "goblin"
+   ],
+   "loot": [
+    {
+     "itemId": "goblin_token",
+     "qty": 1,
+     "chance": 0.5
+    }
+   ]
+  },
+  "ruin_looter": {
+   "id": "ruin_looter",
+   "name": "폐허 약탈자",
+   "hp": 14,
+   "defense": 11,
+   "attackBonus": 2,
+   "damage": "1d6",
+   "speed": 3,
+   "morale": 0.5,
+   "onDefeat": "robbed",
+   "tags": [
+    "humanoid"
+   ],
+   "loot": [
+    {
+     "itemId": "bandage",
+     "qty": 1,
+     "chance": 0.4
+    }
+   ],
+   "silver": 3
   }
  },
  "events": {
@@ -4472,6 +4643,7663 @@
        "delta": -1
       }
      ],
+     "choices": []
+    }
+   }
+  },
+  "hamlet_bandit_hold_01": {
+   "id": "hamlet_bandit_hold_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "도적이 차지한 집",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을에서 가장 큰 집에 도적이 자리를 잡았다. 창문으로 모닥불이 보이고, 문간에 훔친 물건이 쌓여 있다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "문을 걷어차고 들어간다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "sneak",
+       "label": "뒷문으로 들어가 물건만 챙긴다",
+       "check": {
+        "stat": "agi",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "도적이 졸고 있는 사이 은화 주머니를 챙겨 나왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "마룻장이 삐걱거렸다. 도적이 벌떡 일어났다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "상대하지 않는다",
+       "outcome": {
+        "text": "큰 집을 피해 돌아갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "도적이 모닥불 옆에서 칼을 집어 든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적이 창문으로 뛰어내려 달아났다. 쌓인 물건 중 은화를 챙겼다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_bell_tower_01": {
+   "id": "hamlet_bell_tower_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "그을린 종탑",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "성당 옆 종탑은 그을렸지만 서 있다. 꼭대기에 오르면 강 상류와 숲이 한눈에 보일 것이다. 계단 몇 칸이 타서 없다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "남은 계단을 딛고 올라간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "꼭대기에서 숲 너머로 연기 기둥 여럿이 보였다. 고블린의 야영지다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "계단이 무너졌다. 아래층 바닥에 떨어졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "올라가지 않는다",
+       "outcome": {
+        "text": "종탑을 올려다보고 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_burnt_bridge_01": {
+   "id": "hamlet_burnt_bridge_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "불탄 다리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 가운데 개울 위 다리가 반쯤 타 버렸다. 남은 들보 하나가 건너편까지 걸쳐 있다.",
+     "choices": [
+      {
+       "id": "cross",
+       "label": "들보 위를 건넌다",
+       "check": {
+        "stat": "agi",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "팔을 벌리고 들보를 건넜다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "들보가 꺾이며 개울에 빠졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "wade",
+       "label": "개울을 걸어서 건넌다",
+       "outcome": {
+        "text": "무릎까지 젖으며 건넜다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_cellar_01": {
+   "id": "hamlet_cellar_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "여관의 지하 창고",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "불탄 여관 바닥에 지하 창고 문이 있다. 문 위에 무너진 들보가 걸쳐 있다.",
+     "choices": [
+      {
+       "id": "lift",
+       "label": "들보를 들어 올리고 내려간다",
+       "check": {
+        "stat": "str",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "창고에는 보리술 단지와 소금에 절인 고기가 그대로 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "barley_ale",
+           "qty": 2
+          },
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "들보가 꿈쩍도 하지 않는다. 틈으로 손을 넣어 단지 하나만 꺼냈다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "barley_ale",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 둔다",
+       "outcome": {
+        "text": "여관 터를 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_chapel_kit_01": {
+   "id": "hamlet_chapel_kit_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "작은 성당",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "지붕만 탄 작은 성당 제단 밑에 약품 상자가 있다. 피난민을 돌보던 수도사가 두고 간 것 같다.",
+     "choices": [
+      {
+       "id": "sort",
+       "label": "약을 하나씩 살펴 고른다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "붕대와 약초, 상처 연고를 골라 챙겼다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "bandage",
+           "qty": 1
+          },
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 1
+          },
+          {
+           "type": "addItem",
+           "itemId": "salve",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "대부분 상해 있었다. 붕대 한 묶음만 쓸 만하다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "bandage",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "pray",
+       "label": "제단 앞에서 잠시 쉰다",
+       "outcome": {
+        "text": "타다 남은 의자에 앉아 숨을 골랐다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_chickens_01": {
+   "id": "hamlet_chickens_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "살아남은 닭들",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 닭장 둘레에서 닭 몇 마리가 모이를 쪼고 있다. 주인 없이 들판에서 살아남은 놈들이다.",
+     "choices": [
+      {
+       "id": "catch",
+       "label": "몰아서 붙잡는다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "두 마리를 붙잡았다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "한 마리를 겨우 붙잡았다. 온몸이 깃털투성이다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "닭들이 담장 너머로 달아났다. 헛심만 썼다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "eggs",
+       "label": "닭장 속 알만 챙긴다",
+       "outcome": {
+        "text": "볏짚 속에서 달걀 몇 개를 찾았다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_collapsing_roof_01": {
+   "id": "hamlet_collapsing_roof_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "기울어진 집",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "반쯤 기운 집 안에 궤짝이 보인다. 들보가 삐걱거리고, 지붕에서 재가 흘러내린다.",
+     "choices": [
+      {
+       "id": "enter",
+       "label": "재빨리 들어가 궤짝을 꺼낸다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "궤짝을 안고 뛰어나오자마자 지붕이 내려앉았다. 안에 은화가 들어 있었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "나오는 순간 서까래에 등을 맞았다. 궤짝은 건졌다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "들보가 무너져 깔렸다. 겨우 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -4
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "들어가지 않는다",
+       "outcome": {
+        "text": "기울어진 집을 비켜 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_dogs_01": {
+   "id": "hamlet_dogs_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "주인 잃은 개들",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 광장에 들개 둘이 어슬렁거린다. 주인을 잃고 사나워진 개들이다. 우두머리가 낮게 으르렁거린다.",
+     "choices": [
+      {
+       "id": "food",
+       "label": "먹을 것을 던지고 물러난다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "개들이 먹이를 두고 다투는 사이 광장을 빠져나왔다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "climb",
+       "label": "무너진 벽 위로 올라간다",
+       "check": {
+        "stat": "agi",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "벽 위에서 버티자 개들이 지쳐서 흩어졌다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "벽돌이 무너졌다. 개들이 달려든다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "막대를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "들개 둘이 양쪽에서 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wild_dog",
+         "wild_dog"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "우두머리가 쓰러지자 다른 하나는 꼬리를 말고 달아났다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_embers_01": {
+   "id": "hamlet_embers_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "연기 나는 골목",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "골목 끝 잿더미에서 아직 연기가 피어오른다. 바람이 바뀔 때마다 매캐한 연기가 몰려온다.",
+     "choices": [
+      {
+       "id": "through",
+       "label": "소매로 입을 막고 지나간다",
+       "check": {
+        "stat": "con",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "눈물을 훔치며 골목을 빠져나왔다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "연기를 들이마시고 한참을 기침했다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "around",
+       "label": "마을 바깥으로 돌아간다",
+       "outcome": {
+        "text": "둑길로 한참을 돌아갔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_fallback": {
+   "id": "hamlet_fallback",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "적막한 폐허",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "바람에 문짝이 삐걱거리는 소리뿐이다. 별다른 일 없이 폐허를 둘러보았다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_goblin_raider_01": {
+   "id": "hamlet_goblin_raider_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "잔해를 뒤지는 고블린",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "불탄 집터에서 고블린 하나가 잿더미를 뒤지고 있다. 등에 멘 자루가 불룩하다. 아직 이쪽을 보지 못했다.",
+     "choices": [
+      {
+       "id": "ambush",
+       "label": "뒤로 돌아가 덮친다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈이 돌아보기도 전에 한 대 먹였다!",
+         "next": "fight_advantage"
+        },
+        "fail": {
+         "text": "숯덩이를 밟았다. 고블린이 손도끼를 뽑아 들었다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "정면으로 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "back",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "text": "담장 그림자를 따라 조용히 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 약탈병이 이를 드러냈다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_raider"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_advantage": {
+     "text": "휘청거리는 고블린이 손도끼를 겨눈다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_raider"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "enemyHpModifier": -5,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린이 쓰러졌다. 놈의 자루에는 물레방아골 사람들의 냄비와 숟가락이 들어 있었다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_goblin_warrior_01": {
+   "id": "hamlet_goblin_warrior_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "폐허의 고블린 전사",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 20
+    }
+   ],
+   "weight": 3,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광장 우물가에 고블린 전사가 서 있다. 등에 멘 도끼에 아직 그을음이 묻어 있다. 이 마을을 불태운 놈들 중 하나다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "물레방아골의 원수를 갚는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "hide",
+       "label": "무너진 담 뒤에 숨는다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "전사가 우물에서 물을 마시고 상류 쪽으로 떠났다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "숨을 고르다 기와를 밟았다. 전사가 도끼를 뽑아 든다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "광장을 피해 돌아간다",
+       "outcome": {
+        "text": "멀찍이 돌아서 광장을 피했다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 전사가 도끼를 치켜든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린 전사가 우물가에 쓰러졌다. 물레방아골을 불태운 놈 하나를 갚았다.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_granary_01": {
+   "id": "hamlet_granary_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "타다 남은 곡식 창고",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "지붕이 내려앉은 곡식 창고에서 그을린 보리 냄새가 난다. 잿더미 아래에 성한 자루가 남아 있을지도 모른다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "잿더미를 파헤친다",
+       "check": {
+        "stat": "str",
+        "dc": 11,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "서까래 밑에서 성한 보리 자루를 끌어냈다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "그을린 자루 두 개를 건졌다. 쓸 만한 것만 골라 담았다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "서까래가 무너져 팔을 찧었다. 한 줌만 건졌다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "grab",
+       "label": "보이는 것만 챙긴다",
+       "outcome": {
+        "text": "문간에 흘러나온 보리를 쓸어 담았다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_graves_01": {
+   "id": "hamlet_graves_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "묻히지 못한 사람들",
+   "conditions": [],
+   "weight": 3,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광장 한쪽에 거적에 덮인 시신 몇 구가 그대로 있다. 아무도 묻어 주지 못했다.",
+     "choices": [
+      {
+       "id": "bury",
+       "label": "구덩이를 파고 묻어 준다",
+       "outcome": {
+        "text": "해가 기울도록 흙을 퍼 날랐다. 마지막 무덤에 돌을 올리고 나니 온몸이 쑤셨다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 2
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pray",
+       "label": "고개 숙여 명복을 빈다",
+       "outcome": {
+        "text": "잠시 묵념하고 자리를 떴다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_guard_orders_01": {
+   "id": "hamlet_guard_orders_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "불탄 경비 초소",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 경비 초소가 까맣게 탔다. 무너진 탁자 밑에 그을린 양피지 한 장이 깔려 있다.",
+     "choices": [
+      {
+       "id": "read",
+       "label": "양피지를 조심스레 펼친다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "경비대장이 남긴 보고서다. 고블린 무리의 수와 쳐들어온 길, 다음은 하류의 보리울이라는 경고가 적혀 있다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "글자가 그을려 거의 알아볼 수 없다. '보름'이라는 말만 겨우 읽었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "초소를 뒤로하고 걸었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_herb_garden_01": {
+   "id": "hamlet_herb_garden_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "수도원 약초밭",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "성당 뒤 작은 약초밭이 잡초에 묻혀 있다. 수도사들이 기르던 약초가 아직 남았다.",
+     "choices": [
+      {
+       "id": "pick",
+       "label": "약초를 골라 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "쓸 만한 약초를 넉넉히 캤다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "잡초 사이에서 약초 한 줌을 건졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "잡초만 잔뜩 뽑았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "약초밭을 지나쳤다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_hidden_purse_01": {
+   "id": "hamlet_hidden_purse_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "우물가의 돌 틈",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광장 우물가 돌담에 손을 넣을 만한 틈이 있다. 피난 가던 사람이 무언가 숨겨 두었을지도 모른다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "돌 틈을 더듬어 본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "기름 먹인 천에 싼 돈주머니가 나왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "이끼와 거미줄뿐이다. 바닥에서 동전 하나를 주웠다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "돌아올 주인을 위해 둔다",
+       "outcome": {
+        "text": "돌 틈을 그대로 두고 자리를 떴다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_looter_01": {
+   "id": "hamlet_looter_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "폐허의 약탈자",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "누군가 무너진 헛간에서 물건을 끌어내고 있다. 고블린이 아니라 사람이다. 사내가 몽둥이를 들고 이쪽을 노려본다.",
+     "choices": [
+      {
+       "id": "talk",
+       "label": "나눠 갖자고 달랜다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내가 투덜대며 헛간 한쪽을 양보했다. 쓸 만한 것 몇 개를 챙겼다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "\"여긴 내가 먼저 왔어.\" 사내가 몽둥이를 치켜들었다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "죽은 사람 물건을 터는 놈은 두고 볼 수 없다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "상관하지 않고 지나간다",
+       "outcome": {
+        "text": "사내의 눈길을 피해 다른 골목으로 들어갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 몽둥이를 휘두르며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "ruin_looter"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "약탈자가 자루를 버리고 달아났다. 자루 속 물건은 헛간 앞에 가지런히 내려 두었다.",
+     "onEnter": [
+      {
+       "type": "reputation",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_looter_pair_01": {
+   "id": "hamlet_looter_pair_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "약탈자 패거리",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "약탈자 둘이 성당 문을 부수고 있다. 하나가 망을 보다 이쪽을 발견했다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "둘을 상대한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "성당만은 건드리지 말라고 설득한다",
+       "check": {
+        "stat": "cha",
+        "dc": 14
+       },
+       "outcomes": {
+        "success": {
+         "text": "둘이 서로 눈치를 보더니 투덜대며 떠났다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "\"설교는 무덤에서 해.\" 둘이 몽둥이를 들었다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "물러난다",
+       "outcome": {
+        "text": "둘이 쫓아오기 전에 골목으로 빠졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "약탈자 둘이 양쪽에서 다가온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "ruin_looter",
+         "ruin_looter"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "약탈자들이 달아났다. 성당 문간에 떨어진 자루에서 은화를 챙겼다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_miller_01": {
+   "id": "hamlet_miller_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "떠나지 못한 방앗간 주인",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "부서진 물레방아 앞에서 노인이 망치를 들고 있다. 평생 돌린 방아를 두고 떠날 수 없다고 한다.",
+     "choices": [
+      {
+       "id": "help",
+       "label": "물레를 다시 거는 일을 돕는다",
+       "check": {
+        "stat": "str",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "물레가 삐걱거리며 다시 돌았다. 노인이 빻아 둔 보릿가루를 나눠 주었다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "물레가 미끄러져 다시 떨어졌다. 둘이 함께 한숨을 쉬었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "ask",
+       "label": "그날 일을 묻는다",
+       "outcome": {
+        "text": "노인이 고블린들이 강을 따라 올라와 밤중에 방앗간부터 불을 질렀다고 말했다.",
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "goblin_tracks_found"
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "text": "노인이 다시 망치질을 시작했다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_old_well_01": {
+   "id": "hamlet_old_well_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "우물 바닥의 반짝임",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마른 우물 바닥에서 무언가 반짝인다. 두레박 줄은 끊어졌고, 돌벽이 축축하다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "돌벽을 짚고 내려간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "바닥에서 누군가 던져 넣은 은화 몇 닢을 주웠다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "이끼에 미끄러져 바닥까지 떨어졌다. 고인 물이 썩어 있었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 둔다",
+       "outcome": {
+        "text": "우물 안을 들여다보다 발길을 돌렸다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_orchard_01": {
+   "id": "hamlet_orchard_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "타지 않은 과수원",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 뒤편 과수원은 불길을 피했다. 아무도 따지 않은 사과가 가지마다 매달려 있다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "나무에 올라 높은 가지까지 딴다",
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "자루가 묵직해졌다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "가지가 부러져 떨어졌다. 줍기만 했다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "pick",
+       "label": "떨어진 사과만 줍는다",
+       "outcome": {
+        "text": "멀쩡한 것만 골라 담았다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_puppy_01": {
+   "id": "hamlet_puppy_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "주인 잃은 강아지",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 집 문간에 강아지 한 마리가 웅크리고 있다. 꼬리를 흔들며 낑낑거린다.",
+     "choices": [
+      {
+       "id": "feed",
+       "label": "먹을 것을 나눠 준다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "강아지가 허겁지겁 먹고는 한참 동안 졸졸 따라왔다. 마음이 조금 따뜻해졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pet",
+       "label": "머리를 쓰다듬어 준다",
+       "outcome": {
+        "text": "강아지가 손을 핥았다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "낑낑거리는 소리가 뒤에서 들렸다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_raid_traces_01": {
+   "id": "hamlet_raid_traces_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "부서진 목책",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 6
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "마을 어귀 목책이 바깥쪽으로 쓰러져 있다. 땅에는 작은 발자국과 무언가를 끈 자국이 뒤엉켜 있다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "어디로 쳐들어왔는지 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들은 목책을 밧줄로 끌어 넘어뜨리고 한쪽으로만 몰려 들어왔다. 보리울 울타리도 같은 식으로 노릴 것이다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "비에 씻긴 자국이 많아 알아보기 어렵다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "자리를 뜬다",
+       "outcome": {
+        "text": "쓰러진 목책을 넘어 마을 안으로 들어갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_raider_camp_01": {
+   "id": "hamlet_raider_camp_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "약탈병의 야영지",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "방앗간 뒤 공터에 고블린 약탈병의 모닥불이 있다. 약탈병 하나와 정찰병 하나가 훔친 곡식 자루를 깔고 앉아 있다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": [
+      {
+       "id": "fight",
+       "label": "둘을 덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "steal",
+       "label": "자루 하나만 몰래 빼낸다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "곡식 자루를 끌고 빠져나왔다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "자루가 쓰러지며 곡식이 쏟아졌다. 고블린들이 벌떡 일어난다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "text": "모닥불 연기를 뒤로하고 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "약탈병과 정찰병이 무기를 집어 든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_raider",
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "둘이 쓰러졌다. 훔친 곡식을 되찾았다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_raider_patrol_01": {
+   "id": "hamlet_raider_patrol_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "순찰하는 약탈병",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "고블린 약탈병 둘이 마을 어귀를 오가며 무언가를 기다린다. 하나는 둘둘 만 가죽을 허리에 차고 있다.",
+     "choices": [
+      {
+       "id": "hide",
+       "label": "숨어서 놈들이 하는 말을 엿듣는다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "놈들은 '보름'과 '방앗간 길'을 몇 번이고 되뇌었다. 그 말이 무슨 뜻인지 짐작이 간다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌멩이가 굴러 떨어졌다. 약탈병 둘이 동시에 돌아본다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "둘을 상대한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "back",
+       "label": "멀찍이 돌아서 피한다",
+       "outcome": {
+        "text": "마을 바깥 둑길로 크게 돌아갔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "약탈병 둘이 손도끼를 꺼내 들고 양쪽으로 갈라선다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_raider",
+         "goblin_raider"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "약탈병 둘이 쓰러졌다. 허리에 찬 가죽에는 보리울로 들어가는 길이 그려져 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_refugee_merchant_01": {
+   "id": "hamlet_refugee_merchant_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "피난 가는 상인",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "짐수레를 끄는 상인 부부가 폐허를 지나간다. 짐을 줄이려고 물건을 싸게 판다고 한다.",
+     "choices": [
+      {
+       "id": "potion",
+       "label": "은화 14닢에 치유 물약을 산다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 14
+        }
+       ],
+       "cost": {
+        "silver": 14
+       },
+       "outcome": {
+        "text": "붉은 물약 한 병을 받았다. 약초방보다 훨씬 싸다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "healing_potion",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "bandage",
+       "label": "은화 2닢에 붕대를 산다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 2
+        }
+       ],
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "붕대 한 묶음을 샀다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bandage",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "push",
+       "label": "수레 미는 것을 돕는다",
+       "outcome": {
+        "text": "둑길까지 수레를 밀어 주었다. 부부가 말린 빵을 나눠 주었다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 1
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 한다",
+       "outcome": {
+        "text": "부부의 수레가 둑길 너머로 멀어졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_roof_scout_01": {
+   "id": "hamlet_roof_scout_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "지붕 위의 고블린",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "성한 지붕 위에 고블린 하나가 쪼그려 앉아 강 하류를 내려다보고 있다. 보리울 쪽이다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": [
+      {
+       "id": "fight",
+       "label": "지붕으로 올라가 덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "watch",
+       "label": "숨어서 놈이 무엇을 보는지 살핀다",
+       "check": {
+        "stat": "per",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "고블린은 강을 따라 보리울까지 이어진 둑길을 손가락으로 몇 번이고 짚었다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "고블린이 고개를 홱 돌렸다. 들켰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그림자를 따라 물러난다",
+       "outcome": {
+        "text": "놈의 눈길을 피해 골목으로 빠졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 정찰병이 지붕에서 뛰어내리며 단검을 휘두른다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "정찰병이 쓰러졌다. 놈이 지키던 지붕에서 강 하류가 훤히 내려다보였다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "hamlet_smithy_ruins_01": {
+   "id": "hamlet_smithy_ruins_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "대장간 잔해",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 대장간 화덕 옆에 녹슨 쇠붙이가 산더미다. 쓸 만한 연장이 섞여 있을지도 모른다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "쓸 만한 것을 찾아 뒤진다",
+       "check": {
+        "stat": "per",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "날이 성한 손도끼를 찾아냈다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "hand_axe",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "녹슨 쇠 사이에서 은 장식 조각을 건졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "녹슨 쇠에 손을 베었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "sort",
+       "label": "쇠를 두드려 보며 골라낸다",
+       "check": {
+        "stat": "str",
+        "skill": "smithing",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "소리로 성한 쇠를 골라냈다. 은을 입힌 문고리 두 개가 나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "두드려 봐도 다 녹슨 쇠뿐이다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_survivors_01": {
+   "id": "hamlet_survivors_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "지하실의 가족",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 집 지하실 문틈으로 아이 우는 소리가 들린다. 문을 열자 여윈 여인과 두 아이가 웅크리고 있다. 고블린이 다시 올까 봐 몇 주째 숨어 지냈다고 한다.",
+     "choices": [
+      {
+       "id": "share",
+       "label": "가진 식량을 나눠 준다",
+       "cost": {
+        "food": 2
+       },
+       "outcome": {
+        "text": "여인이 눈물을 흘리며 고개를 숙였다. 보리울로 가는 길을 일러 주자 아이들 손을 잡고 길을 나섰다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 5
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "escort",
+       "label": "안전한 길까지 데려다준다",
+       "outcome": {
+        "text": "세 사람을 둑길 끝까지 데려다주고 보리울로 가는 길을 일러 주었다. 여인이 하몬 촌장에게 꼭 이 일을 전하겠다고 했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 4
+         },
+         {
+          "type": "fatigue",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "silver",
+       "label": "은화 3닢을 쥐여 준다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 3
+        }
+       ],
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "여인이 은화를 받아 쥐고 몇 번이나 고맙다고 했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "도울 여유가 없다",
+       "outcome": {
+        "text": "문을 닫고 돌아섰다. 아이 울음소리가 한참 귀에 남았다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "hamlet_wounded_goblin_01": {
+   "id": "hamlet_wounded_goblin_01",
+   "category": "explore",
+   "region": "hamlet",
+   "title": "다친 고블린 약탈병",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 담 밑에 고블린 약탈병이 다리를 다친 채 쓰러져 있다. 이쪽을 보더니 손도끼를 끌어당긴다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "다친 틈을 놓치지 않는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "상관하지 않고 지나간다",
+       "outcome": {
+        "text": "놈이 일어나기 전에 자리를 떴다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "다친 고블린이 이를 악물고 일어선다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_raider"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "enemyHpModifier": -7,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린이 쓰러졌다. 놈의 허리춤에 물레방아골 사람들의 은화가 들어 있었다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_bird_eggs_01": {
+   "id": "marsh_bird_eggs_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "물새 둥지",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갈대 위에 엮은 둥지에 얼룩진 알이 여러 개 있다. 어미 새가 근처를 맴돈다.",
+     "choices": [
+      {
+       "id": "take",
+       "label": "어미가 날아간 틈에 알을 챙긴다",
+       "check": {
+        "stat": "agi",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "알 네 개를 챙겼다. 오늘 저녁거리가 늘었다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "어미 새가 돌아와 손등을 쪼았다. 알 두 개만 건졌다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "둥지를 그냥 둔다",
+       "outcome": {
+        "text": "새가 다시 둥지에 내려앉았다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_black_reed_01": {
+   "id": "marsh_black_reed_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "검은 갈대 뿌리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "뿌리가 검은 갈대가 무성하다. 마그다 할멈은 이 뿌리를 말려 상처약을 만든다고 했다. 다만 즙이 살에 닿으면 따끔거린다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "뿌리를 조심스레 캔다",
+       "check": {
+        "stat": "agi",
+        "skill": "herbalism",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "즙이 묻지 않게 뿌리를 캐서 이파리로 쌌다. 약초로 쓸 만하다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "즙이 손등에 튀었다. 한참을 물에 씻었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "addItem",
+           "itemId": "herb",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "손대지 않는다",
+       "outcome": {
+        "text": "갈대밭을 비켜 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_boar_wallow_01": {
+   "id": "marsh_boar_wallow_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "진흙 구덩이의 멧돼지",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "진흙 구덩이에서 멧돼지가 뒹굴고 있다. 길은 그 옆을 지나야 한다.",
+     "choices": [
+      {
+       "id": "sneak",
+       "label": "바람을 등지고 살금살금 지나간다",
+       "check": {
+        "stat": "agi",
+        "skill": "tracking",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "멧돼지는 끝내 눈치채지 못했다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "멧돼지가 코를 킁킁거리더니 벌떡 일어섰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "사냥감이다. 덤빈다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "먼 길로 돌아간다",
+       "outcome": {
+        "text": "한참 돌아서 구덩이를 피했다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "진흙투성이 멧돼지가 콧김을 뿜으며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "boar"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "멧돼지가 진흙 속에 쓰러졌다. 고기를 넉넉히 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_drowned_soldier_01": {
+   "id": "marsh_drowned_soldier_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "물에 잠긴 병사",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "얕은 물속에 녹슨 투구를 쓴 해골이 누워 있다. 오래전 이 늪을 건너다 쓰러진 병사인 것 같다. 허리에 칼과 주머니가 그대로 있다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "칼과 주머니를 챙긴다",
+       "outcome": {
+        "text": "녹슨 검과 은화 몇 닢을 건졌다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "rusty_sword",
+          "qty": 1
+         },
+         {
+          "type": "silver",
+          "delta": 3
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "bury",
+       "label": "물가로 옮겨 묻어 준다",
+       "outcome": {
+        "text": "마른 흙을 덮고 돌 하나를 올려 두었다. 손은 지쳤지만 마음은 가볍다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그대로 둔다",
+       "outcome": {
+        "text": "고개를 숙이고 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_fallback": {
+   "id": "marsh_fallback",
+   "category": "explore",
+   "region": "marsh",
+   "title": "고요한 늪",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "개구리 울음과 물 끓는 듯한 소리뿐이다. 별다른 일 없이 늪가를 걸었다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_ferry_bandit_01": {
+   "id": "marsh_ferry_bandit_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "나루의 도적",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "깊은 물길 앞에 낡은 나룻배가 있다. 배 위의 사내가 칼을 무릎에 얹은 채 뱃삯으로 은화 4닢을 내라고 한다.",
+     "choices": [
+      {
+       "id": "pay",
+       "label": "은화 4닢을 낸다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 4
+        }
+       ],
+       "cost": {
+        "silver": 4
+       },
+       "outcome": {
+        "text": "사내가 히죽 웃으며 노를 저어 건너 주었다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "swim",
+       "label": "배를 무시하고 헤엄쳐 건넌다",
+       "check": {
+        "stat": "con",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "차가운 물을 헤치고 건넜다. 사내가 뒤에서 혀를 찼다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "중간에 힘이 빠졌다. 겨우 돌아 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "칼을 뽑는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "건너지 않는다",
+       "outcome": {
+        "text": "물길을 등지고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 배에서 뛰어내려 칼을 겨눈다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적이 물에 뛰어들어 달아났다. 남은 나룻배로 물길을 건넜다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_fisher_01": {
+   "id": "marsh_fisher_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪의 어부",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "장대 끝에 그물을 단 사내가 물길에서 고기를 건지고 있다. 늪에서 나고 자랐다고 한다.",
+     "choices": [
+      {
+       "id": "buy",
+       "label": "은화 2닢에 고기를 산다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 2
+        }
+       ],
+       "cost": {
+        "silver": 2
+       },
+       "outcome": {
+        "text": "말린 늪고기 한 꾸러미를 받았다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "help",
+       "label": "그물 걷는 일을 돕는다",
+       "check": {
+        "stat": "str",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "그물이 묵직했다. 어부가 잡은 것을 나눠 주었다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "그물을 놓쳐 반은 빠져나갔다. 어부가 그래도 몇 마리를 건넸다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "text": "어부가 장대를 들어 답했다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_foul_water_01": {
+   "id": "marsh_foul_water_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "목마른 한낮",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "가져온 물이 떨어졌다. 고인 물은 탁하고 비릿한 냄새가 난다.",
+     "choices": [
+      {
+       "id": "drink",
+       "label": "그래도 떠 마신다",
+       "check": {
+        "stat": "con",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "비릿했지만 탈은 없었다. 목을 축이니 기운이 난다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "얼마 지나지 않아 배가 뒤틀렸다. 한참을 주저앉아 있었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "boil",
+       "label": "불을 피워 끓여 마신다",
+       "outcome": {
+        "text": "마른 갈대를 모아 물을 끓였다. 시간은 걸렸지만 속이 편하다.",
+        "effects": [
+         {
+          "type": "hp",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "endure",
+       "label": "참고 걷는다",
+       "outcome": {
+        "text": "마른 입술을 깨물며 걸었다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_frogs_01": {
+   "id": "marsh_frogs_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "살진 개구리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물가 풀숲에서 살진 개구리들이 우렁차게 운다. 구워 먹으면 제법 든든하다.",
+     "choices": [
+      {
+       "id": "catch",
+       "label": "손으로 잡는다",
+       "check": {
+        "stat": "agi",
+        "dc": 11,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "한 자루를 가득 채웠다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "몇 마리만 잡았다. 옷이 흠뻑 젖었다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "개구리는 다 놓치고 물만 뒤집어썼다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "개구리 울음을 뒤로하고 걸었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_goblin_ambush_01": {
+   "id": "marsh_goblin_ambush_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "안개 속의 그림자",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "안개가 짙게 깔렸다. 바람도 없는데 앞쪽 갈대가 흔들리고, 낮게 속삭이는 소리가 들린다.",
+     "choices": [
+      {
+       "id": "strike",
+       "label": "먼저 덮친다",
+       "outcome": {
+        "next": "fight_first"
+       }
+      },
+      {
+       "id": "hide",
+       "label": "갈대 속에 엎드려 지나가기를 기다린다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "늪 고블린 하나가 코앞을 지나갔다. 놈이 간 쪽은 보리울로 흐르는 개울 방향이었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "갈대가 바스락거렸다. 녹슨 창끝이 이쪽을 향한다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "소리 나는 반대쪽으로 물러난다",
+       "outcome": {
+        "text": "발소리를 죽이고 왔던 길로 물러났다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight_first": {
+     "text": "갈대를 헤치고 뛰어들었다. 늪 고블린이 놀라 창을 치켜든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "늪 고블린이 먼저 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늪 고블린이 진흙탕에 쓰러졌다. 허리춤에 찬 주머니를 챙겼다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_goblin_column_01": {
+   "id": "marsh_goblin_column_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪을 건너는 고블린들",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 15
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "늪 고블린 여럿이 짐을 지고 줄지어 물길을 건넌다. 맨 끝의 둘이 처져서 뒤를 살핀다.",
+     "choices": [
+      {
+       "id": "hide",
+       "label": "물풀 속에 숨어 지켜본다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "행렬이 다 지나갔다. 짐에는 창과 횃불이 가득했다. 놈들이 싸움을 준비하고 있다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "처진 둘이 이쪽을 손가락질했다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "처진 둘을 덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "멀리 돌아서 피한다",
+       "outcome": {
+        "text": "행렬과 반대쪽으로 크게 돌았다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늪 고블린 둘이 짐을 내던지고 창을 겨눈다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin",
+         "marsh_goblin"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "둘이 쓰러졌다. 놈들이 지고 있던 짐에서 말린 생선과 은화를 챙겼다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 2
+      },
+      {
+       "type": "silver",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_goblin_signal_01": {
+   "id": "marsh_goblin_signal_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "갈대 섬의 봉화대",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "늪 한가운데 갈대 섬에 고블린들이 장작을 높이 쌓아 두었다. 옆 말뚝에 가죽 조각이 매달려 있고, 섬에는 늪 고블린 하나가 졸고 있다.",
+     "choices": [
+      {
+       "id": "read",
+       "label": "가까이 가서 가죽 조각을 읽는다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "가죽에는 숲길과 강줄기, 보리울을 둘러싼 표시가 그려져 있었다. 놈들이 어디로 몰려올지 알았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑의 갈대가 부러졌다. 졸던 고블린이 눈을 떴다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "attack",
+       "label": "졸고 있는 고블린을 덮친다",
+       "outcome": {
+        "next": "fight_first"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "멀리서 지켜보다 물러난다",
+       "outcome": {
+        "text": "봉화대 자리만 눈에 담고 물러났다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늪 고블린이 뿔피리를 찾으며 창을 집었다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_first": {
+     "text": "갈대를 헤치고 뛰어들었다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린이 쓰러졌다. 말뚝의 가죽 조각을 떼어 살펴보니 보리울로 오는 길이 그려져 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_goblin_snares_01": {
+   "id": "marsh_goblin_snares_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "갈대 속의 올가미",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갈대 사이에 덩굴로 엮은 올가미가 숨어 있다. 하나가 아니다. 짐승을 잡으려는 것치고는 너무 많다.",
+     "choices": [
+      {
+       "id": "disarm",
+       "label": "올가미를 하나씩 풀며 지나간다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "올가미를 풀어 보니 고블린의 매듭이다. 놈들이 이 길을 자주 오간다는 뜻이다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "숨은 올가미 하나가 발목을 낚아챘다. 한참 버둥대다 풀었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "detour",
+       "label": "갈대밭을 크게 돌아간다",
+       "outcome": {
+        "text": "멀리 돌아서 올가미를 피했다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_herb_crone_01": {
+   "id": "marsh_herb_crone_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪의 약초꾼",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갈대 지붕을 얹은 오두막 앞에서 허리 굽은 노파가 풀을 말리고 있다. 마그다 할멈과 오래 알고 지냈다고 한다.",
+     "choices": [
+      {
+       "id": "carry",
+       "label": "약초 바구니를 오두막까지 날라 준다",
+       "outcome": {
+        "text": "노파가 고맙다며 말린 늪 약초 한 포기를 쥐여 주었다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "rare_herb",
+          "qty": 1
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "ask",
+       "label": "늪에서 조심할 곳을 묻는다",
+       "check": {
+        "stat": "cha",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "노파가 지팡이로 땅에 늪의 길을 그려 주었다. 어디가 꺼지는지 알 것 같다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "노파는 귀가 어두운지 엉뚱한 이야기만 늘어놓았다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "food",
+       "label": "가져온 먹을거리를 나눈다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "노파가 답례로 손수 만든 상처 연고를 건넸다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "salve",
+          "qty": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 지나간다",
+       "outcome": {
+        "text": "노파가 고개를 끄덕이고 다시 풀을 뒤집었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_leech_pool_01": {
+   "id": "marsh_leech_pool_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "거머리 웅덩이",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "허리까지 차는 검은 웅덩이를 건너야 저편으로 갈 수 있다. 물속에서 무언가 굵은 것이 꿈틀거린다.",
+     "choices": [
+      {
+       "id": "wade",
+       "label": "무기를 들고 그대로 건넌다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "detour",
+       "label": "웅덩이를 빙 돌아갈 길을 찾는다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "마른 땅을 골라 디디며 웅덩이를 돌아갔다. 시간이 꽤 걸렸다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌아가던 길도 진창이었다. 발이 빠진 사이 물속의 것이 다가왔다.",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "건너지 않고 돌아선다",
+       "outcome": {
+        "text": "오늘은 이 웅덩이를 건너지 않기로 했다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "팔뚝만 한 거머리가 물 밖으로 몸을 일으켰다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "giant_leech"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "거머리를 떼어 내고 웅덩이를 건넜다. 물가에서 늪 약초 한 포기를 뜯었다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "rare_herb",
+       "qty": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_leech_swarm_01": {
+   "id": "marsh_leech_swarm_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "사슴 사체 옆의 거머리",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물가에 쓰러진 사슴 사체 위로 거머리 두 마리가 꿈틀거린다. 사체 옆에는 누군가 떨어뜨린 가죽 가방이 있다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "막대로 거머리를 떼어 낸다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "grab",
+       "label": "거머리가 사체에 붙어 있는 틈에 가방만 낚아챈다",
+       "check": {
+        "stat": "agi",
+        "dc": 13,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "가방을 낚아채 뒤로 물러났다. 안에 은화 몇 닢이 들어 있었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발이 미끄러져 사체 쪽으로 넘어졌다. 거머리들이 고개를 돌린다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "가까이 가지 않는다",
+       "outcome": {
+        "text": "비린내를 피해 멀찍이 돌아갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "거머리 둘이 사체에서 떨어져 나와 다가온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "giant_leech",
+         "giant_leech"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "거머리를 모두 떼어 냈다. 가죽 가방에서 은화와 붕대를 찾았다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 3
+      },
+      {
+       "type": "addItem",
+       "itemId": "bandage",
+       "qty": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_lost_01": {
+   "id": "marsh_lost_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "짙어지는 안개",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "안개가 순식간에 짙어졌다. 왔던 길도, 가려던 길도 보이지 않는다.",
+     "choices": [
+      {
+       "id": "landmark",
+       "label": "말라 죽은 나무를 표지 삼아 길을 찾는다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "죽은 나무 세 그루를 차례로 짚어 가며 길을 되찾았다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "같은 자리를 몇 번이나 맴돌았다. 해가 기울어서야 길을 찾았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "wait",
+       "label": "안개가 걷힐 때까지 기다린다",
+       "outcome": {
+        "text": "마른 둔덕에 앉아 한참을 기다렸다. 안개가 걷히고서야 움직였다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_lost_peddler_01": {
+   "id": "marsh_lost_peddler_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "길 잃은 행상",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "등짐을 진 행상이 진흙에 발이 빠진 채 쩔쩔매고 있다. 로웬으로 가는 지름길을 찾다가 길을 잃었다고 한다.",
+     "choices": [
+      {
+       "id": "guide",
+       "label": "늪 밖까지 길을 안내한다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "둘이 함께 늪을 빠져나왔다. 행상이 은화 세 닢을 내밀었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "둘이 한참 헤매다 겨우 빠져나왔다. 행상이 미안한 얼굴로 은화 한 닢을 건넸다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "buy",
+       "label": "등짐에서 붕대를 산다",
+       "cost": {
+        "silver": 4
+       },
+       "outcome": {
+        "text": "깨끗한 붕대 두 묶음을 샀다. 행상이 길을 물어보고 떠났다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "bandage",
+          "qty": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길이 바쁘다",
+       "outcome": {
+        "text": "행상의 한숨을 뒤로하고 걸음을 옮겼다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_mosquitoes_01": {
+   "id": "marsh_mosquitoes_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "모기떼",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "고인 물 위로 모기떼가 구름처럼 피어오른다. 귓가가 윙윙거린다.",
+     "choices": [
+      {
+       "id": "endure",
+       "label": "손을 휘저으며 버티고 지나간다",
+       "check": {
+        "stat": "con",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "팔다리가 부어올랐지만 견딜 만하다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "온몸이 가렵고 열이 오른다. 걸음이 무거워졌다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "mud",
+       "label": "진흙을 얼굴과 팔에 바른다",
+       "outcome": {
+        "text": "진흙 냄새가 고약했지만 모기는 덜 붙었다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_quagmire_01": {
+   "id": "marsh_quagmire_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "물러진 땅",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "앞길이 온통 물러진 진흙이다. 겉은 단단해 보여도 밟으면 꺼질 것 같다.",
+     "choices": [
+      {
+       "id": "step",
+       "label": "풀뿌리가 엉킨 곳만 골라 디딘다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "한 걸음씩 조심해서 건넜다.",
+         "next": "END"
+        },
+        "partial": {
+         "text": "한쪽 발이 빠졌지만 금방 빼냈다. 장화 속이 진흙투성이다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "허벅지까지 빠졌다. 버둥거리다 겨우 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "pole",
+       "label": "긴 장대를 걸치고 건넌다",
+       "check": {
+        "stat": "str",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "장대를 다리 삼아 수렁을 건넜다. 팔이 뻐근하다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "장대가 부러졌다. 결국 진흙을 헤치고 건넜다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_raft_tracks_01": {
+   "id": "marsh_raft_tracks_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "진흙에 남은 뗏목 자국",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 6
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물가 진흙에 뗏목을 끌어 올린 자국이 길게 나 있다. 옆에는 맨발 발자국이 어지럽다. 사람 발보다 작다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "자국을 자세히 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "뗏목은 여러 번 오갔다. 짐을 잔뜩 싣고 강 하류, 보리울 쪽으로 내려간 자국이다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발자국이 너무 어지러워 알아보기 어렵다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "follow",
+       "label": "발자국을 따라가 본다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "자리를 뜬다",
+       "outcome": {
+        "text": "발자국을 밟지 않게 비켜 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "발자국 끝에서 늪 고블린 하나가 뗏목을 손보다 고개를 들었다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늪 고블린이 쓰러졌다. 뗏목에 실린 짐에는 보리울 쪽 마을의 곡식 자루가 섞여 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_rare_herb_01": {
+   "id": "marsh_rare_herb_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪 약초 군락",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물가 바위틈에 잎이 은빛으로 빛나는 풀이 무리 지어 자란다. 마그다 할멈이 비싸게 쳐주는 늪 약초다. 옆에는 잎이 닮은 독풀도 섞여 있다.",
+     "choices": [
+      {
+       "id": "careful",
+       "label": "잎맥을 하나하나 살피며 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "독풀을 골라내고 늪 약초만 두 포기를 캤다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "헷갈리는 것은 버리고 한 포기만 챙겼다. 시간이 꽤 걸렸다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "독풀을 맨손으로 쥐었다. 손바닥이 벌겋게 부어올랐다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "quick",
+       "label": "눈에 띄는 것만 서둘러 뜯는다",
+       "outcome": {
+        "text": "한 포기를 뜯어 품에 넣었다. 허리를 펴니 다리가 저렸다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "rare_herb",
+          "qty": 1
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "독풀이 섞인 곳은 건드리지 않기로 했다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_reed_boat_01": {
+   "id": "marsh_reed_boat_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "버려진 갈대배",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물길 가에 갈대를 엮어 만든 작은 배가 매여 있다. 물길을 따라가면 늪 깊은 곳의 섬에 닿을 것 같다.",
+     "choices": [
+      {
+       "id": "row",
+       "label": "배를 타고 섬으로 간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "섬에는 사람 손이 닿지 않은 늪 약초와, 누군가 숨겨 둔 은화 단지가 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          },
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "배가 뒤집혔다. 물을 잔뜩 먹고 겨우 기슭으로 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "물길이 깊어 보여 그만둔다",
+       "outcome": {
+        "text": "배를 그대로 두고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_rotten_bridge_01": {
+   "id": "marsh_rotten_bridge_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "썩은 나무다리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물길 위에 통나무 다리가 걸려 있다. 가운데가 내려앉았고, 밟으면 물컹하다.",
+     "choices": [
+      {
+       "id": "cross",
+       "label": "가장자리를 디디며 건넌다",
+       "check": {
+        "stat": "agi",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "다리가 삐걱거렸지만 무사히 건넜다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "통나무가 부러졌다. 물에 빠져 정강이를 찧었다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "wade",
+       "label": "옆으로 물을 건넌다",
+       "outcome": {
+        "text": "허리까지 젖으며 건넜다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_shrine_01": {
+   "id": "marsh_shrine_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪가의 돌 사당",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "이끼 낀 돌 사당 앞에 오래된 동전이 수북하다. 늪을 건너는 사람들이 무사하기를 빌며 두고 간 것이다.",
+     "choices": [
+      {
+       "id": "take",
+       "label": "동전을 집어 간다",
+       "outcome": {
+        "text": "동전을 주머니에 쓸어 담았다. 등 뒤가 자꾸 서늘했다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 3
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "offer",
+       "label": "은화 1닢을 올리고 빈다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 1
+        }
+       ],
+       "cost": {
+        "silver": 1
+       },
+       "outcome": {
+        "text": "두 손을 모으고 잠시 서 있었다. 마음이 한결 가벼워졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "사당에 고개만 숙이고 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_snake_01": {
+   "id": "marsh_snake_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "갈대 사이의 늪 뱀",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "발밑에서 쉿 하는 소리가 났다. 갈색 뱀이 고개를 쳐들고 혀를 날름거린다.",
+     "choices": [
+      {
+       "id": "freeze",
+       "label": "꼼짝 않고 숨을 죽인다",
+       "check": {
+        "stat": "con",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "한참을 버티자 뱀이 고개를 내리고 물속으로 미끄러져 갔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "다리가 떨렸다. 뱀이 몸을 활처럼 휘었다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "막대로 머리를 내리친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "back",
+       "label": "천천히 뒷걸음질 친다",
+       "check": {
+        "stat": "agi",
+        "dc": 10,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "뱀이 닿지 않는 곳까지 물러났다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "뒷걸음질 치다 진흙에 미끄러졌다. 뱀이 달려든다!",
+         "next": "fight_ambushed"
+        }
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "뱀이 몸을 곧추세운다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_snake"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "뱀이 먼저 몸을 날렸다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_snake"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "뱀이 축 늘어졌다. 뱀이 웅크리고 있던 둥지에 물새 알 두 개가 남아 있었다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_stranded_wolf_01": {
+   "id": "marsh_stranded_wolf_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "갈대 섬의 늑대",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "불어난 물에 갈대 섬이 고립됐다. 섬 위에서 굶주린 늑대가 이쪽을 노려본다. 건너야 할 징검돌이 그 섬을 지난다.",
+     "choices": [
+      {
+       "id": "food",
+       "label": "고기를 던져 주고 지나간다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "늑대가 고기를 물고 섬 반대쪽으로 물러났다. 그 틈에 징검돌을 건넜다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기를 들고 건넌다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다른 길을 찾는다",
+       "outcome": {
+        "text": "징검돌을 포기하고 돌아갔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "굶주린 늑대가 징검돌 위로 뛰어든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늑대가 물속으로 굴러떨어졌다. 섬을 지나 길을 이어 갔다.",
+     "onEnter": [
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_sunken_cart_01": {
+   "id": "marsh_sunken_cart_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "가라앉은 상인 수레",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "진흙 속에 상인의 수레가 반쯤 잠겨 있다. 짐칸에 쇠를 덧댄 궤짝이 묶여 있다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "진흙을 파내고 궤짝을 끌어낸다",
+       "check": {
+        "stat": "str",
+        "dc": 13,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "궤짝을 뜯자 은화와 새 장화 한 켤레가 나왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 6
+          },
+          {
+           "type": "addItem",
+           "itemId": "leather_boots",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "궤짝 뚜껑만 겨우 뜯었다. 손에 잡히는 은화만 챙겼다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑이 꺼지며 허리까지 빠졌다. 겨우 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "search",
+       "label": "수레 앞쪽 마부석만 뒤진다",
+       "outcome": {
+        "text": "마부석 밑에서 동전 몇 닢이 든 주머니를 찾았다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "진흙이 깊어 보여 그만둔다",
+       "outcome": {
+        "text": "수레를 두고 발길을 돌렸다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_supply_guard_01": {
+   "id": "marsh_supply_guard_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "말뚝 위의 창고",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물 위에 박은 말뚝 위로 허름한 창고가 서 있다. 늪 고블린 둘이 창고 앞에서 꾸러미를 뗏목에 싣고 있다.",
+     "choices": [
+      {
+       "id": "attack",
+       "label": "둘이 짐을 싣는 틈에 덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "burn",
+       "label": "뒤로 돌아가 창고에 불을 놓는다",
+       "check": {
+        "stat": "agi",
+        "dc": 14,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "마른 갈대에 불이 옮겨붙자 창고가 금세 타올랐다. 고블린들이 물을 퍼 나르느라 이쪽을 보지 못했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "부싯돌 소리에 고블린들이 돌아봤다!",
+         "next": "fight_ambushed"
+        }
+       }
+      },
+      {
+       "id": "watch",
+       "label": "숨어서 뗏목이 어디로 가는지 본다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "뗏목은 강줄기를 따라 보리울 쪽으로 내려갔다. 놈들이 어느 길로 물자를 나르는지 알았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "안개 때문에 뗏목을 놓쳤다. 헛걸음만 했다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "text": "창고를 뒤로하고 조용히 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늪 고블린 둘이 꾸러미를 내던지고 창을 집어 든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin",
+         "marsh_goblin"
+        ],
+        "initiative": "player",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "fight_ambushed": {
+     "text": "늪 고블린 둘이 소리를 지르며 달려든다!",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "marsh_goblin",
+         "marsh_goblin"
+        ],
+        "initiative": "enemy",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "창고에 쌓인 말린 생선을 챙기고 나머지는 불태웠다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 2
+      },
+      {
+       "type": "reputation",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "marsh_white_lily_01": {
+   "id": "marsh_white_lily_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "늪 한가운데의 흰 수련",
+   "conditions": [],
+   "weight": 3,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "늪 가장 깊은 곳에 흰 수련이 피어 있다. 마그다 할멈이 평생 몇 번 못 봤다는 꽃이다. 꽃 둘레의 물은 검고 깊다.",
+     "choices": [
+      {
+       "id": "reach",
+       "label": "물에 들어가 뿌리째 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 14,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "뿌리를 상하지 않게 캐냈다. 늪 약초 세 포기 값은 될 것이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "꽃만 꺾었다. 그래도 귀한 것이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발밑이 꺼지며 깊은 물에 빠졌다. 정신없이 허우적거리다 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "멀리서 보기만 한다",
+       "outcome": {
+        "text": "한참을 바라보다 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "marsh_will_o_wisp_01": {
+   "id": "marsh_will_o_wisp_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "도깨비불",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "해 질 녘 갈대 너머에 푸른 불빛이 떠다닌다. 다가가면 멀어지고, 멈추면 기다리는 것 같다.",
+     "choices": [
+      {
+       "id": "follow",
+       "label": "불빛을 따라간다",
+       "check": {
+        "stat": "per",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "불빛은 썩은 나무에서 새어 나온 늪 가스였다. 그 둘레에 늪 약초가 무성했다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "불빛을 놓쳤지만 돌아오는 길에 늪 약초 한 포기를 찾았다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "불빛만 쫓다 깊은 물에 빠질 뻔했다. 한참 헤매고 돌아왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "ignore",
+       "label": "눈을 돌리고 갈 길을 간다",
+       "outcome": {
+        "text": "불빛은 어느새 사라졌다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_bandit_pair_01": {
+   "id": "mine_bandit_pair_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "깊은 갱도의 도적들",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "깊은 갱도에서 도적 둘이 은 부스러기를 자루에 담고 있다. 하나가 곡괭이를 내려놓고 칼을 집었다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "둘을 상대한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "pay",
+       "label": "은화 5닢을 내고 지나간다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 5
+        }
+       ],
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "도적들이 은화를 세어 보더니 손짓으로 길을 내주었다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "back",
+       "label": "어둠 속으로 물러난다",
+       "outcome": {
+        "text": "등잔불이 닿지 않는 곳까지 물러나 다른 길로 나왔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "도적 둘이 좁은 갱도 양쪽을 막아선다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "tunnel_bandit",
+         "tunnel_bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적들이 자루를 버리고 달아났다. 자루에서 은 부스러기를 챙겼다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_bandit_stash_01": {
+   "id": "mine_bandit_stash_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "도적의 은닉처",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "막다른 갱도 끝에 거적으로 덮은 짐이 있다. 도적들이 숨겨 둔 것 같다. 바닥에 가는 줄이 팽팽하게 매여 있다.",
+     "choices": [
+      {
+       "id": "careful",
+       "label": "줄을 살펴 덫을 풀고 짐을 연다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "줄 끝에 매단 돌무더기를 피했다. 짐 속에서 은화와 붕대를 챙겼다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          },
+          {
+           "type": "addItem",
+           "itemId": "bandage",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "줄을 건드렸다. 돌이 쏟아져 어깨를 맞았다. 짐은 건졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "silver",
+           "delta": 5
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "도적이 돌아오기 전에 떠난다",
+       "outcome": {
+        "text": "짐을 건드리지 않고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_bats_01": {
+   "id": "mine_bats_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "천장의 박쥐 떼",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "횃불을 들자 천장 전체가 꿈틀거렸다. 박쥐 수백 마리가 거꾸로 매달려 있다.",
+     "choices": [
+      {
+       "id": "crouch",
+       "label": "횃불을 가리고 바닥에 엎드린다",
+       "check": {
+        "stat": "con",
+        "dc": 11,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "숨을 죽이고 버티자 박쥐 떼가 다시 조용해졌다. 살금살금 지나갔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "기침이 터졌다. 박쥐 떼가 한꺼번에 날아올랐다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "횃불을 휘둘러 쫓는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "back",
+       "label": "왔던 갱도로 물러난다",
+       "outcome": {
+        "text": "박쥐가 깨기 전에 발소리를 죽이고 물러났다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "박쥐 떼가 날개를 퍼덕이며 쏟아져 내려온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bat_swarm"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "박쥐 떼가 흩어졌다. 박쥐 똥 무더기 밑에서 반짝이는 은 부스러기를 주웠다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_cart_rail_01": {
+   "id": "mine_cart_rail_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "비탈진 광차 레일",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "녹슨 광차가 비탈진 레일 꼭대기에 멈춰 있다. 레일은 어둠 속 깊은 갱도로 이어진다.",
+     "choices": [
+      {
+       "id": "ride",
+       "label": "광차에 올라타 내려간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "광차가 덜컹거리며 깊은 갱도에 멈췄다. 아무도 손대지 않은 광석 더미가 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "광차가 모퉁이에서 뒤집혔다. 바닥에 내동댕이쳐졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "walk",
+       "label": "레일을 따라 걸어 내려간다",
+       "outcome": {
+        "text": "한참을 걸어 내려갔지만 쓸 만한 것은 이미 다 털려 있었다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그만둔다",
+       "outcome": {
+        "text": "광차를 그대로 두고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_deserter_01": {
+   "id": "mine_deserter_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "숨어 지내는 병사",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "옆 갱도에 모닥불 흔적이 있다. 해진 군복을 입은 사내가 칼자루에 손을 얹고 노려본다. 로웬 수비대에서 도망쳤다고 한다.",
+     "choices": [
+      {
+       "id": "trade",
+       "label": "은화 5닢에 가죽 모자를 산다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 5
+        }
+       ],
+       "cost": {
+        "silver": 5
+       },
+       "outcome": {
+        "text": "사내가 군에서 받은 가죽 모자를 벗어 내주었다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "leather_cap",
+          "qty": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "군 이야기를 묻는다",
+       "check": {
+        "stat": "cha",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내가 방패로 막는 요령을 몇 가지 보여 주었다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "guard",
+           "amount": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "사내가 입을 다물고 등을 돌렸다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "수상하다. 붙잡으려 한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "모른 척 지나간다",
+       "outcome": {
+        "text": "사내의 시선을 등 뒤로 느끼며 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 칼을 뽑았다. 손놀림이 제법이다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "사내가 칼을 떨어뜨리고 갱도 깊이 달아났다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_echo_01": {
+   "id": "mine_echo_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갈림길의 메아리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도가 다섯 갈래로 갈라진다. 소리를 내면 사방에서 메아리가 돌아와 어디서 왔는지 헷갈린다.",
+     "choices": [
+      {
+       "id": "mark",
+       "label": "벽에 표시를 하며 길을 고른다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "표시를 따라 헤매지 않고 빠져나왔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "같은 표시를 세 번이나 다시 만났다. 한참 만에 길을 찾았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "wind",
+       "label": "바람이 들어오는 쪽으로 간다",
+       "outcome": {
+        "text": "희미한 바람을 따라 입구 쪽으로 나왔다. 오래 걸렸다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_fallback": {
+   "id": "mine_fallback",
+   "category": "explore",
+   "region": "mine",
+   "title": "조용한 갱도",
+   "conditions": [],
+   "weight": 0,
+   "repeat": {
+    "mode": "always"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물방울 떨어지는 소리만 울린다. 별다른 일 없이 갱도를 둘러보았다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_flooded_shaft_01": {
+   "id": "mine_flooded_shaft_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "물에 잠긴 갱도",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "아래층 갱도가 지하수에 잠겼다. 물 너머 벽감에 광부들의 돈 상자가 보인다.",
+     "choices": [
+      {
+       "id": "swim",
+       "label": "숨을 참고 헤엄쳐 간다",
+       "check": {
+        "stat": "con",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "돈 상자를 안고 돌아왔다. 젖은 은화가 묵직하다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "상자는 무거워 은화만 한 줌 쥐고 돌아왔다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "차가운 물에 다리가 굳었다. 겨우 되돌아 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "물이 차가워 보여 그만둔다",
+       "outcome": {
+        "text": "물가에서 발을 돌렸다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_foreman_hut_01": {
+   "id": "mine_foreman_hut_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "감독관의 오두막",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 입구 옆에 감독관이 쓰던 판잣집이 있다. 책상 서랍은 이미 다 털렸다.",
+     "choices": [
+      {
+       "id": "search",
+       "label": "숨겨 둔 곳이 없는지 샅샅이 뒤진다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "마룻장 하나가 들뜬 것을 찾았다. 밑에 은화 주머니가 있었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "먼지만 잔뜩 뒤집어썼다. 구석에서 동전 하나를 주웠다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "rest",
+       "label": "의자에 앉아 잠시 쉰다",
+       "outcome": {
+        "text": "삐걱거리는 의자에서 숨을 돌렸다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_gas_01": {
+   "id": "mine_gas_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "달큼한 냄새",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 안쪽에서 달큼하고 매캐한 냄새가 흘러나온다. 횃불 끝이 파랗게 흔들린다.",
+     "choices": [
+      {
+       "id": "sniff",
+       "label": "냄새가 어디서 오는지 살핀다",
+       "check": {
+        "stat": "per",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "가스가 고인 갱도를 알아보고 옆길로 돌았다. 옆길 바닥에서 은 부스러기를 주웠다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "눈앞이 핑 돌았다. 벽을 짚고 겨우 빠져나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "dash",
+       "label": "숨을 참고 단숨에 지나간다",
+       "check": {
+        "stat": "con",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "가스가 고인 갱도를 지나자 아무도 손대지 않은 광석 더미가 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "중간에 숨이 막혀 주저앉았다. 기어서 되돌아 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "횃불을 끄고 돌아선다",
+       "outcome": {
+        "text": "불이 붙기 전에 갱도를 빠져나왔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_geode_01": {
+   "id": "mine_geode_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "반짝이는 굴",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "좁은 틈을 비집고 들어가자 벽 전체가 횃불 빛에 반짝인다. 수정 사이사이에 은이 섞여 있다.",
+     "choices": [
+      {
+       "id": "pick",
+       "label": "은이 섞인 조각만 골라 뗀다",
+       "check": {
+        "stat": "per",
+        "skill": "smithing",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "은이 많이 섞인 조각만 골라 챙겼다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "날카로운 수정에 손을 베었다. 그래도 한 조각은 건졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          },
+          {
+           "type": "hp",
+           "delta": -1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "틈이 좁아 그냥 나온다",
+       "outcome": {
+        "text": "반짝임을 뒤로하고 틈을 빠져나왔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_goblin_scout_01": {
+   "id": "mine_goblin_scout_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갱도를 엿보는 고블린",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 모퉁이에서 고블린 하나가 숯으로 벽에 무언가를 그리고 있다. 길을 표시하는 것 같다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      }
+     ],
+     "choices": [
+      {
+       "id": "fight",
+       "label": "덮친다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "watch",
+       "label": "숨어서 무엇을 그리는지 본다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "고블린이 떠난 뒤 벽을 보니 갱도에서 산 너머로 빠지는 길이 표시돼 있었다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "고블린이 고개를 돌렸다. 눈이 마주쳤다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "물러난다",
+       "outcome": {
+        "text": "고블린이 눈치채기 전에 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 정찰병이 단검을 뽑는다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_scout"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "정찰병이 쓰러졌다. 벽의 숯 그림은 산 너머로 이어지는 길을 가리키고 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_goblin_scrawl_01": {
+   "id": "mine_goblin_scrawl_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갱도 깊은 곳의 그림",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 18
+    }
+   ],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "가장 깊은 갱도 벽에 피와 숯으로 그린 그림이 있다. 작은 사람 모양이 줄지어 있고, 그 끝에 지붕이 여럿 그려져 있다.",
+     "choices": [
+      {
+       "id": "read",
+       "label": "그림을 하나하나 헤아린다",
+       "check": {
+        "stat": "per",
+        "dc": 13,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "줄지은 고블린은 서른이 넘고, 지붕 옆에는 보름달이 그려져 있다. 놈들이 언제, 어디로 올지 알았다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_plan_known"
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "무엇을 뜻하는지 알 수 없다. 오싹한 기분만 남았다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "서둘러 빠져나온다",
+       "outcome": {
+        "text": "그림에서 눈을 떼고 갱도를 빠져나왔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_goblin_warrior_01": {
+   "id": "mine_goblin_warrior_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갱도를 지키는 고블린 전사",
+   "conditions": [
+    {
+     "type": "dayRange",
+     "min": 20
+    }
+   ],
+   "weight": 3,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "넓은 채굴장 한가운데 고블린 전사가 서 있다. 뒤쪽에 고블린들이 캐낸 은이 쌓여 있다. 약탈대의 군자금이다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "정면으로 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "sneak",
+       "label": "전사가 등을 돌린 틈에 은을 훔친다",
+       "check": {
+        "stat": "agi",
+        "dc": 14,
+        "tags": [
+         "goblin"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "은 부스러기를 한 움큼 쥐고 빠져나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌멩이가 굴렀다. 전사가 도끼를 들고 돌아선다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "들키기 전에 물러난다",
+       "outcome": {
+        "text": "채굴장을 등지고 조용히 물러났다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "고블린 전사가 도끼를 치켜든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "goblin_warrior"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "고블린 전사가 쓰러졌다. 쌓인 은을 자루에 담고, 남은 것은 갱도 깊이 던져 넣었다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 3
+      },
+      {
+       "type": "reputation",
+       "delta": 2
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_ladder_01": {
+   "id": "mine_ladder_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "아래층으로 가는 사다리",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "수직 갱도에 나무 사다리가 걸려 있다. 아래층에서 희미하게 빛나는 것이 보이지만 사다리 가로대 몇 개가 썩어 있다.",
+     "choices": [
+      {
+       "id": "climb",
+       "label": "썩은 가로대를 건너뛰며 내려간다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "아래층 바닥에 은 부스러기와 광부가 떨어뜨린 은화가 흩어져 있었다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          },
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "가로대가 부러졌다. 바닥까지 미끄러져 떨어졌다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -4
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "내려가지 않는다",
+       "outcome": {
+        "text": "사다리를 흔들어 보고 그만두었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_lunchbox_01": {
+   "id": "mine_lunchbox_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "광부의 도시락 상자",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 쉼터에 양철 상자가 놓여 있다. 녹슨 자물쇠가 걸려 있지만 안에서 마른 것이 굴러가는 소리가 난다.",
+     "choices": [
+      {
+       "id": "break",
+       "label": "돌로 자물쇠를 부순다",
+       "check": {
+        "stat": "str",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "자물쇠가 떨어졌다. 기름종이에 싼 육포와 말린 콩이 그대로 있다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "자물쇠 대신 상자가 찌그러졌다. 틈으로 육포 한 줌만 꺼냈다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "남의 것이니 두고 간다",
+       "outcome": {
+        "text": "상자를 제자리에 두었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_miners_graves_01": {
+   "id": "mine_miners_graves_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갱도 입구의 무덤들",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 입구 비탈에 돌무덤이 줄지어 있다. 사고로 죽은 광부들이다. 무덤마다 동전이 한두 닢 놓여 있다.",
+     "choices": [
+      {
+       "id": "take",
+       "label": "동전을 거둔다",
+       "outcome": {
+        "text": "동전을 주머니에 넣었다. 돌아서는데 등 뒤가 서늘했다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pray",
+       "label": "무덤 앞에 잠시 앉아 쉰다",
+       "outcome": {
+        "text": "바람 소리를 들으며 숨을 골랐다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_miners_map_01": {
+   "id": "mine_miners_map_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "광부의 지도",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 갱도 벽에 숯으로 그린 지도가 남아 있다. 은광의 갱도가 산 아래를 지나 감시탑 쪽으로 이어진다.",
+     "choices": [
+      {
+       "id": "study",
+       "label": "지도를 꼼꼼히 익힌다",
+       "check": {
+        "stat": "per",
+        "skill": "tracking",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "갱도와 산길이 어떻게 이어지는지 머릿속에 그렸다. 숲과 감시탑 길도 한결 눈에 익을 것 같다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "숯이 번져 절반은 알아볼 수 없다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "tracking",
+           "amount": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "text": "지도를 흘끗 보고 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_old_miner_01": {
+   "id": "mine_old_miner_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "옛 광부 영감",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 입구 바위에 노인이 앉아 담뱃대를 물고 있다. 이 은광이 문을 닫기 전까지 삼십 년을 일했다고 한다.",
+     "choices": [
+      {
+       "id": "listen",
+       "label": "옛날이야기를 듣는다",
+       "outcome": {
+        "text": "노인이 어느 갱도가 무너지기 쉽고 어디에 은이 남았는지 일러 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "smithing",
+          "amount": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "food",
+       "label": "먹을거리를 나눈다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "노인이 답례로 품에서 은 부스러기 한 조각을 꺼냈다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 1
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "인사만 하고 들어간다",
+       "outcome": {
+        "text": "노인이 조심하라며 손을 흔들었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_old_pickaxe_01": {
+   "id": "mine_old_pickaxe_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "바위에 박힌 곡괭이",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 바위틈에 곡괭이 하나가 깊이 박혀 있다. 자루는 낡았지만 쇠날은 아직 멀쩡하다.",
+     "choices": [
+      {
+       "id": "pull",
+       "label": "두 손으로 잡아 뽑는다",
+       "check": {
+        "stat": "str",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "힘껏 당기자 곡괭이가 쑥 빠졌다. 묵직하다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "old_pickaxe",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "손바닥이 쓸리기만 하고 곡괭이는 꿈쩍도 하지 않았다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 둔다",
+       "outcome": {
+        "text": "곡괭이를 바위틈에 남겨 두었다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_rats_01": {
+   "id": "mine_rats_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "광부 쉼터의 쥐들",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "광부들이 쉬던 자리에 큰 쥐 두 마리가 썩은 자루를 갉고 있다. 쥐들이 이빨을 드러내며 찍찍거린다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "막대로 쫓는다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "food",
+       "label": "먹을 것을 던져 주고 지나간다",
+       "cost": {
+        "food": 1
+       },
+       "outcome": {
+        "text": "쥐들이 먹이에 달려든 사이 쉼터를 지나갔다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "back",
+       "label": "돌아서 다른 갱도로 간다",
+       "outcome": {
+        "text": "쥐들이 따라오지 않았다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "큰 쥐 둘이 발목을 노리고 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "giant_rat",
+         "giant_rat"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "쥐들이 쓰러졌다. 갉아 먹던 자루 바닥에 은 부스러기가 굴러다녔다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_rich_vein_01": {
+   "id": "mine_rich_vein_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "무너지기 직전의 광맥",
+   "conditions": [],
+   "weight": 3,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 8
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "가장 깊은 갱도 벽에 굵은 은 광맥이 드러나 있다. 그러나 버팀목이 다 썩어 천장이 언제 내려앉을지 모른다.",
+     "choices": [
+      {
+       "id": "mine",
+       "label": "버팀목을 살피며 서둘러 캔다",
+       "check": {
+        "stat": "str",
+        "skill": "smithing",
+        "dc": 14,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "천장이 울리기 전에 은 부스러기를 잔뜩 캐서 빠져나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "몇 조각 캐자마자 천장에서 돌이 떨어지기 시작했다. 서둘러 빠져나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "천장이 무너졌다. 돌에 깔렸다가 겨우 기어 나왔다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -4
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "목숨이 더 귀하다",
+       "outcome": {
+        "text": "광맥을 아쉽게 바라보고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_rockfall_01": {
+   "id": "mine_rockfall_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "무너지는 천장",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 3
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "머리 위에서 우르르 소리가 났다. 천장의 돌이 쏟아지기 시작한다!",
+     "choices": [
+      {
+       "id": "dodge",
+       "label": "앞으로 몸을 날린다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "돌무더기가 등 뒤로 쏟아졌다. 아슬아슬하게 피했다.",
+         "next": "END"
+        },
+        "partial": {
+         "text": "어깨에 돌 하나를 맞았다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌에 깔렸다가 겨우 빠져나왔다. 온몸이 욱신거린다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -4
+          },
+          {
+           "type": "wound",
+           "steps": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "cover",
+       "label": "벽에 붙어 머리를 감싼다",
+       "check": {
+        "stat": "con",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "잔돌에 몇 대 맞았지만 버텼다. 먼지가 가라앉기를 기다렸다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "큰 돌이 등을 때렸다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_silver_vein_01": {
+   "id": "mine_silver_vein_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "캐다 만 광맥",
+   "conditions": [],
+   "weight": 6,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 4
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 벽에 희끄무레한 줄이 길게 나 있다. 광부들이 캐다 만 은 광맥이다.",
+     "choices": [
+      {
+       "id": "chip",
+       "label": "돌을 대고 두드려 은을 떼어 낸다",
+       "check": {
+        "stat": "str",
+        "skill": "smithing",
+        "dc": 12,
+        "allowPartial": true
+       },
+       "outcomes": {
+        "success": {
+         "text": "결을 따라 정확히 내리치자 은 부스러기가 툭툭 떨어졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "partial": {
+         "text": "한참을 두드려 겨우 한 조각을 떼어 냈다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌 조각이 튀어 이마를 스쳤다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "scrape",
+       "label": "바닥에 떨어진 부스러기만 줍는다",
+       "outcome": {
+        "text": "바닥을 훑어 작은 조각 하나를 건졌다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 1
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_spider_den_01": {
+   "id": "mine_spider_den_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "거미 굴",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 7
+   },
+   "dangerTier": 3,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "가장 깊은 갱도 끝이 하얀 거미줄로 뒤덮여 있다. 동굴 거미 두 마리가 알주머니를 지키고, 그 뒤 벽에 은 광맥이 드러나 있다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "거미 둘을 상대한다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "sneak",
+       "label": "벽을 따라 몰래 광맥까지 간다",
+       "check": {
+        "stat": "agi",
+        "dc": 14,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "거미들이 알주머니를 돌보는 사이 은 부스러기를 한 움큼 긁어 나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "발에 거미줄이 감겼다. 거미 둘이 동시에 돌아본다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "back",
+       "label": "돌아선다",
+       "outcome": {
+        "text": "이 깊이까지 들어온 것으로 충분하다. 조용히 물러났다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "거미 둘이 양쪽 벽을 타고 내려온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "cave_spider",
+         "cave_spider"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "거미 둘이 쓰러졌다. 광맥에서 은 부스러기를 넉넉히 긁어모았다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 2
+      },
+      {
+       "type": "silver",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_spider_eggs_01": {
+   "id": "mine_spider_eggs_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "거미 알주머니",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 천장에 하얀 알주머니가 주렁주렁 매달려 있다. 이대로 두면 갱도가 곧 거미 소굴이 될 것이다.",
+     "choices": [
+      {
+       "id": "burn",
+       "label": "횃불로 알주머니를 태운다",
+       "outcome": {
+        "text": "알주머니가 타들어 갔다. 어미 거미는 나타나지 않았다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "poke",
+       "label": "막대로 쿡 찔러 본다",
+       "outcome": {
+        "text": "알주머니가 터지자 천장에서 어미 거미가 내려왔다!",
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "건드리지 않는다",
+       "outcome": {
+        "text": "알주머니 밑을 조심해서 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "어미 거미가 송곳니를 드러내며 내려온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "cave_spider"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "어미 거미가 쓰러졌다. 남은 알주머니도 모두 태웠다.",
+     "onEnter": [
+      {
+       "type": "fatigue",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_spider_nest_01": {
+   "id": "mine_spider_nest_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "거미줄 친 갱도",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "갱도 앞이 끈적한 거미줄로 막혀 있다. 거미줄 안쪽에 광부의 가죽 주머니가 걸려 있고, 어둠 속에서 다리 여럿이 움직인다.",
+     "choices": [
+      {
+       "id": "burn",
+       "label": "횃불로 거미줄을 태운다",
+       "check": {
+        "stat": "agi",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "거미줄이 타오르자 거미가 안쪽으로 달아났다. 주머니에서 은화를 꺼냈다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "불이 옮겨붙기도 전에 거미가 뛰어내렸다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기로 거미줄을 끊고 들어간다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다른 갱도로 간다",
+       "outcome": {
+        "text": "거미줄을 건드리지 않고 돌아섰다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "개만 한 동굴 거미가 송곳니를 드러냈다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "cave_spider"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "거미가 다리를 오그리고 쓰러졌다. 거미줄에 걸린 주머니에서 은화를 꺼냈다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 3
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_spring_01": {
+   "id": "mine_spring_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "바위틈 샘물",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "바위틈에서 맑은 물이 졸졸 흘러나온다. 광부들이 목을 축이던 자리라 바닥에 나무 국자가 놓여 있다.",
+     "choices": [
+      {
+       "id": "drink",
+       "label": "물을 마시고 쉰다",
+       "outcome": {
+        "text": "차갑고 단 물이다. 땀이 식고 기운이 돌아왔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
+         },
+         {
+          "type": "hp",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "갈 길을 간다",
+       "outcome": {
+        "text": "국자를 제자리에 걸어 두고 지나갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_trapped_youth_01": {
+   "id": "mine_trapped_youth_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "돌무더기 너머의 목소리",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "무너진 돌무더기 너머에서 사람 목소리가 들린다. 이웃 마을 청년이 은을 캐러 들어왔다가 갇혔다고 한다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "돌을 치워 꺼내 준다",
+       "check": {
+        "stat": "str",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "돌을 들어내자 청년이 기어 나왔다. 몇 번이나 고개를 숙이고, 캐 둔 은 부스러기를 나눠 주었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "addItem",
+           "itemId": "silver_scrap",
+           "qty": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "돌이 너무 무거웠다. 한참을 애쓴 끝에 겨우 틈을 내어 청년을 끌어냈다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "tell",
+       "label": "갱도 입구에서 도울 사람을 부르겠다고 하고 떠난다",
+       "outcome": {
+        "text": "입구에서 마주친 나무꾼에게 청년 일을 알렸다. 나무꾼이 동료들을 데리러 갔다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "모른 척한다",
+       "outcome": {
+        "text": "목소리를 뒤로하고 걸었다. 발걸음이 무거웠다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "mine_tunnel_bandit_01": {
+   "id": "mine_tunnel_bandit_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "갱도의 도적",
+   "conditions": [],
+   "weight": 5,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "모퉁이를 돌자 등잔불 아래에서 사내가 은 부스러기를 자루에 담고 있다. 사내가 곡괭이 자루를 움켜쥐었다.",
+     "choices": [
+      {
+       "id": "fight",
+       "label": "무기를 들고 맞선다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "talk",
+       "label": "같은 처지라며 말을 건넨다",
+       "check": {
+        "stat": "cha",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "사내가 혀를 차더니 저쪽 갱도는 건드리지 말라며 길을 비켜 주었다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "사내가 코웃음을 쳤다. \"자루를 내놓든가, 맞든가.\"",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "pay",
+       "label": "은화 3닢을 내밀고 지나간다",
+       "conditions": [
+        {
+         "type": "silver",
+         "min": 3
+        }
+       ],
+       "cost": {
+        "silver": 3
+       },
+       "outcome": {
+        "text": "사내가 은화를 받아 넣고 턱짓으로 길을 내주었다.",
+        "next": "END"
+       }
+      },
+      {
+       "id": "back",
+       "label": "모퉁이 뒤로 물러난다",
+       "outcome": {
+        "text": "사내가 쫓아오기 전에 갱도 입구로 돌아 나왔다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "사내가 곡괭이 자루를 휘두르며 달려든다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "tunnel_bandit"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "도적이 자루를 버리고 어둠 속으로 달아났다.",
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+     "choices": []
+    }
+   }
+  },
+  "mine_wolf_den_01": {
+   "id": "mine_wolf_den_01",
+   "category": "explore",
+   "region": "mine",
+   "title": "버려진 갱도의 늑대 굴",
+   "conditions": [],
+   "weight": 4,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "얕은 갱도 안쪽에서 늑대 냄새가 짙다. 뼈다귀가 널린 바닥 너머로 누런 눈이 빛난다.",
+     "choices": [
+      {
+       "id": "sneak",
+       "label": "소리 없이 지나간다",
+       "check": {
+        "stat": "agi",
+        "skill": "tracking",
+        "dc": 12,
+        "tags": [
+         "beast"
+        ]
+       },
+       "outcomes": {
+        "success": {
+         "text": "늑대가 잠든 사이 굴 앞을 지나갔다.",
+         "next": "END"
+        },
+        "fail": {
+         "text": "뼈다귀를 밟았다. 늑대가 일어섰다!",
+         "next": "fight"
+        }
+       }
+      },
+      {
+       "id": "fight",
+       "label": "무기를 들고 들어간다",
+       "outcome": {
+        "next": "fight"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다른 갱도로 간다",
+       "outcome": {
+        "text": "굴을 피해 돌아갔다.",
+        "next": "END"
+       }
+      }
+     ]
+    },
+    "fight": {
+     "text": "늑대가 이를 드러내며 굴에서 뛰쳐나온다.",
+     "onEnter": [
+      {
+       "type": "startCombat",
+       "combat": {
+        "enemies": [
+         "wolf"
+        ],
+        "initiative": "roll",
+        "canFlee": true,
+        "onVictory": "win",
+        "onFled": "fled"
+       }
+      }
+     ],
+     "choices": []
+    },
+    "win": {
+     "text": "늑대가 쓰러졌다. 굴 안쪽에서 광부가 떨어뜨린 은 부스러기를 주웠다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 1
+      },
+      {
+       "type": "incFlag",
+       "flag": "wolves_killed",
+       "delta": 1
+      }
+     ],
+     "choices": []
+    },
+    "fled": {
+     "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
      "choices": []
     }
    }

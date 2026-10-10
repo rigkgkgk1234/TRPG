@@ -1,0 +1,113 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_spider_den_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "거미 굴",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "가장 깊은 갱도 끝이 하얀 거미줄로 뒤덮여 있다. 동굴 거미 두 마리가 알주머니를 지키고, 그 뒤 벽에 은 광맥이 드러나 있다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "거미 둘을 상대한다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "sneak",
+          "label": "벽을 따라 몰래 광맥까지 간다",
+          "check": {
+            "stat": "agi",
+            "dc": 14,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "거미들이 알주머니를 돌보는 사이 은 부스러기를 한 움큼 긁어 나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발에 거미줄이 감겼다. 거미 둘이 동시에 돌아본다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "돌아선다",
+          "outcome": {
+            "text": "이 깊이까지 들어온 것으로 충분하다. 조용히 물러났다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "거미 둘이 양쪽 벽을 타고 내려온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "cave_spider",
+              "cave_spider"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "거미 둘이 쓰러졌다. 광맥에서 은 부스러기를 넉넉히 긁어모았다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 2
+        },
+        {
+          "type": "silver",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

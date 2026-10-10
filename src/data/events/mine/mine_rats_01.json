@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_rats_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "광부 쉼터의 쥐들",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광부들이 쉬던 자리에 큰 쥐 두 마리가 썩은 자루를 갉고 있다. 쥐들이 이빨을 드러내며 찍찍거린다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "막대로 쫓는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "food",
+          "label": "먹을 것을 던져 주고 지나간다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "쥐들이 먹이에 달려든 사이 쉼터를 지나갔다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "back",
+          "label": "돌아서 다른 갱도로 간다",
+          "outcome": {
+            "text": "쥐들이 따라오지 않았다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "큰 쥐 둘이 발목을 노리고 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "giant_rat",
+              "giant_rat"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "쥐들이 쓰러졌다. 갉아 먹던 자루 바닥에 은 부스러기가 굴러다녔다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

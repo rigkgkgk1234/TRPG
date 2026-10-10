@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_orchard_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "타지 않은 과수원",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 뒤편 과수원은 불길을 피했다. 아무도 따지 않은 사과가 가지마다 매달려 있다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "나무에 올라 높은 가지까지 딴다",
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "자루가 묵직해졌다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "가지가 부러져 떨어졌다. 줍기만 했다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "pick",
+          "label": "떨어진 사과만 줍는다",
+          "outcome": {
+            "text": "멀쩡한 것만 골라 담았다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

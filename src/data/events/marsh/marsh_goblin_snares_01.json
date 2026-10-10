@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_goblin_snares_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "갈대 속의 올가미",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갈대 사이에 덩굴로 엮은 올가미가 숨어 있다. 하나가 아니다. 짐승을 잡으려는 것치고는 너무 많다.",
+      "choices": [
+        {
+          "id": "disarm",
+          "label": "올가미를 하나씩 풀며 지나간다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "올가미를 풀어 보니 고블린의 매듭이다. 놈들이 이 길을 자주 오간다는 뜻이다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "숨은 올가미 하나가 발목을 낚아챘다. 한참 버둥대다 풀었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "detour",
+          "label": "갈대밭을 크게 돌아간다",
+          "outcome": {
+            "text": "멀리 돌아서 올가미를 피했다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

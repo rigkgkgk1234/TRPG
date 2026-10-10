@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_embers_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "연기 나는 골목",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "골목 끝 잿더미에서 아직 연기가 피어오른다. 바람이 바뀔 때마다 매캐한 연기가 몰려온다.",
+      "choices": [
+        {
+          "id": "through",
+          "label": "소매로 입을 막고 지나간다",
+          "check": {
+            "stat": "con",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "눈물을 훔치며 골목을 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "연기를 들이마시고 한참을 기침했다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "around",
+          "label": "마을 바깥으로 돌아간다",
+          "outcome": {
+            "text": "둑길로 한참을 돌아갔다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { GameCommand } from "@/core/commands";
 import { actionStatus, EXERCISE_USES, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { canTrade } from "@/core/day/town";
-import { dangerTierForDay, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
+import { dangerTierFor, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
 import {
   EXERCISE_LABEL, EXERCISE_STATS, isNpcId, josa, NPC_IDS, NPC_LABEL, PLACE_IDS, PLACE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_GROWTH_NOTE, type VisitId,
@@ -148,7 +148,7 @@ const HEAD: Record<"trainSolo" | "trainLesson" | "explore" | "village" | "talk",
   explore: {
     icon: ACTION_ICON.explore,
     title: def("explore").label,
-    note: (run) => `카드 ${EXPLORE_CARDS}장을 보고, 원하면 1장 더. 피로 +${def("explore").fatigue}~${def("explore").fatigue + DEEP_FATIGUE}. 오늘 위험 등급 ${dangerTierForDay(run.time.day)}/3`,
+    note: () => `카드 ${EXPLORE_CARDS}장을 보고, 원하면 1장 더. 피로 +${def("explore").fatigue}~${def("explore").fatigue + DEEP_FATIGUE}. 위험 등급은 날이 갈수록 오르고, 곳마다 다르다`,
   },
   village: {
     icon: StorefrontIcon,
@@ -228,7 +228,7 @@ function Lessons({ run, onPick }: { run: RunState; onPick: (cmd: GameCommand) =>
   );
 }
 
-/** 갈 곳: 운동과 같은 2열 버튼 (아이콘 + 이름 / 얻을 수 있는 것 한 줄). 고를 수 없는 곳도 안내는 볼 수 있다 (사유를 설명 줄에) */
+/** 갈 곳: 운동과 같은 2열 버튼 (아이콘 + 이름 / 오늘 위험 등급, 얻을 수 있는 것). 고를 수 없는 곳도 안내는 볼 수 있다 (사유를 설명 줄에) */
 function Regions({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void }) {
   return (
     <ButtonGrid>
@@ -242,7 +242,7 @@ function Regions({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void
               roomy
               icon={REGION_ICON[r]}
               label={REGION_LABEL[r]}
-              detail={status.available ? REGION_INFO[r]?.gains[0] : status.reason}
+              detail={status.available ? [`위험 ${dangerTierFor(r, run.time.day)}/3`, ...(REGION_INFO[r] ? [REGION_INFO[r].gains[0]] : [])] : status.reason}
               onPress={() => onPick(r)}
             />
           </GridCell>
@@ -328,7 +328,7 @@ interface PlaceView extends Intro {
 function regionInfo(run: RunState, region: RegionId): PlaceView {
   const info = REGION_INFO[region];
   const status = actionStatus(run, CONTENT, "explore", { region });
-  const tier = dangerTierForDay(run.time.day);
+  const tier = dangerTierFor(region, run.time.day);
   const explore = def("explore");
   return {
     icon: REGION_ICON[region],

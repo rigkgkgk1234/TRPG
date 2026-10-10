@@ -1,0 +1,97 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_rare_herb_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "늪 약초 군락",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물가 바위틈에 잎이 은빛으로 빛나는 풀이 무리 지어 자란다. 마그다 할멈이 비싸게 쳐주는 늪 약초다. 옆에는 잎이 닮은 독풀도 섞여 있다.",
+      "choices": [
+        {
+          "id": "careful",
+          "label": "잎맥을 하나하나 살피며 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "독풀을 골라내고 늪 약초만 두 포기를 캤다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "헷갈리는 것은 버리고 한 포기만 챙겼다. 시간이 꽤 걸렸다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "독풀을 맨손으로 쥐었다. 손바닥이 벌겋게 부어올랐다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "quick",
+          "label": "눈에 띄는 것만 서둘러 뜯는다",
+          "outcome": {
+            "text": "한 포기를 뜯어 품에 넣었다. 허리를 펴니 다리가 저렸다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "rare_herb",
+                "qty": 1
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "독풀이 섞인 곳은 건드리지 않기로 했다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

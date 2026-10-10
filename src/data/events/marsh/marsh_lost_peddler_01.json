@@ -1,0 +1,91 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_lost_peddler_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "길 잃은 행상",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "등짐을 진 행상이 진흙에 발이 빠진 채 쩔쩔매고 있다. 로웬으로 가는 지름길을 찾다가 길을 잃었다고 한다.",
+      "choices": [
+        {
+          "id": "guide",
+          "label": "늪 밖까지 길을 안내한다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "둘이 함께 늪을 빠져나왔다. 행상이 은화 세 닢을 내밀었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "둘이 한참 헤매다 겨우 빠져나왔다. 행상이 미안한 얼굴로 은화 한 닢을 건넸다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "buy",
+          "label": "등짐에서 붕대를 산다",
+          "cost": {
+            "silver": 4
+          },
+          "outcome": {
+            "text": "깨끗한 붕대 두 묶음을 샀다. 행상이 길을 물어보고 떠났다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "bandage",
+                "qty": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "갈 길이 바쁘다",
+          "outcome": {
+            "text": "행상의 한숨을 뒤로하고 걸음을 옮겼다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

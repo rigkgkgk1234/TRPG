@@ -1,0 +1,102 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_roof_scout_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "지붕 위의 고블린",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "성한 지붕 위에 고블린 하나가 쪼그려 앉아 강 하류를 내려다보고 있다. 보리울 쪽이다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        }
+      ],
+      "choices": [
+        {
+          "id": "fight",
+          "label": "지붕으로 올라가 덮친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "watch",
+          "label": "숨어서 놈이 무엇을 보는지 살핀다",
+          "check": {
+            "stat": "per",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "고블린은 강을 따라 보리울까지 이어진 둑길을 손가락으로 몇 번이고 짚었다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "고블린이 고개를 홱 돌렸다. 들켰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그림자를 따라 물러난다",
+          "outcome": {
+            "text": "놈의 눈길을 피해 골목으로 빠졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 정찰병이 지붕에서 뛰어내리며 단검을 휘두른다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_scout"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "정찰병이 쓰러졌다. 놈이 지키던 지붕에서 강 하류가 훤히 내려다보였다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_tracks_found"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

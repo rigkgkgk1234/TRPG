@@ -1,0 +1,95 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_quagmire_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "물러진 땅",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "앞길이 온통 물러진 진흙이다. 겉은 단단해 보여도 밟으면 꺼질 것 같다.",
+      "choices": [
+        {
+          "id": "step",
+          "label": "풀뿌리가 엉킨 곳만 골라 디딘다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "한 걸음씩 조심해서 건넜다.",
+              "next": "END"
+            },
+            "partial": {
+              "text": "한쪽 발이 빠졌지만 금방 빼냈다. 장화 속이 진흙투성이다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "허벅지까지 빠졌다. 버둥거리다 겨우 기어 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "pole",
+          "label": "긴 장대를 걸치고 건넌다",
+          "check": {
+            "stat": "str",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "장대를 다리 삼아 수렁을 건넜다. 팔이 뻐근하다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "장대가 부러졌다. 결국 진흙을 헤치고 건넜다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

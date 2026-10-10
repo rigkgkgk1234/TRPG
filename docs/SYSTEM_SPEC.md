@@ -23,7 +23,7 @@ export type TraitId = string;
 export type FlagId = string;
 
 export type JobId = "farmer" | "smith" | "hunter" | "herbalist" | "errand";
-export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "rowen";
+export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "mine" | "hamlet" | "rowen";
 
 /** "1d6", "2d4+1", "1d8-1" 형태의 주사위 표기 */
 export type DiceExpr = `${number}d${number}` | `${number}d${number}+${number}` | `${number}d${number}-${number}`;
@@ -478,6 +478,16 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 고블린 정찰병 | 12 | 12 | +2 | 1d4+1 | 3 | 50% (도망 시 플래그 `goblin_alerted`) | deathSave | goblin |
 | 고블린 전사 | 24 | 14 | +4 | 1d8 | 2 | — | deathSave | goblin |
 | 약탈단 두목 | 36 | 13 | +4 | 1d8+1 | 2 | — | scripted | goblin, boss |
+| 거대 거머리 (늪) | 12 | 10 | +3 | 1d4+1 | 2 | 0% | deathSave | beast |
+| 늪 고블린 (늪) | 14 | 12 | +3 | 1d6 | 3 | 40% | deathSave | goblin |
+| 늪 뱀 (늪) | 10 | 12 | +4 | 1d4+1 | 4 | 50% | deathSave | beast |
+| 박쥐 떼 (은광) | 10 | 13 | +3 | 1d4 | 5 | 50% | deathSave | beast |
+| 동굴 거미 (은광) | 14 | 11 | +3 | 1d6 | 3 | 30% | deathSave | beast |
+| 갱도 도적 (은광) | 16 | 12 | +3 | 1d6 | 2 | 40% | robbed | humanoid |
+| 고블린 약탈병 (폐허) | 14 | 12 | +3 | 1d6 | 3 | 40% | deathSave | goblin |
+| 폐허 약탈자 (폐허) | 14 | 11 | +2 | 1d6 | 3 | 50% | robbed | humanoid |
+
+- 늪·은광·폐허(위험 2)의 적은 시작 캐릭터 기준 사망률 1~5%로, 박쥐 떼가 가장 약하고 거머리·늪 고블린·동굴 거미·고블린 약탈병이 늑대~멧돼지 수준이다 (`npm run simulate:combat`).
 
 - **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(전리품 절반).
 
@@ -635,7 +645,7 @@ EventDef
 1. 해당 종류·지역의 이벤트 풀을 가져온다.
 2. `conditions`를 모두 만족하지 않으면 제외.
 3. `repeat` 규칙 위반(once 이미 발생 / cooldown 미경과) 제외.
-4. 위험 등급 필터(탐험): `dangerTier ≤ 현재 등급`. 현재 등급 = 1~10일차 1, 11~20일차 2, 21일차~ 3. "더 깊이" 카드는 등급 +1이고, 전투가 나는 카드의 가중치 ×3.
+4. 위험 등급 필터(탐험): `dangerTier ≤ 현재 등급`. 현재 등급 = 1~10일차 1, 11~20일차 2, 21일차~ 3. 회색 늪지·무너진 은광·물레방아골 폐허는 지역 최소 등급이 2라 1일차부터 2등급이다(`REGION_MIN_TIER`). "더 깊이" 카드는 등급 +1이고, 전투가 나는 카드의 가중치 ×3.
 5. 가중치 보정: 현재 등급과 같은 등급의 카드 가중치 ×2. 최근 3일 안에 본 카드 ×0.3.
 6. 가중치 무작위 추첨. 후보가 없으면 지역별 `fallback` 이벤트("조용한 하루").
 
@@ -929,6 +939,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `war_hammer` | 전투 망치 | blunt | 1d8 | 28 | 근력 +2 이상 필요, 내구도 25 |
 | `soldier_sword` | 병사의 검 | blade | 1d8 | 30 | 감시탑 보상으로도 획득 |
 | `goblin_axe` | 고블린 도끼 | blade | 1d8 | — | 고블린 전사 전리품(50%), 판매 12, 내구도 12 |
+| `old_pickaxe` | 낡은 곡괭이 | blunt | 1d8 | — | 양손, 무너진 은광에서 한 번 얻는다, 판매 6, 내구도 12 |
 | `hunting_bow` | 사냥용 활 | bow | 1d6 | 12 | 양손 |
 | `longbow` | 긴 활 | bow | 1d8 | 32 | 양손, 근력 +1 이상 필요 |
 
@@ -970,7 +981,8 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `healing_potion` | 치유 물약 | HP +12, 치명상 → 중상 | 20 | O |
 | `wolf_pelt` | 늑대 가죽 | 판매용 | (판매 4) | — |
 | `boar_tusk` | 멧돼지 송곳니 | 판매용, 멧돼지 전리품(70%) | (판매 3) | — |
-| `rare_herb` | 늪 약초 | 판매용 / 물약 재료(확장) | (판매 8) | — |
+| `rare_herb` | 늪 약초 | 판매용 / 물약 재료(확장). 회색 늪지에서 얻는다 | (판매 8) | — |
+| `silver_scrap` | 은 부스러기 | 판매용. 무너진 은광·물레방아골에서 얻는다 | (판매 5) | — |
 | `goblin_token` | 고블린 부적 | 스토리 증거물 | — | — |
 
 ```ts

@@ -19,6 +19,8 @@
     "skill": "blade", "damage": "1d8", "twoHanded": false, "durabilityMax": 20 },
   { "id": "goblin_axe", "name": "고블린 도끼", "category": "weapon", "description": "날이 들쭉날쭉한 고블린 전사의 도끼. 무겁고 거칠다.", "price": 0, "sellPrice": 12, "sellable": true, "stackMax": 1,
     "skill": "blade", "damage": "1d8", "twoHanded": false, "durabilityMax": 12 },
+  { "id": "old_pickaxe", "name": "낡은 곡괭이", "category": "weapon", "description": "광부가 두고 간 곡괭이. 날이 무뎌졌지만 두 손으로 내리찍으면 묵직하다.", "price": 0, "sellPrice": 6, "sellable": true, "stackMax": 1,
+    "skill": "blunt", "damage": "1d8", "twoHanded": true, "durabilityMax": 12 },
   { "id": "hunting_bow", "name": "사냥용 활", "category": "weapon", "description": "손때 묻은 짧은 활.", "price": 12, "sellable": true, "stackMax": 1,
     "skill": "bow", "damage": "1d6", "twoHanded": true, "durabilityMax": 20 },
   { "id": "longbow", "name": "긴 활", "category": "weapon", "description": "키만 한 활. 당기려면 힘이 필요하다.", "price": 32, "sellable": true, "stackMax": 1,
@@ -71,6 +73,7 @@
   { "id": "wolf_pelt", "name": "늑대 가죽", "category": "material", "description": "여관에서 값을 쳐준다.", "price": 0, "sellPrice": 4, "sellable": true, "stackMax": 5 },
   { "id": "boar_tusk", "name": "멧돼지 송곳니", "category": "material", "description": "장신구를 만드는 사람들이 값을 쳐준다.", "price": 0, "sellPrice": 3, "sellable": true, "stackMax": 5 },
   { "id": "rare_herb", "name": "늪 약초", "category": "material", "description": "늪지에서만 자라는 귀한 풀.", "price": 0, "sellPrice": 8, "sellable": true, "stackMax": 5 },
+  { "id": "silver_scrap", "name": "은 부스러기", "category": "material", "description": "버려진 은광에서 긁어모은 은 조각. 여관에서 값을 쳐준다.", "price": 0, "sellPrice": 5, "sellable": true, "stackMax": 5 },
 
   { "id": "goblin_token", "name": "고블린 부적", "category": "quest", "description": "뼈와 깃털을 엮은 부적. 촌장에게 보여야 한다.", "price": 0, "sellable": false, "stackMax": 1 }
 ]

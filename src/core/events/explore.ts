@@ -6,8 +6,11 @@ export const EXPLORE_MAX_CARDS = EXPLORE_CARDS + 1;
 /** "더 깊이"의 추가 피로 (SYSTEM_SPEC 6-2) */
 export const DEEP_FATIGUE = 1;
 
-/** 탐험할 수 있는 지역. 로웬·늪지는 확장. */
-export const EXPLORE_REGIONS: readonly RegionId[] = ["forest", "watchtower"];
+/** 탐험할 수 있는 지역. 로웬은 확장. */
+export const EXPLORE_REGIONS: readonly RegionId[] = ["forest", "watchtower", "marsh", "mine", "hamlet"];
+
+/** 지역 최소 위험 등급: 날짜로 정한 등급보다 낮아지지 않는다 (늪·은광·폐허는 1일차부터 2등급) */
+export const REGION_MIN_TIER: Partial<Record<RegionId, 1 | 2 | 3>> = { marsh: 2, mine: 2, hamlet: 2 };
 
 /**
  * 탐험 카드 2장을 다 보고 "더 깊이 갈까?"를 묻는 중인 상태.
@@ -26,4 +29,10 @@ export function stopExplore(explore: NonNullable<ActiveEventState["explore"]>): 
 /** 위험 등급: 1~10일차 1, 11~20일차 2, 21일차~ 3 */
 export function dangerTierForDay(day: number): 1 | 2 | 3 {
   return day <= 10 ? 1 : day <= 20 ? 2 : 3;
+}
+
+/** 그 지역의 오늘 위험 등급: 날짜로 정한 등급과 지역 최소 등급 중 높은 쪽 ("더 깊이"는 따로 +1) */
+export function dangerTierFor(region: RegionId | undefined, day: number): 1 | 2 | 3 {
+  const min = region ? REGION_MIN_TIER[region] ?? 1 : 1;
+  return Math.max(min, dangerTierForDay(day)) as 1 | 2 | 3;
 }

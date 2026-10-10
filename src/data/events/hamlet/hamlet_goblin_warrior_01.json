@@ -1,0 +1,101 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_goblin_warrior_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "폐허의 고블린 전사",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 20
+    }
+  ],
+  "weight": 3,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광장 우물가에 고블린 전사가 서 있다. 등에 멘 도끼에 아직 그을음이 묻어 있다. 이 마을을 불태운 놈들 중 하나다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "물레방아골의 원수를 갚는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "hide",
+          "label": "무너진 담 뒤에 숨는다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "전사가 우물에서 물을 마시고 상류 쪽으로 떠났다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "숨을 고르다 기와를 밟았다. 전사가 도끼를 뽑아 든다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "광장을 피해 돌아간다",
+          "outcome": {
+            "text": "멀찍이 돌아서 광장을 피했다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 전사가 도끼를 치켜든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린 전사가 우물가에 쓰러졌다. 물레방아골을 불태운 놈 하나를 갚았다.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

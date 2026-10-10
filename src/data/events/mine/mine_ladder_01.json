@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_ladder_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "아래층으로 가는 사다리",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "수직 갱도에 나무 사다리가 걸려 있다. 아래층에서 희미하게 빛나는 것이 보이지만 사다리 가로대 몇 개가 썩어 있다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "썩은 가로대를 건너뛰며 내려간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "아래층 바닥에 은 부스러기와 광부가 떨어뜨린 은화가 흩어져 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 1
+                },
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "가로대가 부러졌다. 바닥까지 미끄러져 떨어졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "내려가지 않는다",
+          "outcome": {
+            "text": "사다리를 흔들어 보고 그만두었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

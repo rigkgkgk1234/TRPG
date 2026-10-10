@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_miners_graves_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "갱도 입구의 무덤들",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 입구 비탈에 돌무덤이 줄지어 있다. 사고로 죽은 광부들이다. 무덤마다 동전이 한두 닢 놓여 있다.",
+      "choices": [
+        {
+          "id": "take",
+          "label": "동전을 거둔다",
+          "outcome": {
+            "text": "동전을 주머니에 넣었다. 돌아서는데 등 뒤가 서늘했다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "pray",
+          "label": "무덤 앞에 잠시 앉아 쉰다",
+          "outcome": {
+            "text": "바람 소리를 들으며 숨을 골랐다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

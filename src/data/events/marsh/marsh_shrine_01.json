@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_shrine_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "늪가의 돌 사당",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "이끼 낀 돌 사당 앞에 오래된 동전이 수북하다. 늪을 건너는 사람들이 무사하기를 빌며 두고 간 것이다.",
+      "choices": [
+        {
+          "id": "take",
+          "label": "동전을 집어 간다",
+          "outcome": {
+            "text": "동전을 주머니에 쓸어 담았다. 등 뒤가 자꾸 서늘했다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 3
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "offer",
+          "label": "은화 1닢을 올리고 빈다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 1
+            }
+          ],
+          "cost": {
+            "silver": 1
+          },
+          "outcome": {
+            "text": "두 손을 모으고 잠시 서 있었다. 마음이 한결 가벼워졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "사당에 고개만 숙이고 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

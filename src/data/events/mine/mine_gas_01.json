@@ -1,0 +1,104 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_gas_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "달큼한 냄새",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 안쪽에서 달큼하고 매캐한 냄새가 흘러나온다. 횃불 끝이 파랗게 흔들린다.",
+      "choices": [
+        {
+          "id": "sniff",
+          "label": "냄새가 어디서 오는지 살핀다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "가스가 고인 갱도를 알아보고 옆길로 돌았다. 옆길 바닥에서 은 부스러기를 주웠다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "눈앞이 핑 돌았다. 벽을 짚고 겨우 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "dash",
+          "label": "숨을 참고 단숨에 지나간다",
+          "check": {
+            "stat": "con",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "가스가 고인 갱도를 지나자 아무도 손대지 않은 광석 더미가 있었다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "중간에 숨이 막혀 주저앉았다. 기어서 되돌아 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "횃불을 끄고 돌아선다",
+          "outcome": {
+            "text": "불이 붙기 전에 갱도를 빠져나왔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

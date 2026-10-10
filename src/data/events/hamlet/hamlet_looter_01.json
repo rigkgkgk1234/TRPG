@@ -1,0 +1,93 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_looter_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "폐허의 약탈자",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "누군가 무너진 헛간에서 물건을 끌어내고 있다. 고블린이 아니라 사람이다. 사내가 몽둥이를 들고 이쪽을 노려본다.",
+      "choices": [
+        {
+          "id": "talk",
+          "label": "나눠 갖자고 달랜다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "사내가 투덜대며 헛간 한쪽을 양보했다. 쓸 만한 것 몇 개를 챙겼다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "\"여긴 내가 먼저 왔어.\" 사내가 몽둥이를 치켜들었다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "죽은 사람 물건을 터는 놈은 두고 볼 수 없다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "상관하지 않고 지나간다",
+          "outcome": {
+            "text": "사내의 눈길을 피해 다른 골목으로 들어갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "사내가 몽둥이를 휘두르며 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "ruin_looter"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "약탈자가 자루를 버리고 달아났다. 자루 속 물건은 헛간 앞에 가지런히 내려 두었다.",
+      "onEnter": [
+        {
+          "type": "reputation",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

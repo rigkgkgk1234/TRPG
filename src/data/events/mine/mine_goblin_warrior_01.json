@@ -1,0 +1,111 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_goblin_warrior_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "갱도를 지키는 고블린 전사",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 20
+    }
+  ],
+  "weight": 3,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "넓은 채굴장 한가운데 고블린 전사가 서 있다. 뒤쪽에 고블린들이 캐낸 은이 쌓여 있다. 약탈대의 군자금이다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "정면으로 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "sneak",
+          "label": "전사가 등을 돌린 틈에 은을 훔친다",
+          "check": {
+            "stat": "agi",
+            "dc": 14,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "은 부스러기를 한 움큼 쥐고 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "돌멩이가 굴렀다. 전사가 도끼를 들고 돌아선다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "text": "채굴장을 등지고 조용히 물러났다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 전사가 도끼를 치켜든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_warrior"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린 전사가 쓰러졌다. 쌓인 은을 자루에 담고, 남은 것은 갱도 깊이 던져 넣었다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 3
+        },
+        {
+          "type": "reputation",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

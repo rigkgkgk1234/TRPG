@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_echo_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "갈림길의 메아리",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도가 다섯 갈래로 갈라진다. 소리를 내면 사방에서 메아리가 돌아와 어디서 왔는지 헷갈린다.",
+      "choices": [
+        {
+          "id": "mark",
+          "label": "벽에 표시를 하며 길을 고른다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "표시를 따라 헤매지 않고 빠져나왔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "같은 표시를 세 번이나 다시 만났다. 한참 만에 길을 찾았다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "wind",
+          "label": "바람이 들어오는 쪽으로 간다",
+          "outcome": {
+            "text": "희미한 바람을 따라 입구 쪽으로 나왔다. 오래 걸렸다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -77,7 +77,7 @@ function fight(job: JobId, enemy: EnemyId, level: Veteran, seed: number, t: Tall
 
 const pct = (n: number) => `${((n / RUNS) * 100).toFixed(1)}%`;
 
-for (const enemy of ["wolf", "boar", "bandit", "goblin_scout", "wild_dog", "giant_rat", "poacher"] as EnemyId[]) {
+for (const enemy of ["wolf", "boar", "bandit", "goblin_scout", "wild_dog", "giant_rat", "poacher", "giant_leech", "marsh_goblin", "marsh_snake", "bat_swarm", "cave_spider", "tunnel_bandit", "goblin_raider", "ruin_looter"] as EnemyId[]) {
   for (const level of ["start", "day20"] as Veteran[]) {
     const rows: Record<string, Record<string, string>> = {};
     for (const job of JOBS) {

@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_goblin_ambush_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "안개 속의 그림자",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "안개가 짙게 깔렸다. 바람도 없는데 앞쪽 갈대가 흔들리고, 낮게 속삭이는 소리가 들린다.",
+      "choices": [
+        {
+          "id": "strike",
+          "label": "먼저 덮친다",
+          "outcome": {
+            "next": "fight_first"
+          }
+        },
+        {
+          "id": "hide",
+          "label": "갈대 속에 엎드려 지나가기를 기다린다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "늪 고블린 하나가 코앞을 지나갔다. 놈이 간 쪽은 보리울로 흐르는 개울 방향이었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "갈대가 바스락거렸다. 녹슨 창끝이 이쪽을 향한다!",
+              "next": "fight_ambushed"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "소리 나는 반대쪽으로 물러난다",
+          "outcome": {
+            "text": "발소리를 죽이고 왔던 길로 물러났다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight_first": {
+      "text": "갈대를 헤치고 뛰어들었다. 늪 고블린이 놀라 창을 치켜든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "늪 고블린이 먼저 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늪 고블린이 진흙탕에 쓰러졌다. 허리춤에 찬 주머니를 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

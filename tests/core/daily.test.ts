@@ -5,6 +5,7 @@ import { checkContent } from "@/core/contentCheck";
 import { actionStatus } from "@/core/day/actions";
 import { dispatch } from "@/core/engine";
 import { sceneView } from "@/core/events/runner";
+import { dangerTierFor } from "@/core/events/explore";
 import { eventPool, possibleEvents } from "@/core/events/selector";
 import { NPC_IDS } from "@/core/labels";
 import { newRun } from "@/core/newRun";
@@ -223,6 +224,34 @@ describe("리뷰 회귀", () => {
     expect(morning.time.phase).toBe("pm");
     const after = send(morning, { type: "chooseChoice", choiceId: "help" }, content).state;
     expect(after.time).toMatchObject({ phase: "evening", skipNextAm: false });
+  });
+});
+
+describe("새 탐험지: 회색 늪지 · 무너진 은광 · 물레방아골 폐허", () => {
+  const NEW_REGIONS = ["marsh", "mine", "hamlet"] as const;
+
+  it("지역마다 이벤트 30개 이상과 대체 이벤트가 있고, 1일차부터 갈 수 있다", () => {
+    for (const region of NEW_REGIONS) {
+      expect(eventPool(CONTENT, "explore", region).length, region).toBeGreaterThanOrEqual(30);
+      expect(CONTENT.events[`${region}_fallback`], region).toBeDefined();
+      expect(actionStatus(start(), CONTENT, "explore", { region }), region).toEqual({ available: true });
+    }
+  });
+
+  it("위험 등급은 1일차부터 2, 21일차부터 3. 숲·감시탑은 날짜를 따른다", () => {
+    expect(dangerTierFor("marsh", 1)).toBe(2);
+    expect(dangerTierFor("mine", 20)).toBe(2);
+    expect(dangerTierFor("hamlet", 21)).toBe(3);
+    expect(dangerTierFor("forest", 1)).toBe(1);
+    expect(dangerTierFor("watchtower", 11)).toBe(2);
+  });
+
+  it("1일차에 2등급 카드가 나올 수 있고 3등급은 아직 나오지 않는다", () => {
+    for (const region of NEW_REGIONS) {
+      const now = possibleEvents(start(), CONTENT, "explore", region);
+      expect(now.some((ev) => ev.dangerTier === 2), region).toBe(true);
+      expect(now.every((ev) => (ev.dangerTier ?? 1) <= 2), region).toBe(true);
+    }
   });
 });
 

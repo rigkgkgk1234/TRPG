@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_geode_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "반짝이는 굴",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "좁은 틈을 비집고 들어가자 벽 전체가 횃불 빛에 반짝인다. 수정 사이사이에 은이 섞여 있다.",
+      "choices": [
+        {
+          "id": "pick",
+          "label": "은이 섞인 조각만 골라 뗀다",
+          "check": {
+            "stat": "per",
+            "skill": "smithing",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "은이 많이 섞인 조각만 골라 챙겼다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "날카로운 수정에 손을 베었다. 그래도 한 조각은 건졌다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "틈이 좁아 그냥 나온다",
+          "outcome": {
+            "text": "반짝임을 뒤로하고 틈을 빠져나왔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

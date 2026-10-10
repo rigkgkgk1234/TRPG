@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_mosquitoes_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "모기떼",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "고인 물 위로 모기떼가 구름처럼 피어오른다. 귓가가 윙윙거린다.",
+      "choices": [
+        {
+          "id": "endure",
+          "label": "손을 휘저으며 버티고 지나간다",
+          "check": {
+            "stat": "con",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "팔다리가 부어올랐지만 견딜 만하다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "온몸이 가렵고 열이 오른다. 걸음이 무거워졌다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "mud",
+          "label": "진흙을 얼굴과 팔에 바른다",
+          "outcome": {
+            "text": "진흙 냄새가 고약했지만 모기는 덜 붙었다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

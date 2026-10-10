@@ -1,0 +1,93 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_bandit_hold_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "도적이 차지한 집",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을에서 가장 큰 집에 도적이 자리를 잡았다. 창문으로 모닥불이 보이고, 문간에 훔친 물건이 쌓여 있다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "문을 걷어차고 들어간다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "sneak",
+          "label": "뒷문으로 들어가 물건만 챙긴다",
+          "check": {
+            "stat": "agi",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "도적이 졸고 있는 사이 은화 주머니를 챙겨 나왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "마룻장이 삐걱거렸다. 도적이 벌떡 일어났다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "상대하지 않는다",
+          "outcome": {
+            "text": "큰 집을 피해 돌아갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "도적이 모닥불 옆에서 칼을 집어 든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "도적이 창문으로 뛰어내려 달아났다. 쌓인 물건 중 은화를 챙겼다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

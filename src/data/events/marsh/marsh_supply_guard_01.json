@@ -1,0 +1,162 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_supply_guard_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "말뚝 위의 창고",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물 위에 박은 말뚝 위로 허름한 창고가 서 있다. 늪 고블린 둘이 창고 앞에서 꾸러미를 뗏목에 싣고 있다.",
+      "choices": [
+        {
+          "id": "attack",
+          "label": "둘이 짐을 싣는 틈에 덮친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "burn",
+          "label": "뒤로 돌아가 창고에 불을 놓는다",
+          "check": {
+            "stat": "agi",
+            "dc": 14,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "마른 갈대에 불이 옮겨붙자 창고가 금세 타올랐다. 고블린들이 물을 퍼 나르느라 이쪽을 보지 못했다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "부싯돌 소리에 고블린들이 돌아봤다!",
+              "next": "fight_ambushed"
+            }
+          }
+        },
+        {
+          "id": "watch",
+          "label": "숨어서 뗏목이 어디로 가는지 본다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "뗏목은 강줄기를 따라 보리울 쪽으로 내려갔다. 놈들이 어느 길로 물자를 나르는지 알았다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "안개 때문에 뗏목을 놓쳤다. 헛걸음만 했다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "text": "창고를 뒤로하고 조용히 물러났다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늪 고블린 둘이 꾸러미를 내던지고 창을 집어 든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin",
+              "marsh_goblin"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "늪 고블린 둘이 소리를 지르며 달려든다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin",
+              "marsh_goblin"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "창고에 쌓인 말린 생선을 챙기고 나머지는 불태웠다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": 2
+        },
+        {
+          "type": "reputation",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

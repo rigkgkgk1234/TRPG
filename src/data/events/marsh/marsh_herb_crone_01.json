@@ -1,0 +1,100 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_herb_crone_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "늪의 약초꾼",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갈대 지붕을 얹은 오두막 앞에서 허리 굽은 노파가 풀을 말리고 있다. 마그다 할멈과 오래 알고 지냈다고 한다.",
+      "choices": [
+        {
+          "id": "carry",
+          "label": "약초 바구니를 오두막까지 날라 준다",
+          "outcome": {
+            "text": "노파가 고맙다며 말린 늪 약초 한 포기를 쥐여 주었다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "rare_herb",
+                "qty": 1
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "ask",
+          "label": "늪에서 조심할 곳을 묻는다",
+          "check": {
+            "stat": "cha",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "노파가 지팡이로 땅에 늪의 길을 그려 주었다. 어디가 꺼지는지 알 것 같다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "노파는 귀가 어두운지 엉뚱한 이야기만 늘어놓았다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "food",
+          "label": "가져온 먹을거리를 나눈다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "노파가 답례로 손수 만든 상처 연고를 건넸다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "salve",
+                "qty": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "text": "노파가 고개를 끄덕이고 다시 풀을 뒤집었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

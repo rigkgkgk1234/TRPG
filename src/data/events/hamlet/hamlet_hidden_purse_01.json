@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_hidden_purse_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "우물가의 돌 틈",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광장 우물가 돌담에 손을 넣을 만한 틈이 있다. 피난 가던 사람이 무언가 숨겨 두었을지도 모른다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "돌 틈을 더듬어 본다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "기름 먹인 천에 싼 돈주머니가 나왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "이끼와 거미줄뿐이다. 바닥에서 동전 하나를 주웠다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "돌아올 주인을 위해 둔다",
+          "outcome": {
+            "text": "돌 틈을 그대로 두고 자리를 떴다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

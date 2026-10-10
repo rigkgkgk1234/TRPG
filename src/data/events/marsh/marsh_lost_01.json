@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_lost_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "짙어지는 안개",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "안개가 순식간에 짙어졌다. 왔던 길도, 가려던 길도 보이지 않는다.",
+      "choices": [
+        {
+          "id": "landmark",
+          "label": "말라 죽은 나무를 표지 삼아 길을 찾는다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "죽은 나무 세 그루를 차례로 짚어 가며 길을 되찾았다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "같은 자리를 몇 번이나 맴돌았다. 해가 기울어서야 길을 찾았다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "wait",
+          "label": "안개가 걷힐 때까지 기다린다",
+          "outcome": {
+            "text": "마른 둔덕에 앉아 한참을 기다렸다. 안개가 걷히고서야 움직였다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

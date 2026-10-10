@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_chickens_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "살아남은 닭들",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 닭장 둘레에서 닭 몇 마리가 모이를 쪼고 있다. 주인 없이 들판에서 살아남은 놈들이다.",
+      "choices": [
+        {
+          "id": "catch",
+          "label": "몰아서 붙잡는다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "두 마리를 붙잡았다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "한 마리를 겨우 붙잡았다. 온몸이 깃털투성이다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "닭들이 담장 너머로 달아났다. 헛심만 썼다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "eggs",
+          "label": "닭장 속 알만 챙긴다",
+          "outcome": {
+            "text": "볏짚 속에서 달걀 몇 개를 찾았다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

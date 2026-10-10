@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_chapel_kit_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "작은 성당",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "지붕만 탄 작은 성당 제단 밑에 약품 상자가 있다. 피난민을 돌보던 수도사가 두고 간 것 같다.",
+      "choices": [
+        {
+          "id": "sort",
+          "label": "약을 하나씩 살펴 고른다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "붕대와 약초, 상처 연고를 골라 챙겼다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "bandage",
+                  "qty": 1
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 1
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "salve",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "대부분 상해 있었다. 붕대 한 묶음만 쓸 만하다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "bandage",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "pray",
+          "label": "제단 앞에서 잠시 쉰다",
+          "outcome": {
+            "text": "타다 남은 의자에 앉아 숨을 골랐다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

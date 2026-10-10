@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_stranded_wolf_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "갈대 섬의 늑대",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "불어난 물에 갈대 섬이 고립됐다. 섬 위에서 굶주린 늑대가 이쪽을 노려본다. 건너야 할 징검돌이 그 섬을 지난다.",
+      "choices": [
+        {
+          "id": "food",
+          "label": "고기를 던져 주고 지나간다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "늑대가 고기를 물고 섬 반대쪽으로 물러났다. 그 틈에 징검돌을 건넜다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "fight",
+          "label": "무기를 들고 건넌다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다른 길을 찾는다",
+          "outcome": {
+            "text": "징검돌을 포기하고 돌아갔다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "굶주린 늑대가 징검돌 위로 뛰어든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늑대가 물속으로 굴러떨어졌다. 섬을 지나 길을 이어 갔다.",
+      "onEnter": [
+        {
+          "type": "incFlag",
+          "flag": "wolves_killed",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_flooded_shaft_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "물에 잠긴 갱도",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "아래층 갱도가 지하수에 잠겼다. 물 너머 벽감에 광부들의 돈 상자가 보인다.",
+      "choices": [
+        {
+          "id": "swim",
+          "label": "숨을 참고 헤엄쳐 간다",
+          "check": {
+            "stat": "con",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "돈 상자를 안고 돌아왔다. 젖은 은화가 묵직하다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "상자는 무거워 은화만 한 줌 쥐고 돌아왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "차가운 물에 다리가 굳었다. 겨우 되돌아 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "물이 차가워 보여 그만둔다",
+          "outcome": {
+            "text": "물가에서 발을 돌렸다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

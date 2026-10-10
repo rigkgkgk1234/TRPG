@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_raid_traces_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "부서진 목책",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 6
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 어귀 목책이 바깥쪽으로 쓰러져 있다. 땅에는 작은 발자국과 무언가를 끈 자국이 뒤엉켜 있다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "어디로 쳐들어왔는지 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈들은 목책을 밧줄로 끌어 넘어뜨리고 한쪽으로만 몰려 들어왔다. 보리울 울타리도 같은 식으로 노릴 것이다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "비에 씻긴 자국이 많아 알아보기 어렵다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "자리를 뜬다",
+          "outcome": {
+            "text": "쓰러진 목책을 넘어 마을 안으로 들어갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

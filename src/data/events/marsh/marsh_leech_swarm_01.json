@@ -1,0 +1,102 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_leech_swarm_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "사슴 사체 옆의 거머리",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물가에 쓰러진 사슴 사체 위로 거머리 두 마리가 꿈틀거린다. 사체 옆에는 누군가 떨어뜨린 가죽 가방이 있다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "막대로 거머리를 떼어 낸다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "grab",
+          "label": "거머리가 사체에 붙어 있는 틈에 가방만 낚아챈다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "가방을 낚아채 뒤로 물러났다. 안에 은화 몇 닢이 들어 있었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발이 미끄러져 사체 쪽으로 넘어졌다. 거머리들이 고개를 돌린다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "가까이 가지 않는다",
+          "outcome": {
+            "text": "비린내를 피해 멀찍이 돌아갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "거머리 둘이 사체에서 떨어져 나와 다가온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "giant_leech",
+              "giant_leech"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "거머리를 모두 떼어 냈다. 가죽 가방에서 은화와 붕대를 찾았다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 3
+        },
+        {
+          "type": "addItem",
+          "itemId": "bandage",
+          "qty": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

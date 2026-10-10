@@ -1,0 +1,91 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_rockfall_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "무너지는 천장",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 3
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "머리 위에서 우르르 소리가 났다. 천장의 돌이 쏟아지기 시작한다!",
+      "choices": [
+        {
+          "id": "dodge",
+          "label": "앞으로 몸을 날린다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "돌무더기가 등 뒤로 쏟아졌다. 아슬아슬하게 피했다.",
+              "next": "END"
+            },
+            "partial": {
+              "text": "어깨에 돌 하나를 맞았다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "돌에 깔렸다가 겨우 빠져나왔다. 온몸이 욱신거린다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -4
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "cover",
+          "label": "벽에 붙어 머리를 감싼다",
+          "check": {
+            "stat": "con",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "잔돌에 몇 대 맞았지만 버텼다. 먼지가 가라앉기를 기다렸다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "큰 돌이 등을 때렸다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

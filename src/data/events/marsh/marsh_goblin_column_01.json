@@ -1,0 +1,116 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_goblin_column_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "늪을 건너는 고블린들",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 15
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "늪 고블린 여럿이 짐을 지고 줄지어 물길을 건넌다. 맨 끝의 둘이 처져서 뒤를 살핀다.",
+      "choices": [
+        {
+          "id": "hide",
+          "label": "물풀 속에 숨어 지켜본다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "행렬이 다 지나갔다. 짐에는 창과 횃불이 가득했다. 놈들이 싸움을 준비하고 있다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "처진 둘이 이쪽을 손가락질했다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "처진 둘을 덮친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "멀리 돌아서 피한다",
+          "outcome": {
+            "text": "행렬과 반대쪽으로 크게 돌았다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늪 고블린 둘이 짐을 내던지고 창을 겨눈다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin",
+              "marsh_goblin"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "둘이 쓰러졌다. 놈들이 지고 있던 짐에서 말린 생선과 은화를 챙겼다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": 2
+        },
+        {
+          "type": "silver",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

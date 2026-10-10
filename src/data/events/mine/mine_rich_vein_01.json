@@ -1,0 +1,86 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_rich_vein_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "무너지기 직전의 광맥",
+  "conditions": [],
+  "weight": 3,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "가장 깊은 갱도 벽에 굵은 은 광맥이 드러나 있다. 그러나 버팀목이 다 썩어 천장이 언제 내려앉을지 모른다.",
+      "choices": [
+        {
+          "id": "mine",
+          "label": "버팀목을 살피며 서둘러 캔다",
+          "check": {
+            "stat": "str",
+            "skill": "smithing",
+            "dc": 14,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "천장이 울리기 전에 은 부스러기를 잔뜩 캐서 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "몇 조각 캐자마자 천장에서 돌이 떨어지기 시작했다. 서둘러 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "천장이 무너졌다. 돌에 깔렸다가 겨우 기어 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -4
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "목숨이 더 귀하다",
+          "outcome": {
+            "text": "광맥을 아쉽게 바라보고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

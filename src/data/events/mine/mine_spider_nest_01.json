@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_spider_nest_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "거미줄 친 갱도",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 앞이 끈적한 거미줄로 막혀 있다. 거미줄 안쪽에 광부의 가죽 주머니가 걸려 있고, 어둠 속에서 다리 여럿이 움직인다.",
+      "choices": [
+        {
+          "id": "burn",
+          "label": "횃불로 거미줄을 태운다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "거미줄이 타오르자 거미가 안쪽으로 달아났다. 주머니에서 은화를 꺼냈다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "불이 옮겨붙기도 전에 거미가 뛰어내렸다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "무기로 거미줄을 끊고 들어간다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다른 갱도로 간다",
+          "outcome": {
+            "text": "거미줄을 건드리지 않고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "개만 한 동굴 거미가 송곳니를 드러냈다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "cave_spider"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "거미가 다리를 오그리고 쓰러졌다. 거미줄에 걸린 주머니에서 은화를 꺼냈다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

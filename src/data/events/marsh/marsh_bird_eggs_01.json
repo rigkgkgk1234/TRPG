@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_bird_eggs_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "물새 둥지",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갈대 위에 엮은 둥지에 얼룩진 알이 여러 개 있다. 어미 새가 근처를 맴돈다.",
+      "choices": [
+        {
+          "id": "take",
+          "label": "어미가 날아간 틈에 알을 챙긴다",
+          "check": {
+            "stat": "agi",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "알 네 개를 챙겼다. 오늘 저녁거리가 늘었다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "어미 새가 돌아와 손등을 쪼았다. 알 두 개만 건졌다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "둥지를 그냥 둔다",
+          "outcome": {
+            "text": "새가 다시 둥지에 내려앉았다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

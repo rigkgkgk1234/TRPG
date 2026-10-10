@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_bandit_stash_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "도적의 은닉처",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "막다른 갱도 끝에 거적으로 덮은 짐이 있다. 도적들이 숨겨 둔 것 같다. 바닥에 가는 줄이 팽팽하게 매여 있다.",
+      "choices": [
+        {
+          "id": "careful",
+          "label": "줄을 살펴 덫을 풀고 짐을 연다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "줄 끝에 매단 돌무더기를 피했다. 짐 속에서 은화와 붕대를 챙겼다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "bandage",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "줄을 건드렸다. 돌이 쏟아져 어깨를 맞았다. 짐은 건졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "silver",
+                  "delta": 5
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "도적이 돌아오기 전에 떠난다",
+          "outcome": {
+            "text": "짐을 건드리지 않고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

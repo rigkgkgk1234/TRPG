@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_old_pickaxe_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "바위에 박힌 곡괭이",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 바위틈에 곡괭이 하나가 깊이 박혀 있다. 자루는 낡았지만 쇠날은 아직 멀쩡하다.",
+      "choices": [
+        {
+          "id": "pull",
+          "label": "두 손으로 잡아 뽑는다",
+          "check": {
+            "stat": "str",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "힘껏 당기자 곡괭이가 쑥 빠졌다. 묵직하다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "old_pickaxe",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "손바닥이 쓸리기만 하고 곡괭이는 꿈쩍도 하지 않았다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 둔다",
+          "outcome": {
+            "text": "곡괭이를 바위틈에 남겨 두었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

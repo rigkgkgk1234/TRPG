@@ -1,0 +1,91 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_fisher_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "늪의 어부",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "장대 끝에 그물을 단 사내가 물길에서 고기를 건지고 있다. 늪에서 나고 자랐다고 한다.",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "은화 2닢에 고기를 산다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 2
+            }
+          ],
+          "cost": {
+            "silver": 2
+          },
+          "outcome": {
+            "text": "말린 늪고기 한 꾸러미를 받았다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "help",
+          "label": "그물 걷는 일을 돕는다",
+          "check": {
+            "stat": "str",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "그물이 묵직했다. 어부가 잡은 것을 나눠 주었다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "그물을 놓쳐 반은 빠져나갔다. 어부가 그래도 몇 마리를 건넸다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "text": "어부가 장대를 들어 답했다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_dogs_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "주인 잃은 개들",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 광장에 들개 둘이 어슬렁거린다. 주인을 잃고 사나워진 개들이다. 우두머리가 낮게 으르렁거린다.",
+      "choices": [
+        {
+          "id": "food",
+          "label": "먹을 것을 던지고 물러난다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "개들이 먹이를 두고 다투는 사이 광장을 빠져나왔다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "climb",
+          "label": "무너진 벽 위로 올라간다",
+          "check": {
+            "stat": "agi",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "벽 위에서 버티자 개들이 지쳐서 흩어졌다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "벽돌이 무너졌다. 개들이 달려든다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "막대를 들고 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "들개 둘이 양쪽에서 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wild_dog",
+              "wild_dog"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "우두머리가 쓰러지자 다른 하나는 꼬리를 말고 달아났다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

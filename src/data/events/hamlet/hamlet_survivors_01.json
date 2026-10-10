@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_survivors_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "지하실의 가족",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 집 지하실 문틈으로 아이 우는 소리가 들린다. 문을 열자 여윈 여인과 두 아이가 웅크리고 있다. 고블린이 다시 올까 봐 몇 주째 숨어 지냈다고 한다.",
+      "choices": [
+        {
+          "id": "share",
+          "label": "가진 식량을 나눠 준다",
+          "cost": {
+            "food": 2
+          },
+          "outcome": {
+            "text": "여인이 눈물을 흘리며 고개를 숙였다. 보리울로 가는 길을 일러 주자 아이들 손을 잡고 길을 나섰다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 5
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "escort",
+          "label": "안전한 길까지 데려다준다",
+          "outcome": {
+            "text": "세 사람을 둑길 끝까지 데려다주고 보리울로 가는 길을 일러 주었다. 여인이 하몬 촌장에게 꼭 이 일을 전하겠다고 했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 4
+              },
+              {
+                "type": "fatigue",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "silver",
+          "label": "은화 3닢을 쥐여 준다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 3
+            }
+          ],
+          "cost": {
+            "silver": 3
+          },
+          "outcome": {
+            "text": "여인이 은화를 받아 쥐고 몇 번이나 고맙다고 했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "도울 여유가 없다",
+          "outcome": {
+            "text": "문을 닫고 돌아섰다. 아이 울음소리가 한참 귀에 남았다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

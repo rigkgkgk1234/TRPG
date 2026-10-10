@@ -1,0 +1,112 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_raider_camp_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "약탈병의 야영지",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "방앗간 뒤 공터에 고블린 약탈병의 모닥불이 있다. 약탈병 하나와 정찰병 하나가 훔친 곡식 자루를 깔고 앉아 있다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_scout_seen"
+        }
+      ],
+      "choices": [
+        {
+          "id": "fight",
+          "label": "둘을 덮친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "steal",
+          "label": "자루 하나만 몰래 빼낸다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "곡식 자루를 끌고 빠져나왔다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "자루가 쓰러지며 곡식이 쏟아졌다. 고블린들이 벌떡 일어난다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "back",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "text": "모닥불 연기를 뒤로하고 물러났다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "약탈병과 정찰병이 무기를 집어 든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_raider",
+              "goblin_scout"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "둘이 쓰러졌다. 훔친 곡식을 되찾았다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": 3
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

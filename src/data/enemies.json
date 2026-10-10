@@ -28,5 +28,22 @@
   { "id": "arena_champion", "name": "결투장 우승자 가렛", "hp": 24, "defense": 13, "attackBonus": 4, "damage": "1d6+1", "speed": 3,
     "onDefeat": "deathSave", "tags": ["humanoid"], "loot": [] },
   { "id": "hero_adel", "name": "용사 아델", "hp": 32, "defense": 14, "attackBonus": 5, "damage": "1d8", "speed": 4,
-    "onDefeat": "deathSave", "tags": ["humanoid"], "loot": [] }
+    "onDefeat": "deathSave", "tags": ["humanoid"], "loot": [] },
+
+  { "id": "giant_leech", "name": "거대 거머리", "hp": 12, "defense": 10, "attackBonus": 3, "damage": "1d4+1", "speed": 2,
+    "morale": 0, "onDefeat": "deathSave", "tags": ["beast"], "loot": [] },
+  { "id": "marsh_goblin", "name": "늪 고블린", "hp": 14, "defense": 12, "attackBonus": 3, "damage": "1d6", "speed": 3,
+    "morale": 0.4, "onDefeat": "deathSave", "tags": ["goblin"], "loot": [{ "itemId": "goblin_token", "qty": 1, "chance": 0.3 }], "silver": 2 },
+  { "id": "marsh_snake", "name": "늪 뱀", "hp": 10, "defense": 12, "attackBonus": 4, "damage": "1d4+1", "speed": 4,
+    "morale": 0.5, "onDefeat": "deathSave", "tags": ["beast"], "loot": [] },
+  { "id": "bat_swarm", "name": "박쥐 떼", "hp": 10, "defense": 13, "attackBonus": 3, "damage": "1d4", "speed": 5,
+    "morale": 0.5, "onDefeat": "deathSave", "tags": ["beast"], "loot": [] },
+  { "id": "cave_spider", "name": "동굴 거미", "hp": 14, "defense": 11, "attackBonus": 3, "damage": "1d6", "speed": 3,
+    "morale": 0.3, "onDefeat": "deathSave", "tags": ["beast"], "loot": [] },
+  { "id": "tunnel_bandit", "name": "갱도 도적", "hp": 16, "defense": 12, "attackBonus": 3, "damage": "1d6", "speed": 2,
+    "morale": 0.4, "onDefeat": "robbed", "tags": ["humanoid"], "loot": [{ "itemId": "silver_scrap", "qty": 1, "chance": 0.6 }], "silver": 3 },
+  { "id": "goblin_raider", "name": "고블린 약탈병", "hp": 14, "defense": 12, "attackBonus": 3, "damage": "1d6", "speed": 3,
+    "morale": 0.4, "onDefeat": "deathSave", "tags": ["goblin"], "loot": [{ "itemId": "goblin_token", "qty": 1, "chance": 0.5 }] },
+  { "id": "ruin_looter", "name": "폐허 약탈자", "hp": 14, "defense": 11, "attackBonus": 2, "damage": "1d6", "speed": 3,
+    "morale": 0.5, "onDefeat": "robbed", "tags": ["humanoid"], "loot": [{ "itemId": "bandage", "qty": 1, "chance": 0.4 }], "silver": 3 }
 ]

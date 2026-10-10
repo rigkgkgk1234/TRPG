@@ -1,0 +1,97 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_wolf_den_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "버려진 갱도의 늑대 굴",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "얕은 갱도 안쪽에서 늑대 냄새가 짙다. 뼈다귀가 널린 바닥 너머로 누런 눈이 빛난다.",
+      "choices": [
+        {
+          "id": "sneak",
+          "label": "소리 없이 지나간다",
+          "check": {
+            "stat": "agi",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "늑대가 잠든 사이 굴 앞을 지나갔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "뼈다귀를 밟았다. 늑대가 일어섰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "무기를 들고 들어간다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다른 갱도로 간다",
+          "outcome": {
+            "text": "굴을 피해 돌아갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늑대가 이를 드러내며 굴에서 뛰쳐나온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "wolf"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늑대가 쓰러졌다. 굴 안쪽에서 광부가 떨어뜨린 은 부스러기를 주웠다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 1
+        },
+        {
+          "type": "incFlag",
+          "flag": "wolves_killed",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

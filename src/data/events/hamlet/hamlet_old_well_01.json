@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_old_well_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "우물 바닥의 반짝임",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마른 우물 바닥에서 무언가 반짝인다. 두레박 줄은 끊어졌고, 돌벽이 축축하다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "돌벽을 짚고 내려간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "바닥에서 누군가 던져 넣은 은화 몇 닢을 주웠다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "이끼에 미끄러져 바닥까지 떨어졌다. 고인 물이 썩어 있었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 둔다",
+          "outcome": {
+            "text": "우물 안을 들여다보다 발길을 돌렸다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

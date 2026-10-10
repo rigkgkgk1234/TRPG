@@ -1,0 +1,125 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_goblin_signal_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "갈대 섬의 봉화대",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "늪 한가운데 갈대 섬에 고블린들이 장작을 높이 쌓아 두었다. 옆 말뚝에 가죽 조각이 매달려 있고, 섬에는 늪 고블린 하나가 졸고 있다.",
+      "choices": [
+        {
+          "id": "read",
+          "label": "가까이 가서 가죽 조각을 읽는다",
+          "check": {
+            "stat": "agi",
+            "dc": 13,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "가죽에는 숲길과 강줄기, 보리울을 둘러싼 표시가 그려져 있었다. 놈들이 어디로 몰려올지 알았다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발밑의 갈대가 부러졌다. 졸던 고블린이 눈을 떴다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "attack",
+          "label": "졸고 있는 고블린을 덮친다",
+          "outcome": {
+            "next": "fight_first"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "멀리서 지켜보다 물러난다",
+          "outcome": {
+            "text": "봉화대 자리만 눈에 담고 물러났다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "늪 고블린이 뿔피리를 찾으며 창을 집었다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_first": {
+      "text": "갈대를 헤치고 뛰어들었다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린이 쓰러졌다. 말뚝의 가죽 조각을 떼어 살펴보니 보리울로 오는 길이 그려져 있었다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_plan_known"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

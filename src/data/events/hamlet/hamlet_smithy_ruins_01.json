@@ -1,0 +1,101 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_smithy_ruins_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "대장간 잔해",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 대장간 화덕 옆에 녹슨 쇠붙이가 산더미다. 쓸 만한 연장이 섞여 있을지도 모른다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "쓸 만한 것을 찾아 뒤진다",
+          "check": {
+            "stat": "per",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "날이 성한 손도끼를 찾아냈다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "hand_axe",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "녹슨 쇠 사이에서 은 장식 조각을 건졌다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "녹슨 쇠에 손을 베었다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "sort",
+          "label": "쇠를 두드려 보며 골라낸다",
+          "check": {
+            "stat": "str",
+            "skill": "smithing",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "소리로 성한 쇠를 골라냈다. 은을 입힌 문고리 두 개가 나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "silver_scrap",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "두드려 봐도 다 녹슨 쇠뿐이다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -56,6 +56,14 @@ const ENEMY_HIT_TEXT: Record<string, string> = {
   goblin_scout: "고블린 정찰병의 단검이 옆구리를 파고들었다.",
   goblin_warrior: "고블린 전사의 도끼가 어깨를 내리찍었다.",
   raid_leader: "약탈단 두목의 철퇴가 몸을 강타했다.",
+  giant_leech: "거머리가 다리에 달라붙어 피를 빨았다.",
+  marsh_goblin: "늪 고블린의 녹슨 창이 허벅지를 찔렀다.",
+  marsh_snake: "늪 뱀이 발목을 물었다.",
+  bat_swarm: "박쥐 떼가 얼굴을 할퀴고 지나갔다.",
+  cave_spider: "동굴 거미의 송곳니가 팔에 박혔다.",
+  tunnel_bandit: "갱도 도적의 곡괭이 자루가 옆구리를 쳤다.",
+  goblin_raider: "고블린 약탈병의 손도끼가 어깨를 그었다.",
+  ruin_looter: "폐허 약탈자의 몽둥이가 등을 내리쳤다.",
 };
 
 // ───────────────────────── 계산 ─────────────────────────

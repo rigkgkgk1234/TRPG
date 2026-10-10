@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_old_miner_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "옛 광부 영감",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 입구 바위에 노인이 앉아 담뱃대를 물고 있다. 이 은광이 문을 닫기 전까지 삼십 년을 일했다고 한다.",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "옛날이야기를 듣는다",
+          "outcome": {
+            "text": "노인이 어느 갱도가 무너지기 쉽고 어디에 은이 남았는지 일러 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "smithing",
+                "amount": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "food",
+          "label": "먹을거리를 나눈다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "노인이 답례로 품에서 은 부스러기 한 조각을 꺼냈다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "silver_scrap",
+                "qty": 1
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 들어간다",
+          "outcome": {
+            "text": "노인이 조심하라며 손을 흔들었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

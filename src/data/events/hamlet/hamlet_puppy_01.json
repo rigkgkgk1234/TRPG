@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_puppy_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "주인 잃은 강아지",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 집 문간에 강아지 한 마리가 웅크리고 있다. 꼬리를 흔들며 낑낑거린다.",
+      "choices": [
+        {
+          "id": "feed",
+          "label": "먹을 것을 나눠 준다",
+          "cost": {
+            "food": 1
+          },
+          "outcome": {
+            "text": "강아지가 허겁지겁 먹고는 한참 동안 졸졸 따라왔다. 마음이 조금 따뜻해졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "pet",
+          "label": "머리를 쓰다듬어 준다",
+          "outcome": {
+            "text": "강아지가 손을 핥았다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "낑낑거리는 소리가 뒤에서 들렸다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

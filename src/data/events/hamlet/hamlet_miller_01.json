@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_miller_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "떠나지 못한 방앗간 주인",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "부서진 물레방아 앞에서 노인이 망치를 들고 있다. 평생 돌린 방아를 두고 떠날 수 없다고 한다.",
+      "choices": [
+        {
+          "id": "help",
+          "label": "물레를 다시 거는 일을 돕는다",
+          "check": {
+            "stat": "str",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "물레가 삐걱거리며 다시 돌았다. 노인이 빻아 둔 보릿가루를 나눠 주었다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "물레가 미끄러져 다시 떨어졌다. 둘이 함께 한숨을 쉬었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "ask",
+          "label": "그날 일을 묻는다",
+          "outcome": {
+            "text": "노인이 고블린들이 강을 따라 올라와 밤중에 방앗간부터 불을 질렀다고 말했다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "goblin_tracks_found"
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "인사만 하고 지나간다",
+          "outcome": {
+            "text": "노인이 다시 망치질을 시작했다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -91,6 +91,8 @@ export const REGION_LABEL: Record<RegionId, string> = {
   forest: "개암나무 숲",
   watchtower: "버려진 감시탑",
   marsh: "회색 늪지",
+  mine: "무너진 은광",
+  hamlet: "물레방아골 폐허",
   rowen: "로웬",
 };
 

@@ -1,0 +1,85 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_will_o_wisp_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "도깨비불",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "해 질 녘 갈대 너머에 푸른 불빛이 떠다닌다. 다가가면 멀어지고, 멈추면 기다리는 것 같다.",
+      "choices": [
+        {
+          "id": "follow",
+          "label": "불빛을 따라간다",
+          "check": {
+            "stat": "per",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "불빛은 썩은 나무에서 새어 나온 늪 가스였다. 그 둘레에 늪 약초가 무성했다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "불빛을 놓쳤지만 돌아오는 길에 늪 약초 한 포기를 찾았다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "불빛만 쫓다 깊은 물에 빠질 뻔했다. 한참 헤매고 돌아왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "눈을 돌리고 갈 길을 간다",
+          "outcome": {
+            "text": "불빛은 어느새 사라졌다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

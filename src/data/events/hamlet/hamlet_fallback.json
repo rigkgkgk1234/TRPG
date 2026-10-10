@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_fallback",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "적막한 폐허",
+  "conditions": [],
+  "weight": 0,
+  "repeat": {
+    "mode": "always"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "바람에 문짝이 삐걱거리는 소리뿐이다. 별다른 일 없이 폐허를 둘러보았다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_graves_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "묻히지 못한 사람들",
+  "conditions": [],
+  "weight": 3,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "광장 한쪽에 거적에 덮인 시신 몇 구가 그대로 있다. 아무도 묻어 주지 못했다.",
+      "choices": [
+        {
+          "id": "bury",
+          "label": "구덩이를 파고 묻어 준다",
+          "outcome": {
+            "text": "해가 기울도록 흙을 퍼 날랐다. 마지막 무덤에 돌을 올리고 나니 온몸이 쑤셨다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 2
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "pray",
+          "label": "고개 숙여 명복을 빈다",
+          "outcome": {
+            "text": "잠시 묵념하고 자리를 떴다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_bats_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "천장의 박쥐 떼",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "횃불을 들자 천장 전체가 꿈틀거렸다. 박쥐 수백 마리가 거꾸로 매달려 있다.",
+      "choices": [
+        {
+          "id": "crouch",
+          "label": "횃불을 가리고 바닥에 엎드린다",
+          "check": {
+            "stat": "con",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "숨을 죽이고 버티자 박쥐 떼가 다시 조용해졌다. 살금살금 지나갔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "기침이 터졌다. 박쥐 떼가 한꺼번에 날아올랐다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "횃불을 휘둘러 쫓는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "back",
+          "label": "왔던 갱도로 물러난다",
+          "outcome": {
+            "text": "박쥐가 깨기 전에 발소리를 죽이고 물러났다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "박쥐 떼가 날개를 퍼덕이며 쏟아져 내려온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bat_swarm"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "박쥐 떼가 흩어졌다. 박쥐 똥 무더기 밑에서 반짝이는 은 부스러기를 주웠다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

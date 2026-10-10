@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_spring_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "바위틈 샘물",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "바위틈에서 맑은 물이 졸졸 흘러나온다. 광부들이 목을 축이던 자리라 바닥에 나무 국자가 놓여 있다.",
+      "choices": [
+        {
+          "id": "drink",
+          "label": "물을 마시고 쉰다",
+          "outcome": {
+            "text": "차갑고 단 물이다. 땀이 식고 기운이 돌아왔다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              },
+              {
+                "type": "hp",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "갈 길을 간다",
+          "outcome": {
+            "text": "국자를 제자리에 걸어 두고 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

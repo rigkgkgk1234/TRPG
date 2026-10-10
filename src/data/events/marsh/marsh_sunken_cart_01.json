@@ -1,0 +1,102 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_sunken_cart_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "가라앉은 상인 수레",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "진흙 속에 상인의 수레가 반쯤 잠겨 있다. 짐칸에 쇠를 덧댄 궤짝이 묶여 있다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "진흙을 파내고 궤짝을 끌어낸다",
+          "check": {
+            "stat": "str",
+            "dc": 13,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "궤짝을 뜯자 은화와 새 장화 한 켤레가 나왔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 6
+                },
+                {
+                  "type": "addItem",
+                  "itemId": "leather_boots",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "궤짝 뚜껑만 겨우 뜯었다. 손에 잡히는 은화만 챙겼다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발밑이 꺼지며 허리까지 빠졌다. 겨우 기어 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "search",
+          "label": "수레 앞쪽 마부석만 뒤진다",
+          "outcome": {
+            "text": "마부석 밑에서 동전 몇 닢이 든 주머니를 찾았다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "진흙이 깊어 보여 그만둔다",
+          "outcome": {
+            "text": "수레를 두고 발길을 돌렸다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

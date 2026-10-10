@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_herb_garden_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "수도원 약초밭",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "성당 뒤 작은 약초밭이 잡초에 묻혀 있다. 수도사들이 기르던 약초가 아직 남았다.",
+      "choices": [
+        {
+          "id": "pick",
+          "label": "약초를 골라 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 10,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "쓸 만한 약초를 넉넉히 캤다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "잡초 사이에서 약초 한 줌을 건졌다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "herb",
+                  "qty": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "잡초만 잔뜩 뽑았다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "약초밭을 지나쳤다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_deserter_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "숨어 지내는 병사",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "옆 갱도에 모닥불 흔적이 있다. 해진 군복을 입은 사내가 칼자루에 손을 얹고 노려본다. 로웬 수비대에서 도망쳤다고 한다.",
+      "choices": [
+        {
+          "id": "trade",
+          "label": "은화 5닢에 가죽 모자를 산다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 5
+            }
+          ],
+          "cost": {
+            "silver": 5
+          },
+          "outcome": {
+            "text": "사내가 군에서 받은 가죽 모자를 벗어 내주었다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "leather_cap",
+                "qty": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "talk",
+          "label": "군 이야기를 묻는다",
+          "check": {
+            "stat": "cha",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "사내가 방패로 막는 요령을 몇 가지 보여 주었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "guard",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "사내가 입을 다물고 등을 돌렸다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "수상하다. 붙잡으려 한다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "모른 척 지나간다",
+          "outcome": {
+            "text": "사내의 시선을 등 뒤로 느끼며 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "사내가 칼을 뽑았다. 손놀림이 제법이다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "사내가 칼을 떨어뜨리고 갱도 깊이 달아났다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

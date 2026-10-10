@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_guard_orders_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "불탄 경비 초소",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 18
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "마을 경비 초소가 까맣게 탔다. 무너진 탁자 밑에 그을린 양피지 한 장이 깔려 있다.",
+      "choices": [
+        {
+          "id": "read",
+          "label": "양피지를 조심스레 펼친다",
+          "check": {
+            "stat": "per",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "경비대장이 남긴 보고서다. 고블린 무리의 수와 쳐들어온 길, 다음은 하류의 보리울이라는 경고가 적혀 있다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_plan_known"
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "글자가 그을려 거의 알아볼 수 없다. '보름'이라는 말만 겨우 읽었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "초소를 뒤로하고 걸었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_frogs_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "살진 개구리",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물가 풀숲에서 살진 개구리들이 우렁차게 운다. 구워 먹으면 제법 든든하다.",
+      "choices": [
+        {
+          "id": "catch",
+          "label": "손으로 잡는다",
+          "check": {
+            "stat": "agi",
+            "dc": 11,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "한 자루를 가득 채웠다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "몇 마리만 잡았다. 옷이 흠뻑 젖었다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "개구리는 다 놓치고 물만 뒤집어썼다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "개구리 울음을 뒤로하고 걸었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

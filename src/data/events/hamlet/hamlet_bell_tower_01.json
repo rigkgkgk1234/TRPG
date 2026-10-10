@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_bell_tower_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "그을린 종탑",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "성당 옆 종탑은 그을렸지만 서 있다. 꼭대기에 오르면 강 상류와 숲이 한눈에 보일 것이다. 계단 몇 칸이 타서 없다.",
+      "choices": [
+        {
+          "id": "climb",
+          "label": "남은 계단을 딛고 올라간다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "꼭대기에서 숲 너머로 연기 기둥 여럿이 보였다. 고블린의 야영지다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "계단이 무너졌다. 아래층 바닥에 떨어졌다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "올라가지 않는다",
+          "outcome": {
+            "text": "종탑을 올려다보고 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

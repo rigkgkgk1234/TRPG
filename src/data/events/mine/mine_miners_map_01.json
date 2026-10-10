@@ -1,0 +1,62 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_miners_map_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "광부의 지도",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 갱도 벽에 숯으로 그린 지도가 남아 있다. 은광의 갱도가 산 아래를 지나 감시탑 쪽으로 이어진다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "지도를 꼼꼼히 익힌다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "갱도와 산길이 어떻게 이어지는지 머릿속에 그렸다. 숲과 감시탑 길도 한결 눈에 익을 것 같다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 3
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "숯이 번져 절반은 알아볼 수 없다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "text": "지도를 흘끗 보고 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

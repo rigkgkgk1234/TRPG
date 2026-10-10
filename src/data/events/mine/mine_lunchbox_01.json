@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_lunchbox_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "광부의 도시락 상자",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 쉼터에 양철 상자가 놓여 있다. 녹슨 자물쇠가 걸려 있지만 안에서 마른 것이 굴러가는 소리가 난다.",
+      "choices": [
+        {
+          "id": "break",
+          "label": "돌로 자물쇠를 부순다",
+          "check": {
+            "stat": "str",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "자물쇠가 떨어졌다. 기름종이에 싼 육포와 말린 콩이 그대로 있다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "자물쇠 대신 상자가 찌그러졌다. 틈으로 육포 한 줌만 꺼냈다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "남의 것이니 두고 간다",
+          "outcome": {
+            "text": "상자를 제자리에 두었다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

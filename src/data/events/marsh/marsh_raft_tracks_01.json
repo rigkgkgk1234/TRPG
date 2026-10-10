@@ -1,0 +1,107 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_raft_tracks_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "진흙에 남은 뗏목 자국",
+  "conditions": [
+    {
+      "type": "dayRange",
+      "min": 6
+    }
+  ],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물가 진흙에 뗏목을 끌어 올린 자국이 길게 나 있다. 옆에는 맨발 발자국이 어지럽다. 사람 발보다 작다.",
+      "choices": [
+        {
+          "id": "study",
+          "label": "자국을 자세히 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "뗏목은 여러 번 오갔다. 짐을 잔뜩 싣고 강 하류, 보리울 쪽으로 내려간 자국이다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "tracking",
+                  "amount": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "발자국이 너무 어지러워 알아보기 어렵다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "follow",
+          "label": "발자국을 따라가 본다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "자리를 뜬다",
+          "outcome": {
+            "text": "발자국을 밟지 않게 비켜 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "발자국 끝에서 늪 고블린 하나가 뗏목을 손보다 고개를 들었다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_goblin"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "늪 고블린이 쓰러졌다. 뗏목에 실린 짐에는 보리울 쪽 마을의 곡식 자루가 섞여 있었다.",
+      "onEnter": [
+        {
+          "type": "setFlag",
+          "flag": "goblin_tracks_found"
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_fallback",
+  "category": "explore",
+  "region": "mine",
+  "title": "조용한 갱도",
+  "conditions": [],
+  "weight": 0,
+  "repeat": {
+    "mode": "always"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물방울 떨어지는 소리만 울린다. 별다른 일 없이 갱도를 둘러보았다.",
+      "choices": []
+    }
+  }
+}

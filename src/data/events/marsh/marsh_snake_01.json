@@ -1,0 +1,121 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_snake_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "갈대 사이의 늪 뱀",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "발밑에서 쉿 하는 소리가 났다. 갈색 뱀이 고개를 쳐들고 혀를 날름거린다.",
+      "choices": [
+        {
+          "id": "freeze",
+          "label": "꼼짝 않고 숨을 죽인다",
+          "check": {
+            "stat": "con",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "한참을 버티자 뱀이 고개를 내리고 물속으로 미끄러져 갔다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "다리가 떨렸다. 뱀이 몸을 활처럼 휘었다!",
+              "next": "fight_ambushed"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "막대로 머리를 내리친다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "back",
+          "label": "천천히 뒷걸음질 친다",
+          "check": {
+            "stat": "agi",
+            "dc": 10,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "뱀이 닿지 않는 곳까지 물러났다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "뒷걸음질 치다 진흙에 미끄러졌다. 뱀이 달려든다!",
+              "next": "fight_ambushed"
+            }
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "뱀이 몸을 곧추세운다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_snake"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_ambushed": {
+      "text": "뱀이 먼저 몸을 날렸다!",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "marsh_snake"
+            ],
+            "initiative": "enemy",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "뱀이 축 늘어졌다. 뱀이 웅크리고 있던 둥지에 물새 알 두 개가 남아 있었다.",
+      "onEnter": [
+        {
+          "type": "food",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

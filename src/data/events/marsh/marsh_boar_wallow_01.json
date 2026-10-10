@@ -1,0 +1,91 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_boar_wallow_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "진흙 구덩이의 멧돼지",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "진흙 구덩이에서 멧돼지가 뒹굴고 있다. 길은 그 옆을 지나야 한다.",
+      "choices": [
+        {
+          "id": "sneak",
+          "label": "바람을 등지고 살금살금 지나간다",
+          "check": {
+            "stat": "agi",
+            "skill": "tracking",
+            "dc": 11,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "멧돼지는 끝내 눈치채지 못했다.",
+              "next": "END"
+            },
+            "fail": {
+              "text": "멧돼지가 코를 킁킁거리더니 벌떡 일어섰다!",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "사냥감이다. 덤빈다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "먼 길로 돌아간다",
+          "outcome": {
+            "text": "한참 돌아서 구덩이를 피했다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "진흙투성이 멧돼지가 콧김을 뿜으며 달려든다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "boar"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "멧돼지가 진흙 속에 쓰러졌다. 고기를 넉넉히 챙겼다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

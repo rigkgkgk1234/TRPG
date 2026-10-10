@@ -1,8 +1,8 @@
 import type { ExerciseStat } from "@/core/labels";
 import type { DailyActionId, JobId, RegionId, SkillId } from "@/core/types";
 import {
-  BarbellIcon, BedIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, HammerIcon, HeartbeatIcon, PersonSimpleRunIcon,
-  PlantIcon, ShieldIcon, StorefrontIcon, SwordIcon, TargetIcon, TreeIcon, type Icon,
+  BarbellIcon, BedIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, HammerIcon, HeartbeatIcon, HouseLineIcon, MountainsIcon, PersonSimpleRunIcon,
+  PlantIcon, ShieldIcon, StorefrontIcon, SwordIcon, TargetIcon, TreeIcon, WavesIcon, type Icon,
 } from "@/ui/icons";
 
 /** 직업·행동마다 쓰는 아이콘. 같은 대상은 어느 화면에서나 같은 아이콘. */
@@ -41,4 +41,7 @@ export const SKILL_ICON: Partial<Record<SkillId, Icon>> = {
 export const REGION_ICON: Partial<Record<RegionId, Icon>> = {
   forest: TreeIcon,
   watchtower: CastleTurretIcon,
+  marsh: WavesIcon,
+  mine: MountainsIcon,
+  hamlet: HouseLineIcon,
 };

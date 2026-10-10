@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_spider_eggs_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "거미 알주머니",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "갱도 천장에 하얀 알주머니가 주렁주렁 매달려 있다. 이대로 두면 갱도가 곧 거미 소굴이 될 것이다.",
+      "choices": [
+        {
+          "id": "burn",
+          "label": "횃불로 알주머니를 태운다",
+          "outcome": {
+            "text": "알주머니가 타들어 갔다. 어미 거미는 나타나지 않았다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "poke",
+          "label": "막대로 쿡 찔러 본다",
+          "outcome": {
+            "text": "알주머니가 터지자 천장에서 어미 거미가 내려왔다!",
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "건드리지 않는다",
+          "outcome": {
+            "text": "알주머니 밑을 조심해서 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "어미 거미가 송곳니를 드러내며 내려온다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "cave_spider"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "어미 거미가 쓰러졌다. 남은 알주머니도 모두 태웠다.",
+      "onEnter": [
+        {
+          "type": "fatigue",
+          "delta": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

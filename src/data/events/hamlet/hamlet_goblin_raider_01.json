@@ -1,0 +1,109 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_goblin_raider_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "잔해를 뒤지는 고블린",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "불탄 집터에서 고블린 하나가 잿더미를 뒤지고 있다. 등에 멘 자루가 불룩하다. 아직 이쪽을 보지 못했다.",
+      "choices": [
+        {
+          "id": "ambush",
+          "label": "뒤로 돌아가 덮친다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "tags": [
+              "goblin"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "놈이 돌아보기도 전에 한 대 먹였다!",
+              "next": "fight_advantage"
+            },
+            "fail": {
+              "text": "숯덩이를 밟았다. 고블린이 손도끼를 뽑아 들었다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "정면으로 맞선다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "back",
+          "label": "들키기 전에 물러난다",
+          "outcome": {
+            "text": "담장 그림자를 따라 조용히 물러났다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "고블린 약탈병이 이를 드러냈다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_raider"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "fight_advantage": {
+      "text": "휘청거리는 고블린이 손도끼를 겨눈다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_raider"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "enemyHpModifier": -5,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린이 쓰러졌다. 놈의 자루에는 물레방아골 사람들의 냄비와 숟가락이 들어 있었다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

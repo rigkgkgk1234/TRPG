@@ -1,0 +1,98 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_leech_pool_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "거머리 웅덩이",
+  "conditions": [],
+  "weight": 6,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "허리까지 차는 검은 웅덩이를 건너야 저편으로 갈 수 있다. 물속에서 무언가 굵은 것이 꿈틀거린다.",
+      "choices": [
+        {
+          "id": "wade",
+          "label": "무기를 들고 그대로 건넌다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "detour",
+          "label": "웅덩이를 빙 돌아갈 길을 찾는다",
+          "check": {
+            "stat": "per",
+            "skill": "tracking",
+            "dc": 12,
+            "tags": [
+              "beast"
+            ]
+          },
+          "outcomes": {
+            "success": {
+              "text": "마른 땅을 골라 디디며 웅덩이를 돌아갔다. 시간이 꽤 걸렸다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "돌아가던 길도 진창이었다. 발이 빠진 사이 물속의 것이 다가왔다.",
+              "next": "fight"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "건너지 않고 돌아선다",
+          "outcome": {
+            "text": "오늘은 이 웅덩이를 건너지 않기로 했다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "팔뚝만 한 거머리가 물 밖으로 몸을 일으켰다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "giant_leech"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "거머리를 떼어 내고 웅덩이를 건넜다. 물가에서 늪 약초 한 포기를 뜯었다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "rare_herb",
+          "qty": 1
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

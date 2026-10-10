@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_collapsing_roof_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "기울어진 집",
+  "conditions": [],
+  "weight": 5,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 4
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "반쯤 기운 집 안에 궤짝이 보인다. 들보가 삐걱거리고, 지붕에서 재가 흘러내린다.",
+      "choices": [
+        {
+          "id": "enter",
+          "label": "재빨리 들어가 궤짝을 꺼낸다",
+          "check": {
+            "stat": "agi",
+            "dc": 12,
+            "allowPartial": true
+          },
+          "outcomes": {
+            "success": {
+              "text": "궤짝을 안고 뛰어나오자마자 지붕이 내려앉았다. 안에 은화가 들어 있었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            },
+            "partial": {
+              "text": "나오는 순간 서까래에 등을 맞았다. 궤짝은 건졌다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "들보가 무너져 깔렸다. 겨우 기어 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -4
+                },
+                {
+                  "type": "wound",
+                  "steps": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "들어가지 않는다",
+          "outcome": {
+            "text": "기울어진 집을 비켜 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

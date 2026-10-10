@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_drowned_soldier_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "물에 잠긴 병사",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 8
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "얕은 물속에 녹슨 투구를 쓴 해골이 누워 있다. 오래전 이 늪을 건너다 쓰러진 병사인 것 같다. 허리에 칼과 주머니가 그대로 있다.",
+      "choices": [
+        {
+          "id": "search",
+          "label": "칼과 주머니를 챙긴다",
+          "outcome": {
+            "text": "녹슨 검과 은화 몇 닢을 건졌다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "rusty_sword",
+                "qty": 1
+              },
+              {
+                "type": "silver",
+                "delta": 3
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "bury",
+          "label": "물가로 옮겨 묻어 준다",
+          "outcome": {
+            "text": "마른 흙을 덮고 돌 하나를 올려 두었다. 손은 지쳤지만 마음은 가볍다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그대로 둔다",
+          "outcome": {
+            "text": "고개를 숙이고 지나갔다.",
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -10,7 +10,7 @@ export type TraitId = string;
 export type FlagId = string;
 
 export type JobId = "farmer" | "smith" | "hunter" | "herbalist" | "errand";
-export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "rowen";
+export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "mine" | "hamlet" | "rowen";
 
 /** "1d6", "2d4+1", "1d8-1" 형태의 주사위 표기 */
 export type DiceExpr = `${number}d${number}` | `${number}d${number}+${number}` | `${number}d${number}-${number}`;

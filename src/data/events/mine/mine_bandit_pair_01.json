@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "mine_bandit_pair_01",
+  "category": "explore",
+  "region": "mine",
+  "title": "깊은 갱도의 도적들",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "깊은 갱도에서 도적 둘이 은 부스러기를 자루에 담고 있다. 하나가 곡괭이를 내려놓고 칼을 집었다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "둘을 상대한다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "pay",
+          "label": "은화 5닢을 내고 지나간다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 5
+            }
+          ],
+          "cost": {
+            "silver": 5
+          },
+          "outcome": {
+            "text": "도적들이 은화를 세어 보더니 손짓으로 길을 내주었다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "back",
+          "label": "어둠 속으로 물러난다",
+          "outcome": {
+            "text": "등잔불이 닿지 않는 곳까지 물러나 다른 길로 나왔다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "도적 둘이 좁은 갱도 양쪽을 막아선다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "tunnel_bandit",
+              "tunnel_bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "도적들이 자루를 버리고 달아났다. 자루에서 은 부스러기를 챙겼다.",
+      "onEnter": [
+        {
+          "type": "addItem",
+          "itemId": "silver_scrap",
+          "qty": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "갱도 입구의 빛을 향해 정신없이 달렸다. 오늘 은광은 여기까지다.",
+      "choices": []
+    }
+  }
+}

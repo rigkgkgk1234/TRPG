@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "hamlet_wounded_goblin_01",
+  "category": "explore",
+  "region": "hamlet",
+  "title": "다친 고블린 약탈병",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "무너진 담 밑에 고블린 약탈병이 다리를 다친 채 쓰러져 있다. 이쪽을 보더니 손도끼를 끌어당긴다.",
+      "choices": [
+        {
+          "id": "fight",
+          "label": "다친 틈을 놓치지 않는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "상관하지 않고 지나간다",
+          "outcome": {
+            "text": "놈이 일어나기 전에 자리를 떴다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "다친 고블린이 이를 악물고 일어선다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "goblin_raider"
+            ],
+            "initiative": "player",
+            "canFlee": true,
+            "enemyHpModifier": -7,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "고블린이 쓰러졌다. 놈의 허리춤에 물레방아골 사람들의 은화가 들어 있었다.",
+      "onEnter": [
+        {
+          "type": "silver",
+          "delta": 2
+        }
+      ],
+      "choices": []
+    },
+    "fled": {
+      "text": "무너진 담장을 넘어 정신없이 달아났다. 오늘 물레방아골은 여기까지다.",
+      "choices": []
+    }
+  }
+}

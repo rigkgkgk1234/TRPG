@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_ferry_bandit_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "나루의 도적",
+  "conditions": [],
+  "weight": 4,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 7
+  },
+  "dangerTier": 3,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "깊은 물길 앞에 낡은 나룻배가 있다. 배 위의 사내가 칼을 무릎에 얹은 채 뱃삯으로 은화 4닢을 내라고 한다.",
+      "choices": [
+        {
+          "id": "pay",
+          "label": "은화 4닢을 낸다",
+          "conditions": [
+            {
+              "type": "silver",
+              "min": 4
+            }
+          ],
+          "cost": {
+            "silver": 4
+          },
+          "outcome": {
+            "text": "사내가 히죽 웃으며 노를 저어 건너 주었다.",
+            "next": "END"
+          }
+        },
+        {
+          "id": "swim",
+          "label": "배를 무시하고 헤엄쳐 건넌다",
+          "check": {
+            "stat": "con",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "차가운 물을 헤치고 건넜다. 사내가 뒤에서 혀를 찼다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "중간에 힘이 빠졌다. 겨우 돌아 나왔다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -3
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "label": "칼을 뽑는다",
+          "outcome": {
+            "next": "fight"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "건너지 않는다",
+          "outcome": {
+            "text": "물길을 등지고 돌아섰다.",
+            "next": "END"
+          }
+        }
+      ]
+    },
+    "fight": {
+      "text": "사내가 배에서 뛰어내려 칼을 겨눈다.",
+      "onEnter": [
+        {
+          "type": "startCombat",
+          "combat": {
+            "enemies": [
+              "bandit"
+            ],
+            "initiative": "roll",
+            "canFlee": true,
+            "onVictory": "win",
+            "onFled": "fled"
+          }
+        }
+      ],
+      "choices": []
+    },
+    "win": {
+      "text": "도적이 물에 뛰어들어 달아났다. 남은 나룻배로 물길을 건넜다.",
+      "choices": []
+    },
+    "fled": {
+      "text": "갈대밭을 헤치고 정신없이 달아났다. 오늘 늪은 여기까지다.",
+      "choices": []
+    }
+  }
+}

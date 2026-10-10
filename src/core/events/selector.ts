@@ -2,7 +2,7 @@ import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import type { EventCategory, EventDef, EventHistoryEntry, RegionId, Rng, RunState } from "../types";
 import { evalAll } from "./conditions";
-import { dangerTierForDay } from "./explore";
+import { dangerTierFor } from "./explore";
 
 /** 최근 이만큼 안에 본 카드는 덜 뽑힌다 */
 const RECENT_DAYS = 3;
@@ -40,7 +40,7 @@ export function isFallback(ev: EventDef): boolean {
  */
 export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId, deep = false, npc?: string): EventDef | null {
   const { draft: s, content, rng } = ctx;
-  const tier = Math.min(3, dangerTierForDay(s.time.day) + (deep ? 1 : 0));
+  const tier = Math.min(3, dangerTierFor(region, s.time.day) + (deep ? 1 : 0));
 
   const pool = eventPool(content, category, region, npc).filter((ev) =>
     (ev.dangerTier ?? 1) <= tier &&
@@ -82,7 +82,7 @@ export function eventPool(content: Pick<ContentDB, "events">, category: EventCat
  * selectEvent와 같은 걸러내기를 하되 rng를 쓰지 않는다: 확률 조건(chance)은 나올 수 있는 것으로 친다.
  */
 export function possibleEvents(run: RunState, content: Pick<ContentDB, "events">, category: EventCategory, region?: RegionId, npc?: string): EventDef[] {
-  const tier = dangerTierForDay(run.time.day);
+  const tier = dangerTierFor(region, run.time.day);
   return eventPool(content, category, region, npc).filter((ev) =>
     (ev.dangerTier ?? 1) <= tier &&
     repeatAllowed(ev, run.eventHistory[ev.id], run.time.day) &&
