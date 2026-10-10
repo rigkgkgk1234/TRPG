@@ -7,6 +7,7 @@ import { CONTENT } from "@/data";
 import { makeRecord } from "@/core/story/ending";
 import { useMeta } from "./metaStore";
 import { clearRun, loadRun, saveCheckpoint, saveRun } from "./storage";
+import { isVolley, volleyParts, VOLLEY_GAP_MS } from "./volley";
 
 /** 화면에 남겨 둘 최근 명령 수 */
 const LOG_MAX = 20;
@@ -135,11 +136,23 @@ export const useGame = create<GameStore>()((set, get) => ({
 
   playFx: (fx) => {
     const { hpCut, hurt } = get();
+    const seq = fxSeq++;
+    // 활 대성공은 화살 세 발: HP를 한 발씩 나눠 깎는다 (연출이 끝나거나 건너뛰면 더 깎지 않는다)
+    const parts = isVolley(fx) ? volleyParts(fx.damage) : null;
+    const cut = (target: string, dmg: number) => {
+      const now = get().hpCut;
+      set({ hpCut: { ...now, [target]: (now[target] ?? 0) + dmg } });
+    };
     set({
-      fx: { seq: fxSeq++, fx },
-      ...(fx.side === "player" && fx.hit ? { hpCut: { ...hpCut, [fx.targetId]: (hpCut[fx.targetId] ?? 0) + fx.damage } } : {}),
+      fx: { seq, fx },
       ...(fx.side === "foe" && fx.hit ? { hurt: hurt + fx.damage } : {}),
     });
+    if (fx.side === "player" && fx.hit) {
+      set({ hpCut: { ...hpCut, [fx.targetId]: (hpCut[fx.targetId] ?? 0) + (parts ? parts[0] : fx.damage) } });
+      parts?.slice(1).forEach((dmg, i) => setTimeout(() => {
+        if (get().fx?.seq === seq) cut(fx.targetId, dmg);
+      }, VOLLEY_GAP_MS * (i + 1)));
+    }
   },
 
   startNew: (job, name) => {

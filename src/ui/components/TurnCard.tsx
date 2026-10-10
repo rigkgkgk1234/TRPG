@@ -4,7 +4,9 @@ import type { CombatFx } from "@/core/commands";
 import { OUTCOME_LABEL } from "@/core/labels";
 import type { CheckResult } from "@/core/types";
 import { useGame } from "@/store/gameStore";
+import { isVolley, VOLLEY_GAP_MS, VOLLEY_SHOTS } from "@/store/volley";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
+import { HIT_FX_MS } from "@/ui/components/HitEffect";
 import { BandaidsIcon, TrendUpIcon, WarningIcon, type Icon } from "@/ui/icons";
 import { OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line, type Tone, type TurnSummary } from "@/ui/turnSummary";
 import { RollFormula } from "@/ui/components/RollFormula";
@@ -47,7 +49,9 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
   const [offRolling, setOffRolling] = useState(false);
   const [offPending, setOffPending] = useState(animate && !!offRoll);
   const [shown, setShown] = useState(animate ? 0 : steps);
-  const done = !rolling && !offRolling && shown >= steps;
+  /** 활 대성공 연사의 남은 화살이 꽂히는 동안은 끝나지 않는다 (마지막 줄이어도 연출이 잘리지 않게) */
+  const [holding, setHolding] = useState(false);
+  const done = !rolling && !offRolling && !holding && shown >= steps;
 
   // 박자마다 재생할 전투 연출: 굴림 결과가 드러날 때 내 공격, 글 줄이 드러날 때 상대 공격
   const fxOf = (b: Beat): CombatFx[] =>
@@ -78,6 +82,13 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
         setShown(i + 1);
         if (!skipped.current) fx.forEach((f) => useGame.getState().playFx(f));
       }, t));
+      // 활 대성공 연사는 나머지 화살이 다 꽂힐 때까지 다음 박자와 끝을 미룬다
+      if (fx.some(isVolley)) {
+        timers.push(setTimeout(() => setHolding(true), t));
+        t += VOLLEY_GAP_MS * (VOLLEY_SHOTS - 1);
+        // 마지막 화살이 꽂히고 터지는 것까지 본 뒤에 끝난다
+        timers.push(setTimeout(() => setHolding(false), t + HIT_FX_MS * 0.6));
+      }
     });
     return () => timers.forEach(clearTimeout);
     // beats는 summary에서 정해지므로 steps로 충분하다
@@ -93,6 +104,7 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
 
   const skip = () => {
     skipped.current = true;
+    setHolding(false);
     setRolling(false);
     setOffRolling(false);
     setOffPending(false);

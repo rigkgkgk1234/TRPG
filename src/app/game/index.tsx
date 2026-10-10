@@ -1,11 +1,13 @@
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Easing, StyleSheet, View } from "react-native";
 import { josa, PHASE_LABEL } from "@/core/labels";
 import type { RunState } from "@/core/types";
 import { selectView, type GameView } from "@/store/selectors";
 import { useGame, useShownRun } from "@/store/gameStore";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
+import { HIT_FX_MS } from "@/ui/components/HitEffect";
+import { isVolley, VOLLEY_GAP_MS, VOLLEY_SHOTS } from "@/store/volley";
 import { RunStatusBar } from "@/ui/components/RunStatusBar";
 import { TurnLog } from "@/ui/components/TurnLog";
 import { colors } from "@/ui/theme";
@@ -53,21 +55,38 @@ export default function GameScreen() {
 }
 
 /**
- * 적에게 맞으면 화면 전체가 짧게 좌우로 흔들린다 (급소면 더 세게). 내가 둔기로 내리쳐도 묵직하게 조금 흔들린다.
+ * 적에게 맞으면 화면 전체가 짧게 좌우로 흔들린다 (급소면 더 세게). 내가 둔기·검·활로 맞혀도 흔들린다 (둔기가 가장 세다, 활은 화살이 닿을 때).
  * "동작 줄이기"면 연출 자체가 오지 않는다
  */
 function useHurtShake(): Animated.Value {
   const fx = useGame((s) => s.fx);
   const [x] = useState(() => new Animated.Value(0));
   const hurt = fx?.fx.side === "foe" && fx.fx.hit;
-  const smash = fx?.fx.side === "player" && fx.fx.hit && fx.fx.weapon === "blunt";
+  const weapon = fx?.fx.side === "player" && fx.fx.hit ? fx.fx.weapon : null;
+  const smash = weapon === "blunt" || weapon === "blade" || weapon === "bow" ? weapon : null;
   const hurtSeq = hurt || smash ? fx!.seq : null;
   const crit = !!fx?.fx.crit;
+  const volley = !!fx && isVolley(fx.fx);
   useEffect(() => {
     if (hurtSeq === null) return;
-    const a = smash ? (crit ? 11 : 7) : crit ? 9 : 5;
-    Animated.sequence([a, -a, a * 0.6, -a * 0.4, 0].map((v) => Animated.timing(x, { toValue: v, duration: 45, useNativeDriver: NATIVE_DRIVER }))).start();
-  }, [hurtSeq, smash, crit, x]);
+    // 활 대성공 연사: 화살이 꽂힐 때마다 작게 한 번씩
+    if (volley) {
+      const sway = (to: number) => Animated.timing(x, { toValue: to, duration: VOLLEY_GAP_MS / 3, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER });
+      Animated.sequence([
+        Animated.delay(HIT_FX_MS * 0.2),
+        ...Array.from({ length: VOLLEY_SHOTS }, (_, i) => Animated.sequence([sway(-(3 + i * 2)), sway(2 + i), sway(0)])),
+      ]).start();
+      return;
+    }
+    const a = smash === "blunt" ? (crit ? 11 : 7) : smash ? (crit ? 7 : 4) : crit ? 9 : 5;
+    // 검·활은 길고 부드럽게 출렁이고, 둔기와 적에게 맞을 때는 짧게 덜컹거린다
+    const soft = smash === "blade" || smash === "bow";
+    Animated.sequence([
+      Animated.delay(smash === "bow" ? HIT_FX_MS * 0.2 : 0),
+      ...(soft ? [a, -a * 0.6, a * 0.3, 0] : [a, -a, a * 0.6, -a * 0.4, 0]).map((v) =>
+        Animated.timing(x, { toValue: v, duration: soft ? 90 : 45, easing: soft ? Easing.inOut(Easing.sin) : undefined, useNativeDriver: NATIVE_DRIVER })),
+    ]).start();
+  }, [hurtSeq, smash, crit, volley, x]);
   return x;
 }
 

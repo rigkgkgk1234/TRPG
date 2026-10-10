@@ -7,6 +7,7 @@ import { MODE_LABEL } from "@/core/labels";
 import type { CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
+import { isVolley, volleyParts, VOLLEY_GAP_MS, VOLLEY_SHOTS } from "@/store/volley";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
@@ -156,7 +157,7 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
         const mine = fx?.fx.side === "player" && fx.fx.targetId === e.id ? { seq: fx.seq, fx: fx.fx } : null;
         const attacking = fx?.fx.side === "foe" && fx.fx.enemyId === e.id ? fx.seq : null;
         return (
-          <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} heavy={mine?.fx.weapon === "blunt"} lungeSeq={attacking} front={mine !== null}>
+          <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} impact={mine?.fx.weapon} volley={!!mine && isVolley(mine.fx)} lungeSeq={attacking} front={mine !== null}>
             <EnemyCard
               name={e.name}
               hp={hp}
@@ -189,7 +190,8 @@ function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; 
         <View style={styles.bar}>
           <View style={[styles.barFill, { width: `${hpRatio(hp, maxHp) * 100}%`, backgroundColor: hp <= maxHp / 2 ? colors.partial : colors.fail }]} />
         </View>
-        {mine && <HitEffect key={mine.seq} fx={mine.fx} from={hpRatio(hp + mine.fx.damage, maxHp)} to={hpRatio(hp, maxHp)} />}
+        {/* 활 대성공 연사는 첫 발만큼만 먼저 깎여 있다 (나머지는 스토어가 차례로 깎는다) */}
+        {mine && <HitEffect key={mine.seq} fx={mine.fx} from={hpRatio(hp + (isVolley(mine.fx) ? volleyParts(mine.fx.damage)[0] : mine.fx.damage), maxHp)} to={hpRatio(hp, maxHp)} maxHp={maxHp} />}
       </View>
       <Text style={styles.enemyHp}>{status}</Text>
     </Pressable>
@@ -197,22 +199,51 @@ function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; 
 }
 
 /**
- * 적 줄 하나: 맞으면 좌우로 흔들리고(shakeSeq), 나를 공격하면 아래로 살짝 달려든다(lungeSeq).
- * heavy(둔기): 맞는 즉시 아래로 꺼졌다 튀어 오르고, 더 크게 흔들린다
+ * 무기마다 맞았을 때 적 줄이 움직이는 모양: 맞는 순간(ms), 아래로 꺼지는 깊이, 좌우 흔들림, 한 번 흔들리는 시간(ms).
+ * 둔기는 짧고 세게 덜컹거리고, 검·활은 길고 부드럽게 출렁인다
  */
-function EnemyRow({ shakeSeq, heavy, lungeSeq, front, children }: { shakeSeq: number | null; heavy?: boolean; lungeSeq: number | null; front: boolean; children: React.ReactNode }) {
+const ROW_IMPACT: Partial<Record<string, { delay: number; drop: number; shake: number[]; step: number }>> = {
+  blunt: { delay: 0, drop: 12, shake: [18, -16, 13, -10, 7, -4, 2, 0], step: 42 },
+  blade: { delay: HIT_FX_MS * 0.08, drop: 4, shake: [-14, 10, -6, 3, 0], step: 95 },
+  bow: { delay: HIT_FX_MS * 0.2, drop: 6, shake: [-12, 8, -4, 2, 0], step: 95 },
+};
+
+/**
+ * 적 줄 하나: 맞으면 좌우로 흔들리고(shakeSeq), 나를 공격하면 아래로 살짝 달려든다(lungeSeq).
+ * impact(둔기·검·활): 맞는 순간 아래로 꺼졌다 튀어 오르고 크게 흔들린다. 맨주먹은 가볍게만 흔들린다
+ */
+function EnemyRow({ shakeSeq, impact, volley, lungeSeq, front, children }: {
+  shakeSeq: number | null; impact?: string; volley?: boolean; lungeSeq: number | null; front: boolean; children: React.ReactNode;
+}) {
   const [x] = useState(() => new Animated.Value(0));
   const [y] = useState(() => new Animated.Value(0));
   useEffect(() => {
     if (shakeSeq === null) return;
+    // 활 대성공 연사: 화살이 꽂힐 때마다 한 번씩 작게 출렁인다
+    if (volley) {
+      const sway = (to: number, duration: number) => Animated.timing(x, { toValue: to, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER });
+      const dip = (to: number, duration: number) => Animated.timing(y, { toValue: to, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER });
+      Animated.sequence([
+        Animated.delay(HIT_FX_MS * 0.2),
+        ...Array.from({ length: VOLLEY_SHOTS }, (_, i) => Animated.parallel([
+          Animated.sequence([dip(5 + i * 2, VOLLEY_GAP_MS * 0.3), dip(0, VOLLEY_GAP_MS * 0.7)]),
+          Animated.sequence([sway(-8 - i * 3, VOLLEY_GAP_MS * 0.35), sway(5 + i * 2, VOLLEY_GAP_MS * 0.35), sway(0, VOLLEY_GAP_MS * 0.3)]),
+        ])),
+      ]).start();
+      return;
+    }
+    const heavy = impact ? ROW_IMPACT[impact] : undefined;
     if (heavy) {
-      Animated.parallel([
-        Animated.sequence([
-          Animated.timing(y, { toValue: 12, duration: 55, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-          Animated.timing(y, { toValue: -4, duration: 120, useNativeDriver: NATIVE_DRIVER }),
-          Animated.timing(y, { toValue: 0, duration: 90, useNativeDriver: NATIVE_DRIVER }),
+      Animated.sequence([
+        Animated.delay(heavy.delay),
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(y, { toValue: heavy.drop, duration: heavy.step + 13, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+            Animated.timing(y, { toValue: -heavy.drop / 3, duration: heavy.step * 2.8, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+            Animated.timing(y, { toValue: 0, duration: heavy.step * 2.1, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+          ]),
+          Animated.sequence(heavy.shake.map((v) => Animated.timing(x, { toValue: v, duration: heavy.step, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }))),
         ]),
-        Animated.sequence([18, -16, 13, -10, 7, -4, 2, 0].map((v) => Animated.timing(x, { toValue: v, duration: 42, useNativeDriver: NATIVE_DRIVER }))),
       ]).start();
       return;
     }
@@ -221,7 +252,7 @@ function EnemyRow({ shakeSeq, heavy, lungeSeq, front, children }: { shakeSeq: nu
       Animated.delay(HIT_FX_MS * 0.25),
       ...[7, -6, 4, -2, 0].map((v) => Animated.timing(x, { toValue: v, duration: 45, useNativeDriver: NATIVE_DRIVER })),
     ]).start();
-  }, [shakeSeq, heavy, x, y]);
+  }, [shakeSeq, impact, volley, x, y]);
   useEffect(() => {
     if (lungeSeq === null) return;
     Animated.sequence([
