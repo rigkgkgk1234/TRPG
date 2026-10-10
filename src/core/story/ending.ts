@@ -41,9 +41,9 @@ export function endingText(s: RunState): string {
       if (s.flags.fled_together) return "수레는 떠났지만 따라나선 이웃은 몇 되지 않았다. 남은 사람들의 소식은 끝내 듣지 못했다.";
       return "날이 밝자 마을 곳곳에 연기가 피어올랐다. 살아남았다. 그것 말고는 아무것도 장담할 수 없다.";
     case "debtor":
-      return "세금 걷는 관리가 빚 문서를 흔들었다. 빚을 갚을 때까지 영주의 땅에서 일하게 되었다. 서른 날을 다 채우지 못한 것이 못내 아쉬웠다.";
+      return "세금 걷는 관리가 빚 문서를 흔들었다. 빚을 갚을 때까지 영주의 땅에서 일하게 되었다. 끝까지 버티지 못한 것이 못내 아쉬웠다.";
     case "death":
-      return "보리울의 서른 날은 여기서 끝났다.";
+      return "보리울에서 버틴 날들은 여기서 끝났다.";
     default:
       return "";
   }
