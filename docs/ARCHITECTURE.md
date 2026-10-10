@@ -632,7 +632,7 @@ export function selectEvent(ctx: Ctx, category: EventCategory, region?: RegionId
 ### 4주차 — 전투
 **할 일**
 - `combatStep`: 플레이어 행동 → 적 턴 → 라운드 종료(사기·방어 해제·종료 판정)
-- 부상 발생 3조건, 사망 굴림, 도적 강탈, 전리품·화살 회수
+- 부상 발생 3조건, 사망 굴림, 도적 강탈, 전리품
 - 전투 뷰: 적 HP 바, 로그, 행동 버튼(도주 불가 사유 표시), 피해 숫자 팝업
 - `simulate.ts`에 전투 1,000회 시뮬레이션 추가 → 직업별 승률·사망률 표
 

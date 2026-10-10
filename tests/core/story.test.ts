@@ -6,6 +6,7 @@ import { dispatch } from "@/core/engine";
 import { handleChoice, sceneView } from "@/core/events/runner";
 import { newRun } from "@/core/newRun";
 import { addRecord, emptyMeta, loadMeta, saveMeta } from "@/core/save/meta";
+import { seal } from "@/core/save/seal";
 import type { KeyValueStore } from "@/core/save/serialize";
 import { epitaph, makeRecord, resolveEnding } from "@/core/story/ending";
 import { SAVE_KEYS, type JobId, type Rng, type RunState } from "@/core/types";
@@ -136,7 +137,7 @@ describe("기록", () => {
       s.time.day = 12;
       s.activeEvent = { eventId: "forest_wolf_01", sceneId: "fight", explore: { region: "forest", cardsDrawn: 1, deep: false } };
       s.combat = { setup: { enemies: ["wolf"], initiative: "roll", canFlee: true, onVictory: "win" }, enemies: [{ instanceId: "wolf_1", defId: "wolf", hp: 3, maxHp: 6, routed: false }],
-        round: 2, phase: "playerTurn", defendBonus: 0, defensePenalty: 0, enemyAdvantageThisRound: false, arrowsFired: 0, lowHpWoundApplied: true, xpThisCombat: {}, log: [] };
+        round: 2, phase: "playerTurn", defendBonus: 0, defensePenalty: 0, enemyAdvantageThisRound: false, lowHpWoundApplied: true, xpThisCombat: {}, log: [] };
     });
     const dead = edit(before, (s) => { s.ending = "death"; s.player.hp = 0; s.combat = null; s.activeEvent = null; });
     const r = makeRecord(dead, CONTENT, NOW, before);
@@ -160,6 +161,9 @@ describe("기록", () => {
     const kv: KeyValueStore = { getItem: async (k) => data.get(k) ?? null, setItem: async (k, v) => { data.set(k, v); }, removeItem: async (k) => { data.delete(k); } };
     const meta = addRecord(emptyMeta(), makeRecord(edit(start(), (s) => { s.ending = "debtor"; }), CONTENT, NOW));
     await saveMeta(kv, meta);
+    expect(await loadMeta(kv)).toEqual(meta);
+    // 진행 저장 버전이 올라도 버전 5 기록은 그대로 읽는다
+    data.set(SAVE_KEYS.meta, seal(JSON.stringify({ version: 5, data: meta })));
     expect(await loadMeta(kv)).toEqual(meta);
     // 봉인이라 글자로 찾아 고칠 수 없다. 한 글자라도 바뀌면 빈 기록
     const sealed = data.get(SAVE_KEYS.meta)!;

@@ -125,7 +125,7 @@ function pickChoice(run: RunState, choices: ChoiceView[], ai: Ai): string {
   return open.reduce((best, c) => (score(c) > score(best) ? c : best)).id;
 }
 
-/** 저녁마다 마을에 들른다: 치료(치명상은 응급 처치, 안 되면 물약 / 중상은 약초방) → 빚 → 식량 → 화살 (돈이 남으면). */
+/** 저녁마다 마을에 들른다: 치료(치명상은 응급 처치, 안 되면 물약 / 중상은 약초방) → 빚 → 식량. */
 function evening(run: RunState): RunState {
   const send = (cmd: GameCommand) => (run = dispatch(run, cmd, CONTENT).state);
   if (run.player.wound.level === "critical") send({ type: "shop", op: "stabilize" });
@@ -138,9 +138,6 @@ function evening(run: RunState): RunState {
   const need = FOOD_PER_DAY - run.resources.food;
   const qty = Math.min(need, maxFoodAffordable(run));
   if (qty > 0) send({ type: "shop", op: "buyFood", qty });
-  if (run.player.job === "hunter" && countInBag(run.inventory, "arrow") < 5 && run.resources.silver >= SILVER_FLOOR + 3) {
-    send({ type: "shop", op: "buy", shop: "inn", target: "arrow" });
-  }
   return run;
 }
 

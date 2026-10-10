@@ -26,16 +26,15 @@
             }
           },
           "outcome": {
-            "text": "사냥꾼이 고맙다며 화살 다섯 개를 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
+            "text": "사냥꾼이 고맙다며 은화 두 닢을 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
             "effects": [
               {
                 "type": "reputation",
                 "delta": 3
               },
               {
-                "type": "addItem",
-                "itemId": "arrow",
-                "qty": 5
+                "type": "silver",
+                "delta": 2
               }
             ],
             "next": "END"
@@ -51,16 +50,15 @@
             }
           },
           "outcome": {
-            "text": "사냥꾼이 이를 악물고 고맙다고 했다. 화살 다섯 개를 건넸다.",
+            "text": "사냥꾼이 이를 악물고 고맙다고 했다. 허리춤에서 말린 고기 한 덩이를 꺼내 건넸다.",
             "effects": [
               {
                 "type": "reputation",
                 "delta": 2
               },
               {
-                "type": "addItem",
-                "itemId": "arrow",
-                "qty": 5
+                "type": "food",
+                "delta": 1
               }
             ],
             "next": "END"

@@ -145,7 +145,6 @@
    "skill": "bow",
    "damage": "1d6",
    "twoHanded": true,
-   "ammo": "arrow",
    "durabilityMax": 20
   },
   "longbow": {
@@ -159,7 +158,6 @@
    "skill": "bow",
    "damage": "1d8",
    "twoHanded": true,
-   "ammo": "arrow",
    "requires": {
     "str": 1
    },
@@ -297,17 +295,6 @@
    "stackMax": 1,
    "defense": 2,
    "durabilityMax": 20
-  },
-  "arrow": {
-   "id": "arrow",
-   "name": "화살",
-   "category": "consumable",
-   "description": "깃이 고르지 않은 사냥용 화살.",
-   "price": 0,
-   "sellable": true,
-   "stackMax": 20,
-   "use": [],
-   "usableInCombat": false
   },
   "herb": {
    "id": "herb",
@@ -684,13 +671,7 @@
    "tags": [
     "humanoid"
    ],
-   "loot": [
-    {
-     "itemId": "arrow",
-     "qty": 3,
-     "chance": 0.6
-    }
-   ],
+   "loot": [],
    "silver": 3
   },
   "goblin_scout": {
@@ -1830,12 +1811,6 @@
          "itemId": "hunting_bow"
         }
        ],
-       "cost": {
-        "item": {
-         "itemId": "arrow",
-         "qty": 1
-        }
-       },
        "check": {
         "stat": "agi",
         "skill": "bow",
@@ -1938,7 +1913,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 화살 묶음과 거칠게 그린 지도가 보인다.",
+     "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 짐 위에 거칠게 그린 지도가 놓여 있다.",
      "choices": [
       {
        "id": "study",
@@ -1957,11 +1932,6 @@
           {
            "type": "setFlag",
            "flag": "goblin_plan_known"
-          },
-          {
-           "type": "addItem",
-           "itemId": "arrow",
-           "qty": 5
           }
          ],
          "next": "END"
@@ -3020,12 +2990,6 @@
          "itemId": "hunting_bow"
         }
        ],
-       "cost": {
-        "item": {
-         "itemId": "arrow",
-         "qty": 1
-        }
-       },
        "check": {
         "stat": "agi",
         "skill": "bow",
@@ -3636,12 +3600,6 @@
          "itemId": "hunting_bow"
         }
        ],
-       "cost": {
-        "item": {
-         "itemId": "arrow",
-         "qty": 1
-        }
-       },
        "check": {
         "stat": "agi",
         "skill": "bow",
@@ -4151,16 +4109,15 @@
         }
        },
        "outcome": {
-        "text": "사냥꾼이 고맙다며 화살 다섯 개를 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
+        "text": "사냥꾼이 고맙다며 은화 두 닢을 건넸다. 보리울 사람에게 신세를 졌다고 소문을 내겠단다.",
         "effects": [
          {
           "type": "reputation",
           "delta": 3
          },
          {
-          "type": "addItem",
-          "itemId": "arrow",
-          "qty": 5
+          "type": "silver",
+          "delta": 2
          }
         ],
         "next": "END"
@@ -4176,16 +4133,15 @@
         }
        },
        "outcome": {
-        "text": "사냥꾼이 이를 악물고 고맙다고 했다. 화살 다섯 개를 건넸다.",
+        "text": "사냥꾼이 이를 악물고 고맙다고 했다. 허리춤에서 말린 고기 한 덩이를 꺼내 건넸다.",
         "effects": [
          {
           "type": "reputation",
           "delta": 2
          },
          {
-          "type": "addItem",
-          "itemId": "arrow",
-          "qty": 5
+          "type": "food",
+          "delta": 1
          }
         ],
         "next": "END"
@@ -5221,24 +5177,6 @@
           "type": "addItem",
           "itemId": "bandage",
           "qty": 1
-         }
-        ],
-        "next": "END"
-       }
-      },
-      {
-       "id": "buy_arrows",
-       "label": "화살 한 묶음을 산다",
-       "cost": {
-        "silver": 2
-       },
-       "outcome": {
-        "text": "깃이 고른 화살 다섯 개를 샀다.",
-        "effects": [
-         {
-          "type": "addItem",
-          "itemId": "arrow",
-          "qty": 5
          }
         ],
         "next": "END"
@@ -12335,12 +12273,11 @@
        },
        "outcomes": {
         "success": {
-         "text": "창턱에 걸린 낡은 화살통을 찾았다. 쓸 만한 화살이 몇 개 남아 있다.",
+         "text": "창턱에 낡은 가죽 주머니가 걸려 있다. 안에 은화 두 닢이 들어 있었다.",
          "effects": [
           {
-           "type": "addItem",
-           "itemId": "arrow",
-           "qty": 6
+           "type": "silver",
+           "delta": 2
           },
           {
            "type": "fatigue",
@@ -12350,12 +12287,11 @@
          "next": "END"
         },
         "partial": {
-         "text": "손끝이 찢어졌지만 화살 몇 개를 건졌다.",
+         "text": "손끝이 찢어졌지만 주머니를 건졌다. 은화는 한 닢뿐이었다.",
          "effects": [
           {
-           "type": "addItem",
-           "itemId": "arrow",
-           "qty": 3
+           "type": "silver",
+           "delta": 1
           },
           {
            "type": "hp",

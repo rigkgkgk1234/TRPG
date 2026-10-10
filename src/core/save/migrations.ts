@@ -34,4 +34,13 @@ export const MIGRATIONS: Record<number, Migration> = {
     }
     return { ...file, version: 5 };
   },
+  // 6: 화살 없앰 → 가방의 화살과 전투 중 쏜 화살 수를 지운다
+  5: (old) => {
+    type Stack = { itemId?: string } | null;
+    const file = old as { version: number; data?: { inventory?: { slots?: Stack[] }; combat?: Record<string, unknown> | null } };
+    const slots = file.data?.inventory?.slots;
+    if (slots) file.data!.inventory!.slots = slots.map((s) => (s?.itemId === "arrow" ? null : s));
+    if (file.data?.combat) delete file.data.combat.arrowsFired;
+    return { ...file, version: 6 };
+  },
 };

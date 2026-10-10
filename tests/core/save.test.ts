@@ -106,6 +106,13 @@ describe("저장 파일", () => {
     expect(loaded?.player.hp).toBe(10);
     expect(loaded?.combat?.enemies[0]).toMatchObject({ hp: 6, maxHp: 12 });
   });
+
+  it("버전 5 저장은 가방의 화살을 지우고 읽는다", () => {
+    const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    file.data.inventory.slots[3] = { itemId: "arrow", qty: 10 };
+    const back = decodeSave(seal(JSON.stringify({ ...file, version: 5 })), CONTENT);
+    expect(back?.inventory.slots[3]).toBeNull();
+  });
 });
 
 describe("저장 슬롯", () => {

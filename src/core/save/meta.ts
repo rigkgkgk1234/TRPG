@@ -3,6 +3,9 @@ import { SAVE_KEYS, SAVE_VERSION, type MetaSave, type RunRecord } from "../types
 import { seal, unseal } from "./seal";
 import type { KeyValueStore } from "./serialize";
 
+/** 이 버전부터의 기록은 모양이 같아 그대로 읽는다 (진행 저장 버전을 올려도 기록은 남긴다) */
+const META_MIN_VERSION = 5;
+
 /** 회차 기록은 최근 이만큼만 남긴다 */
 export const HISTORY_MAX = 50;
 
@@ -47,7 +50,7 @@ export async function loadMeta(kv: KeyValueStore): Promise<MetaSave> {
     const text = raw ? unseal(raw) : null;
     if (!text) return emptyMeta();
     const file = JSON.parse(text) as MetaFile;
-    if (file.version !== SAVE_VERSION || !plausibleMeta(file.data)) return emptyMeta();
+    if (file.version < META_MIN_VERSION || file.version > SAVE_VERSION || !plausibleMeta(file.data)) return emptyMeta();
     return { ...emptyMeta(), ...file.data };
   } catch {
     return emptyMeta();

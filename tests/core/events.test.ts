@@ -91,8 +91,8 @@ describe("조건", () => {
     expect(evalCondition({ type: "flag", flag: "wolves", value: 3 }, run)).toBe(false);
     expect(evalCondition({ type: "notFlag", flag: "nope" }, run)).toBe(true);
     expect(evalCondition({ type: "skill", skill: "bow", min: 2 }, run)).toBe(true);
-    expect(evalCondition({ type: "hasItem", itemId: "arrow", qty: 10 }, run)).toBe(true);
-    expect(evalCondition({ type: "hasItem", itemId: "arrow", qty: 11 }, run)).toBe(false);
+    expect(evalCondition({ type: "hasItem", itemId: "hunting_knife", qty: 1 }, run)).toBe(true);
+    expect(evalCondition({ type: "hasItem", itemId: "hunting_knife", qty: 2 }, run)).toBe(false);
     expect(evalCondition({ type: "equipped", itemId: "hunting_bow" }, run)).toBe(true);
     expect(evalCondition({ type: "hasItem", itemId: "hunting_bow" }, run)).toBe(true);
     expect(evalCondition({ type: "job", job: "farmer" }, run)).toBe(false);

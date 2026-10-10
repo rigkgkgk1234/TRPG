@@ -22,7 +22,6 @@
           "id": "shoot",
           "label": "먼저 활을 쏜다",
           "conditions": [{ "type": "equipped", "itemId": "hunting_bow" }],
-          "cost": { "item": { "itemId": "arrow", "qty": 1 } },
           "check": { "stat": "agi", "skill": "bow", "dc": 12, "tags": ["beast"] },
           "outcomes": {
             "success": { "text": "화살이 늑대의 어깨에 꽂혔다!", "next": "fight_advantage" },

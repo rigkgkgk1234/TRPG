@@ -134,7 +134,6 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
     silver: 5, food: 4, reputation: 5,
     startItems: [
       { itemId: "hunting_bow", qty: 1, equip: true },
-      { itemId: "arrow", qty: 10 },
       { itemId: "hunting_knife", qty: 1 },
     ],
     work: { label: "덫, 가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
@@ -323,7 +322,6 @@ export interface CombatState {
   defensePenalty: number;
   /** 도주 실패 → 이번 적 턴 유리함 */
   enemyAdvantageThisRound: boolean;
-  arrowsFired: number;
   /** 전투 중 HP 1/3 이하 부상이 이미 적용됐는지 */
   lowHpWoundApplied: boolean;
   xpThisCombat: Partial<Record<SkillId, number>>;
@@ -342,7 +340,6 @@ export const DEATH_SAVE_VILLAGE_BONUS = 2;
 export const CRITICAL_WOUND_MORNING_DC = 8;
 export const POWER_ATTACK_HIT_PENALTY = -2;
 export const POWER_ATTACK_DAMAGE_BONUS = 3;
-export const ARROW_RECOVERY_RATE = 0.5;
 
 export type Condition =
   | { type: "dayRange"; min?: number; max?: number }
@@ -495,7 +492,6 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
         {
           id: "shoot", label: "먼저 활을 쏜다",
           conditions: [{ type: "equipped", itemId: "hunting_bow" }],
-          cost: { item: { itemId: "arrow", qty: 1 } },
           check: { stat: "agi", skill: "bow", dc: 12, tags: ["beast"] },
           outcomes: {
             success: { text: "화살이 늑대의 어깨에 꽂혔다!", next: "fight_advantage" },
@@ -571,7 +567,6 @@ export interface WeaponDef extends ItemDefBase {
   skill: WeaponSkill;
   damage: DiceExpr;
   twoHanded: boolean;
-  ammo?: ItemId;
   requires?: Partial<Stats>;
   durabilityMax: number;
 }
@@ -592,7 +587,6 @@ export interface ShieldDef extends ItemDefBase {
 
 export interface ConsumableDef extends ItemDefBase {
   category: "consumable";
-  /** 화살처럼 직접 '사용'하지 않는 소모품이면 빈 배열 */
   use: Effect[];
   /** 확률형 효과: 약초의 경상 치료 50% */
   chanceEffects?: { p: number; effects: Effect[] }[];
@@ -649,7 +643,7 @@ export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "hunting_bow", name: "사냥용 활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
-    skill: "bow", damage: "1d6", twoHanded: true, ammo: "arrow", durabilityMax: 20 },
+    skill: "bow", damage: "1d6", twoHanded: true, durabilityMax: 20 },
   { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "질긴 소가죽으로 만든 조끼.", price: 25, sellable: true, stackMax: 1,
     defense: 2, durabilityMax: 25 },
   { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
@@ -739,7 +733,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

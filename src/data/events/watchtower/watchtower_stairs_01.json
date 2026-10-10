@@ -26,12 +26,11 @@
           },
           "outcomes": {
             "success": {
-              "text": "창턱에 걸린 낡은 화살통을 찾았다. 쓸 만한 화살이 몇 개 남아 있다.",
+              "text": "창턱에 낡은 가죽 주머니가 걸려 있다. 안에 은화 두 닢이 들어 있었다.",
               "effects": [
                 {
-                  "type": "addItem",
-                  "itemId": "arrow",
-                  "qty": 6
+                  "type": "silver",
+                  "delta": 2
                 },
                 {
                   "type": "fatigue",
@@ -41,12 +40,11 @@
               "next": "END"
             },
             "partial": {
-              "text": "손끝이 찢어졌지만 화살 몇 개를 건졌다.",
+              "text": "손끝이 찢어졌지만 주머니를 건졌다. 은화는 한 닢뿐이었다.",
               "effects": [
                 {
-                  "type": "addItem",
-                  "itemId": "arrow",
-                  "qty": 3
+                  "type": "silver",
+                  "delta": 1
                 },
                 {
                   "type": "hp",

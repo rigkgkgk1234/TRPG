@@ -208,7 +208,6 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
     silver: 5, food: 4, reputation: 5,
     startItems: [
       { itemId: "hunting_bow", qty: 1, equip: true },
-      { itemId: "arrow", qty: 10 },
       { itemId: "hunting_knife", qty: 1 },
     ],
     work: { label: "덫, 가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
@@ -414,16 +413,15 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 
 | 행동 | 판정 | 효과 | 비고 |
 |------|------|------|------|
-| **공격** | D20 + (근접: 근력 / 활: 민첩) + 무기 숙련 vs 적 방어도 | 명중 시 무기 피해 | 활은 화살 1개 소모 |
+| **공격** | D20 + (근접: 근력 / 활: 민첩) + 무기 숙련 vs 적 방어도 | 명중 시 무기 피해 | |
 | **강타** (활은 "조준 사격") | 공격과 같되 **-2** | 명중 시 피해 **+3** | 피로 +1 |
 | **방어 자세** | 없음 | 다음 내 턴까지 방어도 **+2 + 방어 숙련 등급** | 적이 빗나가면 방어 XP +1 |
 | **아이템 사용** | 없음 | 소모품 효과(`usableInCombat`) | 턴 소모 |
 | **도주** | D20 + 민첩 vs DC(10 + 적 최고 속도) | 성공 시 전투 이탈 | 실패 시 이번 라운드 적 공격 유리함 |
 
 - **피해**: 무기 주사위 + 근력(근접만), 최소 1. **대성공 시 주사위 개수 2배**(1d6 → 2d6, 보정은 1번만).
-- **대실패**: 근접 → 다음 턴 방어도 -2 / 활 → 화살 1개 추가 손실 / 공통 → 무기 내구도 -2.
+- **대실패**: 근접 → 다음 턴 방어도 -2 / 공통 → 무기 내구도 -2.
 - **적 공격**: D20 + 적 공격 보정 vs 플레이어 방어도. 적의 자연 20 → 피해 2배 + 플레이어 부상 1단계.
-- 전투 후 회수: 쏜 화살의 50%(내림) 회수.
 - 전투 1회마다 피로 +1 (승패 무관).
 
 ### 3-4. 도주
@@ -578,7 +576,6 @@ export interface CombatState {
   defensePenalty: number;
   /** 도주 실패 → 이번 적 턴 유리함 */
   enemyAdvantageThisRound: boolean;
-  arrowsFired: number;
   /** 전투 중 HP 1/3 이하 부상이 이미 적용됐는지 */
   lowHpWoundApplied: boolean;
   xpThisCombat: Partial<Record<SkillId, number>>;
@@ -597,7 +594,6 @@ export const DEATH_SAVE_VILLAGE_BONUS = 2;
 export const CRITICAL_WOUND_MORNING_DC = 8;
 export const POWER_ATTACK_HIT_PENALTY = -2;
 export const POWER_ATTACK_DAMAGE_BONUS = 3;
-export const ARROW_RECOVERY_RATE = 0.5;
 ```
 
 ---
@@ -820,7 +816,6 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
         {
           id: "shoot", label: "먼저 활을 쏜다",
           conditions: [{ type: "equipped", itemId: "hunting_bow" }],
-          cost: { item: { itemId: "arrow", qty: 1 } },
           check: { stat: "agi", skill: "bow", dc: 12, tags: ["beast"] },
           outcomes: {
             success: { text: "화살이 늑대의 어깨에 꽂혔다!", next: "fight_advantage" },
@@ -893,7 +888,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 ### 5-2. 인벤토리 규칙
 - **가방 10칸** 고정(MVP). 장착 중인 장비는 칸을 차지하지 않는다.
-- 같은 아이템은 `stackMax`까지 한 칸에 겹친다. (화살 20, 약초 5, 물약 3)
+- 같은 아이템은 `stackMax`까지 한 칸에 겹친다. (약초 5, 물약 3)
 - 가방이 가득 차면 획득 시 "버릴 것 고르기" 시트를 띄운다(버리기 거부 = 새 아이템 포기).
 - **식량과 은화는 아이템이 아닌 자원**(칸 차지 없음). 사냥 고기는 획득 즉시 식량으로 환산.
 
@@ -910,12 +905,12 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 ### 5-5. MVP 아이템 목록
 
-가게: 대장간(무기·방어구·방패 17종), 약초방(약 8종), 여관(화살 10개 3닢, 스튜, 보리술, 식량). 가격은 은화 1~45. 30일 동안 버는 돈이 50닢 안팎이라 45를 넘는 물건은 두지 않는다.
+가게: 대장간(무기·방어구·방패 17종), 약초방(약 8종), 여관(스튜, 보리술, 식량). 가격은 은화 1~45. 30일 동안 버는 돈이 50닢 안팎이라 45를 넘는 물건은 두지 않는다.
 
 **값 매기는 기준** (같은 값이면 같은 쓸모, 비싸면 그만큼 낫게)
 - 한손 근접 무기: 피해 1d4 = 5, 1d6 = 10, 1d8 = 30. 양손이면 약 60% (방패를 못 든다). 숙련(검·둔기)은 값에 넣지 않는다.
 - 내구도는 수리비(5당 은화 1)만큼만 값을 깎는다 (기준 20, 방어구 25). 능력치 조건이 있으면 조금 싸다.
-- 활은 같은 주사위의 양손 근접 무기의 2배 (멀리서 쏜다, 대신 화살과 근력 피해 보정이 없다).
+- 활은 같은 주사위의 양손 근접 무기의 2배 (멀리서 쏜다, 대신 근력 피해 보정이 없다). 화살은 따로 쓰지 않는다.
 - 방어도: +1 = 10, +2 = 24, +3 = 48(민첩 페널티로 45). 방패는 같은 방어도의 갑옷과 같은 기준.
 - 소모품: HP 2당 은화 1, 피로 1당 약 1.5, 경상 치료 약 1.5. 전투 중에 쓸 수 있으면 조금 더 받는다.
 
@@ -934,7 +929,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `war_hammer` | 전투 망치 | blunt | 1d8 | 28 | 근력 +2 이상 필요, 내구도 25 |
 | `soldier_sword` | 병사의 검 | blade | 1d8 | 30 | 감시탑 보상으로도 획득 |
 | `goblin_axe` | 고블린 도끼 | blade | 1d8 | — | 고블린 전사 전리품(50%), 판매 12, 내구도 12 |
-| `hunting_bow` | 사냥용 활 | bow | 1d6 | 12 | 양손, 화살 소모 |
+| `hunting_bow` | 사냥용 활 | bow | 1d6 | 12 | 양손 |
 | `longbow` | 긴 활 | bow | 1d8 | 32 | 양손, 근력 +1 이상 필요 |
 
 **방어구 · 방패** (상체·머리·하체·발, 방패)
@@ -963,7 +958,6 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 | ID | 이름 | 효과 | 가격 | 전투 중 |
 |----|------|------|----:|:---:|
-| `arrow` | 화살 | 활 공격 1회 | 10개 3 | — |
 | `herb` | 약초 | HP +4, 경상이면 50% 확률 치료 | 3 | O |
 | `bandage` | 붕대 | 경상 → 없음 | 3 | X |
 | `bitter_tea` | 쓴 약초차 | 피로 -2 | 3 | X |
@@ -1003,7 +997,6 @@ export interface WeaponDef extends ItemDefBase {
   skill: WeaponSkill;
   damage: DiceExpr;
   twoHanded: boolean;
-  ammo?: ItemId;
   requires?: Partial<Stats>;
   durabilityMax: number;
 }
@@ -1024,7 +1017,6 @@ export interface ShieldDef extends ItemDefBase {
 
 export interface ConsumableDef extends ItemDefBase {
   category: "consumable";
-  /** 화살처럼 직접 '사용'하지 않는 소모품이면 빈 배열 */
   use: Effect[];
   /** 확률형 효과: 약초의 경상 치료 50% */
   chanceEffects?: { p: number; effects: Effect[] }[];
@@ -1081,7 +1073,7 @@ export const REP_HEAVY_SURCHARGE_RATE = 0.2;
 
 export const SAMPLE_ITEMS: ItemDef[] = [
   { id: "hunting_bow", name: "사냥용 활", category: "weapon", description: "손때 묻은 짧은 활.", price: 12, sellable: true, stackMax: 1,
-    skill: "bow", damage: "1d6", twoHanded: true, ammo: "arrow", durabilityMax: 20 },
+    skill: "bow", damage: "1d6", twoHanded: true, durabilityMax: 20 },
   { id: "leather_armor", name: "가죽 갑옷", category: "armor", description: "질긴 소가죽으로 만든 조끼.", price: 25, sellable: true, stackMax: 1,
     defense: 2, durabilityMax: 25 },
   { id: "chain_shirt", name: "사슬 갑옷", category: "armor", description: "무겁지만 든든하다.", price: 60, sellable: true, stackMax: 1,
@@ -1323,7 +1315,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 - 한계: 열쇠가 앱 안에 있으므로 앱을 뜯어 분석하는 사람까지 막지는 못한다. 흔한 저장 편집기·메모리 조작 도구로 수치를 바꾸거나 엔딩으로 건너뛰는 것을 막는다.
 
 ```ts
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

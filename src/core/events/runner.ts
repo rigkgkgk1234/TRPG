@@ -37,7 +37,7 @@ export interface ChoiceView {
   mode?: RollMode;
   /** 판정 선택지: 실패하면 다치거나 싸우게 된다. 판정 없는 선택지: 고르면 싸움이 벌어진다 */
   danger: boolean;
-  /** "은화 -3", "화살 -1", "피로 +1" */
+  /** "은화 -3", "약초 -1", "피로 +1" */
   cost: string[];
 }
 

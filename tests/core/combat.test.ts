@@ -83,14 +83,13 @@ describe("전투 수치", () => {
     expect(farmer.actions.find((a) => a.type === "flee")!.chance).toBeCloseTo(0.35);
   });
 
-  it("화살이 떨어지면 맨주먹으로 싸우고, 도주 불가 전투는 사유를 보여 준다", () => {
-    const noArrows = edit(start("hunter"), (s) => { s.inventory.slots = s.inventory.slots.map((x) => (x?.itemId === "arrow" ? null : x)); });
-    const run = inCombat(noArrows, ["wolf"], { canFlee: false, noFleeReason: "등 뒤에 가족이 있다" });
+  it("활은 화살 없이 쏘고, 도주 불가 전투는 사유를 보여 준다", () => {
+    const run = inCombat(start("hunter"), ["wolf"], { canFlee: false, noFleeReason: "등 뒤에 가족이 있다" });
     const v = combatView(run, CONTENT)!;
     const attack = v.actions.find((a) => a.type === "attack")!;
-    expect(attack).toMatchObject({ label: "공격", lockedReason: null });
-    expect(attack.detail).toEqual(["피해 1d2", "화살이 없어 맨주먹"]);
-    expect(attackSpec(run, CONTENT, run.combat!.enemies[0], false)).toMatchObject({ stat: "str", skill: "blunt" });
+    expect(attack).toMatchObject({ label: "활 쏘기", lockedReason: null });
+    expect(attack.detail).toEqual(["피해 1d6"]);
+    expect(attackSpec(run, CONTENT, run.combat!.enemies[0], false)).toMatchObject({ stat: "agi", skill: "bow" });
     expect(v.actions.find((a) => a.type === "flee")!.lockedReason).toBe("등 뒤에 가족이 있다");
   });
 });
@@ -275,17 +274,12 @@ describe("전투 끝", () => {
     expect(ctx.draft.player.skills.blunt).toEqual(run.player.skills.blunt);
   });
 
-  it("승리: 피로 +1, 쏜 화살 절반 회수, 전리품", () => {
-    const run = edit(inCombat(start("hunter"), ["wolf"]), (s) => {
-      s.combat!.result = "victory";
-      s.combat!.arrowsFired = 3;
-      s.inventory.slots[0]!.qty = 7;
-    });
+  it("승리: 피로 +1, 전리품", () => {
+    const run = edit(inCombat(start("hunter"), ["wolf"]), (s) => { s.combat!.result = "victory"; });
     const ctx = ctxOf(run, seq(0.1));
     expect(finishCombat(ctx)).toBe("win");
     expect(ctx.draft.combat).toBeNull();
     expect(ctx.draft.resources.fatigue).toBe(1);
-    expect(ctx.draft.inventory.slots[0]!.qty).toBe(8);
     expect(ctx.draft.resources.food).toBe(start("hunter").resources.food + 1);
     expect(ctx.draft.inventory.slots.some((x) => x?.itemId === "wolf_pelt")).toBe(true);
   });

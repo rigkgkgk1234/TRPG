@@ -22,7 +22,7 @@ import { addItem } from "./inventory";
 
 export type ShopId = "smithy" | "healer" | "inn";
 
-/** 가게에 놓인 물건. qty개를 한 묶음으로 판다 (화살 10개 3닢) */
+/** 가게에 놓인 물건. qty개를 한 묶음으로 판다 */
 export interface ShopEntry {
   itemId: ItemId;
   qty: number;
@@ -55,7 +55,7 @@ export const SHOPS: Record<ShopId, ShopDef> = {
   },
   inn: {
     id: "inn", name: "여관", owner: "토비",
-    stock: [{ itemId: "arrow", qty: 10, price: 3 }, { itemId: "hot_stew", qty: 1 }, { itemId: "barley_ale", qty: 1 }],
+    stock: [{ itemId: "hot_stew", qty: 1 }, { itemId: "barley_ale", qty: 1 }],
   },
 };
 

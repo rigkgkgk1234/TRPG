@@ -9,7 +9,6 @@ import { BROKEN_WEAPON_PENALTY, isBroken, wearEquipment } from "../items/equipme
 import { addItem, canUseItem, consumeItem, countInBag, removeItem } from "../items/inventory";
 import { josa, SKILL_LABEL } from "../labels";
 import {
-  ARROW_RECOVERY_RATE,
   d,
   DEATH_SAVE_DC,
   DEATH_SAVE_VILLAGE_BONUS,
@@ -40,7 +39,6 @@ export const FIST: WeaponDef = {
   id: "fist", name: "맨주먹", category: "weapon", description: "", price: 0, sellable: false, stackMax: 1,
   skill: "blunt", damage: "1d2", twoHanded: false, durabilityMax: 0,
 };
-const ARROW: ItemId = "arrow";
 const BASE_DEFENSE = 10;
 const DEFEND_BONUS = 2;
 const MELEE_FUMBLE_DEFENSE_PENALTY = 2;
@@ -76,12 +74,6 @@ export function equippedWeapon(run: RunState, content: Pick<ContentDB, "items">)
 
 export const isBow = (w: WeaponDef) => w.skill === "bow";
 
-/** 공격에 실제로 쓰는 무기: 활인데 화살이 떨어졌으면 맨주먹으로 싸운다 (도주할 수 없는 전투에서도 손쓸 수 있게) */
-export function attackWeapon(run: RunState, content: Pick<ContentDB, "items">): WeaponDef {
-  const w = equippedWeapon(run, content);
-  return isBow(w) && countInBag(run.inventory, ARROW) === 0 ? FIST : w;
-}
-
 /** 아직 싸우는 적 (쓰러지지도 달아나지도 않은) */
 export function activeEnemies(c: CombatState): EnemyInstance[] {
   return c.enemies.filter((e) => e.hp > 0 && !e.routed);
@@ -94,7 +86,7 @@ export const DUAL_WIELD_DAMAGE_TAKEN = 1;
 
 /** 왼손에 든 무기: 오른손도 근접 한손 무기일 때만 왼손으로 한 번 더 친다 (활·맨주먹이면 없음) */
 export function offHandWeapon(run: RunState, content: Pick<ContentDB, "items">): WeaponDef | null {
-  const main = attackWeapon(run, content);
+  const main = equippedWeapon(run, content);
   if (main === FIST || isBow(main) || main.twoHanded) return null;
   const stack = run.inventory.equipment.offHand;
   const def = stack ? content.items[stack.itemId] : undefined;
@@ -119,7 +111,7 @@ export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, 
 
 /** 공격 판정 명세: 근접은 근력, 활은 민첩 + 무기 숙련 vs 적 방어도. 강타는 −2. */
 export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean, weapon?: WeaponDef, offHand = false): CheckSpec {
-  const w = weapon ?? attackWeapon(run, content);
+  const w = weapon ?? equippedWeapon(run, content);
   const def = enemyDef(content, target);
   const situational = (power ? POWER_ATTACK_HIT_PENALTY : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
   return {
@@ -170,9 +162,8 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   if (!c) return null;
   const alive = activeEnemies(c);
   const target = alive.find((e) => e.instanceId === targetId) ?? alive[0];
-  const w = attackWeapon(run, content);
+  const w = equippedWeapon(run, content);
   const bow = isBow(w);
-  const outOfArrows = w === FIST && isBow(equippedWeapon(run, content));
   const off = offHandWeapon(run, content);
   const brokenPenalty = w !== FIST && isBroken(run.inventory.equipment.weapon) ? -BROKEN_WEAPON_PENALTY : 0;
   const dmg = (bonus: number) => `피해 ${w.damage}${signedOrEmpty((bow ? 0 : run.player.stats.str) + bonus + brokenPenalty)}`;
@@ -194,7 +185,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
   const actions: CombatActionView[] = [
     {
       type: "attack", label: bow ? "활 쏘기" : "공격", ...chanceOf(false),
-      detail: [dmg(0), ...(off ? [`왼손 ${off.damage}`, `받는 피해 +${DUAL_WIELD_DAMAGE_TAKEN}`] : []), ...(bow ? ["화살 -1"] : []), ...(outOfArrows ? ["화살이 없어 맨주먹"] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
+      detail: [dmg(0), ...(off ? [`왼손 ${off.damage}`, `받는 피해 +${DUAL_WIELD_DAMAGE_TAKEN}`] : []), ...(brokenPenalty ? ["무기 망가짐"] : [])],
       lockedReason: null,
     },
     {
@@ -274,7 +265,7 @@ export function startCombat(ctx: Ctx, rawSetup: CombatSetup): void {
   });
   const c: CombatState = {
     setup, enemies, round: 1, phase: "playerTurn", defendBonus: 0, defensePenalty: 0,
-    enemyAdvantageThisRound: false, arrowsFired: 0, lowHpWoundApplied: false, xpThisCombat: {}, log: [],
+    enemyAdvantageThisRound: false, lowHpWoundApplied: false, xpThisCombat: {}, log: [],
   };
   s.combat = c;
 
@@ -360,7 +351,7 @@ function playerAct(ctx: Ctx, c: CombatState, a: CombatAction): void {
 
 function attack(ctx: Ctx, c: CombatState, target: EnemyInstance, power: boolean): void {
   const s = ctx.draft;
-  strike(ctx, c, target, attackWeapon(s, ctx.content), power, false);
+  strike(ctx, c, target, equippedWeapon(s, ctx.content), power, false);
   // 두 손에 한손 무기를 들었으면 왼손으로 한 번 더 (같은 상대가 쓰러졌으면 다음 상대)
   const off = offHandWeapon(s, ctx.content);
   const next = target.hp > 0 && !target.routed ? target : activeEnemies(c)[0];
@@ -372,10 +363,6 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
   const s = ctx.draft;
   const bow = isBow(w);
   const def = enemyDef(ctx.content, target);
-  if (bow) {
-    removeItem(ctx, ARROW, 1);
-    c.arrowsFired += 1;
-  }
   if (power) changeFatigue(ctx, COMBAT_FATIGUE);
 
   const spec = attackSpec(s, ctx.content, target, power, w, offHand);
@@ -407,13 +394,9 @@ function strike(ctx: Ctx, c: CombatState, target: EnemyInstance, w: WeaponDef, p
 
   fx(false, false, 0);
   say(ctx, c, "player", bow ? "화살이 빗나갔다." : offHand ? "왼손 공격이 빗나갔다." : "공격이 빗나갔다.", r);
-  if (r.outcome === "critFail") {
-    if (bow) {
-      if (removeItem(ctx, ARROW, 1) > 0) say(ctx, c, "player", "시위가 엉키면서 화살 하나를 부러뜨렸다.");
-    } else {
-      c.defensePenalty = MELEE_FUMBLE_DEFENSE_PENALTY;
-      say(ctx, c, "player", "중심을 잃고 비틀거렸다. (이번 라운드 방어도 −2)");
-    }
+  if (r.outcome === "critFail" && !bow) {
+    c.defensePenalty = MELEE_FUMBLE_DEFENSE_PENALTY;
+    say(ctx, c, "player", "중심을 잃고 비틀거렸다. (이번 라운드 방어도 −2)");
   }
 }
 
@@ -486,7 +469,7 @@ function endRound(ctx: Ctx, c: CombatState): void {
 
 /**
  * 끝난 전투를 정리하고 이벤트가 이어질 장면을 돌려준다.
- * 공통: 피로 +1, 쏜 화살 절반 회수. 승리: 전리품. 패배: 적의 패배 규칙(사망 굴림·강탈·스토리).
+ * 공통: 피로 +1. 승리: 전리품. 패배: 적의 패배 규칙(사망 굴림·강탈·스토리).
  * @returns 다음 장면. "END"면 이벤트 끝. 사망이면 null (엔딩).
  */
 export function finishCombat(ctx: Ctx): SceneId | "END" | null {
@@ -495,8 +478,6 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
   s.combat = null;
   changeFatigue(ctx, COMBAT_FATIGUE);
   wearAfterCombat(ctx, c);
-  const recovered = Math.floor(c.arrowsFired * ARROW_RECOVERY_RATE);
-  if (recovered > 0) addItem(ctx, ARROW, recovered);
 
   switch (c.result) {
     case "victory":

@@ -40,11 +40,10 @@ describe("newRun", () => {
     expect(r.time).toEqual({ day: 1, phase: "am", skipNextAm: false, restsToday: 0, collapsedToday: false });
   });
 
-  it("사냥꾼: 활은 장착, 화살·사냥칼은 가방에", () => {
+  it("사냥꾼: 활은 장착, 사냥칼은 가방에", () => {
     const r = start("hunter");
     expect(r.inventory.equipment.weapon?.itemId).toBe("hunting_bow");
     expect(r.inventory.slots.filter(Boolean)).toEqual([
-      { itemId: "arrow", qty: 10 },
       { itemId: "hunting_knife", qty: 1, durability: 20 },
     ]);
   });

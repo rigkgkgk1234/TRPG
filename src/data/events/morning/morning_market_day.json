@@ -58,24 +58,6 @@
           }
         },
         {
-          "id": "buy_arrows",
-          "label": "화살 한 묶음을 산다",
-          "cost": {
-            "silver": 2
-          },
-          "outcome": {
-            "text": "깃이 고른 화살 다섯 개를 샀다.",
-            "effects": [
-              {
-                "type": "addItem",
-                "itemId": "arrow",
-                "qty": 5
-              }
-            ],
-            "next": "END"
-          }
-        },
-        {
           "id": "leave",
           "label": "구경만 하고 지나간다",
           "outcome": {

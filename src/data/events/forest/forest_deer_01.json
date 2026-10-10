@@ -25,12 +25,6 @@
               "itemId": "hunting_bow"
             }
           ],
-          "cost": {
-            "item": {
-              "itemId": "arrow",
-              "qty": 1
-            }
-          },
           "check": {
             "stat": "agi",
             "skill": "bow",

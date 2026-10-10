@@ -19,7 +19,7 @@
   "startScene": "start",
   "scenes": {
     "start": {
-      "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 화살 묶음과 거칠게 그린 지도가 보인다.",
+      "text": "쓰러진 나무 밑에 가죽으로 덮은 짐이 숨겨져 있다. 짐 위에 거칠게 그린 지도가 놓여 있다.",
       "choices": [
         {
           "id": "study",
@@ -38,11 +38,6 @@
                 {
                   "type": "setFlag",
                   "flag": "goblin_plan_known"
-                },
-                {
-                  "type": "addItem",
-                  "itemId": "arrow",
-                  "qty": 5
                 }
               ],
               "next": "END"

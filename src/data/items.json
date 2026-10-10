@@ -20,9 +20,9 @@
   { "id": "goblin_axe", "name": "고블린 도끼", "category": "weapon", "description": "날이 들쭉날쭉한 고블린 전사의 도끼. 무겁고 거칠다.", "price": 0, "sellPrice": 12, "sellable": true, "stackMax": 1,
     "skill": "blade", "damage": "1d8", "twoHanded": false, "durabilityMax": 12 },
   { "id": "hunting_bow", "name": "사냥용 활", "category": "weapon", "description": "손때 묻은 짧은 활.", "price": 12, "sellable": true, "stackMax": 1,
-    "skill": "bow", "damage": "1d6", "twoHanded": true, "ammo": "arrow", "durabilityMax": 20 },
+    "skill": "bow", "damage": "1d6", "twoHanded": true, "durabilityMax": 20 },
   { "id": "longbow", "name": "긴 활", "category": "weapon", "description": "키만 한 활. 당기려면 힘이 필요하다.", "price": 32, "sellable": true, "stackMax": 1,
-    "skill": "bow", "damage": "1d8", "twoHanded": true, "ammo": "arrow", "requires": { "str": 1 }, "durabilityMax": 20 },
+    "skill": "bow", "damage": "1d8", "twoHanded": true, "requires": { "str": 1 }, "durabilityMax": 20 },
 
   { "id": "padded_coat", "name": "솜옷", "category": "armor", "description": "솜을 두껍게 넣어 지은 겉옷.", "price": 10, "sellable": true, "stackMax": 1,
     "defense": 1, "durabilityMax": 25 },
@@ -47,8 +47,6 @@
   { "id": "round_shield", "name": "쇠 방패", "category": "shield", "description": "쇠판을 덧댄 둥근 방패. 무겁지만 도끼도 막아 낸다.", "price": 24, "sellable": true, "stackMax": 1,
     "defense": 2, "durabilityMax": 20 },
 
-  { "id": "arrow", "name": "화살", "category": "consumable", "description": "깃이 고르지 않은 사냥용 화살.", "price": 0, "sellable": true, "stackMax": 20,
-    "use": [], "usableInCombat": false },
   { "id": "herb", "name": "약초", "category": "consumable", "description": "씹으면 쓰지만 상처가 아문다.", "price": 3, "sellable": true, "stackMax": 5,
     "use": [{ "type": "hp", "delta": 4 }], "chanceEffects": [{ "p": 0.5, "effects": [{ "type": "healWound", "to": "none" }] }], "usableInCombat": true },
   { "id": "bandage", "name": "붕대", "category": "consumable", "description": "깨끗한 천 조각.", "price": 3, "sellable": true, "stackMax": 5,

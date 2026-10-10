@@ -17,7 +17,6 @@
           "id": "shoot",
           "label": "활을 쏜다",
           "conditions": [{ "type": "equipped", "itemId": "hunting_bow" }],
-          "cost": { "item": { "itemId": "arrow", "qty": 1 } },
           "check": { "stat": "agi", "skill": "bow", "dc": 11, "tags": ["beast"] },
           "outcomes": {
             "critSuccess": { "text": "옆에 한 마리가 더 있었다. 연달아 쏘아 둘 다 잡았다.", "effects": [{ "type": "food", "delta": 3 }], "next": "END" },

@@ -21,7 +21,7 @@ import { Text } from "@/ui/Text";
 const TABS: ShopId[] = ["smithy", "healer", "inn"];
 
 /**
- * 마을 모달: 대장간(장비·수리) / 약초방(약·치료) / 여관(식량·화살·팔기·빚). 거래는 행동 슬롯을 쓰지 않는다. (SYSTEM_SPEC 5-4)
+ * 마을 모달: 대장간(장비·수리) / 약초방(약·치료) / 여관(식량·팔기·빚). 거래는 행동 슬롯을 쓰지 않는다. (SYSTEM_SPEC 5-4)
  * 가격은 평판 보정이 들어간 값이다. 맨 위에 방금 한 거래의 결과를 한 줄로 보여 준다.
  */
 export default function TownScreen() {

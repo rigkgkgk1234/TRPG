@@ -95,13 +95,12 @@ describe("가게", () => {
     expect(playerDefense(ctx.draft, CONTENT, null)).toBe(12);
   });
 
-  it("이미 든 칸이면 가방으로, 은화·자리가 모자라면 거절, 화살은 10개 묶음", () => {
+  it("이미 든 칸이면 가방으로, 은화·자리가 모자라면 거절, 화살은 팔지 않는다", () => {
     const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 30; }));
     expect(buy(ctx, "smithy", "rusty_sword")).toBeNull();
     expect(ctx.draft.inventory.slots[0]?.itemId).toBe("rusty_sword");
     expect(buy(ctx, "smithy", "soldier_sword")).toBe("은화가 모자란다");
-    expect(buy(ctx, "inn", "arrow")).toBeNull();
-    expect(ctx.draft.inventory.slots[1]).toEqual({ itemId: "arrow", qty: 10 });
+    expect(buy(ctx, "inn", "arrow")).toBe("그런 물건은 없다");
     expect(buy(ctx, "healer", "rusty_sword")).toBe("그런 물건은 없다");
   });
 
@@ -251,7 +250,7 @@ describe("아이템 값과 쓸모", () => {
         case "weapon": {
           const req = Object.values(d.requires ?? {}).reduce((s, x) => s + (x ?? 0), 0);
           // 숙련(검·둔기)은 쓰는 사람에 따라 다르므로 비교하지 않는다. 활은 활끼리
-          return { group: d.ammo ? "bow" : "melee", v: [avg(d.damage), d.twoHanded ? 0 : 1, d.durabilityMax, -req] };
+          return { group: d.skill === "bow" ? "bow" : "melee", v: [avg(d.damage), d.twoHanded ? 0 : 1, d.durabilityMax, -req] };
         }
         case "armor":
         case "head":
@@ -279,7 +278,8 @@ describe("아이템 값과 쓸모", () => {
   });
 
   it("성능이 똑같은 물건은 값도 같다", () => {
-    const key = (d: (typeof onSale)[number]) => JSON.stringify({ ...d, id: "", name: "", description: "", price: 0, skill: "" });
+    // 숙련 종류는 값에 넣지 않지만, 활은 근접 무기와 쓰임이 다르다
+    const key = (d: (typeof onSale)[number]) => JSON.stringify({ ...d, id: "", name: "", description: "", price: 0, skill: "skill" in d && d.skill === "bow" ? "bow" : "" });
     for (const a of onSale) for (const b of onSale) {
       if (a !== b && key(a) === key(b)) expect(a.price, `${a.name}·${b.name}`).toBe(b.price);
     }

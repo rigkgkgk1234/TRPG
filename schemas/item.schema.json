@@ -63,9 +63,6 @@
         "twoHanded": {
           "type": "boolean"
         },
-        "ammo": {
-          "$ref": "#/definitions/ItemId"
-        },
         "requires": {
           "type": "object",
           "properties": {
@@ -292,8 +289,7 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/Effect"
-          },
-          "description": "화살처럼 직접 '사용'하지 않는 소모품이면 빈 배열"
+          }
         },
         "chanceEffects": {
           "type": "array",

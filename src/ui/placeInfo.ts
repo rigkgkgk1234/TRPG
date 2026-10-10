@@ -26,7 +26,7 @@ export const REGION_INFO: Partial<Record<RegionId, PlaceInfo>> = {
   watchtower: {
     tagline: "옛 병사의 물건이 남았다. 도적과 고블린이 드나든다",
     summary: "숲 너머 언덕의 버려진 감시탑. 옛 병사들의 물건이 남아 있지만, 도적이 숨어들고 날이 갈수록 고블린이 드나든다.",
-    gains: ["옛 병사의 장비, 은화", "약초, 화살", "고블린의 계획"],
+    gains: ["옛 병사의 장비, 은화", "약초", "고블린의 계획"],
     risks: ["무너지는 계단, 마루", "도적, 늑대", "고블린 전사"],
   },
 };
