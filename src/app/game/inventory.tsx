@@ -107,6 +107,25 @@ export default function InventoryScreen() {
 
 /** 장비 칸 하나: "머리" / 걸친 것 이름 / 성능 한 줄. 누르면 고르기 창 */
 function SlotCell({ run, slot, onPress }: { run: RunState; slot: EquipSlot; onPress: () => void }) {
+  const mainStack = run.inventory.equipment.weapon;
+  const mainDef = mainStack ? CONTENT.items[mainStack.itemId] : undefined;
+  // 양손 무기를 들면 왼손은 쓸 수 없다: 칸을 흐리게 하고 누를 수 없게 한다
+  if (slot === "offHand" && mainDef?.category === "weapon" && mainDef.twoHanded) {
+    return (
+      <View
+        accessible
+        accessibilityLabel={`${EQUIP_SLOT_LABEL[slot]}: ${mainDef.name}, 양손 무기 장착함`}
+        accessibilityState={{ disabled: true }}
+        style={[styles.slot, styles.slotLocked]}
+      >
+        <Text style={styles.slotLabel}>{EQUIP_SLOT_LABEL[slot]}</Text>
+        <View style={styles.slotText}>
+          <Text style={styles.slotName} numberOfLines={1}>{mainDef.name}</Text>
+          <Text style={styles.slotSub} numberOfLines={2}>양손 무기 장착함</Text>
+        </View>
+      </View>
+    );
+  }
   const stack = run.inventory.equipment[slot];
   const def = stack ? CONTENT.items[stack.itemId] : undefined;
   const dur = def && stack ? durabilityText(def, stack) : null;
@@ -224,6 +243,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
   },
   slotPressed: { backgroundColor: colors.surfaceRaised },
+  slotLocked: { opacity: 0.55 },
   slotLabel: { ...type.label, color: colors.textFaint, width: 38 },
   slotText: { flex: 1, gap: 1 },
   slotName: { ...type.bodyStrong, color: colors.text },
