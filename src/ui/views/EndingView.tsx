@@ -6,7 +6,7 @@ import { endingText, epitaph } from "@/core/story/ending";
 import type { RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
-import { ActionButton } from "@/ui/components/Buttons";
+import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { colors, hairline, space, type } from "@/ui/theme";
 import { once, pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
@@ -56,10 +56,10 @@ export function EndingPanel({ run }: { run: RunState }) {
         {st.lowestHp && <Text style={styles.line}>가장 위험했던 순간: {st.lowestHp.day}일차, HP {st.lowestHp.hp}</Text>}
         <Text style={styles.line}>남긴 흔적: {traits.length ? traits.map((t) => `「${t}」`).join(", ") : "없음"}</Text>
       </View>
-      <View style={styles.buttons}>
-        <View style={styles.cell}><ActionButton fill center label="기록 보기" onPress={() => pushOnce("/records")} /></View>
-        <View style={styles.cell}><ActionButton fill primary label="처음 화면으로" onPress={toTitle} /></View>
-      </View>
+      <ButtonGrid>
+        <GridCell><ActionButton fill center label="기록 보기" onPress={() => pushOnce("/records")} /></GridCell>
+        <GridCell><ActionButton fill primary label="처음 화면으로" onPress={toTitle} /></GridCell>
+      </ButtonGrid>
     </View>
   );
 }
@@ -99,6 +99,4 @@ const styles = StyleSheet.create({
   lines: { gap: 2 },
   story: { ...type.body, color: colors.text },
   grave: { ...type.bodyStrong, color: colors.textDim },
-  buttons: { flexDirection: "row", gap: space.sm },
-  cell: { flex: 1, flexDirection: "column" },
 });

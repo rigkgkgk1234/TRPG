@@ -12,6 +12,7 @@ import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { HIT_FX_MS, HP_BAR_HEIGHT, HitEffect } from "@/ui/components/HitEffect";
+import { HpBar } from "@/ui/components/HpBar";
 import { CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
@@ -70,7 +71,6 @@ export function CombatPanel({ run }: { run: RunState }) {
     }
   };
 
-  const isWide = (i: number) => i === view.actions.length - 1 && view.actions.length % 2 === 1;
   const enemyRows = Math.max(1, Math.min(view.enemies.length, MAX_VISIBLE_ENEMIES));
   // 적 칸 높이: 실제로 그린 적 목록 높이(적이 넷 이상이면 셋까지만 보이고 스크롤). 그려 보기 전에는 어림값
   const rowsHeight = enemyListHeight ?? enemyRows * ENEMY_ROW - space.sm;
@@ -114,10 +114,10 @@ export function CombatPanel({ run }: { run: RunState }) {
       <ButtonGrid>
         {view.actions.map((a, i) => (
           // 홀수 개면 마지막 칸(보통 도주)이 한 줄을 다 쓰고, 넓으니 확률은 오른쪽에 둔다
-          <GridCell key={a.type} full={isWide(i)}>
+          <GridCell key={a.type}>
             <ActionButton
               fill
-              badgeBelow={!isWide(i)}
+              badgeBelow
               icon={ACTION_ICON[a.type]}
               label={a.label}
               {...(!a.lockedReason && a.chance !== undefined ? chanceBadgeProps(a.chance, a.need) : {})}
@@ -187,9 +187,7 @@ function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; 
     <Pressable {...press} accessibilityLabel={`${name} HP ${Math.max(0, hp)}/${maxHp}`}>
       <Text style={styles.enemyName} numberOfLines={1}>{name}</Text>
       <View style={styles.barWrap}>
-        <View style={styles.bar}>
-          <View style={[styles.barFill, { width: `${hpRatio(hp, maxHp) * 100}%`, backgroundColor: hp <= maxHp / 2 ? colors.partial : colors.fail }]} />
-        </View>
+        <HpBar ratio={hpRatio(hp, maxHp)} height={HP_BAR_HEIGHT} color={hp <= maxHp / 2 ? colors.partial : colors.fail} trackColor={colors.border} />
         {/* 활 대성공 연사는 첫 발만큼만 먼저 깎여 있다 (나머지는 스토어가 차례로 깎는다) */}
         {mine && <HitEffect key={mine.seq} fx={mine.fx} from={hpRatio(hp + (isVolley(mine.fx) ? volleyParts(mine.fx.damage)[0] : mine.fx.damage), maxHp)} to={hpRatio(hp, maxHp)} maxHp={maxHp} />}
       </View>
@@ -297,8 +295,6 @@ const styles = StyleSheet.create({
   enemyName: { ...type.bodyStrong, color: colors.text, flexShrink: 1, maxWidth: "45%" },
   enemyHp: { ...type.label, color: colors.textDim, fontVariant: ["tabular-nums"], minWidth: 56, textAlign: "right" },
   barWrap: { flex: 1, alignSelf: "stretch", justifyContent: "center" },
-  bar: { height: HP_BAR_HEIGHT, borderRadius: radius.pill, backgroundColor: colors.border, overflow: "hidden" },
-  barFill: { height: "100%", borderRadius: radius.pill },
   defenseValue: { ...type.label, color: colors.text, fontVariant: ["tabular-nums"] },
   picker: { gap: space.sm },
   pickerTitle: { ...type.label, color: colors.textDim },

@@ -6,7 +6,7 @@ import { runEvening } from "./day/evening";
 import { buyFood, payDebt } from "./day/town";
 import { discard, equip, unequip } from "./items/equipment";
 import { consumeItem } from "./items/inventory";
-import { buy, repair, sell, stabilize, treat, type RepairTarget } from "./items/shop";
+import { buy, heal, repair, sell, stabilize, treat, type RepairTarget } from "./items/shop";
 import { handleChoice, handleCombat, handleContinue, handleGoDeeper, startPendingStory } from "./events/runner";
 import { createRng, type RunState } from "./types";
 
@@ -80,9 +80,10 @@ function handleShop(ctx: Ctx, cmd: Extract<GameCommand, { type: "shop" }>): bool
   switch (cmd.op) {
     case "buyFood": return buyFood(ctx, cmd.qty ?? 1);
     case "payDebt": return payDebt(ctx, cmd.qty ?? ctx.draft.resources.debt);
-    case "buy": return ok(ctx, cmd.shop && cmd.target ? buy(ctx, cmd.shop, cmd.target) : "무엇을 살지 정하지 않았다");
+    case "buy": return ok(ctx, cmd.shop && cmd.target ? buy(ctx, cmd.shop, cmd.target, cmd.qty ?? 1) : "무엇을 살지 정하지 않았다");
     case "sell": return ok(ctx, sell(ctx, Number(cmd.target), cmd.qty ?? 1));
     case "repair": return ok(ctx, repair(ctx, (cmd.target ?? "weapon") as RepairTarget));
+    case "heal": return ok(ctx, heal(ctx, cmd.qty ?? 1));
     case "treat": return ok(ctx, treat(ctx));
     case "stabilize": return ok(ctx, stabilize(ctx));
   }

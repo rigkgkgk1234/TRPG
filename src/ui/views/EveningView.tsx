@@ -5,9 +5,9 @@ import type { FeedOrder } from "@/core/commands";
 import { FOOD_PER_DAY, previewEvening } from "@/core/day/evening";
 import { FOOD_PRICE, type RunState } from "@/core/types";
 import { useGame } from "@/store/gameStore";
-import { ActionButton } from "@/ui/components/Buttons";
+import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
-import { TownRow } from "@/ui/components/TownRow";
+import { townCells } from "@/ui/components/TownCells";
 import { BasketIcon, HandCoinsIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
 import { colors, hairline, icon, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
@@ -72,17 +72,22 @@ export function EveningPanel({ run, onVillage }: { run: RunState; onVillage: () 
         </>
       )}
 
-      {run.resources.debt > 0 && silver > 0 && (
-        <ActionButton
-          icon={HandCoinsIcon}
-          label="빚 갚기"
-          detail={[`가진 만큼 (최대 ${Math.min(silver, run.resources.debt)})`, `남은 빚 ${run.resources.debt}`]}
-          onPress={() => send({ type: "shop", op: "payDebt", qty: run.resources.debt })}
-        />
-      )}
-
-      <TownRow run={run} onVillage={onVillage} />
-      <ActionButton primary icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
+      <ButtonGrid>
+        {run.resources.debt > 0 && silver > 0 && (
+          <GridCell>
+            <ActionButton
+              icon={HandCoinsIcon}
+              label="빚 갚기"
+              detail={[`가진 만큼 (최대 ${Math.min(silver, run.resources.debt)})`, `남은 빚 ${run.resources.debt}`]}
+              onPress={() => send({ type: "shop", op: "payDebt", qty: run.resources.debt })}
+            />
+          </GridCell>
+        )}
+        {townCells(run, onVillage)}
+        <GridCell>
+          <ActionButton primary icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
+        </GridCell>
+      </ButtonGrid>
     </View>
   );
 }

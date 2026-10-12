@@ -5,7 +5,7 @@ import type { DailyActionDef, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
-import { TownRow } from "@/ui/components/TownRow";
+import { townCells } from "@/ui/components/TownCells";
 import { ACTION_ICON, JOB_ICON } from "@/ui/gameIcons";
 import { isPicking, pickingStatus, workBadge } from "@/ui/hubText";
 import { colors, hairline, space } from "@/ui/theme";
@@ -51,9 +51,11 @@ export function HubPanel({ run, onPick }: { run: RunState; onPick: (step: PickSt
             </GridCell>
           );
         })}
+        {townCells(run, () => onPick({ kind: "village" }))}
+        <GridCell>
+          <RestButton run={run} onPress={() => choose(REST)} />
+        </GridCell>
       </ButtonGrid>
-      <TownRow run={run} onVillage={() => onPick({ kind: "village" })} />
-      <RestButton run={run} onPress={() => choose(REST)} />
     </View>
   );
 }

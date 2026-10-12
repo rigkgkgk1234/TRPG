@@ -105,9 +105,8 @@ function Stat({ icon: IconC, label, value, suffix = "", color, higherIsGood = fa
 
   const base = color ?? colors.text;
   const animatedColor = flash.interpolate({ inputRange: [0, 1], outputRange: [base, good ? colors.success : colors.fail] });
-  const bg = flash.interpolate({ inputRange: [0, 1], outputRange: ["rgba(0,0,0,0)", good ? colors.goodBg : colors.badBg] });
   return (
-    <Animated.View style={[styles.stat, { backgroundColor: bg }]} accessibilityLabel={`${label} ${value}${suffix}`}>
+    <Animated.View style={styles.stat} accessibilityLabel={`${label} ${value}${suffix}`}>
       <View style={styles.statTop}>
         <IconC size={icon.sm} weight={icon.weight} color={color ?? colors.textFaint} />
         <Text style={styles.statLabel}>{label}</Text>
@@ -138,14 +137,12 @@ const styles = StyleSheet.create({
     gap: space.xs,
     paddingHorizontal: space.sm + 2,
     paddingVertical: 3,
-    borderRadius: radius.pill,
-    backgroundColor: colors.accentSoft,
   },
   phaseText: { ...type.label, color: colors.accent },
   who: { marginLeft: "auto", flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 1 },
   name: { ...type.caption, color: colors.textDim, flexShrink: 1 },
-  progress: { height: 3, borderRadius: radius.pill, backgroundColor: colors.surfaceRaised, overflow: "hidden" },
-  progressFill: { height: "100%", borderRadius: radius.pill, backgroundColor: colors.accent },
+  progress: { height: 3, backgroundColor: colors.surfaceRaised, overflow: "hidden" },
+  progressFill: { height: "100%", backgroundColor: colors.accent },
   stats: { flexDirection: "row", gap: space.xs, marginHorizontal: -space.sm },
   stat: { flex: 1, paddingVertical: space.xs, paddingHorizontal: space.sm, borderRadius: radius.sm, gap: 2 },
   statTop: { flexDirection: "row", alignItems: "center", gap: space.xs },

@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { GameCommand } from "@/core/commands";
 import { actionStatus, EXERCISE_USES, LESSON_SKILLS, LESSON_XP, MVP_ACTIONS, SOLO_TRAINING_DC } from "@/core/day/actions";
 import { canTrade } from "@/core/day/town";
+import { SHOPS, type ShopId } from "@/core/items/shop";
 import { dangerTierFor, DEEP_FATIGUE, EXPLORE_CARDS, EXPLORE_REGIONS } from "@/core/events/explore";
 import { possibleEvents } from "@/core/events/selector";
 import {
@@ -11,11 +12,12 @@ import {
 import type { RegionId, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
-import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
+import { ActionButton, ButtonGrid, ButtonStack, GridCell } from "@/ui/components/Buttons";
 import { ACTION_ICON, EXERCISE_ICON, NPC_ICON, REGION_ICON, SKILL_ICON } from "@/ui/gameIcons";
 import { exerciseDetail, skillDetail, workBadge } from "@/ui/hubText";
 import { ChatCircleDotsIcon, StorefrontIcon, type Icon } from "@/ui/icons";
-import { pushOnce } from "@/ui/navigate";
+import { MODE_ICON, MODE_LABEL, modeDetail, reputationNote, SHOP_ICON, SHOP_IDS, SHOP_MODES, type ShopMode } from "@/ui/shopText";
+import { ShopView } from "@/ui/views/ShopView";
 import { NPC_INFO, PLACE_ICON, PLACE_INFO, REGION_INFO } from "@/ui/placeInfo";
 import { colors, hairline, icon as iconToken, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
@@ -30,6 +32,9 @@ export type PickStep =
   | { kind: "explore" }
   | { kind: "village" }
   | { kind: "talk" }
+  | { kind: "shops" }
+  | { kind: "shop"; shop: ShopId }
+  | { kind: "store"; shop: ShopId; mode: ShopMode }
   | { kind: "region"; region: RegionId }
   | { kind: "visit"; id: VisitId };
 
@@ -39,6 +44,10 @@ function backOf(step: PickStep): PickStep | null {
     case "region": return { kind: "explore" };
     case "visit": return isNpcId(step.id) ? { kind: "talk" } : { kind: "village" };
     case "talk": return { kind: "village" };
+    case "shops": return { kind: "village" };
+    case "shop": return { kind: "shops" };
+    // 가게 안에서는 아래 패널이 모드 버튼을 그대로 보여 주므로 "뒤로"는 가게 고르기로
+    case "store": return { kind: "shops" };
     default: return null;
   }
 }
@@ -55,16 +64,16 @@ export function PickPanel({ run, step, onStep }: { run: RunState; step: PickStep
     onStep(null);
     send(cmd);
   };
-  const back = <ActionButton center compact label="뒤로" onPress={() => onStep(backOf(step))} />;
+  const back = <ActionButton center compact raised label="뒤로" onPress={() => onStep(backOf(step))} />;
 
   if (step.kind === "region" || step.kind === "visit") {
     const place = step.kind === "region" ? regionInfo(run, step.region) : visitInfo(run, step.id);
     return (
       <Frame insets={insets.bottom} actions={
-        <>
-          <ActionButton primary label={place.confirmLabel} detail={place.lockedReason ?? undefined} disabled={!!place.lockedReason} onPress={() => choose(place.cmd)} />
-          {back}
-        </>
+        [
+          <ActionButton key="go" primary label={place.confirmLabel} detail={place.lockedReason ?? undefined} disabled={!!place.lockedReason} onPress={() => choose(place.cmd)} />,
+          <View key="back">{back}</View>,
+        ]
       } />
     );
   }
@@ -76,6 +85,9 @@ export function PickPanel({ run, step, onStep }: { run: RunState; step: PickStep
       {step.kind === "explore" && <Regions run={run} onPick={(region) => onStep({ kind: "region", region })} />}
       {step.kind === "village" && <Village run={run} onStep={onStep} />}
       {step.kind === "talk" && <Talk run={run} onPick={(id) => onStep({ kind: "visit", id })} />}
+      {step.kind === "shops" && <Shops onPick={(shop) => onStep({ kind: "shop", shop })} />}
+      {step.kind === "shop" && <ShopModes run={run} shop={step.shop} onPick={(mode) => onStep({ kind: "store", shop: step.shop, mode })} />}
+      {step.kind === "store" && <ShopModes run={run} shop={step.shop} selected={step.mode} onPick={(mode) => onStep({ kind: "store", shop: step.shop, mode })} />}
     </Frame>
   );
 }
@@ -98,12 +110,17 @@ interface Intro {
 function introOf(run: RunState, step: PickStep): Intro {
   if (step.kind === "region") return regionInfo(run, step.region);
   if (step.kind === "visit") return visitInfo(run, step.id);
+  if (step.kind === "shop" || step.kind === "store") {
+    const shop = SHOPS[step.shop];
+    return { icon: SHOP_ICON[step.shop], title: shop.name, subtitle: shop.owner, body: SHOP_NOTE[step.shop], facts: [`가진 은화 ${run.resources.silver}`, reputationNote(run)] };
+  }
   const head = HEAD[step.kind];
   return { icon: head.icon, title: head.title, body: head.note(run) };
 }
 
 /** 고르는 동안 스크립트 창(결과 카드 자리)에 보여 줄 설명 */
 export function PickIntro({ run, step }: { run: RunState; step: PickStep }) {
+  if (step.kind === "store") return <ShopView run={run} shop={step.shop} mode={step.mode} />;
   const { icon: IconC, title, subtitle, body, facts, sections } = introOf(run, step);
   return (
     <View style={styles.intro}>
@@ -133,7 +150,13 @@ const PICK_CELL_HEIGHT = 86;
 
 const def = (id: string) => MVP_ACTIONS.find((a) => a.id === id)!;
 
-const HEAD: Record<"trainSolo" | "trainLesson" | "explore" | "village" | "talk", { icon?: Icon; title: string; note: (run: RunState) => string }> = {
+const SHOP_NOTE: Record<ShopId, string> = {
+  smithy: "브록이 무기와 방어구를 팔고, 닳은 장비를 손봐 준다.",
+  healer: "마그다 할멈이 상처를 돌보고 약을 판다.",
+  inn: "토비가 식량과 음식을 팔고, 쓸 만한 물건을 사들인다.",
+};
+
+const HEAD: Record<"trainSolo" | "trainLesson" | "explore" | "village" | "talk" | "shops", { icon?: Icon; title: string; note: (run: RunState) => string }> = {
   trainSolo: {
     icon: ACTION_ICON.trainSolo,
     title: def("trainSolo").label,
@@ -159,6 +182,11 @@ const HEAD: Record<"trainSolo" | "trainLesson" | "explore" | "village" | "talk",
     title: "주민과 대화",
     note: () => "행동 1칸, 피로 없음. 누구를 찾아갈까?",
   },
+  shops: {
+    icon: StorefrontIcon,
+    title: "가게",
+    note: (run) => `거래는 행동을 쓰지 않는다. 가진 은화 ${run.resources.silver}, ${reputationNote(run)}`,
+  },
 };
 
 /** 틀: 패널 배경 + 스크롤되는 선택지(안내 단계면 없음) + 맨 아래 버튼 */
@@ -170,7 +198,9 @@ function Frame({ insets, actions, children }: { insets: number; actions: React.R
           {children}
         </ScrollView>
       ) : null}
-      <View style={styles.actions}>{actions}</View>
+      <View style={styles.actions}>
+        <ButtonStack backLast>{actions}</ButtonStack>
+      </View>
     </View>
   );
 }
@@ -251,7 +281,42 @@ function Regions({ run, onPick }: { run: RunState; onPick: (r: RegionId) => void
   );
 }
 
-/** 마을: 가게는 가게 화면을 열고(행동 소모 없음), 나머지는 다음 단계로 */
+/** 가게 고르기: 대장간·약초방·여관 */
+function Shops({ onPick }: { onPick: (shop: ShopId) => void }) {
+  return (
+    <ButtonGrid>
+      {SHOP_IDS.map((id) => (
+        <GridCell key={id} minHeight={PICK_CELL_HEIGHT}>
+          <ActionButton fill large tight icon={SHOP_ICON[id]} label={SHOPS[id].name} detail={SHOPS[id].owner} onPress={() => onPick(id)} />
+        </GridCell>
+      ))}
+    </ButtonGrid>
+  );
+}
+
+/** 가게에서 할 일 두 가지(구매·수리 등). 고르면 스크립트 창에 그 목록을 띄운다. 가게 안에서는 지금 모드를 표시한다 */
+function ShopModes({ run, shop, selected, onPick }: { run: RunState; shop: ShopId; selected?: ShopMode; onPick: (mode: ShopMode) => void }) {
+  return (
+    <ButtonGrid>
+      {SHOP_MODES[shop].map((mode) => (
+        <GridCell key={mode} minHeight={PICK_CELL_HEIGHT}>
+          <ActionButton
+            fill
+            large
+            tight
+            icon={MODE_ICON[mode]}
+            label={MODE_LABEL[mode]}
+            detail={modeDetail(run, shop, mode)}
+            selected={selected === mode}
+            onPress={() => onPick(mode)}
+          />
+        </GridCell>
+      ))}
+    </ButtonGrid>
+  );
+}
+
+/** 마을: 가게·주민·장소는 다음 단계로 */
 function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) => void }) {
   const trade = canTrade(run);
   const talk = NPC_IDS.some((id) => actionStatus(run, CONTENT, "village", { npc: id }).available);
@@ -265,7 +330,7 @@ function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) 
           label="가게"
           detail={trade ? "행동 소모 없음" : "지금은 갈 수 없다"}
           disabled={!trade}
-          onPress={() => pushOnce("/game/town")}
+          onPress={() => onStep({ kind: "shops" })}
         />
       </GridCell>
       <GridCell minHeight={PICK_CELL_HEIGHT}>
@@ -387,14 +452,13 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     paddingHorizontal: space.lg,
     paddingTop: space.lg,
-    gap: space.sm,
     backgroundColor: colors.surface,
     borderTopWidth: hairline,
     borderColor: colors.borderStrong,
   },
   scroll: { flexGrow: 0, flexShrink: 1 },
   content: { gap: space.md },
-  actions: { gap: space.sm },
+  actions: {},
   // 스크립트 창의 첫 안내("3일차 오전")와 같은 크기·같은 위 여백
   intro: { gap: space.sm, paddingTop: space.md },
   introHead: { flexDirection: "row", alignItems: "center", gap: space.md },

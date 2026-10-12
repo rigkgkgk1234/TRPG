@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   center: { ...FILL, alignItems: "center", justifyContent: "center" },
   /** 맞은 자리 기준점 (너비 0, 세로 가운데) */
   point: { position: "absolute", top: 0, bottom: 0, width: 0, alignItems: "center", justifyContent: "center" },
-  chunk: { position: "absolute", top: "50%", height: HP_BAR_HEIGHT, marginTop: -HP_BAR_HEIGHT / 2, borderRadius: 2, backgroundColor: colors.fail, overflow: "hidden" },
+  chunk: { position: "absolute", top: "50%", height: HP_BAR_HEIGHT, marginTop: -HP_BAR_HEIGHT / 2, backgroundColor: colors.fail, overflow: "hidden" },
   chunkFill: { ...FILL, backgroundColor: colors.text },
   cutHolder: { position: "absolute", width: 0, height: 0, alignItems: "center", justifyContent: "center" },
   cut: { position: "absolute", width: CUT_W, height: CUT_H },

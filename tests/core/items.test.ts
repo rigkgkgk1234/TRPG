@@ -4,11 +4,11 @@ import { combatStep, finishCombat, playerDefense, startCombat } from "@/core/com
 import { dispatch } from "@/core/engine";
 import { discard, equip, equipBlock, unequip } from "@/core/items/equipment";
 import { canUseItem, consumeItem } from "@/core/items/inventory";
-import { adjustedPrice, buy, repair, repairPrice, sell, sellPrice, SHOPS, stabilize, treat } from "@/core/items/shop";
+import { adjustedPrice, buy, heal, healPrice, maxHealable, repair, repairPrice, sell, sellPrice, SHOPS, stabilize, treat } from "@/core/items/shop";
 import { newRun } from "@/core/newRun";
 import { seal, unseal } from "@/core/save/seal";
 import { decodeSave, encodeSave } from "@/core/save/serialize";
-import type { ItemStack, JobId, Rng, RunState } from "@/core/types";
+import { maxHp, type ItemStack, type JobId, type Rng, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 
 const NOW = "2026-10-07T00:00:00.000Z";
@@ -154,6 +154,60 @@ describe("가게", () => {
     const busy = edit(run, (s) => { s.activeEvent = { eventId: "forest_herb_01", sceneId: "start" }; });
     expect(dispatch(busy, { type: "shop", op: "buy", shop: "smithy", target: "leather_armor" }, CONTENT).feed)
       .toEqual([{ kind: "toast", text: "지금은 살 수 없다" }]);
+  });
+});
+
+describe("수량 거래와 약초방 HP 회복", () => {
+  const rich = (silver = 40) => edit(start("farmer"), (s) => { s.resources.silver = silver; s.player.reputation = 30; s.inventory.slots = s.inventory.slots.map(() => null); });
+
+  it("약을 3개 사면 값도 3배, 한 칸에 겹쳐 넣는다", () => {
+    const ctx = ctxOf(rich());
+    expect(buy(ctx, "healer", "herb", 3)).toBeNull();
+    expect(ctx.draft.resources.silver).toBe(40 - 3 * 3);
+    expect(ctx.draft.inventory.slots[0]).toEqual({ itemId: "herb", qty: 3 });
+  });
+
+  it("수량이 0·NaN이거나 가방 자리가 모자라면 거절", () => {
+    expect(buy(ctxOf(rich()), "healer", "herb", 0)).toBe("살 수량이 올바르지 않다");
+    expect(buy(ctxOf(rich()), "healer", "herb", Number.NaN)).toBe("살 수량이 올바르지 않다");
+    const full = edit(rich(400), (s) => { s.inventory.slots = s.inventory.slots.map(() => gear("club")); s.inventory.slots[0] = { itemId: "herb", qty: 3 }; });
+    expect(buy(ctxOf(full), "healer", "herb", 3)).toBe("가방에 자리가 없다");
+    expect(buy(ctxOf(full), "healer", "herb", 2)).toBeNull();
+  });
+
+  it("장비를 여러 개 사면 바로 걸치지 않고 가방에 넣는다", () => {
+    const run = edit(rich(), (s) => { s.inventory.equipment.head = null; });
+    const ctx = ctxOf(run);
+    expect(buy(ctx, "smithy", "leather_cap", 2)).toBeNull();
+    expect(ctx.draft.inventory.equipment.head).toBeNull();
+    expect(ctx.draft.inventory.slots.filter((x) => x?.itemId === "leather_cap")).toHaveLength(2);
+  });
+
+  it("HP 회복은 HP 1당 은화 1, 최대 HP에서 멈춘다", () => {
+    const run = edit(rich(10), (s) => { s.player.hp = maxHp(s.player.stats) - 6; });
+    const ctx = ctxOf(run);
+    expect(heal(ctx, 4)).toBeNull();
+    expect(ctx.draft.player.hp).toBe(maxHp(run.player.stats) - 2);
+    expect(ctx.draft.resources.silver).toBe(6);
+    expect(heal(ctx, 10)).toBeNull();
+    expect(ctx.draft.player.hp).toBe(maxHp(run.player.stats));
+    expect(ctx.draft.resources.silver).toBe(4);
+    expect(heal(ctx, 1)).toBe("HP가 가득 차 있다");
+  });
+
+  it("HP 회복 값은 평판 보정을 받고, 은화만큼만 고를 수 있다", () => {
+    const poor = edit(rich(5), (s) => { s.player.reputation = 4; s.player.hp = 1; });
+    expect(healPrice(poor, 5)).toBe(6);
+    expect(maxHealable(poor)).toBe(4);
+    expect(heal(ctxOf(poor), 5)).toBe("은화가 모자란다");
+  });
+
+  it("엔진 명령: 여관 스튜 2그릇, 약초방 HP 회복", () => {
+    const run = edit(rich(), (s) => { s.player.hp = 3; });
+    const bought = dispatch(run, { type: "shop", op: "buy", shop: "inn", target: "hot_stew", qty: 2 }, CONTENT).state;
+    expect(bought.inventory.slots[0]).toEqual({ itemId: "hot_stew", qty: 2 });
+    const healed = dispatch(bought, { type: "shop", op: "heal", qty: 2 }, CONTENT).state;
+    expect(healed.player.hp).toBe(5);
   });
 });
 

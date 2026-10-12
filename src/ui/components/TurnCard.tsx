@@ -8,13 +8,12 @@ import { isVolley, VOLLEY_GAP_MS, VOLLEY_SHOTS } from "@/store/volley";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { HIT_FX_MS } from "@/ui/components/HitEffect";
 import { BandaidsIcon, TrendUpIcon, WarningIcon, type Icon } from "@/ui/icons";
-import { OUTCOME_COLOR, OUTCOME_TONE, signed, TONE_COLOR, type Change, type Line, type Tone, type TurnSummary } from "@/ui/turnSummary";
+import { OUTCOME_COLOR, signed, TONE_COLOR, type Change, type Line, type TurnSummary } from "@/ui/turnSummary";
 import { RollFormula } from "@/ui/components/RollFormula";
 import { rollModeNote } from "@/ui/rollText";
-import { colors, icon, motion, radius, space, type } from "@/ui/theme";
+import { colors, icon, motion, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
-const TONE_BG: Record<Tone, string> = { good: colors.goodBg, bad: colors.badBg, crit: colors.critBg, neutral: colors.neutralBg };
 const MARK_ICON: Record<NonNullable<Line["mark"]>, Icon> = { levelUp: TrendUpIcon, wound: WarningIcon, heal: BandaidsIcon };
 
 /** 전투 연출이 붙은 박자 앞에 두는 틈 (앞 연출이 끝날 시간, ms) */
@@ -131,6 +130,9 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
 
   return (
     <Pressable onPress={skip} disabled={done} accessibilityHint={done ? undefined : "눌러서 결과 바로 보기"} style={[styles.card, dense && styles.cardDense]}>
+      {/* 왼쪽 위·오른쪽 아래 모서리 꺾쇠로 카드를 묶는다 */}
+      <View pointerEvents="none" style={[styles.corner, styles.cornerTopLeft]} />
+      <View pointerEvents="none" style={[styles.corner, styles.cornerBottomRight]} />
       {dense ? (
         // 좁은 칸: 바뀐 것(HP 등)은 제목 줄 오른쪽에 둬서 한 줄을 아낀다
         <View style={styles.titleRow}>
@@ -199,7 +201,7 @@ function RollResult({ r, compact, dense, hand }: { r: CheckResult; compact?: boo
       <View style={styles.rollResultDense}>
         <View style={styles.outcomeRow}>
           {hand && <Text style={styles.handTag}>{hand}</Text>}
-          <View style={[styles.badgeDense, { backgroundColor: TONE_BG[OUTCOME_TONE[r.outcome]] }]}>
+          <View style={styles.badgeDense}>
             <Text style={[styles.badgeTextDense, { color }]}>{OUTCOME_LABEL[r.outcome]}</Text>
           </View>
           {!compact && <Text style={styles.dcCompact}>목표 {r.spec.dc}</Text>}
@@ -214,7 +216,7 @@ function RollResult({ r, compact, dense, hand }: { r: CheckResult; compact?: boo
   return (
     <View style={styles.rollResult}>
       <View style={styles.outcomeRow}>
-        <View style={[styles.badge, { backgroundColor: TONE_BG[OUTCOME_TONE[r.outcome]] }]}>
+        <View style={styles.badge}>
           <Text style={[styles.badgeText, { color }]}>{OUTCOME_LABEL[r.outcome]}</Text>
         </View>
         {r.xpGained > 0 && <Text style={styles.xp}>경험 +{r.xpGained}</Text>}
@@ -239,7 +241,7 @@ function EventLine({ line, dense }: { line: Line; dense?: boolean }) {
 
 function ChangeChip({ change: c, dense }: { change: Change; dense?: boolean }) {
   return (
-    <View style={[styles.chip, dense && styles.chipDense, { backgroundColor: TONE_BG[c.tone] }]}>
+    <View style={[styles.chip, dense && styles.chipDense]}>
       <Text style={styles.chipLabel}>{c.label}</Text>
       <Text style={[styles.chipValue, { color: TONE_COLOR[c.tone] }]}>{signed(c.delta)}</Text>
     </View>
@@ -256,26 +258,31 @@ export function FadeIn({ animate, style, children }: { animate: boolean; style?:
   return <Animated.View style={[style, { opacity: v, transform: [{ translateY }] }]}>{children}</Animated.View>;
 }
 
+/** 모서리 꺾쇠 한 변의 길이 */
+const CORNER = 14;
+
 const styles = StyleSheet.create({
-  // 상자 없이 여백과 왼쪽 가는 줄로만 묶는다 (지난 기록과 같은 바탕 위에 놓인 장부 한 장)
+  // 상자 없이 여백과 두 모서리의 꺾쇠(왼쪽 위 ┌, 오른쪽 아래 ┘)로만 묶는다 (지난 기록과 같은 바탕 위에 놓인 장부 한 장)
   card: {
-    paddingVertical: space.xs,
-    paddingLeft: space.lg,
+    paddingVertical: space.sm,
+    paddingHorizontal: space.lg,
     gap: space.lg,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.accent,
   },
+  corner: { position: "absolute", width: CORNER, height: CORNER, borderColor: colors.accent },
+  cornerTopLeft: { top: 0, left: 0, borderTopWidth: 2, borderLeftWidth: 2 },
+  cornerBottomRight: { bottom: 0, right: 0, borderBottomWidth: 2, borderRightWidth: 2 },
   cardDense: { gap: space.xs + 2 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   titleDense: { ...type.heading, color: colors.text, flexShrink: 1, marginRight: "auto" },
   rollTextDense: { minHeight: 44 },
   rollResultDense: { gap: 2 },
-  badgeDense: { paddingHorizontal: space.sm, paddingVertical: 1, borderRadius: radius.sm },
+  // 결과 표시는 바탕 없이 글자색만
+  badgeDense: { paddingVertical: 1 },
   badgeTextDense: { ...type.label },
   mathDense: { ...type.caption, color: colors.text, fontVariant: ["tabular-nums"] },
   eventsDense: { gap: 2 },
   eventDense: { ...type.caption, fontSize: 14, lineHeight: 20, flex: 1 },
-  chipDense: { paddingVertical: 2, paddingHorizontal: space.sm },
+  chipDense: { paddingVertical: 2 },
   when: { ...type.overline, color: colors.textFaint },
   title: { ...type.title, color: colors.text },
   rollRow: { flexDirection: "row", alignItems: "center", gap: space.lg },
@@ -287,7 +294,7 @@ const styles = StyleSheet.create({
   handLabel: { ...type.caption, color: colors.textFaint },
   rollResult: { gap: space.xs },
   outcomeRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
-  badge: { paddingHorizontal: space.md, paddingVertical: 2, borderRadius: radius.sm },
+  badge: { paddingVertical: 2 },
   badgeText: { ...type.heading },
   xp: { ...type.label, color: colors.textDim },
   math: { ...type.body, color: colors.text, fontVariant: ["tabular-nums"] },
@@ -298,8 +305,9 @@ const styles = StyleSheet.create({
   mathCompact: { ...type.caption, fontSize: 14, lineHeight: 20, color: colors.text, fontVariant: ["tabular-nums"] },
   dcCompact: { ...type.caption, color: colors.textFaint },
   small: { ...type.caption, color: colors.textFaint },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: space.sm },
-  chip: { flexDirection: "row", alignItems: "center", gap: space.xs + 2, paddingHorizontal: space.md, paddingVertical: space.xs + 2, borderRadius: radius.sm },
+  chips: { flexDirection: "row", flexWrap: "wrap", columnGap: space.lg, rowGap: space.xs },
+  // 바뀐 값(HP +4 등)도 바탕 없이 글자만
+  chip: { flexDirection: "row", alignItems: "center", gap: space.xs + 2, paddingVertical: space.xs + 2 },
   chipLabel: { ...type.label, color: colors.textDim },
   chipValue: { ...type.number, fontSize: 16, lineHeight: 20 },
   events: { gap: space.sm },

@@ -42,7 +42,8 @@ export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
  * 모서리 규칙: 안쪽일수록 좁게. 떠 있는 창 = lg(20), 버튼·카드 = md(10), 카드 안의 작은 상자 = sm(6), 칩·막대 = pill.
  * 화면 아래에 붙은 패널은 모서리를 굴리지 않고 가는 윗선만 둔다.
  */
-export const radius = { sm: 6, md: 10, lg: 20, pill: 999 } as const;
+/** 모서리는 모두 5만 둥글린다 (버튼·칩·카드·시간 표시까지). 동그라미가 필요한 것(막대 손잡이, 타격 효과)은 따로 둥글린다 */
+export const radius = { sm: 5, md: 5, lg: 5, pill: 5 } as const;
 
 /** 가는 선 굵기 (상자 대신 나누는 선) */
 export const hairline = 1;

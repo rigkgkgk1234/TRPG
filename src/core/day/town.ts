@@ -40,7 +40,7 @@ export function payDebt(ctx: Ctx, qty: number): boolean {
 }
 
 /** NaN·Infinity·0 이하를 막는다. 명령은 UI 밖(시뮬레이터·마이그레이션)에서도 오므로 엔진이 직접 검사한다. */
-function validQty(n: number): boolean {
+export function validQty(n: number): boolean {
   return Number.isFinite(n) && n > 0;
 }
 

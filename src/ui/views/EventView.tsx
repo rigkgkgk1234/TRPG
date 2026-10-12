@@ -7,7 +7,7 @@ import { MODE_LABEL, REGION_LABEL } from "@/core/labels";
 import type { EventCategory, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
-import { ActionButton } from "@/ui/components/Buttons";
+import { ActionButton, ButtonStack } from "@/ui/components/Buttons";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { REGION_ICON } from "@/ui/gameIcons";
@@ -59,6 +59,7 @@ export function EventPanel({ run }: { run: RunState }) {
                 안쪽은 더 어둡고 조용하다. 더 들어가면 위험하지만, 남들이 못 본 것을 찾을지도 모른다.
               </Text>
               <View style={styles.choices}>
+                <ButtonStack>
                 <ActionButton
                   icon={CaretRightIcon}
                   label="더 깊이 들어간다"
@@ -66,12 +67,14 @@ export function EventPanel({ run }: { run: RunState }) {
                   onPress={() => send({ type: "goDeeper", yes: true })}
                 />
                 <ActionButton icon={SignOutIcon} label="마을로 돌아간다" onPress={() => send({ type: "goDeeper", yes: false })} />
+                </ButtonStack>
               </View>
             </>
           ) : (
             <>
               <Text style={styles.text}>{view.text}</Text>
               <View style={styles.choices}>
+                <ButtonStack>
                 {view.kind === "continue" ? (
                   <ActionButton primary icon={ArrowRightIcon} label="계속" onPress={() => send({ type: "continue" })} />
                 ) : (
@@ -79,6 +82,7 @@ export function EventPanel({ run }: { run: RunState }) {
                     <ChoiceButton key={c.id} choice={c} onPress={() => send({ type: "chooseChoice", choiceId: c.id })} />
                   ))
                 )}
+                </ButtonStack>
               </View>
             </>
           )}
@@ -183,5 +187,5 @@ const styles = StyleSheet.create({
   title: { ...type.heading, color: colors.text, flexShrink: 1 },
   progress: { ...type.label, color: colors.textFaint, marginLeft: "auto", fontVariant: ["tabular-nums"] },
   text: { ...type.body, color: colors.text },
-  choices: { gap: space.sm, marginTop: space.xs },
+  choices: { marginTop: space.xs },
 });

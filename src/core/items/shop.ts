@@ -1,7 +1,7 @@
 import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
-import { canTrade } from "../day/town";
-import { changeFatigue, changeSilver, setWound } from "../day/resources";
+import { canTrade, validQty } from "../day/town";
+import { changeFatigue, changeHp, changeSilver, setWound } from "../day/resources";
 import { josa } from "../labels";
 import {
   REP_DISCOUNT_RATE,
@@ -14,6 +14,7 @@ import {
   SELL_RATE,
   type ItemDef,
   type ItemId,
+  maxHp,
   type ItemStack,
   type RunState,
 } from "../types";
@@ -64,6 +65,8 @@ export const TREAT_PRICE = 5;
 /** 치명상 응급 처치: 은화 12, 피로 +2 → 치료받은 중상 (SYSTEM_SPEC 3-5) */
 export const STABILIZE_PRICE = 12;
 export const STABILIZE_FATIGUE = 2;
+/** 약초방 HP 회복: HP 1당 은화 1, 평판 보정 (SYSTEM_SPEC 3-5) */
+export const HEAL_SILVER_PER_HP = 1;
 /** 대장장이 견습은 수리비 반값 (SYSTEM_SPEC 5-3) */
 const SMITH_REPAIR_RATE = 0.5;
 
@@ -117,19 +120,21 @@ export function treatable(run: RunState): boolean {
 
 // ───────────────────────── 거래 ─────────────────────────
 
-/** 산다. 장비는 그 칸이 비어 있고 걸칠 수 있으면 바로 걸친다. @returns 거절 사유, 성공이면 null */
-export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId): string | null {
+/** qty묶음을 산다. 장비 하나를 사면 그 칸이 비어 있고 걸칠 수 있을 때 바로 걸친다. @returns 거절 사유, 성공이면 null */
+export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId, qty = 1): string | null {
   const s = ctx.draft;
   if (!canTrade(s)) return "지금은 살 수 없다";
   const entry = SHOPS[shopId]?.stock.find((e) => e.itemId === itemId);
   const def = ctx.content.items[itemId];
   if (!entry || !def) return "그런 물건은 없다";
-  const price = entryPrice(s, ctx.content, entry);
+  const n = Math.floor(qty);
+  if (!validQty(n)) return "살 수량이 올바르지 않다";
+  const price = entryPrice(s, ctx.content, entry) * n;
   if (s.resources.silver < price) return "은화가 모자란다";
 
   const slot = slotOf(def);
-  const wearNow = slot && !s.inventory.equipment[slot] && !(slot === "offHand" && twoHandedEquipped(s, ctx.content));
-  if (!wearNow && !hasRoom(s, def, entry.qty)) return "가방에 자리가 없다";
+  const wearNow = n === 1 && slot && !s.inventory.equipment[slot] && !(slot === "offHand" && twoHandedEquipped(s, ctx.content));
+  if (!wearNow && !hasRoom(s, def, entry.qty * n)) return "가방에 자리가 없다";
 
   changeSilver(ctx, -price);
   if (wearNow) {
@@ -137,9 +142,40 @@ export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId): string | null {
     ctx.feed.push({ kind: "item", itemId, name: def.name, delta: 1 });
     ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} 사서 바로 ${wearVerb(slot)}.` });
   } else {
-    addItem(ctx, itemId, entry.qty);
-    ctx.feed.push({ kind: "text", text: `${josa(def.name, "을/를")} 사서 가방에 넣었다.` });
+    addItem(ctx, itemId, entry.qty * n);
+    const what = n > 1 ? `${def.name} ${entry.qty * n}개를` : josa(def.name, "을/를");
+    ctx.feed.push({ kind: "text", text: `${what} 사서 가방에 넣었다.` });
   }
+  return null;
+}
+
+/** 약초방에서 HP를 n만큼 회복할 때 값 */
+export function healPrice(run: RunState, n: number): number {
+  return adjustedPrice(run, n * HEAL_SILVER_PER_HP);
+}
+
+/** 모자란 HP와 가진 은화로 살 수 있는 회복량 중 작은 쪽 */
+export function maxHealable(run: RunState): number {
+  const missing = maxHp(run.player.stats) - run.player.hp;
+  let n = Math.max(0, missing);
+  while (n > 0 && healPrice(run, n) > run.resources.silver) n--;
+  return n;
+}
+
+/** 약초방 HP 회복: qty만큼 (최대 HP까지) */
+export function heal(ctx: Ctx, qty: number): string | null {
+  const s = ctx.draft;
+  if (!canTrade(s)) return "지금은 치료받을 수 없다";
+  const want = Math.floor(qty);
+  if (!validQty(want)) return "회복할 양이 올바르지 않다";
+  const missing = maxHp(s.player.stats) - s.player.hp;
+  if (missing <= 0) return "HP가 가득 차 있다";
+  const n = Math.min(want, missing);
+  const price = healPrice(s, n);
+  if (s.resources.silver < price) return "은화가 모자란다";
+  changeSilver(ctx, -price);
+  changeHp(ctx, n);
+  ctx.feed.push({ kind: "text", text: "마그다 할멈이 약을 달여 먹이고 상처를 씻어 주었다." });
   return null;
 }
 
@@ -207,7 +243,7 @@ function twoHandedEquipped(run: RunState, content: Pick<ContentDB, "items">): bo
 }
 
 /** 이미 있는 칸에 겹치거나 빈 칸에 다 들어가는지 */
-function hasRoom(run: RunState, def: ItemDef, qty: number): boolean {
+export function hasRoom(run: RunState, def: ItemDef, qty: number): boolean {
   let room = 0;
   for (const slot of run.inventory.slots) {
     if (slot === null) room += def.stackMax;

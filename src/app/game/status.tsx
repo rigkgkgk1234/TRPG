@@ -5,7 +5,7 @@ import { SKILL_MAX_RANK, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, maxHp } from "@/cor
 import { CONTENT } from "@/data";
 import { useShownRun } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
-import { colors, hairline, radius, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
 /** 상태 모달: 능력치(성장까지 남은 사용 횟수), 숙련 XP, 흔적. 한 줄은 [이름 · 막대 · 진행 · 레벨] 순서로, 레벨은 맨 오른쪽. */
@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   // 이름과 레벨은 같은 색, 같은 굵기 ("근력 2레벨"이 한 덩어리로 읽히게)
   name: { ...type.bodyStrong, color: colors.text, width: 148 },
   value: { ...type.bodyStrong, color: colors.text, fontVariant: ["tabular-nums"] },
-  track: { flex: 1, height: 4, borderRadius: radius.pill, backgroundColor: colors.surfaceRaised, overflow: "hidden" },
-  fill: { height: "100%", borderRadius: radius.pill, backgroundColor: colors.accent },
+  track: { flex: 1, height: 4, backgroundColor: colors.surfaceRaised, overflow: "hidden" },
+  fill: { height: "100%", backgroundColor: colors.accent },
   note: { ...type.caption, color: colors.textFaint, fontVariant: ["tabular-nums"] },
   trait: { ...type.body, color: colors.text },
 });
