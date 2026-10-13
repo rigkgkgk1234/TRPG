@@ -17,4 +17,3 @@ export function once(fn: () => void): boolean {
 }
 
 export const pushOnce = (href: Href) => once(() => router.push(href));
-export const replaceOnce = (href: Href) => once(() => router.replace(href));

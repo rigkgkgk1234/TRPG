@@ -112,8 +112,7 @@ export function CombatPanel({ run }: { run: RunState }) {
       </View>
 
       <ButtonGrid>
-        {view.actions.map((a, i) => (
-          // 홀수 개면 마지막 칸(보통 도주)이 한 줄을 다 쓰고, 넓으니 확률은 오른쪽에 둔다
+        {view.actions.map((a) => (
           <GridCell key={a.type}>
             <ActionButton
               fill

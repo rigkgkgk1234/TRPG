@@ -122,7 +122,7 @@ export const JOBS: Record<JobId, JobDef> = {
     work: { label: "밭일", check: { stat: "str", skill: "farming", dc: 10 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
   },
   smith: {
-    id: "smith", name: "대장장이 견습", mvp: true,
+    id: "smith", name: "견습 대장장이", mvp: true,
     stats: { str: 2, agi: 0, con: 1, per: 0, cha: 1 },
     startSkills: { smithing: 2, blunt: 1 },
     silver: 8, food: 5, reputation: 10,

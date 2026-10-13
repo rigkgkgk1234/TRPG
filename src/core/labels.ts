@@ -100,7 +100,7 @@ export const REGION_LABEL: Record<RegionId, string> = {
 /** 직업 이름. 확장 직업은 jobs 데이터가 없어도 이름은 있어야 해서 여기 둔다 */
 export const JOB_LABEL: Record<JobId, string> = {
   farmer: "농부",
-  smith: "대장장이 견습",
+  smith: "견습 대장장이",
   hunter: "사냥꾼",
   herbalist: "약초꾼",
   recruit: "경비대 신병",

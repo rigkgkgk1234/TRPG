@@ -114,7 +114,7 @@ describe("가게", () => {
     expect(ctx.draft.inventory.slots[0]?.qty).toBe(1);
   });
 
-  it("수리: 내구도 5당 은화 1 (올림), 대장장이 견습은 반값", () => {
+  it("수리: 내구도 5당 은화 1 (올림), 견습 대장장이는 반값", () => {
     const worn = edit(start("farmer"), (s) => { s.inventory.equipment.weapon!.durability = 5; });
     expect(repairPrice(worn, CONTENT, worn.inventory.equipment.weapon!)).toBe(3);
     const smith = edit(start("smith"), (s) => { s.inventory.equipment.weapon!.durability = 5; });
@@ -372,7 +372,7 @@ describe("장비 칸 6개와 두 손", () => {
   });
 
   it("두 손에 한손 무기를 들면 공격할 때 왼손으로 한 번 더 친다 (명중 −2, 근력 피해 보정 없음)", () => {
-    // 대장장이 견습: 근력 2, 둔기 1. 오른손 낡은 망치 1d6, 왼손 손도끼 1d6
+    // 견습 대장장이: 근력 2, 둔기 1. 오른손 낡은 망치 1d6, 왼손 손도끼 1d6
     const run = edit(inCombat(start("smith"), ["boar"]), (s) => {
       s.inventory.equipment.offHand = gear("hand_axe");
       s.combat!.enemies[0].hp = 99;

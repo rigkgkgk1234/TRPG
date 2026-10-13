@@ -8,7 +8,3 @@ export interface ContentDB {
   jobs: Partial<Record<JobId, JobDef>>;
   traits: Record<TraitId, TraitDef>;
 }
-
-export function emptyContent(): ContentDB {
-  return { items: {}, enemies: {}, events: {}, jobs: {}, traits: {} };
-}

@@ -60,7 +60,7 @@ describe("직업 열 가지", () => {
     expect(ctx.feed.some((f) => f.kind === "text" && f.text.includes("방어도 +5"))).toBe(true);
   });
 
-  it("옛 병사의 자식은 강타 명중 벌점이 −1", () => {
+  it("옛 병사의 자식은 강타 명중 불리 보정이 −1", () => {
     const enemy = { instanceId: "wolf_1", defId: "wolf", hp: 10, maxHp: 10 } as never;
     expect(attackSpec(start("soldier_child"), CONTENT, enemy, true).situational).toBe(-1);
     expect(attackSpec(start("farmer"), CONTENT, enemy, true).situational).toBe(-2);

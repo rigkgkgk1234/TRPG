@@ -40,9 +40,3 @@ export function damageRange(expr: DiceExpr): [number, number] {
   const { count, sides, mod } = parseDice(expr);
   return [count + mod, count * sides + mod];
 }
-
-/** 평균 피해 (화면 표시용) */
-export function averageDice(expr: DiceExpr): number {
-  const { count, sides, mod } = parseDice(expr);
-  return count * (sides + 1) / 2 + mod;
-}

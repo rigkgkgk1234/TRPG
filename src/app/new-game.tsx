@@ -57,7 +57,7 @@ export default function NewGameScreen() {
           <Text style={styles.label}>직업</Text>
           <View style={styles.jobs}>
             {MVP_JOBS.map((j) => (
-              <JobCard key={j.id} job={j} selected={job === j.id} onPress={() => setJob(j.id)} />
+              <JobCard key={j.id} job={j} selected={job === j.id} onPress={() => setJob(job === j.id ? null : j.id)} />
             ))}
           </View>
         </Pressable>

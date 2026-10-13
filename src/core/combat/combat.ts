@@ -123,7 +123,7 @@ export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, 
   return BASE_DEFENSE + run.player.stats.agi + gear + extra;
 }
 
-/** 강타 명중 벌점: 옛 병사의 자식은 덜 빗나간다 */
+/** 강타 명중 불리 보정: 옛 병사의 자식은 덜 빗나간다 */
 function powerHitPenalty(run: RunState): number {
   return POWER_ATTACK_HIT_PENALTY + (run.player.job === "soldier_child" ? SOLDIER_CHILD_POWER_RELIEF : 0);
 }

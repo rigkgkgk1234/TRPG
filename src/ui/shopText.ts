@@ -19,9 +19,6 @@ export const MODE_LABEL: Record<ShopMode, string> = { buy: "구매", repair: "�
 export const MODE_ICON: Record<ShopMode, Icon> = { buy: ShoppingCartIcon, repair: WrenchIcon, care: HeartbeatIcon, goods: BasketIcon, sell: HandCoinsIcon };
 export const SHOP_ICON: Record<ShopId, Icon> = { smithy: HammerIcon, healer: FirstAidKitIcon, inn: BeerSteinIcon };
 
-export const isShopId = (v: unknown): v is ShopId => SHOP_IDS.includes(v as ShopId);
-export const isShopMode = (shop: ShopId, v: unknown): v is ShopMode => SHOP_MODES[shop].includes(v as ShopMode);
-
 export function reputationNote(run: RunState): string {
   const rep = run.player.reputation;
   if (rep >= REP_DISCOUNT_THRESHOLD) return `평판 ${rep}: 물건값 10% 할인`;

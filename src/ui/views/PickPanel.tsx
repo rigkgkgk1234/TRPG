@@ -165,7 +165,7 @@ const HEAD: Record<"trainSolo" | "trainLesson" | "explore" | "village" | "talk" 
   trainLesson: {
     icon: ACTION_ICON.trainLesson,
     title: def("trainLesson").label,
-    note: () => `은화 ${def("trainLesson").silverCost}을 내고 판정 없이 성장 +${LESSON_XP}, 피로 +${def("trainLesson").fatigue}`,
+    note: () => `은화 ${def("trainLesson").silverCost}개를 내고 판정 없이 성장 +${LESSON_XP}, 피로 +${def("trainLesson").fatigue}`,
   },
   explore: {
     icon: ACTION_ICON.explore,

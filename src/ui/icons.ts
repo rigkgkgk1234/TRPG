@@ -35,7 +35,6 @@ export const HouseLineIcon: Icon = require("phosphor-react-native/src/icons/Hous
 export const LeafIcon: Icon = require("phosphor-react-native/src/icons/Leaf").LeafIcon;
 export const LightningIcon: Icon = require("phosphor-react-native/src/icons/Lightning").LightningIcon;
 export const LockSimpleIcon: Icon = require("phosphor-react-native/src/icons/LockSimple").LockSimpleIcon;
-export const MedalIcon: Icon = require("phosphor-react-native/src/icons/Medal").MedalIcon;
 export const MoonStarsIcon: Icon = require("phosphor-react-native/src/icons/MoonStars").MoonStarsIcon;
 export const MountainsIcon: Icon = require("phosphor-react-native/src/icons/Mountains").MountainsIcon;
 export const PackageIcon: Icon = require("phosphor-react-native/src/icons/Package").PackageIcon;

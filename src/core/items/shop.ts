@@ -68,7 +68,7 @@ export const STABILIZE_PRICE = 12;
 export const STABILIZE_FATIGUE = 2;
 /** 약초방 HP 회복: HP 1당 은화 1, 평판 보정 (SYSTEM_SPEC 3-5) */
 export const HEAL_SILVER_PER_HP = 1;
-/** 대장장이 견습은 수리비 반값 (SYSTEM_SPEC 5-3) */
+/** 견습 대장장이는 수리비 반값 (SYSTEM_SPEC 5-3) */
 const SMITH_REPAIR_RATE = 0.5;
 
 /**
@@ -98,7 +98,7 @@ export function sellPrice(run: RunState, def: ItemDef | undefined): number {
   return run.player.job === "peddler" ? Math.floor(base * (1 + PEDDLER_SELL_BONUS) + 1e-9) : base;
 }
 
-/** 내구도 5당 은화 1 (올림), 대장장이 견습은 반값 (올림) */
+/** 내구도 5당 은화 1 (올림), 견습 대장장이는 반값 (올림) */
 export function repairPrice(run: RunState, content: Pick<ContentDB, "items">, stack: ItemStack): number {
   const def = content.items[stack.itemId];
   if (!def || !("durabilityMax" in def) || stack.durability === undefined) return 0;

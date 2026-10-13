@@ -24,14 +24,6 @@ export const OUTCOME_COLOR: Record<CheckOutcome, string> = {
   critFail: colors.fumble,
 };
 
-export const OUTCOME_TONE: Record<CheckOutcome, Tone> = {
-  critSuccess: "crit",
-  success: "good",
-  partial: "neutral",
-  fail: "bad",
-  critFail: "bad",
-};
-
 const RESOURCE_LABEL: Record<ResourceKey, string> = {
   silver: "은화",
   food: "식량",
