@@ -663,6 +663,8 @@ export interface CombatSetup {
   onVictory: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
+  /** 끝장 승부: 적이 사기 판정으로 달아나지 않는다. HP가 모두 닳아야 이긴다 (결투장) */
+  noRout?: boolean;
   /** 결투: 지면 죽지 않고 HP 1로 깨어난다 (부상이 없으면 경상, 은화는 그대로). 적의 쓰러짐 규칙보다 먼저 */
   knockout?: boolean;
   /** 결투에서 졌어도 적 HP가 이 비율 이하로 남았으면 onDefeat 대신 scene으로 (예: 용사 아델을 30%까지 몰아붙임) */
@@ -753,7 +755,7 @@ EventDef
 | `story_goblin_tracks` | 숲 탐험 중, 7일차 이상, `tracking` 판정 성공 | 고블린 발자국 발견 → 플래그 `goblin_tracks_found` |
 | `story_scout` | 11일차 이상, 감시탑 탐험 | 고블린 정찰병 조우 (전투) |
 | `story_report` | 플래그 `goblin_scout_seen` | 촌장에게 보고 → 평판 +10, 대응 방향 선택 시작 |
-| `story_recruiter` | 15일차 | 로웬 모집관 방문 → 「로웬의 창병」 루트 |
+| `story_recruiter` | 15일차 | 로웬 모집관 방문 → 「로웬으로」 루트 |
 | `story_heroes_arrive` | 9일차 | 용사 일행 방문. 직업별 일거리(농부: 곡식 팔기 / 견습 대장장이: 검 수리 / 사냥꾼: 숲길 안내) → `heroes_met`, 도우면 `heroes_helped` |
 | `story_heroes_return` | 19일차, `heroes_met` | 궁수가 빠진 일행. 무기 숙련 3이면 시험(DC 13) → 합류 제안 → `route_hero` |
 | `story_heroes_departure` | 26일차, `route_hero` | 따라나서면 「용사 일행」 엔딩, 남으면 `route_defend` |
@@ -761,7 +763,7 @@ EventDef
 | `story_raid` | 30일차 저녁 | 최종 습격 → 엔딩 판정 |
 
 ### 4-5. 텍스트 변형
-같은 장면에서 조건에 따라 문장을 바꿔 재사용성을 높인다. (`{name}`, `{job}`, `{silver}` 치환 지원)
+같은 장면에서 조건에 따라 문장을 바꿔 재사용성을 높인다. (`{name}`, `{job}`, `{weapon}`, `{silver}` 치환 지원. `{weapon}`은 손에 쥔 무기 이름이고 맨손이면 "주먹"이다. 이름·직업·무기 뒤 조사는 `{weapon:을/를}`처럼 쓴다. 선택지 이름도 같은 `TextBlock`이라 치환·변형된다. 맨손일 때 다른 문장을 쓰려면 `unarmed` 조건 변형을 둔다)
 
 ```ts
 export type Condition =
@@ -781,6 +783,8 @@ export type Condition =
   | { type: "fatigue"; max?: number; min?: number }
   | { type: "trait"; trait: TraitId }
   | { type: "chance"; p: number }
+  /** 손에 쥔 무기가 없다 (문장 변형에 쓴다) */
+  | { type: "unarmed" }
   | { type: "any"; of: Condition[] };
 
 export type Effect =
@@ -834,7 +838,8 @@ export interface ChoiceCost {
 
 interface ChoiceBase {
   id: string;
-  label: string;
+  /** 선택지 이름. 장면 글처럼 조건에 따라 바꿀 수 있다(맨손일 때 등) */
+  label: TextBlock;
   /** 표시·활성 조건 */
   conditions?: Condition[];
   /** 조건 미충족 시 숨김 (기본 false → 잠김 표시) */

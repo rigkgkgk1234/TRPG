@@ -38,12 +38,18 @@ interface GameStore {
   hpCut: Record<string, number>;
   /** 플레이어가 연출 중에 이미 받은 피해 (상태 바 HP) */
   hurt: number;
+  /**
+   * 적이 달아났다는 알림: 연출이 끝나면 전투 패널의 행동 칸 자리에 띄우고, 확인을 누를 때까지 다음으로 넘어가지 않는다.
+   * frozen: 마지막 적이 달아나 전투가 이미 끝났으면, 확인 전까지 그려 둘 전투 장면 (명령 뒤 상태에 명령 전 전투를 얹었다)
+   */
+  rout: { names: string[]; frozen: RunState | null } | null;
   /** 앱을 켠 뒤 저장을 읽어 봤는지 (읽기 전에는 타이틀의 "이어하기"를 정할 수 없다) */
   hydrated: boolean;
   /** 저장이 깨져 백업에서 되살렸을 때 한 번 보여 줄 안내 */
   notice: string | null;
   send: (cmd: GameCommand) => void;
   finishPlaying: () => void;
+  dismissRout: () => void;
   playFx: (fx: CombatFx) => void;
   startNew: (job: JobId, name: string) => void;
   /** 저장된 회차를 불러온다. 앱을 켤 때 한 번 */
@@ -90,6 +96,7 @@ export const useGame = create<GameStore>()((set, get) => ({
   fx: null,
   hpCut: {},
   hurt: 0,
+  rout: null,
   hydrated: false,
   notice: null,
 
@@ -118,6 +125,7 @@ export const useGame = create<GameStore>()((set, get) => ({
       fx: null,
       hpCut: {},
       hurt: 0,
+      rout: null,
     });
     const next = result.state;
     if (next.ending) {
@@ -132,7 +140,13 @@ export const useGame = create<GameStore>()((set, get) => ({
     else if (result.save) persist(() => saveRun(next));
   },
 
-  finishPlaying: () => set({ playing: null, fx: null, hpCut: {}, hurt: 0 }),
+  finishPlaying: () => {
+    const { playing, log, run } = get();
+    const group = playing && log.find((g) => g.id === playing.id);
+    set({ playing: null, fx: null, hpCut: {}, hurt: 0, rout: group && run ? routNotice(group, run) : null });
+  },
+
+  dismissRout: () => set({ rout: null }),
 
   playFx: (fx) => {
     const { hpCut, hurt } = get();
@@ -161,7 +175,7 @@ export const useGame = create<GameStore>()((set, get) => ({
     const previous = get().run;
     const run = newRun(CONTENT, job, name, { seed, now: now.toISOString() });
     fingerprint = stamp(run);
-    set({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0 });
+    set({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, rout: null });
     // 끝나지 않은 회차를 버리면 포기 기록을 남기고, 이전 회차의 백업이 새 회차로 되살아나지 않게 지운다
     persist(async () => {
       if (previous && !previous.ending) await useMeta.getState().record(makeRecord(previous, CONTENT, now.toISOString(), undefined, true));
@@ -197,8 +211,24 @@ export const useGame = create<GameStore>()((set, get) => ({
   dismissNotice: () => set({ notice: null }),
 }));
 
-/** 화면이 그릴 상태: 연출 중이면 명령 전 상태, 아니면 현재 상태 */
-export const useShownRun = () => useGame((s) => s.playing?.before ?? s.run);
+/** 화면이 그릴 상태: 연출 중이면 명령 전 상태, 달아난 적 알림이 전투 장면을 붙잡고 있으면 그것, 아니면 현재 상태 */
+export const useShownRun = () => useGame((s) => s.playing?.before ?? s.rout?.frozen ?? s.run);
+
+/** 이번 명령에서 달아난 적이 있으면 알림을 만든다. 마지막 적이 달아나 전투가 끝났으면 명령 전 전투에 이번 피해와 달아남을 얹어 붙잡아 둔다 */
+function routNotice(group: LogGroup, run: RunState): GameStore["rout"] {
+  const routs = group.items.flatMap((f) => (f.kind === "rout" ? [f] : []));
+  if (routs.length === 0) return null;
+  const before = group.before.combat;
+  if (run.combat || !before) return { names: routs.map((r) => r.name), frozen: null };
+  const dealt: Record<string, number> = {};
+  for (const f of group.items) if (f.kind === "fx" && f.fx.side === "player" && f.fx.hit) dealt[f.fx.targetId] = (dealt[f.fx.targetId] ?? 0) + f.fx.damage;
+  const combat = structuredClone(before);
+  for (const e of combat.enemies) {
+    e.hp = Math.max(0, e.hp - (dealt[e.instanceId] ?? 0));
+    if (routs.some((r) => r.enemyId === e.instanceId)) e.routed = true;
+  }
+  return { names: routs.map((r) => r.name), frozen: { ...run, combat, activeEvent: group.before.activeEvent } };
+}
 
 /** 조작된 상태는 저장하지 않고 버린다: 마지막 저장(봉인·규칙 검사를 통과한 것)으로 되돌리고, 없으면 타이틀로 */
 async function restoreAfterTamper(): Promise<void> {
@@ -210,5 +240,5 @@ async function restoreAfterTamper(): Promise<void> {
   }
   const run = loaded && !loaded.run.ending ? loaded.run : null;
   fingerprint = stamp(run);
-  useGame.setState({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, notice: TAMPER_NOTICE });
+  useGame.setState({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, rout: null, notice: TAMPER_NOTICE });
 }

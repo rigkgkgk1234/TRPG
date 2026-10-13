@@ -28,7 +28,7 @@
             "fail": { "text": "\"거짓말은 몸으로 갚아야지.\" 사내가 칼을 휘두르며 달려든다!", "next": "fight_ambushed" }
           }
         },
-        { "id": "fight", "label": "무기를 들고 맞선다", "outcome": { "next": "fight" } }
+        { "id": "fight", "label": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "전투에 대비해 몸을 푼다" }], "fallback": "{weapon:을/를} 들고 맞선다" }, "outcome": { "next": "fight" } }
       ]
     },
     "fight": {

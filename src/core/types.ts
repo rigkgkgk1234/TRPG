@@ -384,6 +384,8 @@ export interface CombatSetup {
   onVictory: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
+  /** 끝장 승부: 적이 사기 판정으로 달아나지 않는다. HP가 모두 닳아야 이긴다 (결투장) */
+  noRout?: boolean;
   /** 결투: 지면 죽지 않고 HP 1로 깨어난다 (부상이 없으면 경상, 은화는 그대로). 적의 쓰러짐 규칙보다 먼저 */
   knockout?: boolean;
   /** 결투에서 졌어도 적 HP가 이 비율 이하로 남았으면 onDefeat 대신 scene으로 (예: 용사 아델을 30%까지 몰아붙임) */
@@ -436,6 +438,8 @@ export type Condition =
   | { type: "fatigue"; max?: number; min?: number }
   | { type: "trait"; trait: TraitId }
   | { type: "chance"; p: number }
+  /** 손에 쥔 무기가 없다 (문장 변형에 쓴다) */
+  | { type: "unarmed" }
   | { type: "any"; of: Condition[] };
 
 export type Effect =
@@ -489,7 +493,8 @@ export interface ChoiceCost {
 
 interface ChoiceBase {
   id: string;
-  label: string;
+  /** 선택지 이름. 장면 글처럼 조건에 따라 바꿀 수 있다(맨손일 때 등) */
+  label: TextBlock;
   /** 표시·활성 조건 */
   conditions?: Condition[];
   /** 조건 미충족 시 숨김 (기본 false → 잠김 표시) */

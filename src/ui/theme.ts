@@ -12,6 +12,8 @@ export const colors = {
   surface: "#141416",
   surfaceRaised: "#1e1e22",
   border: "#28282d",
+  /** 지난 기록 사이처럼 겨우 보이는 구분선 */
+  borderFaint: "#18181b",
   borderStrong: "#393940",
   text: "#eceef1",
   textDim: "#a3a8b1",

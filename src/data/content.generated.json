@@ -1081,6 +1081,7 @@
         "canFlee": false,
         "noFleeReason": "결투 중에는 물러설 수 없다",
         "knockout": true,
+        "noRout": true,
         "onVictory": "brawler_win",
         "onDefeat": "brawler_lose"
        }
@@ -1125,6 +1126,7 @@
         "canFlee": false,
         "noFleeReason": "결투 중에는 물러설 수 없다",
         "knockout": true,
+        "noRout": true,
         "onVictory": "mercenary_win",
         "onDefeat": "mercenary_lose"
        }
@@ -1169,6 +1171,7 @@
         "canFlee": false,
         "noFleeReason": "결투 중에는 물러설 수 없다",
         "knockout": true,
+        "noRout": true,
         "onVictory": "champion_win",
         "onDefeat": "champion_lose"
        }
@@ -1258,7 +1261,19 @@
       },
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -1746,7 +1761,19 @@
       },
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -3118,7 +3145,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -3604,7 +3643,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -3697,7 +3748,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -3738,7 +3801,19 @@
      ]
     },
     "fight": {
-     "text": "등을 나무에 붙이고 무기를 고쳐 쥔다.",
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "등을 나무에 붙이고 전투에 대비해 몸을 푼다."
+       }
+      ],
+      "fallback": "등을 나무에 붙이고 {weapon:을/를} 고쳐 쥔다."
+     },
      "onEnter": [
       {
        "type": "startCombat",
@@ -3885,7 +3960,19 @@
       },
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -3893,7 +3980,19 @@
      ]
     },
     "fight": {
-     "text": "피할 수 없다. 무기를 고쳐 쥔다.",
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "피할 수 없다. 전투에 대비해 몸을 푼다."
+       }
+      ],
+      "fallback": "피할 수 없다. {weapon:을/를} 고쳐 쥔다."
+     },
      "onEnter": [
       {
        "type": "startCombat",
@@ -3948,7 +4047,19 @@
      "choices": []
     },
     "win": {
-     "text": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 무기를 내렸다.",
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 주먹을 풀었다."
+       }
+      ],
+      "fallback": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 {weapon:을/를} 내렸다."
+     },
      "onEnter": [
       {
        "type": "incFlag",
@@ -4053,7 +4164,19 @@
      "choices": []
     },
     "win": {
-     "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 무기를 내렸다.",
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 주먹을 풀었다."
+       }
+      ],
+      "fallback": "두 마리 모두 쓰러졌다. 떨리는 손으로 {weapon:을/를} 내렸다."
+     },
      "onEnter": [
       {
        "type": "incFlag",
@@ -7506,7 +7629,19 @@
       },
       {
        "id": "fight",
-       "label": "칼을 뽑는다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 고쳐 쥔다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -8344,7 +8479,19 @@
      "choices": [
       {
        "id": "wade",
-       "label": "무기를 들고 그대로 건넌다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 풀고 그대로 건넌다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 그대로 건넌다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -9383,7 +9530,19 @@
       },
       {
        "id": "fight",
-       "label": "무기를 들고 건넌다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 풀고 건넌다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 건넌다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -12163,7 +12322,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -12288,7 +12459,19 @@
       },
       {
        "id": "fight",
-       "label": "무기를 들고 들어간다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 풀고 들어간다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 들어간다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -14361,7 +14544,19 @@
       },
       {
        "id": "club",
-       "label": "몽둥이를 들고 나간다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 풀고 나간다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 나간다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -16264,7 +16459,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -16902,7 +17109,19 @@
        },
        "outcomes": {
         "success": {
-         "text": "한 번도 칼을 뽑지 않고 숲을 빠져나왔다. 마법사 세린이 길잡이 값을 두둑이 쳐 주었다.",
+         "text": {
+          "variants": [
+           {
+            "when": [
+             {
+              "type": "unarmed"
+             }
+            ],
+            "text": "한 번도 싸우지 않고 숲을 빠져나왔다. 마법사 세린이 길잡이 값을 두둑이 쳐 주었다."
+           }
+          ],
+          "fallback": "{weapon:을/를} 한 번도 쓰지 않고 숲을 빠져나왔다. 마법사 세린이 길잡이 값을 두둑이 쳐 주었다."
+         },
          "effects": [
           {
            "type": "silver",
@@ -17819,7 +18038,7 @@
    "startScene": "start",
    "scenes": {
     "start": {
-     "text": "광장에 로웬 기사단의 모집관이 깃발을 세웠다. 창을 쓸 줄 아는 젊은이를 찾는다며, 그 자리에서 시험을 보겠다고 한다.",
+     "text": "광장에 로웬 기사단의 모집관이 깃발을 세웠다. 무기를 쓸 줄 아는 젊은이를 찾는다며, 그 자리에서 시험을 보겠다고 한다.",
      "choices": [
       {
        "id": "trial",
@@ -17864,7 +18083,19 @@
          "next": "END"
         },
         "fail": {
-         "text": "창끝이 흔들렸다. 모집관은 열흘쯤 뒤에 다시 들르겠다고 했다.",
+         "text": {
+          "variants": [
+           {
+            "when": [
+             {
+              "type": "unarmed"
+             }
+            ],
+            "text": "자세가 흔들렸다. 모집관은 열흘쯤 뒤에 다시 들르겠다고 했다."
+           }
+          ],
+          "fallback": "쥔 {weapon:이/가} 흔들렸다. 모집관은 열흘쯤 뒤에 다시 들르겠다고 했다."
+         },
          "next": "END"
         }
        }
@@ -18116,7 +18347,19 @@
        "id": "stay",
        "label": "마을에 남는다",
        "outcome": {
-        "text": "창은 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다.",
+        "text": {
+         "variants": [
+          {
+           "when": [
+            {
+             "type": "unarmed"
+            }
+           ],
+           "text": "익힌 솜씨는 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다."
+          }
+         ],
+         "fallback": "{weapon:은/는} 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다."
+        },
         "effects": [
          {
           "type": "setFlag",
@@ -19556,7 +19799,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -19948,7 +20203,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }
@@ -20381,7 +20648,19 @@
      "choices": [
       {
        "id": "fight",
-       "label": "무기를 들고 맞선다",
+       "label": {
+        "variants": [
+         {
+          "when": [
+           {
+            "type": "unarmed"
+           }
+          ],
+          "text": "전투에 대비해 몸을 푼다"
+         }
+        ],
+        "fallback": "{weapon:을/를} 들고 맞선다"
+       },
        "outcome": {
         "next": "fight"
        }

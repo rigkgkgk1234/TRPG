@@ -3,7 +3,7 @@ import { Animated, Easing, Pressable, ScrollView, StyleSheet, View, type LayoutC
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { CombatFx } from "@/core/commands";
 import { combatView, type CombatActionView, type CombatView } from "@/core/combat/combat";
-import { MODE_LABEL } from "@/core/labels";
+import { josa, MODE_LABEL } from "@/core/labels";
 import type { CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
@@ -13,7 +13,7 @@ import { Chip, ChipRow } from "@/ui/components/Controls";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { HIT_FX_MS, HP_BAR_HEIGHT, HitEffect } from "@/ui/components/HitEffect";
 import { HpBar } from "@/ui/components/HpBar";
-import { CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
+import { ArrowRightIcon, CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
@@ -48,6 +48,8 @@ export function CombatPanel({ run }: { run: RunState }) {
   const [pickingItem, setPickingItem] = useState(false);
   const [minHeight, setMinHeight] = useState(0);
   const [enemyListHeight, setEnemyListHeight] = useState<number | null>(null);
+  const rout = useGame((s) => s.rout);
+  const dismissRout = useGame((s) => s.dismissRout);
   const view = combatView(run, CONTENT, targetId);
   if (!view) return null;
 
@@ -111,23 +113,27 @@ export function CombatPanel({ run }: { run: RunState }) {
         </EnemyBody>
       </View>
 
-      <ButtonGrid>
-        {view.actions.map((a) => (
-          <GridCell key={a.type}>
-            <ActionButton
-              fill
-              badgeBelow
-              icon={ACTION_ICON[a.type]}
-              label={a.label}
-              {...(!a.lockedReason && a.chance !== undefined ? chanceBadgeProps(a.chance, a.need) : {})}
-              detail={a.lockedReason ?? [...a.detail, ...(a.mode && a.mode !== "normal" ? [MODE_LABEL[a.mode]] : [])]}
-              disabled={a.lockedReason !== null}
-              selected={a.type === "useItem" && pickingItem}
-              onPress={() => choose(a)}
-            />
-          </GridCell>
-        ))}
-      </ButtonGrid>
+      <View style={styles.actions}>
+        <ButtonGrid>
+          {view.actions.map((a) => (
+            <GridCell key={a.type}>
+              <ActionButton
+                fill
+                badgeBelow
+                icon={ACTION_ICON[a.type]}
+                label={a.label}
+                {...(!a.lockedReason && a.chance !== undefined ? chanceBadgeProps(a.chance, a.need) : {})}
+                detail={a.lockedReason ?? [...a.detail, ...(a.mode && a.mode !== "normal" ? [MODE_LABEL[a.mode]] : [])]}
+                disabled={a.lockedReason !== null}
+                selected={a.type === "useItem" && pickingItem}
+                onPress={() => choose(a)}
+              />
+            </GridCell>
+          ))}
+        </ButtonGrid>
+        {/* 적이 달아났다: 행동 칸 자리를 알림으로 바꾸고, 확인을 누르면 다시 행동 버튼 (마지막 적이면 전투 뒤 장면으로) */}
+        {rout && <RoutNotice names={rout.names} over={!!rout.frozen} onClose={dismissRout} />}
+      </View>
     </View>
   );
 }
@@ -152,23 +158,27 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
       {view.enemies.map((e) => {
         const selected = selectable && e.id === view.targetId;
         const hp = e.hp - (hpCut[e.id] ?? 0);
+        const routed = e.state === "routed" && hp > 0;
         const out = e.state !== "active" || hp <= 0;
         const mine = fx?.fx.side === "player" && fx.fx.targetId === e.id ? { seq: fx.seq, fx: fx.fx } : null;
         const attacking = fx?.fx.side === "foe" && fx.fx.enemyId === e.id ? fx.seq : null;
         return (
           <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} impact={mine?.fx.weapon} volley={!!mine && isVolley(mine.fx)} lungeSeq={attacking} front={mine !== null}>
+            <RoutFade routed={routed}>
             <EnemyCard
               name={e.name}
               hp={hp}
               maxHp={e.maxHp}
               status={e.state === "down" || hp <= 0 ? "쓰러짐" : e.state === "routed" ? "달아남" : `HP ${hp}/${e.maxHp}`}
               mine={mine}
+              routed={routed}
               onPress={() => onSelect(e.id)}
               disabled={!selectable || out}
               accessibilityRole={selectable ? "button" : undefined}
               accessibilityState={{ selected }}
-              style={[styles.enemy, selected && styles.enemySelected, out && styles.enemyOut]}
+              style={[styles.enemy, selected && styles.enemySelected, out && !routed && styles.enemyOut]}
             />
+            </RoutFade>
           </EnemyRow>
         );
       })}
@@ -181,12 +191,12 @@ const hpRatio = (hp: number, max: number) => Math.min(1, Math.max(0, hp / max));
 type Mine = { seq: number; fx: Extract<CombatFx, { side: "player" }> };
 
 /** 적 칸 하나: 이름, HP 막대, 숫자를 한 줄에 (칸 높이가 늘 같다). HP 막대를 적으로 보고 공격 효과를 그 위에 겹친다 */
-function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; hp: number; maxHp: number; status: string; mine: Mine | null } & Omit<PressableProps, "children">) {
+function EnemyCard({ name, hp, maxHp, status, mine, routed, ...press }: { name: string; hp: number; maxHp: number; status: string; mine: Mine | null; routed: boolean } & Omit<PressableProps, "children">) {
   return (
     <Pressable {...press} accessibilityLabel={`${name} HP ${Math.max(0, hp)}/${maxHp}`}>
       <Text style={styles.enemyName} numberOfLines={1}>{name}</Text>
       <View style={styles.barWrap}>
-        <HpBar ratio={hpRatio(hp, maxHp)} height={HP_BAR_HEIGHT} color={hp <= maxHp / 2 ? colors.partial : colors.fail} trackColor={colors.border} />
+        <HpBar ratio={hpRatio(hp, maxHp)} height={HP_BAR_HEIGHT} color={routed ? colors.textFaint : colors.fail} trackColor={colors.border} trailColor={colors.textFaint} />
         {/* 활 대성공 연사는 첫 발만큼만 먼저 깎여 있다 (나머지는 스토어가 차례로 깎는다) */}
         {mine && <HitEffect key={mine.seq} fx={mine.fx} from={hpRatio(hp + (isVolley(mine.fx) ? volleyParts(mine.fx.damage)[0] : mine.fx.damage), maxHp)} to={hpRatio(hp, maxHp)} maxHp={maxHp} />}
       </View>
@@ -194,6 +204,59 @@ function EnemyCard({ name, hp, maxHp, status, mine, ...press }: { name: string; 
     </Pressable>
   );
 }
+
+/** 달아남 알림: 행동 칸 자리를 그대로 써서 행동 버튼 대신 보여 준다 (칸 높이는 행동 버튼 그대로) */
+function RoutNotice({ names, over, onClose }: { names: string[]; over: boolean; onClose: () => void }) {
+  return (
+    <View style={styles.routNotice}>
+      <View style={styles.routHeader}>
+        <PersonSimpleRunIcon size={icon.md} weight={icon.weight} color={colors.textDim} />
+        <Text style={styles.routTitle}>{over ? "전투가 끝났다" : "적이 달아났다"}</Text>
+      </View>
+      <Text sentences style={styles.routText}>
+        {names.map((n) => `${josa(n, "이/가")} 겁을 먹고 달아났다.`).join(" ")}
+        {over ? " 더 싸울 상대가 없다." : ""}
+      </Text>
+      <View style={styles.routButton}>
+        <ActionButton primary icon={ArrowRightIcon} label="확인" onPress={onClose} />
+      </View>
+    </View>
+  );
+}
+
+/** 달아난 적의 칸: 달아나는 순간 살짝 빛났다가 회색으로 꺼진다. 처음부터 달아난 상태로 그려지면 바로 꺼진 모양 */
+function RoutFade({ routed, children }: { routed: boolean; children: React.ReactNode }) {
+  const [glow] = useState(() => new Animated.Value(0));
+  const [dim] = useState(() => new Animated.Value(routed ? 1 : 0));
+  useEffect(() => {
+    if (!routed) {
+      dim.setValue(0);
+      return;
+    }
+    Animated.parallel([
+      Animated.sequence([
+        Animated.timing(glow, { toValue: 1, duration: ROUT_GLOW_MS, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+        Animated.timing(glow, { toValue: 0, duration: ROUT_FADE_MS, easing: Easing.in(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      ]),
+      Animated.sequence([
+        Animated.delay(ROUT_GLOW_MS),
+        Animated.timing(dim, { toValue: 1, duration: ROUT_FADE_MS, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      ]),
+    ]).start();
+  }, [routed, glow, dim]);
+  return (
+    <Animated.View style={{ opacity: dim.interpolate({ inputRange: [0, 1], outputRange: [1, ROUT_OPACITY] }) }}>
+      {children}
+      <Animated.View pointerEvents="none" style={[styles.routGlow, { opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0, ROUT_GLOW] }) }]} />
+    </Animated.View>
+  );
+}
+
+/** 달아날 때 빛나는 시간·꺼지는 시간(ms), 빛의 세기, 꺼진 뒤 투명도 (쓰러진 적과 같다) */
+const ROUT_GLOW_MS = 450;
+const ROUT_FADE_MS = 1300;
+const ROUT_GLOW = 0.12;
+const ROUT_OPACITY = 0.45;
 
 /**
  * 무기마다 맞았을 때 적 줄이 움직이는 모양: 맞는 순간(ms), 아래로 꺼지는 깊이, 좌우 흔들림, 한 번 흔들리는 시간(ms).
@@ -291,6 +354,14 @@ const styles = StyleSheet.create({
   },
   enemySelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   enemyOut: { opacity: 0.45 },
+  actions: { position: "relative" },
+  // 행동 버튼은 그 아래 그대로 두고(칸 높이 유지) 같은 바탕으로 가린다
+  routNotice: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, gap: space.md, paddingTop: space.xs, backgroundColor: colors.surface },
+  routHeader: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  routTitle: { ...type.heading, color: colors.text, flexShrink: 1 },
+  routButton: { marginTop: "auto" },
+  routText: { ...type.body, color: colors.text },
+  routGlow: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, borderRadius: radius.md, borderWidth: 1.5, borderColor: colors.text, backgroundColor: colors.text },
   enemyName: { ...type.bodyStrong, color: colors.text, flexShrink: 1, maxWidth: "45%" },
   enemyHp: { ...type.label, color: colors.textDim, fontVariant: ["tabular-nums"], minWidth: 56, textAlign: "right" },
   barWrap: { flex: 1, alignSelf: "stretch", justifyContent: "center" },

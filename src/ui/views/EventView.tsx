@@ -55,7 +55,7 @@ export function EventPanel({ run }: { run: RunState }) {
         >
           {view.kind === "deeper" ? (
             <>
-              <Text style={styles.text}>
+              <Text sentences style={styles.text}>
                 안쪽은 더 어둡고 조용하다. 더 들어가면 위험하지만, 남들이 못 본 것을 찾을지도 모른다.
               </Text>
               <View style={styles.choices}>
@@ -72,7 +72,7 @@ export function EventPanel({ run }: { run: RunState }) {
             </>
           ) : (
             <>
-              <Text style={styles.text}>{view.text}</Text>
+              <Text sentences style={styles.text}>{view.text}</Text>
               <View style={styles.choices}>
                 <ButtonStack divided>
                 {view.kind === "continue" ? (

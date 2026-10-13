@@ -474,12 +474,13 @@ function enemyTurn(ctx: Ctx, c: CombatState): void {
 function endRound(ctx: Ctx, c: CombatState): void {
   c.enemyAdvantageThisRound = false;
   c.defensePenalty = 0;
-  for (const e of activeEnemies(c)) {
+  for (const e of c.setup.noRout ? [] : activeEnemies(c)) {
     const def = enemyDef(ctx.content, e);
     if (def.morale === undefined || e.hp > e.maxHp / 2) continue;
     if (ctx.rng() < def.morale) {
       e.routed = true;
       say(ctx, c, e.instanceId, `${josa(def.name, "이/가")} 겁을 먹고 달아났다.`);
+      ctx.feed.push({ kind: "rout", enemyId: e.instanceId, name: def.name });
       if (def.onRoutFlag) ctx.draft.flags[def.onRoutFlag] = true;
     }
   }

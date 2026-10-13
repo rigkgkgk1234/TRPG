@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "wade",
-          "label": "무기를 들고 그대로 건넌다",
+          "label": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "전투에 대비해 몸을 풀고 그대로 건넌다" }], "fallback": "{weapon:을/를} 들고 그대로 건넌다" },
           "outcome": {
             "next": "fight"
           }

@@ -80,6 +80,7 @@
             "canFlee": false,
             "noFleeReason": "결투 중에는 물러설 수 없다",
             "knockout": true,
+            "noRout": true,
             "onVictory": "brawler_win",
             "onDefeat": "brawler_lose"
           }
@@ -124,6 +125,7 @@
             "canFlee": false,
             "noFleeReason": "결투 중에는 물러설 수 없다",
             "knockout": true,
+            "noRout": true,
             "onVictory": "mercenary_win",
             "onDefeat": "mercenary_lose"
           }
@@ -168,6 +170,7 @@
             "canFlee": false,
             "noFleeReason": "결투 중에는 물러설 수 없다",
             "knockout": true,
+            "noRout": true,
             "onVictory": "champion_win",
             "onDefeat": "champion_lose"
           }

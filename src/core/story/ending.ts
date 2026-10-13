@@ -33,7 +33,7 @@ export function endingText(s: RunState): string {
     case "flee_together":
       return "보리울은 불탔다. 그래도 수레마다 사람이 타고 있었다. 마을은 잃었지만 이웃은 잃지 않았다.";
     case "rowen_spearman":
-      return "로웬으로 가는 길에 마지막으로 고개를 돌렸다. 기사는 되지 못하겠지만, 창을 쥔 손은 이제 떨리지 않는다.";
+      return "로웬으로 가는 길에 마지막으로 고개를 돌렸다. 기사는 되지 못하겠지만, 이제 손이 떨리지 않는다.";
     case "hero_party":
       return "용사 일행의 짐을 나눠 지고 북쪽 길에 올랐다. 노래는 아델의 이름을 부르겠지만, 밤마다 불침번을 선 것은 보리울에서 온 평범한 사람이었다.";
     case "survivor":

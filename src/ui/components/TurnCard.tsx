@@ -234,7 +234,7 @@ function EventLine({ line, dense }: { line: Line; dense?: boolean }) {
   return (
     <View style={styles.eventRow}>
       {MarkIcon && <MarkIcon size={icon.sm} weight={icon.weight} color={color} style={styles.eventIcon} />}
-      <Text style={[dense ? styles.eventDense : styles.event, { color }]}>{line.text}</Text>
+      <Text sentences style={[dense ? styles.eventDense : styles.event, { color }]}>{line.text}</Text>
     </View>
   );
 }

@@ -34,7 +34,7 @@
           "id": "stay",
           "label": "마을에 남는다",
           "outcome": {
-            "text": "창은 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다.",
+            "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "익힌 솜씨는 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다." }], "fallback": "{weapon:은/는} 여기서도 쓸 수 있다. 촌장에게 함께 막겠다고 말했다." },
             "effects": [
               {
                 "type": "setFlag",

@@ -39,7 +39,7 @@ export function EndingPanel({ run }: { run: RunState }) {
 
   return (
     <View style={[styles.panel, { paddingBottom: insets.bottom + space.md }]}>
-      <Text style={styles.story}>{endingText(run)}</Text>
+      <Text sentences style={styles.story}>{endingText(run)}</Text>
       {grave ? <Text style={styles.grave}>{grave}</Text> : null}
       <View style={styles.stats}>
         <Figure label="판정" value={`${st.checksRolled}회`} />

@@ -28,7 +28,7 @@
           "cost": { "food": 1 },
           "outcome": { "text": "던져 준 보리떡에 멧돼지가 코를 박은 사이 덤불 뒤로 빠져나왔다.", "next": "END" }
         },
-        { "id": "fight", "label": "무기를 들고 맞선다", "outcome": { "next": "fight" } }
+        { "id": "fight", "label": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "전투에 대비해 몸을 푼다" }], "fallback": "{weapon:을/를} 들고 맞선다" }, "outcome": { "next": "fight" } }
       ]
     },
     "fight": {

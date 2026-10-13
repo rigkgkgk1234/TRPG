@@ -2,6 +2,7 @@ import type { CombatFx, FeedItem, GameCommand, ResourceKey } from "@/core/comman
 import { jobOf } from "@/core/day/actions";
 import { EXERCISE_LABEL, isExerciseStat, isVisitId, josa, PHASE_LABEL, REGION_LABEL, SKILL_LABEL, STAT_LABEL, VISIT_LABEL, WOUND_LABEL } from "@/core/labels";
 import { equippedWeapon, isBow } from "@/core/combat/combat";
+import { resolveText } from "@/core/events/text";
 import type { CheckOutcome, CheckResult, CombatAction, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import type { LogGroup } from "@/store/gameStore";
@@ -100,6 +101,8 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
         } else roll ??= item.result;
         break;
       case "toast": notices.push(item.text); break;
+      // 달아남은 글 줄로 이미 나온다 (알림 창은 전투 패널이 띄운다)
+      case "rout": break;
       // 내 공격 효과는 바로 앞 굴림에, 상대 공격 효과는 바로 뒤에 나올 글 줄에 붙인다
       case "fx":
         if (item.fx.side === "player") (item.fx.hand === "off" && offRoll ? offRollFx : rollFx).push(item.fx);
@@ -152,7 +155,8 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
     case "chooseChoice": {
       const a = run.activeEvent;
       const scene = a && CONTENT.events[a.eventId]?.scenes[a.sceneId];
-      return scene?.choices.find((c) => c.id === cmd.choiceId)?.label ?? "선택";
+      const choice = scene?.choices.find((c) => c.id === cmd.choiceId);
+      return choice ? resolveText(choice.label, run, CONTENT) : "선택";
     }
     case "continue": return "계속";
     case "goDeeper": return cmd.yes ? "더 깊이 들어간다" : "마을로 돌아간다";
@@ -210,7 +214,7 @@ function eventTitle(cmd: GameCommand, run: RunState): string | null {
   return (a && CONTENT.events[a.eventId]?.title) ?? null;
 }
 
-function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" | "fx" }>): Line {
+function eventLine(item: Exclude<FeedItem, { kind: "resource" | "item" | "roll" | "toast" | "fx" | "rout" }>): Line {
   switch (item.kind) {
     case "text":
       return item.foe ? { text: item.text, tone: "neutral", foe: true } : { text: item.text, tone: "neutral" };

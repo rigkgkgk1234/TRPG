@@ -129,7 +129,7 @@ export function PickIntro({ run, step }: { run: RunState; step: PickStep }) {
         <Text style={styles.introTitle}>{title}</Text>
       </View>
       {subtitle ? <Text style={styles.introSubtitle}>{subtitle}</Text> : null}
-      <Text style={styles.introBody}>{body}</Text>
+      <Text sentences style={styles.introBody}>{body}</Text>
       {facts && facts.length > 0 && (
         <View style={styles.facts}>
           {facts.map((f) => <Text key={f} style={styles.fact}>{f}</Text>)}

@@ -58,7 +58,7 @@ export function sceneView(run: RunState, content: ContentDB): SceneView | null {
   const ev = content.events[active.eventId];
   const scene = ev?.scenes[active.sceneId];
   if (!ev || !scene) return null;
-  const text = resolveText(scene.text, run);
+  const text = resolveText(scene.text, run, content);
   if (scene.choices.length === 0) return { kind: "continue", title: ev.title, text, progress, category: ev.category };
 
   const choices = scene.choices
@@ -70,7 +70,7 @@ export function sceneView(run: RunState, content: ContentDB): SceneView | null {
 function choiceView(run: RunState, content: ContentDB, ev: EventDef, c: ChoiceDef): ChoiceView {
   const view: ChoiceView = {
     id: c.id,
-    label: c.label,
+    label: resolveText(c.label, run, content),
     lockedReason: choiceBlock(run, content, c),
     danger: isDangerous(ev, c.check ? [c.outcomes.fail, c.outcomes.critFail] : [c.outcome]),
     cost: costText(content, c.cost),
@@ -138,7 +138,7 @@ export function handleChoice(ctx: Ctx, choiceId: string): boolean {
   delete s.activeEvent!.lastCheck;
   let outcome: Outcome;
   if (choice.check) {
-    const r = performCheck(ctx, choice.check, choice.label);
+    const r = performCheck(ctx, choice.check, resolveText(choice.label, s, ctx.content));
     s.activeEvent!.lastCheck = r;
     outcome = pickOutcome(choice.outcomes, r.outcome);
     if (r.outcome === "critFail" && !choice.outcomes.critFail) changeFatigue(ctx, CRIT_FAIL_FATIGUE);
@@ -261,7 +261,7 @@ function payCost(ctx: Ctx, cost: ChoiceCost | undefined): void {
 }
 
 function applyOutcome(ctx: Ctx, o: Outcome): void {
-  if (o.text) ctx.feed.push({ kind: "text", text: resolveText(o.text, ctx.draft) });
+  if (o.text) ctx.feed.push({ kind: "text", text: resolveText(o.text, ctx.draft, ctx.content) });
   applyEffects(ctx, o.effects);
   goTo(ctx, o.next);
 }
@@ -283,7 +283,7 @@ function enterScene(ctx: Ctx, sceneId: SceneId): void {
   const scene = ctx.content.events[active.eventId]?.scenes[sceneId];
   if (!scene) throw new Error(`없는 장면: ${active.eventId}/${sceneId}`);
   // 전투로 넘어가거나 엔딩으로 끝나는 장면은 패널에 그려질 틈이 없으므로 장면 글을 결과 카드에 남긴다
-  if (scene.onEnter?.some((e) => SCENE_TEXT_TO_FEED.has(e.type))) ctx.feed.push({ kind: "text", text: resolveText(scene.text, s) });
+  if (scene.onEnter?.some((e) => SCENE_TEXT_TO_FEED.has(e.type))) ctx.feed.push({ kind: "text", text: resolveText(scene.text, s, ctx.content) });
   applyEffects(ctx, scene.onEnter);
   if (s.ending) s.activeEvent = null;
   // 기습당해 전투가 시작하자마자 끝날 수도 있다

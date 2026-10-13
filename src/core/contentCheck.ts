@@ -8,8 +8,8 @@ import type { ChoiceDef, Condition, Effect, EventDef, Outcome, SceneDef, TextBlo
 const SCENE_TEXT_MAX = 220;
 const CHOICES_MAX = 4;
 const PLACEHOLDER_ALL = /\{[^}]*\}/g;
-/** {name} {job} {silver}, 이름·직업 뒤 조사는 {name:이/가}처럼 */
-const PLACEHOLDER_OK = /^\{(?:(?:name|job)(?::(?:을\/를|이\/가|은\/는|과\/와|으로\/로))?|silver)\}$/;
+/** {name} {job} {weapon} {silver}, 이름·직업·무기 뒤 조사는 {name:이/가}처럼 */
+const PLACEHOLDER_OK = /^\{(?:(?:name|job|weapon)(?::(?:을\/를|이\/가|은\/는|과\/와|으로\/로))?|silver)\}$/;
 
 export interface ContentIssues {
   /** 빌드를 멈추는 것 */
@@ -64,6 +64,7 @@ export function checkContent(content: ContentDB): ContentIssues {
         const where = `${sceneId}/${choice.id}`;
         if (ids.has(choice.id)) err(where, "선택지 ID 중복");
         ids.add(choice.id);
+        checkText(choice.label, where, "선택지");
         checkConditions(choice.conditions, where, { allowChance: false });
         if (choice.cost?.item) checkItem(choice.cost.item.itemId, `${where} cost`);
         if (choice.hideIfLocked && !choice.conditions?.length) warn(where, "조건 없이 hideIfLocked만 있다");

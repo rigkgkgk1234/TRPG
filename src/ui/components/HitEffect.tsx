@@ -80,7 +80,7 @@ function VolleyShot({ hi, lo, last }: { hi: number; lo: number; last: boolean })
 }
 
 function SingleHit({ fx, from, to }: { fx: PlayerFx; from: number; to: number }) {
-  const t = useFxClock(fx.hit ? HIT_FX_MS : HIT_FX_MS * 0.8);
+  const t = useFxClock(fx.hit ? HIT_FX_MS : WHIFF_MS);
 
   if (!fx.hit) {
     return (
@@ -104,6 +104,9 @@ function SingleHit({ fx, from, to }: { fx: PlayerFx; from: number; to: number })
   );
 }
 
+/** 깎인 막대 조각이 하얗게 빛나는 세기 (1이면 완전히 하얗다) */
+const CHUNK_GLOW = 0.7;
+
 /** 깎인 막대 조각: 하얗게 번쩍인 뒤 떨어지거나(베기·화살) 부풀며 부서진다(타격, 둔기는 더 크게) */
 function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number; shatter: "heavy" | "light" | null }) {
   if (width <= 0) return null;
@@ -118,13 +121,15 @@ function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number;
       ];
   return (
     <Animated.View style={[styles.chunk, { left: `${left * 100}%`, width: `${width * 100}%`, opacity, transform }]}>
-      <Animated.View style={[styles.chunkFill, { opacity: t.interpolate({ inputRange: [0, 0.25, 0.6], outputRange: [1, 1, 0] }) }]} />
+      <Animated.View style={[styles.chunkFill, { opacity: t.interpolate({ inputRange: [0, 0.25, 0.6], outputRange: [CHUNK_GLOW, CHUNK_GLOW, 0] }) }]} />
     </Animated.View>
   );
 }
 
 const CUT_W = 260;
-const CUT_H = 14;
+/** 칼자국 굵기 배율 */
+const CUT_THICK = 0.7;
+const CUT_H = 14 * CUT_THICK;
 /** 가운데가 두껍고 양 끝으로 갈수록 가늘어지는 칼자국 (렌즈 모양) */
 const CUT_PATH = `M0 ${CUT_H / 2} Q${CUT_W / 2} ${-CUT_H / 2} ${CUT_W} ${CUT_H / 2} Q${CUT_W / 2} ${CUT_H * 1.5} 0 ${CUT_H / 2} Z`;
 
@@ -287,20 +292,36 @@ function Arrow({ t, crit, flash = true }: { t: T; crit: boolean; flash?: boolean
 
 /** 빗나감: "-"(위, 짧게)와 "_"(아래, 길게) 속도선이 막대 위를 왼쪽에서 오른쪽으로 슉 */
 function Whiff({ t }: { t: T }) {
-  const dash = (y: number, w: number, lag: number, key: string) => {
-    const x = t.interpolate({ inputRange: [0, lag, 1], outputRange: [-300, -300, 300] });
-    const opacity = t.interpolate({ inputRange: [0, lag, lag + 0.1, 0.85, 1], outputRange: [0, 0, 0.9, 0.9, 0] });
-    return <Animated.View key={key} style={[styles.dash, { width: w, opacity, transform: [{ translateX: x }, { translateY: y }] }]} />;
-  };
+  // 바람결: 짧은 선 여러 개가 높이·길이·출발·빠르기를 제각각 달리해 스쳐 간다 (연출용 무작위라 게임 결과와 무관)
+  const [gusts] = useState(makeGusts);
   return (
     <View style={styles.center}>
-      {dash(-11, 46, 0, "top")}
-      {dash(11, 80, 0.1, "bottom")}
+      {gusts.map((g, i) => {
+        const end = Math.min(1, g.lag + g.span);
+        const x = t.interpolate({ inputRange: [0, g.lag, end, 1], outputRange: [-g.reach, -g.reach, g.reach, g.reach] });
+        const opacity = t.interpolate({ inputRange: [0, g.lag, g.lag + g.span * 0.2, g.lag + g.span * 0.7, end, 1], outputRange: [0, 0, g.alpha, g.alpha, 0, 0] });
+        return <Animated.View key={i} style={[styles.dash, { width: g.width, height: g.thick, opacity, transform: [{ translateX: x }, { translateY: g.y }] }]} />;
+      })}
     </View>
   );
 }
 
+/** 빗나감(바람결) 연출 시간(ms) */
+const WHIFF_MS = 1000;
+
+/** 바람결 선의 수와 범위 */
+const GUSTS = 11;
+type Gust = { y: number; width: number; thick: number; lag: number; span: number; reach: number; alpha: number };
+function makeGusts(): Gust[] {
+  const r = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
+  return Array.from({ length: GUSTS }, () => ({
+    y: r(-20, 20), width: r(10, 38), thick: r(1.5, 2.8), lag: r(0, 0.4), span: r(0.3, 0.55), reach: r(170, 260), alpha: r(0.45, 0.95),
+  }));
+}
+
 const FILL = { position: "absolute", top: 0, right: 0, bottom: 0, left: 0 } as const;
+/** 튀는 선 굵기 (검·둔기·활 공통) */
+const SPIKE_H = 4 * 0.8;
 
 const styles = StyleSheet.create({
   // 막대 칸에 겹친다. 적 칸 밖으로 넘쳐도 그린다
@@ -318,12 +339,12 @@ const styles = StyleSheet.create({
   smashRing: { position: "absolute", width: 30, height: 30, borderRadius: 15, borderWidth: 3, borderColor: colors.text },
   /** 충격선 하나를 돌리는 너비 0 기준점 (회전 중심이 맞은 자리) */
   spikeArm: { position: "absolute", width: 0, height: 0, alignItems: "flex-start", justifyContent: "center" },
-  spike: { position: "absolute", width: 30, height: 4, borderRadius: 2, backgroundColor: colors.text },
+  spike: { position: "absolute", width: 30, height: SPIKE_H, borderRadius: 2, backgroundColor: colors.text },
   debris: { position: "absolute", width: 8, height: 8, borderRadius: 1, backgroundColor: colors.text },
   debrisRed: { backgroundColor: colors.fail },
   arrowFrame: { position: "absolute", width: ARROW_W * 2, left: -ARROW_W, flexDirection: "row", alignItems: "center" },
   arrow: { width: ARROW_W, marginLeft: ARROW_W - ARROW_SINK, flexDirection: "row", alignItems: "center" },
   fletch: { width: 15, height: 8.5, borderRadius: 2, backgroundColor: colors.fail },
   shaft: { flex: 1, height: 3, backgroundColor: colors.text },
-  dash: { position: "absolute", height: 3.5, borderRadius: 2, backgroundColor: colors.text },
+  dash: { position: "absolute", borderRadius: 2, backgroundColor: colors.text },
 });

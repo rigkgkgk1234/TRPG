@@ -735,6 +735,10 @@
         "onDefeat": {
           "$ref": "#/definitions/SceneId"
         },
+        "noRout": {
+          "type": "boolean",
+          "description": "끝장 승부: 적이 사기 판정으로 달아나지 않는다. HP가 모두 닳아야 이긴다 (결투장)"
+        },
         "knockout": {
           "type": "boolean",
           "description": "결투: 지면 죽지 않고 HP 1로 깨어난다 (부상이 없으면 경상, 은화는 그대로). 적의 쓰러짐 규칙보다 먼저"

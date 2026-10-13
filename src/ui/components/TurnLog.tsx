@@ -6,7 +6,7 @@ import { TurnCard } from "@/ui/components/TurnCard";
 import { changesLine, OUTCOME_COLOR, summarizeTurn } from "@/ui/turnSummary";
 import { useReducedMotion } from "@/ui/useReducedMotion";
 import { RollFormula } from "@/ui/components/RollFormula";
-import { colors, space, type } from "@/ui/theme";
+import { colors, hairline, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
 /**
@@ -48,14 +48,18 @@ export function TurnLog({ intro, compact, cover }: { intro?: { title: string; bo
       ) : intro ? (
         <View style={styles.intro}>
           <Text style={styles.introTitle}>{intro.title}</Text>
-          <Text style={styles.introBody}>{intro.body}</Text>
+          <Text sentences style={styles.introBody}>{intro.body}</Text>
         </View>
       ) : null}
 
       {older.length > 0 && (
         <View style={styles.history}>
           <Text style={styles.historyTitle}>지난 기록</Text>
-          {older.map((g) => <HistoryRow key={g.id} group={g} />)}
+          {older.map((g, i) => (
+            <View key={g.id} style={i > 0 && styles.divided}>
+              <HistoryRow group={g} />
+            </View>
+          ))}
         </View>
       )}
     </ScrollView>
@@ -98,6 +102,8 @@ const styles = StyleSheet.create({
   history: { gap: space.lg, paddingHorizontal: space.xs },
   historyTitle: { ...type.overline, color: colors.textFaint },
   row: { gap: 2 },
+  // 지난 기록 사이의 아주 흐린 선: 선 위아래로 간격을 반씩 나눈다
+  divided: { borderTopWidth: hairline, borderTopColor: colors.borderFaint, paddingTop: space.lg },
   rowHead: { flexDirection: "row", alignItems: "baseline", gap: space.sm },
   rowTitle: { ...type.bodyStrong, color: colors.textDim, flexShrink: 1 },
   rowOutcome: { ...type.label },

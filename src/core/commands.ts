@@ -40,6 +40,8 @@ export type FeedItem =
   | { kind: "levelUp"; skill?: SkillId; stat?: StatId; newValue: number }
   | { kind: "wound"; level: WoundLevel }
   | { kind: "toast"; text: string }
+  /** 전투에서 적이 겁을 먹고 달아났다 (화면이 알림 창을 띄운다. 글 줄은 따로 나온다) */
+  | { kind: "rout"; enemyId: string; name: string }
   /** 전투 연출: 누가 무엇으로 쳤고 맞았는지 (화면이 맞은 줄 위에 효과를 띄운다). 게임 결과에는 쓰지 않는다 */
   | { kind: "fx"; fx: CombatFx };
 

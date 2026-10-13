@@ -35,6 +35,7 @@ export function evalCondition(c: Condition, run: RunState, rng?: Rng): boolean {
     case "hasItem": return countItem(run.inventory, c.itemId) >= (c.qty ?? 1);
     case "equipped": return Object.values(run.inventory.equipment).some((s) => s?.itemId === c.itemId);
     case "job": return p.job === c.job;
+    case "unarmed": return !run.inventory.equipment.weapon;
     case "wound": return WOUND_RANK[p.wound.level] <= WOUND_RANK[c.max];
     case "fatigue": return r.fatigue >= (c.min ?? 0) && r.fatigue <= (c.max ?? Infinity);
     case "trait": return p.traits.includes(c.trait);
@@ -65,6 +66,7 @@ export function conditionReason(c: Condition, content: Pick<ContentDB, "items" |
     case "hasItem": return `${itemName(content, c.itemId)}${c.qty && c.qty > 1 ? ` ${c.qty}개` : ""} 필요`;
     case "equipped": return `${itemName(content, c.itemId)} 장착 필요`;
     case "job": return `${JOB_LABEL[c.job]}만`;
+    case "unarmed": return "맨손일 때만";
     case "wound": return c.max === "none" ? "다친 몸으로는 불가" : `${WOUND_LABEL[WOUND_ORDER[WOUND_RANK[c.max] + 1] ?? c.max]} 상태로는 불가`;
     case "fatigue": return c.max !== undefined ? "너무 지침" : "아직 기운이 남음";
     case "trait": return `흔적 「${content.traits[c.trait]?.name ?? c.trait}」 필요`;

@@ -8,7 +8,7 @@ import { newRun } from "@/core/newRun";
 import { addRecord, emptyMeta, loadMeta, saveMeta } from "@/core/save/meta";
 import { seal } from "@/core/save/seal";
 import type { KeyValueStore } from "@/core/save/serialize";
-import { epitaph, makeRecord, resolveEnding } from "@/core/story/ending";
+import { endingText, epitaph, makeRecord, resolveEnding } from "@/core/story/ending";
 import { SAVE_KEYS, type JobId, type Rng, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { d20Sequence, withoutDailyEvents } from "./fixtures";
@@ -122,12 +122,13 @@ describe("엔딩 판정", () => {
     expect(resolveEnding(base)).toBe("survivor");
   });
 
-  it("로웬으로 떠나면 로웬의 창병", () => {
+  it("로웬으로 떠나면 「로웬으로」 엔딩", () => {
     const run = edit(start(), (s) => { s.time.day = 27; s.flags.route_rowen = true; s.flags.recruit_passed = true; });
     let next = send(run, { type: "chooseAction", action: "rest" });
     expect(next.activeEvent?.eventId).toBe("story_rowen_departure");
     next = send(next, { type: "chooseChoice", choiceId: "go" });
     expect(next.ending).toBe("rowen_spearman");
+    expect(endingText(next)).toContain("이제 손이 떨리지 않는다");
   });
 });
 

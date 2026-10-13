@@ -202,6 +202,15 @@ describe("전투 진행", () => {
     expect(texts(ctx)).toContain("늑대가 겁을 먹고 달아났다.");
   });
 
+  it("끝장 승부(noRout, 결투장)에서는 HP가 절반 아래여도 달아나지 않는다", () => {
+    // 위와 같은 굴림인데 사기 판정을 하지 않아 늑대가 그대로 남고 다음 라운드로 넘어간다
+    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 9; s.combat!.setup.noRout = true; }), seq(f20(15), fd(2, 6), f20(2), 0.1));
+    combatStep(ctx, { type: "attack", targetId: "wolf_1" });
+    expect(ctx.draft.combat!.result).toBeUndefined();
+    expect(ctx.draft.combat!.enemies[0].routed).toBe(false);
+    expect(ctx.draft.combat!.round).toBe(2);
+  });
+
   it("고블린 정찰병이 달아나면 플래그", () => {
     // 대장장이: 근력 2 + 둔기 1 → 9면 정찰병(방어도 12)을 겨우 맞혀 최소 피해 1 + 2 = 3 → HP 3, 사기 굴림 0.1에 달아난다
     const ctx = ctxOf(edit(inCombat(start("smith"), ["goblin_scout"]), (s) => { s.combat!.enemies[0].hp = 6; }), seq(f20(9), f20(2), 0.1));

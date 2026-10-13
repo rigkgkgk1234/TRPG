@@ -88,7 +88,7 @@
       "choices": []
     },
     "win": {
-      "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 무기를 내렸다.",
+      "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 주먹을 풀었다." }], "fallback": "두 마리 모두 쓰러졌다. 떨리는 손으로 {weapon:을/를} 내렸다." },
       "onEnter": [
         {
           "type": "incFlag",

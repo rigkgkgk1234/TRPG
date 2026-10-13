@@ -128,11 +128,23 @@ describe("문장", () => {
 
   it("변형 조건과 {name}·{job}·{silver} 치환", () => {
     const run = start("hunter");
-    expect(resolveText("{name}({job})의 은화 {silver}개", run)).toBe("하람(사냥꾼)의 은화 5개");
-    expect(resolveText("{name:이/가} 어릴 때부터 {job:으로/로} 살아왔다.", run)).toBe("하람이 어릴 때부터 사냥꾼으로 살아왔다.");
+    expect(resolveText("{name}({job})의 은화 {silver}개", run, CONTENT)).toBe("하람(사냥꾼)의 은화 5개");
+    expect(resolveText("{name:이/가} 어릴 때부터 {job:으로/로} 살아왔다.", run, CONTENT)).toBe("하람이 어릴 때부터 사냥꾼으로 살아왔다.");
     const block = { variants: [{ when: [{ type: "job" as const, job: "hunter" as const }], text: "사냥꾼용" }], fallback: "기본" };
-    expect(resolveText(block, run)).toBe("사냥꾼용");
-    expect(resolveText(block, start("farmer"))).toBe("기본");
+    expect(resolveText(block, run, CONTENT)).toBe("사냥꾼용");
+    expect(resolveText(block, start("farmer"), CONTENT)).toBe("기본");
+  });
+
+  it("{weapon}은 손에 쥔 무기 이름, 맨손이면 주먹 (이벤트는 맨손 문장을 따로 둔다)", () => {
+    expect(resolveText("{weapon:을/를} 들고 맞선다", start("farmer"), CONTENT)).toBe("쇠갈퀴를 들고 맞선다");
+    expect(resolveText("{weapon:을/를} 들고 맞선다", start("soldier_child"), CONTENT)).toBe("녹슨 검을 들고 맞선다");
+    const bare = start("farmer");
+    bare.inventory.equipment.weapon = null;
+    expect(resolveText("{weapon:을/를} 고쳐 쥔다", bare, CONTENT)).toBe("주먹을 고쳐 쥔다");
+    // 이벤트는 맨손일 때 문장을 따로 둔다
+    const label = { variants: [{ when: [{ type: "unarmed" as const }], text: "전투에 대비해 몸을 푼다" }], fallback: "{weapon:을/를} 들고 맞선다" };
+    expect(resolveText(label, bare, CONTENT)).toBe("전투에 대비해 몸을 푼다");
+    expect(resolveText(label, start("farmer"), CONTENT)).toBe("쇠갈퀴를 들고 맞선다");
   });
 });
 
