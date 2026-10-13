@@ -9,7 +9,9 @@ export type EnemyId = string;
 export type TraitId = string;
 export type FlagId = string;
 
-export type JobId = "farmer" | "smith" | "hunter" | "herbalist" | "errand";
+export type JobId =
+  | "farmer" | "smith" | "hunter"
+  | "herbalist" | "recruit" | "soldier_child" | "woodcutter" | "errand" | "peddler" | "acolyte";
 export type RegionId = "village" | "forest" | "watchtower" | "marsh" | "mine" | "hamlet" | "rowen";
 
 /** "1d6", "2d4+1", "1d8-1" 형태의 주사위 표기 */
@@ -26,7 +28,7 @@ export type Stats = Record<StatId, number>;
 
 export type SkillId =
   | "blade" | "blunt" | "bow" | "guard"
-  | "farming" | "smithing" | "tracking" | "herbalism";
+  | "farming" | "smithing" | "tracking" | "herbalism" | "haggle";
 
 export interface SkillProgress {
   /** 0(무경험) ~ 5(달인). 판정 보너스로 그대로 더해진다. */
@@ -52,7 +54,7 @@ export const STAT_GROWTH_USES = 15;
 
 export const SKILL_STAT: Record<SkillId, StatId> = {
   blade: "str", blunt: "str", bow: "agi", guard: "con",
-  farming: "str", smithing: "str", tracking: "per", herbalism: "per",
+  farming: "str", smithing: "str", tracking: "per", herbalism: "per", haggle: "cha",
 };
 
 export type WoundLevel = "none" | "light" | "serious" | "critical";
@@ -110,7 +112,7 @@ export interface JobDef {
   mvp: boolean;
 }
 
-export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
+export const JOBS: Record<JobId, JobDef> = {
   farmer: {
     id: "farmer", name: "농부", mvp: true,
     stats: { str: 1, agi: 0, con: 2, per: 1, cha: 0 },
@@ -137,6 +139,82 @@ export const JOBS: Record<"farmer" | "smith" | "hunter", JobDef> = {
       { itemId: "hunting_knife", qty: 1 },
     ],
     work: { label: "덫, 가죽 손질", check: { stat: "per", skill: "tracking", dc: 12 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
+  },
+  herbalist: {
+    id: "herbalist", name: "약초꾼", mvp: true,
+    stats: { str: -1, agi: 1, con: 1, per: 2, cha: 1 },
+    startSkills: { herbalism: 2 },
+    silver: 7, food: 3, reputation: 10,
+    startItems: [
+      { itemId: "hunting_knife", qty: 1, equip: true },
+      { itemId: "padded_coat", qty: 1, equip: true },
+      { itemId: "herb", qty: 3 },
+    ],
+    work: { label: "약초 손질", check: { stat: "per", skill: "herbalism", dc: 11 }, baseSilver: 2, bonusSilver: 1, bonusFood: 0, fatigue: 2, bonusItem: "herb" },
+  },
+  recruit: {
+    id: "recruit", name: "경비대 신병", mvp: true,
+    stats: { str: 1, agi: 0, con: 2, per: 1, cha: 0 },
+    startSkills: { guard: 2, blade: 1 },
+    silver: 6, food: 4, reputation: 10,
+    startItems: [
+      { itemId: "rusty_sword", qty: 1, equip: true },
+      { itemId: "wooden_shield", qty: 1, equip: true },
+    ],
+    work: { label: "보초", check: { stat: "con", skill: "guard", dc: 11 }, baseSilver: 3, bonusSilver: 1, bonusFood: 0, fatigue: 2 },
+  },
+  soldier_child: {
+    id: "soldier_child", name: "옛 병사의 자식", mvp: true,
+    stats: { str: 1, agi: 2, con: 1, per: 0, cha: 0 },
+    startSkills: { blade: 2 },
+    silver: 6, food: 4, reputation: 10,
+    startItems: [
+      { itemId: "rusty_sword", qty: 1, equip: true },
+      { itemId: "padded_coat", qty: 1, equip: true },
+    ],
+    work: { label: "대련 상대", check: { stat: "agi", skill: "blade", dc: 12 }, baseSilver: 2, bonusSilver: 2, bonusFood: 0, fatigue: 2, bonusSkillXp: "blade" },
+  },
+  woodcutter: {
+    id: "woodcutter", name: "나무꾼", mvp: true,
+    stats: { str: 0, agi: 2, con: 2, per: 1, cha: -1 },
+    startSkills: {},
+    silver: 8, food: 5, reputation: 10,
+    startItems: [{ itemId: "hand_axe", qty: 1, equip: true }],
+    work: { label: "장작 패기", check: { stat: "con", dc: 9 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 2 },
+  },
+  errand: {
+    id: "errand", name: "여관 심부름꾼", mvp: true,
+    stats: { str: 0, agi: 1, con: 1, per: 0, cha: 2 },
+    startSkills: {},
+    silver: 12, food: 2, reputation: 10,
+    startItems: [
+      { itemId: "club", qty: 1, equip: true },
+      { itemId: "padded_coat", qty: 1, equip: true },
+    ],
+    work: { label: "여관 심부름", check: { stat: "cha", dc: 10 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 1 },
+  },
+  peddler: {
+    id: "peddler", name: "떠돌이 행상", mvp: true,
+    stats: { str: 0, agi: 0, con: 1, per: 1, cha: 2 },
+    startSkills: { haggle: 2 },
+    silver: 20, food: 2, reputation: 0,
+    startItems: [
+      { itemId: "rusty_sword", qty: 1, equip: true },
+      { itemId: "padded_coat", qty: 1, equip: true },
+      { itemId: "silver_scrap", qty: 2 },
+    ],
+    work: { label: "물건 팔기", check: { stat: "cha", skill: "haggle", dc: 12 }, baseSilver: 2, bonusSilver: 4, bonusFood: 0, fatigue: 2 },
+  },
+  acolyte: {
+    id: "acolyte", name: "수도원 견습", mvp: true,
+    stats: { str: 0, agi: 0, con: 2, per: 1, cha: 1 },
+    startSkills: { guard: 1, herbalism: 1 },
+    silver: 5, food: 4, reputation: 15,
+    startItems: [
+      { itemId: "club", qty: 1, equip: true },
+      { itemId: "bandage", qty: 2 },
+    ],
+    work: { label: "예배당 일", check: { stat: "cha", dc: 10 }, baseSilver: 1, bonusSilver: 1, bonusFood: 0, fatigue: 1, bonusReputation: 1 },
   },
 };
 
@@ -709,6 +787,10 @@ export interface WorkDef {
   fatigue: number;
   /** 성공·대성공이면 이 숙련 XP +1 (대장간 일의 망치질 → 둔기) */
   bonusSkillXp?: SkillId;
+  /** 성공·대성공이면 이 아이템 1개 (대성공은 2개, 약초 손질 → 약초) */
+  bonusItem?: ItemId;
+  /** 성공·대성공이면 평판 +이만큼 (예배당 일) */
+  bonusReputation?: number;
 }
 
 export interface DailyActionDef {
@@ -732,7 +814,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",

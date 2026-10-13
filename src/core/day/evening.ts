@@ -14,6 +14,7 @@ import {
   TAX_INTERVAL_DAYS,
   type RunState,
 } from "../types";
+import { ACOLYTE_SLEEP_BONUS } from "../jobPerks";
 import { changeDebt, changeFatigue, changeFood, changeHp, changeReputation, changeSilver, setWound } from "./resources";
 
 /** 본인 1 + 가족 1 (SYSTEM_SPEC 6-4) */
@@ -131,7 +132,7 @@ function sleep(ctx: Ctx): void {
     changeFatigue(ctx, FATIGUE_AFTER_COLLAPSE - r.fatigue);
     return;
   }
-  const recovery = SLEEP_RECOVERY - (r.hunger >= 1 ? 1 : 0) + (time.restsToday > 0 ? 1 : 0);
+  const recovery = SLEEP_RECOVERY - (r.hunger >= 1 ? 1 : 0) + (time.restsToday > 0 ? 1 : 0) + (ctx.draft.player.job === "acolyte" ? ACOLYTE_SLEEP_BONUS : 0);
   changeFatigue(ctx, -recovery);
 }
 

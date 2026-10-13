@@ -1,4 +1,5 @@
 import type { ContentDB } from "../content";
+import { HERBALIST_REGION, HERBALIST_REGION_BONUS } from "../jobPerks";
 import { SKILL_LABEL, STAT_LABEL } from "../labels";
 import {
   FATIGUE_DISADVANTAGE_AT,
@@ -68,6 +69,11 @@ export function buildCheckContext(
 
   if (spec.situational) {
     modifiers.push({ label: spec.situationalLabel ?? "상황", value: spec.situational });
+  }
+
+  // 약초꾼은 늪을 잘 안다: 늪 탐험 중의 판정 +1
+  if (player.job === "herbalist" && subject.activeEvent?.explore?.region === HERBALIST_REGION) {
+    modifiers.push({ label: "늪 지리", value: HERBALIST_REGION_BONUS });
   }
 
   // 같은 흔적이 두 번 기록돼도 효과는 한 번만

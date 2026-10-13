@@ -24,6 +24,34 @@
       "text": "마을 어귀에 나무 울타리를 세우기로 했다. 브록이 통나무를 나를 일손이 모자라다며 소매를 걷어붙였다.",
       "choices": [
         {
+          "id": "fell",
+          "label": "직접 통나무를 베어 와 세운다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "woodcutter"
+            }
+          ],
+          "hideIfLocked": true,
+          "cost": {
+            "fatigue": 1
+          },
+          "outcome": {
+            "text": "익숙한 도끼질로 통나무를 베어 날랐다. 해가 지기 전에 끝을 뾰족하게 깎은 울타리가 섰다. 브록이 혀를 내둘렀다.",
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "palisade_built"
+              },
+              {
+                "type": "reputation",
+                "delta": 10
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
           "id": "work",
           "label": "한나절 품을 들여 돕는다",
           "cost": {

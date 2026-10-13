@@ -690,7 +690,8 @@
         "farming",
         "smithing",
         "tracking",
-        "herbalism"
+        "herbalism",
+        "haggle"
       ]
     },
     "TraitId": {

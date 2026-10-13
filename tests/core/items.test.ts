@@ -105,9 +105,9 @@ describe("가게", () => {
   });
 
   it("팔기: 구매가의 절반(내림), 가죽은 정해진 값, 증거물은 못 판다", () => {
-    expect(sellPrice(CONTENT.items.rusty_sword)).toBe(5);
-    expect(sellPrice(CONTENT.items.wolf_pelt)).toBe(4);
-    expect(sellPrice(CONTENT.items.goblin_token)).toBe(0);
+    expect(sellPrice(start(), CONTENT.items.rusty_sword)).toBe(5);
+    expect(sellPrice(start(), CONTENT.items.wolf_pelt)).toBe(4);
+    expect(sellPrice(start(), CONTENT.items.goblin_token)).toBe(0);
     const ctx = ctxOf(withBag(start(), { itemId: "wolf_pelt", qty: 3 }));
     expect(sell(ctx, 0, 2)).toBeNull();
     expect(ctx.draft.resources.silver).toBe(10 + 8);
@@ -267,7 +267,7 @@ describe("가게 물건 목록", () => {
   });
 
   it("되팔아 남는 물건은 없다: 판매가 ≤ 구매가", () => {
-    for (const def of Object.values(CONTENT.items)) if (def.price > 0) expect(sellPrice(def), def.id).toBeLessThanOrEqual(def.price);
+    for (const def of Object.values(CONTENT.items)) if (def.price > 0) expect(sellPrice(start(), def), def.id).toBeLessThanOrEqual(def.price);
   });
 
   it("부목은 중상만 경상으로, 고칠 부상이 없으면 쓰지 않는다", () => {

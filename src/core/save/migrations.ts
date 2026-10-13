@@ -43,4 +43,11 @@ export const MIGRATIONS: Record<number, Migration> = {
     if (file.data?.combat) delete file.data.combat.arrowsFired;
     return { ...file, version: 6 };
   },
+  // 7: 흥정 숙련 추가 → 0에서 시작
+  6: (old) => {
+    const file = old as { version: number; data?: { player?: { skills?: Record<string, unknown> } } };
+    const skills = file.data?.player?.skills;
+    if (skills && !skills.haggle) skills.haggle = { rank: 0, xp: 0 };
+    return { ...file, version: 7 };
+  },
 };

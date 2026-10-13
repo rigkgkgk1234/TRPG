@@ -9,7 +9,7 @@ import type { CombatAction, EnemyId, EventDef, JobId, RunState } from "@/core/ty
 import { CONTENT } from "@/data";
 
 const RUNS = Number(process.argv[process.argv.indexOf("--runs") + 1]) || 1000;
-const JOBS: JobId[] = ["farmer", "smith", "hunter"];
+const JOBS = Object.keys(CONTENT.jobs) as JobId[];
 
 /** 선공 굴림으로 시작하는 1:1 전투 하나뿐인 이벤트 */
 function arena(enemy: EnemyId): ContentDB {
@@ -37,10 +37,12 @@ function fighter(job: JobId, seed: number, level: Veteran): RunState {
   run.activeEvent = { eventId: "sim_arena", sceneId: "start" };
   run.inventory.slots = run.inventory.slots.map((s) => (s?.itemId === "herb" ? null : s));
   if (level === "day20") {
-    const weaponSkill = job === "hunter" ? "bow" : job === "smith" ? "blunt" : "blunt";
+    // 주력 무기 숙련은 처음 쥔 무기를 따른다
+    const weapon = run.inventory.equipment.weapon ? CONTENT.items[run.inventory.equipment.weapon.itemId] : undefined;
+    const weaponSkill = weapon?.category === "weapon" ? weapon.skill : "blunt";
     run.player.skills[weaponSkill].rank = 4;
-    run.player.skills.guard.rank = 1;
-    if (job === "hunter") run.player.stats.agi += 1; else run.player.stats.str += 1;
+    run.player.skills.guard.rank = Math.max(1, run.player.skills.guard.rank);
+    if (weaponSkill === "bow") run.player.stats.agi += 1; else run.player.stats.str += 1;
     run.inventory.equipment.armor = { itemId: "leather_armor", qty: 1, durability: 25 };
   }
   return run;

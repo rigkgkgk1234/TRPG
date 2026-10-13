@@ -439,7 +439,8 @@
         "farming",
         "smithing",
         "tracking",
-        "herbalism"
+        "herbalism",
+        "haggle"
       ]
     },
     "ItemId": {
@@ -453,7 +454,12 @@
         "smith",
         "hunter",
         "herbalist",
-        "errand"
+        "recruit",
+        "soldier_child",
+        "woodcutter",
+        "errand",
+        "peddler",
+        "acolyte"
       ]
     },
     "WoundLevel": {

@@ -82,8 +82,8 @@ function useOpenRow() {
 }
 
 /** 은화와 가방 자리로 살 수 있는 묶음 수 */
-function maxBuyable(run: RunState, def: ItemDef, e: ShopEntry): number {
-  const each = entryPrice(run, CONTENT, e);
+function maxBuyable(run: RunState, def: ItemDef, e: ShopEntry, shop: ShopId): number {
+  const each = entryPrice(run, CONTENT, e, shop);
   let n = each > 0 ? Math.floor(run.resources.silver / each) : 0;
   while (n > 0 && !hasRoom(run, def, e.qty * n)) n--;
   return n;
@@ -92,7 +92,7 @@ function maxBuyable(run: RunState, def: ItemDef, e: ShopEntry): number {
 function stockRows(run: RunState, shop: ShopId) {
   return SHOPS[shop].stock.flatMap((e) => {
     const def = CONTENT.items[e.itemId];
-    return def ? [{ e, def, price: entryPrice(run, CONTENT, e) }] : [];
+    return def ? [{ e, def, price: entryPrice(run, CONTENT, e, shop) }] : [];
   });
 }
 
@@ -238,7 +238,7 @@ function QtyStock({ run, shop, rows }: { run: RunState; shop: ShopId; rows: { e:
   return (
     <View>
       {rows.map(({ e, def, price }) => {
-        const max = maxBuyable(run, def, e);
+        const max = maxBuyable(run, def, e, shop);
         const owned = run.inventory.slots.reduce((n, s) => n + (s?.itemId === def.id ? s.qty : 0), 0);
         return (
           <ItemRow

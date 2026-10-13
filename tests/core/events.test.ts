@@ -435,7 +435,7 @@ describe("무작위 플레이", () => {
   }
 
   it("직업마다 60판: 막히는 장면 없이 30일을 끝낸다", () => {
-    for (const job of ["farmer", "smith", "hunter"] as const) {
+    for (const job of Object.keys(CONTENT.jobs) as JobId[]) {
       for (let seed = 1; seed <= 60; seed++) {
         let run = start(job, seed);
         const pick = createRng({ seed: seed * 7919, state: seed * 7919 });

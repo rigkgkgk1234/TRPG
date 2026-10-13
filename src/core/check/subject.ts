@@ -1,8 +1,8 @@
 import { SKILL_IDS, STAT_IDS } from "../labels";
 import { INVENTORY_CAPACITY, type RunState, type SkillId, type Skills, type StatId, type Stats, type WoundLevel } from "../types";
 
-/** 판정에 필요한 상태만 골라낸 것. 테스트·개발 화면에서 RunState 전체 없이도 쓸 수 있다. */
-export type CheckSubject = Pick<RunState, "player" | "resources" | "inventory">;
+/** 판정에 필요한 상태만 골라낸 것. 테스트·개발 화면에서 RunState 전체 없이도 쓸 수 있다. 진행 중인 이벤트는 지역 보정(약초꾼의 늪)에만 쓴다. */
+export type CheckSubject = Pick<RunState, "player" | "resources" | "inventory"> & Partial<Pick<RunState, "activeEvent">>;
 
 export interface SubjectOptions {
   stats?: Partial<Stats>;

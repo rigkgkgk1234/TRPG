@@ -1,7 +1,7 @@
 import type { ExerciseStat, NpcId } from "@/core/labels";
 import type { DailyActionId, JobId, RegionId, SkillId } from "@/core/types";
 import {
-  BarbellIcon, BedIcon, BreadIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, FirstAidKitIcon, HammerIcon, HeartbeatIcon, HouseLineIcon, MountainsIcon, PersonSimpleRunIcon,
+  AxeIcon, BarbellIcon, BeerSteinIcon, ChurchIcon, LeafIcon, PackageIcon, ShieldChevronIcon, BedIcon, BreadIcon, CastleTurretIcon, ChalkboardTeacherIcon, CompassIcon, CrosshairIcon, EyeIcon, FirstAidKitIcon, HammerIcon, HeartbeatIcon, HouseLineIcon, MountainsIcon, PersonSimpleRunIcon,
   PlantIcon, ScalesIcon, ShieldIcon, StorefrontIcon, SwordIcon, TargetIcon, TreeIcon, WavesIcon, type Icon,
 } from "@/ui/icons";
 
@@ -10,8 +10,13 @@ export const JOB_ICON: Record<JobId, Icon> = {
   farmer: PlantIcon,
   smith: HammerIcon,
   hunter: TargetIcon,
-  herbalist: PlantIcon,
-  errand: StorefrontIcon,
+  herbalist: LeafIcon,
+  recruit: ShieldChevronIcon,
+  soldier_child: SwordIcon,
+  woodcutter: AxeIcon,
+  errand: BeerSteinIcon,
+  peddler: PackageIcon,
+  acolyte: ChurchIcon,
 };
 
 export const ACTION_ICON: Partial<Record<DailyActionId, Icon>> = {

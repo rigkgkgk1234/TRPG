@@ -20,7 +20,9 @@ import {
   type SkillId,
   type StatId,
 } from "../types";
-import { changeFatigue, changeFood, changeHp, changeSilver, setWound } from "./resources";
+import { addItem } from "../items/inventory";
+import { WOODCUTTER_EXPLORE_RELIEF, WOODCUTTER_REGION } from "../jobPerks";
+import { changeFatigue, changeFood, changeHp, changeReputation, changeSilver, setWound } from "./resources";
 import { advanceSlot } from "./time";
 
 /** 레나가 가르치는 숙련 (SYSTEM_SPEC 6-2) */
@@ -116,8 +118,9 @@ export function handleAction(ctx: Ctx, id: DailyActionId, { skill, stat, region,
     case "trainLesson": trainLesson(ctx, skill!, def); break;
     case "rest": rest(ctx); break;
   }
-  // 일하기는 직업마다 피로가 달라 work()가 직접 더한다
-  if (id !== "work") changeFatigue(ctx, def.fatigue);
+  // 일하기는 직업마다 피로가 달라 work()가 직접 더한다. 나무꾼은 숲 탐험이 덜 지친다
+  const relief = id === "explore" && region === WOODCUTTER_REGION && ctx.draft.player.job === "woodcutter" ? WOODCUTTER_EXPLORE_RELIEF : 0;
+  if (id !== "work") changeFatigue(ctx, def.fatigue - relief);
 
   // 탐험·마을 볼일은 이벤트가 끝난 뒤 runner가 슬롯을 넘긴다
   if (id === "explore") startExplore(ctx, region!);
@@ -134,11 +137,13 @@ function work(ctx: Ctx): void {
 
   const success = r.outcome === "success" || r.outcome === "critSuccess";
   const mult = r.outcome === "critSuccess" ? 2 : success ? 1 : 0;
-  // 대장간 망치질은 둔기 연습도 된다
+  // 일하며 무기 연습도 된다 (대장간 망치질 → 둔기, 대련 상대 → 검술)
   if (success && w.bonusSkillXp) {
     const gained = gainSkillXp(ctx, w.bonusSkillXp, 1);
-    if (gained > 0) ctx.feed.push({ kind: "text", text: `망치질에 손이 익었다. ${SKILL_LABEL[w.bonusSkillXp]} 경험 +${gained}` });
+    if (gained > 0) ctx.feed.push({ kind: "text", text: `일하며 손이 익었다. ${SKILL_LABEL[w.bonusSkillXp]} 경험 +${gained}` });
   }
+  if (w.bonusItem && mult > 0) addItem(ctx, w.bonusItem, mult);
+  if (w.bonusReputation && mult > 0) changeReputation(ctx, w.bonusReputation);
   const silver = w.baseSilver + w.bonusSilver * mult;
   changeSilver(ctx, silver);
   s.stats.silverEarned += silver;

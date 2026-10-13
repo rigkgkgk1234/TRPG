@@ -56,7 +56,7 @@ describe("newRun", () => {
 
   it("빈 이름은 기본 이름, 없는 직업은 오류", () => {
     expect(newRun(CONTENT, "farmer", "  ", { seed: 1, now: NOW }).player.name).toBe("이름 없는 주민");
-    expect(() => newRun(CONTENT, "errand", "x", { seed: 1, now: NOW })).toThrow();
+    expect(() => newRun(CONTENT, "nobody" as JobId, "x", { seed: 1, now: NOW })).toThrow();
   });
 });
 

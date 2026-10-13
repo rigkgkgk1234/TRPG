@@ -126,6 +126,298 @@
           }
         },
         {
+          "id": "herb_bundle",
+          "label": "원정길에 쓸 약초 꾸러미를 엮어 준다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "herbalist"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "약초를 골라 말리고 꾸러미로 엮느라 한나절이 갔다. 마법사 세린이 꼼꼼하다며 값을 넉넉히 치르고, 떠나기 전에 칼로 몸을 지키는 법도 몇 가지 일러 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 6
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 3
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "heroes_helped"
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "꾸러미 몇 개는 덜 말라 곰팡내가 났다. 세린은 쓴웃음을 지으며 반값만 치렀다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            }
+          }
+        },
+        {
+          "id": "night_watch",
+          "label": "일행이 묵는 밤에 여관 앞 보초를 선다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "recruit"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "밤새 여관 앞을 지켰다. 새벽에 교대하러 나온 성기사 고드윈이 검을 방패 뒤에서 찌르는 법을 일러 주었다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 4
+              },
+              {
+                "type": "skillXp",
+                "skill": "blade",
+                "amount": 3
+              },
+              {
+                "type": "setFlag",
+                "flag": "heroes_helped"
+              },
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "leave"
+          }
+        },
+        {
+          "id": "spar",
+          "label": "용사 아델에게 대련을 청한다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "soldier_child"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "agi",
+            "skill": "blade",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "목검이 몇 번 맞부딪쳤다. 아델은 아버지의 검술이 몸에 배어 있다며 칼끝을 겨누는 법을 고쳐 주었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 3
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "heroes_helped"
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "세 합 만에 목검을 놓쳤다. 아델은 웃으며 돌아오는 길에 다시 겨루자고 했다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            }
+          }
+        },
+        {
+          "id": "firewood",
+          "label": "원정길에 쓸 장작을 패서 쌓아 준다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "woodcutter"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "도끼질로 한나절을 보냈다. 장작더미를 본 고드윈이 도끼를 방패 너머로 내리치는 법을 보여 주었다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 5
+              },
+              {
+                "type": "skillXp",
+                "skill": "blade",
+                "amount": 3
+              },
+              {
+                "type": "setFlag",
+                "flag": "heroes_helped"
+              },
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "leave"
+          }
+        },
+        {
+          "id": "stable",
+          "label": "일행의 말과 짐을 돌본다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "errand"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "말을 먹이고 짐을 나르느라 하루가 저물었다. 궁수 리아가 심부름 값과 함께 몽둥이를 짧게 쥐고 휘두르는 법을 일러 주었다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 5
+              },
+              {
+                "type": "skillXp",
+                "skill": "blunt",
+                "amount": 3
+              },
+              {
+                "type": "setFlag",
+                "flag": "heroes_helped"
+              },
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "leave"
+          }
+        },
+        {
+          "id": "trade",
+          "label": "원정에 쓸 물건을 흥정해 판다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "peddler"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "cha",
+            "skill": "haggle",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "끈질긴 흥정 끝에 짐 꾸러미를 통째로 넘겼다. 마법사 세린은 이런 장사꾼은 처음 본다며 웃고, 길에서 몸을 지키는 칼 쓰는 법을 일러 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 10
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 2
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "heroes_helped"
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            },
+            "fail": {
+              "text": "값을 너무 불렀다. 일행은 필요한 것만 조금 사 갔다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "loseNextSlot"
+                }
+              ],
+              "next": "leave"
+            }
+          }
+        },
+        {
+          "id": "prayer",
+          "label": "일행의 무사를 비는 기도를 올린다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "acolyte"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "예배당에서 밤새 등불을 지키며 기도했다. 성기사 고드윈이 고맙다며 몽둥이로 막고 치는 법을 일러 주었다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              },
+              {
+                "type": "skillXp",
+                "skill": "blunt",
+                "amount": 3
+              },
+              {
+                "type": "setFlag",
+                "flag": "heroes_helped"
+              },
+              {
+                "type": "loseNextSlot"
+              }
+            ],
+            "next": "leave"
+          }
+        },
+        {
           "id": "talk",
           "label": "말을 건넨다",
           "check": {

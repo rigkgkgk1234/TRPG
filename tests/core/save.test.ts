@@ -113,6 +113,13 @@ describe("저장 파일", () => {
     const back = decodeSave(seal(JSON.stringify({ ...file, version: 5 })), CONTENT);
     expect(back?.inventory.slots[3]).toBeNull();
   });
+
+  it("버전 6 저장은 흥정 숙련을 0레벨로 더해 읽는다", () => {
+    const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    delete file.data.player.skills.haggle;
+    const back = decodeSave(seal(JSON.stringify({ ...file, version: 6 })), CONTENT);
+    expect(back?.player.skills.haggle).toEqual({ rank: 0, xp: 0 });
+  });
 });
 
 describe("저장 슬롯", () => {

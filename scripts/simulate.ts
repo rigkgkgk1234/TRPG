@@ -17,7 +17,7 @@ import { FATIGUE_DISADVANTAGE_AT, maxHp, SKILL_STAT, type EndingId, type JobId, 
 import { CONTENT } from "@/data";
 
 const RUNS = Number(process.argv[process.argv.indexOf("--runs") + 1]) || 1000;
-const JOBS: JobId[] = ["farmer", "smith", "hunter"];
+const JOBS = Object.keys(CONTENT.jobs) as JobId[];
 const NOW = "2026-01-01T00:00:00.000Z";
 /** 은화가 이보다 적으면 일하러 간다 */
 const SILVER_FLOOR = 6;
@@ -36,7 +36,10 @@ const STORY_RISK_FLOOR = 0.4;
 const CURVE_DAYS = [1, 5, 10, 15, 20, 25, 30];
 
 /** 직업별 주력 무기 숙련 (훈련할 것) */
-const MAIN_SKILL: Record<JobId, SkillId> = { farmer: "blunt", smith: "blunt", hunter: "bow", herbalist: "blade", errand: "blade" };
+const MAIN_SKILL: Record<JobId, SkillId> = {
+  farmer: "blunt", smith: "blunt", hunter: "bow",
+  herbalist: "blade", recruit: "blade", soldier_child: "blade", woodcutter: "blade", errand: "blunt", peddler: "blade", acolyte: "blunt",
+};
 
 /** AI가 스스로 굴리는 작은 시드 RNG (게임 RNG와 따로 둔다: AI의 변덕이 게임 결과의 재현성을 해치지 않게) */
 function aiRng(seed: number): () => number {

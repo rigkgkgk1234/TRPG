@@ -2,6 +2,7 @@ import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { setWound } from "../day/resources";
 import { applyEffect } from "../events/effects";
+import { HERB_SURE_HEAL_JOB } from "../jobPerks";
 import { josa } from "../labels";
 import type { ConsumableDef, Effect, Inventory, ItemId, RunState, WoundLevel } from "../types";
 
@@ -113,7 +114,9 @@ export function consumeItem(ctx: Ctx, itemId: ItemId, inCombat: boolean): boolea
   ctx.feed.push({ kind: "text", text: USE_TEXT[itemId] ?? `${josa(def.name, "을/를")} 썼다.` });
 
   const effects: Effect[] = [...def.use];
-  for (const ce of def.chanceEffects ?? []) if (ctx.rng() < ce.p) effects.push(...ce.effects);
+  // 약초꾼은 약초의 부상 치료가 늘 듣는다
+  const sure = itemId === "herb" && ctx.draft.player.job === HERB_SURE_HEAL_JOB;
+  for (const ce of def.chanceEffects ?? []) if (ctx.rng() < ce.p || sure) effects.push(...ce.effects);
   for (const e of effects) {
     if (e.type === "healWound") {
       const now = WOUND_STEPS.indexOf(ctx.draft.player.wound.level);

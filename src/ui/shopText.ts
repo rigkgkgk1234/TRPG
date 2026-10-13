@@ -52,7 +52,7 @@ export interface SellRow { index: number; stack: ItemStack; def: ItemDef; price:
 export function sellRows(run: RunState): SellRow[] {
   return run.inventory.slots.flatMap((stack, index) => {
     const def = stack ? CONTENT.items[stack.itemId] : undefined;
-    const price = sellPrice(def);
+    const price = sellPrice(run, def);
     return stack && def && price > 0 ? [{ index, stack, def, price }] : [];
   });
 }

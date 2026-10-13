@@ -6,7 +6,7 @@ export function formatSigned(n: number): string {
 }
 
 export const STAT_IDS: readonly StatId[] = ["str", "agi", "con", "per", "cha"];
-export const SKILL_IDS: readonly SkillId[] = ["blade", "blunt", "bow", "guard", "farming", "smithing", "tracking", "herbalism"];
+export const SKILL_IDS: readonly SkillId[] = ["blade", "blunt", "bow", "guard", "farming", "smithing", "tracking", "herbalism", "haggle"];
 
 export const STAT_LABEL: Record<StatId, string> = {
   str: "근력",
@@ -41,6 +41,7 @@ export const SKILL_LABEL: Record<SkillId, string> = {
   smithing: "대장일",
   tracking: "추적",
   herbalism: "약초",
+  haggle: "흥정",
 };
 
 /** 능력치 성장 안내 (상태·혼자 훈련 창) */
@@ -102,7 +103,12 @@ export const JOB_LABEL: Record<JobId, string> = {
   smith: "대장장이 견습",
   hunter: "사냥꾼",
   herbalist: "약초꾼",
+  recruit: "경비대 신병",
+  soldier_child: "옛 병사의 자식",
+  woodcutter: "나무꾼",
   errand: "여관 심부름꾼",
+  peddler: "떠돌이 행상",
+  acolyte: "수도원 견습",
 };
 
 export type JosaPair = "을/를" | "이/가" | "은/는" | "과/와" | "으로/로";

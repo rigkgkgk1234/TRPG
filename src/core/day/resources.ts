@@ -1,4 +1,5 @@
 import type { Ctx, ResourceKey } from "../commands";
+import { ERRAND_REPUTATION_BONUS } from "../jobPerks";
 import { FAME_MAX, FATIGUE_MAX, maxHp, type WoundLevel } from "../types";
 
 /** 자원 변화는 모두 이 함수들을 거친다: 범위 제한 + 피드 기록이 한 곳에 모인다. */
@@ -51,7 +52,7 @@ export function changeHp(ctx: Ctx, delta: number): void {
 
 export function changeReputation(ctx: Ctx, delta: number): void {
   const p = ctx.draft.player;
-  const bonus = delta > 0 && p.stats.cha >= CHA_REPUTATION_BONUS_AT ? 1 : 0;
+  const bonus = delta > 0 ? (p.stats.cha >= CHA_REPUTATION_BONUS_AT ? 1 : 0) + (p.job === "errand" ? ERRAND_REPUTATION_BONUS : 0) : 0;
   const next = Math.min(REPUTATION_MAX, Math.max(0, p.reputation + delta + bonus));
   record(ctx, "reputation", next - p.reputation);
   p.reputation = next;

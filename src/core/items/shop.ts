@@ -2,6 +2,7 @@ import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { canTrade, validQty } from "../day/town";
 import { changeFatigue, changeHp, changeSilver, setWound } from "../day/resources";
+import { ERRAND_INN_DISCOUNT, PEDDLER_SELL_BONUS } from "../jobPerks";
 import { josa } from "../labels";
 import {
   REP_DISCOUNT_RATE,
@@ -84,14 +85,17 @@ export function adjustedPrice(run: RunState, base: number): number {
   return Math.ceil(base * rate - 1e-9);
 }
 
-export function entryPrice(run: RunState, content: Pick<ContentDB, "items">, e: ShopEntry): number {
-  return adjustedPrice(run, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
+/** 가게 물건 한 묶음의 값: 평판 보정, 여관 심부름꾼은 여관 물건 반값 (올림) */
+export function entryPrice(run: RunState, content: Pick<ContentDB, "items">, e: ShopEntry, shop: ShopId): number {
+  const base = adjustedPrice(run, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
+  return shop === "inn" && run.player.job === "errand" ? Math.ceil(base * (1 - ERRAND_INN_DISCOUNT) - 1e-9) : base;
 }
 
-/** 한 개를 팔 때 값: 판매가 지정이 있으면 그것, 아니면 구매가의 50% (내림). 못 팔면 0. */
-export function sellPrice(def: ItemDef | undefined): number {
+/** 한 개를 팔 때 값: 판매가 지정이 있으면 그것, 아니면 구매가의 50% (내림). 떠돌이 행상은 +20% (내림). 못 팔면 0. */
+export function sellPrice(run: RunState, def: ItemDef | undefined): number {
   if (!def || !def.sellable) return 0;
-  return def.sellPrice ?? Math.floor(def.price * SELL_RATE);
+  const base = def.sellPrice ?? Math.floor(def.price * SELL_RATE);
+  return run.player.job === "peddler" ? Math.floor(base * (1 + PEDDLER_SELL_BONUS) + 1e-9) : base;
 }
 
 /** 내구도 5당 은화 1 (올림), 대장장이 견습은 반값 (올림) */
@@ -129,7 +133,7 @@ export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId, qty = 1): string |
   if (!entry || !def) return "그런 물건은 없다";
   const n = Math.floor(qty);
   if (!validQty(n)) return "살 수량이 올바르지 않다";
-  const price = entryPrice(s, ctx.content, entry) * n;
+  const price = entryPrice(s, ctx.content, entry, shopId) * n;
   if (s.resources.silver < price) return "은화가 모자란다";
 
   const slot = slotOf(def);
@@ -185,7 +189,7 @@ export function sell(ctx: Ctx, slotIndex: number, qty: number): string | null {
   if (!canTrade(s)) return "지금은 팔 수 없다";
   const stack = s.inventory.slots[slotIndex];
   if (!stack) return "팔 물건이 없다";
-  const each = sellPrice(ctx.content.items[stack.itemId]);
+  const each = sellPrice(s, ctx.content.items[stack.itemId]);
   if (each <= 0) return "토비가 사지 않는 물건이다";
   const n = Math.min(Math.max(1, Math.floor(qty)), stack.qty);
   removeAt(ctx, slotIndex, n);

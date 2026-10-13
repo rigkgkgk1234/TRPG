@@ -194,6 +194,11 @@ describe("용사 일행", () => {
     expect(choiceIds(farmer)).toEqual(["sell_food", "talk", "watch"]);
     expect(choiceIds(arrive("smith"))).toEqual(["repair", "talk", "watch"]);
     expect(choiceIds(arrive("hunter"))).toEqual(["escort", "talk", "watch"]);
+    const extra: [JobId, string][] = [
+      ["herbalist", "herb_bundle"], ["recruit", "night_watch"], ["soldier_child", "spar"], ["woodcutter", "firewood"],
+      ["errand", "stable"], ["peddler", "trade"], ["acolyte", "prayer"],
+    ];
+    for (const [job, id] of extra) expect(choiceIds(arrive(job)), job).toEqual([id, "talk", "watch"]);
 
     const sold = send(farmer, { type: "chooseChoice", choiceId: "sell_food" });
     expect(sold.resources).toMatchObject({ food: 6, silver: 16 }); // 식구 몫이 아니라 밭의 곡식을 판다

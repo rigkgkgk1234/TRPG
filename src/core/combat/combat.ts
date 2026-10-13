@@ -7,6 +7,7 @@ import { gainTrait } from "../day/evening";
 import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "../day/resources";
 import { BROKEN_WEAPON_PENALTY, isBroken, wearEquipment } from "../items/equipment";
 import { addItem, canUseItem, consumeItem, countInBag, removeItem } from "../items/inventory";
+import { RECRUIT_DEFEND_BONUS, RECRUIT_MILITIA_BONUS, SOLDIER_CHILD_POWER_RELIEF } from "../jobPerks";
 import { josa, SKILL_LABEL } from "../labels";
 import {
   d,
@@ -122,11 +123,21 @@ export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, 
   return BASE_DEFENSE + run.player.stats.agi + gear + extra;
 }
 
+/** 강타 명중 벌점: 옛 병사의 자식은 덜 빗나간다 */
+function powerHitPenalty(run: RunState): number {
+  return POWER_ATTACK_HIT_PENALTY + (run.player.job === "soldier_child" ? SOLDIER_CHILD_POWER_RELIEF : 0);
+}
+
+/** 방어 자세의 방어도: 기본 + 방어 숙련, 경비대 신병은 +1 */
+function defendBonusOf(run: RunState): number {
+  return DEFEND_BONUS + run.player.skills.guard.rank + (run.player.job === "recruit" ? RECRUIT_DEFEND_BONUS : 0);
+}
+
 /** 공격 판정 명세: 근접은 근력, 활은 민첩 + 무기 숙련 vs 적 방어도. 강타는 −2. */
 export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean, weapon?: WeaponDef, offHand = false): CheckSpec {
   const w = weapon ?? equippedWeapon(run, content);
   const def = enemyDef(content, target);
-  const situational = (power ? POWER_ATTACK_HIT_PENALTY : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
+  const situational = (power ? powerHitPenalty(run) : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
   return {
     stat: isBow(w) ? "agi" : "str",
     skill: w.skill,
@@ -198,7 +209,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
 
   const fleeSpec: CheckSpec = { stat: "agi", dc: fleeDc(content, c) };
   const flee = previewCheck(fleeSpec, buildCheckContext(run, fleeSpec, content));
-  const defendBonus = DEFEND_BONUS + run.player.skills.guard.rank;
+  const defendBonus = defendBonusOf(run);
 
   const actions: CombatActionView[] = [
     {
@@ -208,7 +219,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
     },
     {
       type: "powerAttack", label: bow ? "조준 사격" : "강타", ...chanceOf(true),
-      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${POWER_ATTACK_HIT_PENALTY}`, "피로 +1"], lockedReason: null,
+      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${powerHitPenalty(run)}`, "피로 +1"], lockedReason: null,
     },
     { type: "defend", label: "방어 자세", detail: [`방어도 +${defendBonus}`], lockedReason: null },
     {
@@ -251,7 +262,8 @@ function withVillagePreparation(ctx: Ctx, setup: CombatSetup): CombatSetup {
   const scripted = setup.enemies.some((id) => ctx.content.enemies[id]?.onDefeat === "scripted");
   if (!scripted) return setup;
   const next = { ...setup };
-  const militia = Math.min(MILITIA_MAX, Math.floor(s.player.reputation / MILITIA_PER_REPUTATION));
+  // 경비대 신병은 경비대 동료를 한 명 더 데려온다
+  const militia = Math.min(MILITIA_MAX, Math.floor(s.player.reputation / MILITIA_PER_REPUTATION) + (s.player.job === "recruit" ? RECRUIT_MILITIA_BONUS : 0));
   if (militia > 0) {
     next.enemyHpModifier = (next.enemyHpModifier ?? 0) - militia * MILITIA_HP_CUT;
     ctx.feed.push({ kind: "text", text: `마을 사람 ${militia}명이 함께 버티며 약탈단 두목을 몰아붙였다. (약탈단 두목 HP −${militia * MILITIA_HP_CUT})` });
@@ -343,7 +355,7 @@ function playerAct(ctx: Ctx, c: CombatState, a: CombatAction): void {
     case "powerAttack":
       return attack(ctx, c, activeEnemies(c).find((e) => e.instanceId === a.targetId)!, a.type === "powerAttack");
     case "defend": {
-      c.defendBonus = DEFEND_BONUS + s.player.skills.guard.rank;
+      c.defendBonus = defendBonusOf(s);
       say(ctx, c, "player", `몸을 낮추고 방어 자세를 잡았다. (방어도 +${c.defendBonus})`);
       return;
     }
