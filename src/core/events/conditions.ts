@@ -58,15 +58,15 @@ export function conditionReason(c: Condition, content: Pick<ContentDB, "items" |
     case "dayRange": return c.min ? `${c.min}일차부터` : `${c.max}일차까지`;
     case "stat": return `${STAT_LABEL[c.stat]} ${c.min}레벨 필요`;
     case "skill": return `${SKILL_LABEL[c.skill]} ${c.min}레벨 필요`;
-    case "reputation": return c.min !== undefined ? `평판 ${c.min} 필요` : "평판이 너무 높다";
-    case "fame": return c.min !== undefined ? `명성 ${c.min} 필요` : "이름이 너무 알려졌다";
+    case "reputation": return c.min !== undefined ? `평판 ${c.min} 필요` : "평판이 너무 높음";
+    case "fame": return c.min !== undefined ? `명성 ${c.min} 필요` : "명성이 너무 높음";
     case "silver": return `은화 ${c.min} 필요`;
     case "food": return `식량 ${c.min} 필요`;
     case "hasItem": return `${itemName(content, c.itemId)}${c.qty && c.qty > 1 ? ` ${c.qty}개` : ""} 필요`;
     case "equipped": return `${itemName(content, c.itemId)} 장착 필요`;
     case "job": return `${JOB_LABEL[c.job]}만`;
-    case "wound": return c.max === "none" ? "다친 몸으로는 무리다" : `${WOUND_LABEL[WOUND_ORDER[WOUND_RANK[c.max] + 1] ?? c.max]} 상태로는 무리다`;
-    case "fatigue": return c.max !== undefined ? "너무 지쳤다" : "아직 기운이 남았다";
+    case "wound": return c.max === "none" ? "다친 몸으로는 불가" : `${WOUND_LABEL[WOUND_ORDER[WOUND_RANK[c.max] + 1] ?? c.max]} 상태로는 불가`;
+    case "fatigue": return c.max !== undefined ? "너무 지침" : "아직 기운이 남음";
     case "trait": return `흔적 「${content.traits[c.trait]?.name ?? c.trait}」 필요`;
     default: return null;
   }

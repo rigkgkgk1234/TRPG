@@ -71,7 +71,7 @@ export function PickPanel({ run, step, onStep }: { run: RunState; step: PickStep
     return (
       <Frame insets={insets.bottom} actions={
         [
-          <ActionButton key="go" primary label={place.confirmLabel} detail={place.lockedReason ?? undefined} disabled={!!place.lockedReason} onPress={() => choose(place.cmd)} />,
+          <ActionButton key="go" primary label={place.confirmLabel} cornerNote={place.lockedReason ?? undefined} disabled={!!place.lockedReason} onPress={() => choose(place.cmd)} />,
           <View key="back">{back}</View>,
         ]
       } />
@@ -199,7 +199,7 @@ function Frame({ insets, actions, children }: { insets: number; actions: React.R
         </ScrollView>
       ) : null}
       <View style={styles.actions}>
-        <ButtonStack backLast>{actions}</ButtonStack>
+        <ButtonStack>{actions}</ButtonStack>
       </View>
     </View>
   );
@@ -328,7 +328,7 @@ function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) 
           large
           icon={StorefrontIcon}
           label="가게"
-          detail={trade ? "행동 소모 없음" : "지금은 갈 수 없다"}
+          detail={trade ? "행동 소모 없음" : "지금은 갈 수 없음"}
           disabled={!trade}
           onPress={() => onStep({ kind: "shops" })}
         />
@@ -339,7 +339,7 @@ function Village({ run, onStep }: { run: RunState; onStep: (s: PickStep | null) 
           large
           icon={ChatCircleDotsIcon}
           label="주민과 대화"
-          detail={talk ? "행동 1칸" : "지금은 대화할 수 없다"}
+          detail={talk ? "행동 1칸" : "지금은 대화할 수 없음"}
           onPress={() => onStep({ kind: "talk" })}
         />
       </GridCell>
@@ -402,9 +402,9 @@ function regionInfo(run: RunState, region: RegionId): PlaceView {
   return {
     icon: REGION_ICON[region],
     title: REGION_LABEL[region],
-    subtitle: `위험 등급 ${tier}/3, 더 깊이 들어가면 ${Math.min(3, tier + 1)}`,
+    subtitle: `위험 등급 ${tier}/3, 깊은 곳 ${Math.min(3, tier + 1)}`,
     body: info?.summary ?? "",
-    facts: [`카드 ${EXPLORE_CARDS}장, 원하면 1장 더`, `피로 +${explore.fatigue}~${explore.fatigue + DEEP_FATIGUE}`, `지금 나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`],
+    facts: [`카드 ${EXPLORE_CARDS}~${EXPLORE_CARDS + 1}장`, `피로 +${explore.fatigue}~${explore.fatigue + DEEP_FATIGUE}`, `나올 수 있는 일 ${possibleEvents(run, CONTENT, "explore", region).length}가지`],
     sections: info ? [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }] : [],
     confirmLabel: `${josa(REGION_LABEL[region], "으로/로")} 간다`,
     lockedReason: status.available ? null : status.reason,
@@ -425,7 +425,7 @@ function visitInfo(run: RunState, id: VisitId): PlaceView {
       title: NPC_LABEL[id],
       subtitle: info.role,
       body: info.summary,
-      facts: ["행동 1칸", "피로 없음", talks > 0 ? `오늘 나눌 이야기 ${talks}가지` : "오늘은 바빠 보인다"],
+      facts: ["행동 1칸", "피로 없음", talks > 0 ? `이야기 ${talks}가지` : "오늘은 바쁨"],
       sections: [{ title: "이야기하면", items: info.gains }],
       confirmLabel: "대화한다",
       lockedReason,
@@ -438,7 +438,7 @@ function visitInfo(run: RunState, id: VisitId): PlaceView {
     title: PLACE_LABEL[id],
     subtitle: info.subtitle,
     body: info.summary,
-    facts: ["행동 1칸", "겨루면 피로 +2", `내 명성 ${run.player.fame}`],
+    facts: ["행동 1칸", "피로 +2", `내 명성 ${run.player.fame}`],
     sections: [{ title: "얻을 수 있는 것", items: info.gains }, { title: "조심할 것", items: info.risks }],
     confirmLabel: "들어간다",
     lockedReason,

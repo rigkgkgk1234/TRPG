@@ -52,7 +52,7 @@
         },
         {
           "id": "silver",
-          "label": "은화 3닢을 쥐여 준다",
+          "label": "은화 3개를 쥐여 준다",
           "conditions": [
             {
               "type": "silver",

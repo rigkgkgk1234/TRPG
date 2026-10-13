@@ -50,7 +50,7 @@ export function ShopControls({ groups, group, onGroup, sort, onSort, sortKeys = 
  * 수량 고르기: [−] n [+] [최대] / 합계와 확인 버튼. 줄 아래에 펼친다.
  * max가 줄어들면 n도 따라 줄인다. 확인하면 1로 돌아간다.
  */
-export function QtyPicker({ max, total, verb, unit = "개", slider, onConfirm }: {
+export function QtyPicker({ max, total, verb, unit = "개", slider, maxConfirm, maxCost, onConfirm }: {
   max: number;
   /** n개의 합계 표시 ("은화 6") */
   total: (n: number) => string;
@@ -59,6 +59,10 @@ export function QtyPicker({ max, total, verb, unit = "개", slider, onConfirm }:
   unit?: string;
   /** 버튼 아래에 끌어서 고르는 막대를 둔다 (HP 회복처럼 고를 폭이 넓을 때) */
   slider?: boolean;
+  /** 위 줄의 "최대" 대신 확인 버튼 오른쪽에 바로 최대로 거래하는 버튼을 둔다 ("최대 회복") */
+  maxConfirm?: string;
+  /** 최대로 거래할 때 드는 값 ("20"): 최대 버튼 안 오른쪽에 적는다 */
+  maxCost?: string;
   onConfirm: (n: number) => void;
 }) {
   const [picked, setPicked] = useState(1);
@@ -70,7 +74,7 @@ export function QtyPicker({ max, total, verb, unit = "개", slider, onConfirm }:
         <StepButton text="−" label="하나 줄이기" disabled={none || n <= 1} onPress={() => setPicked(n - 1)} />
         <Text style={styles.qtyValue}>{none ? 0 : n}{unit}</Text>
         <StepButton text="+" label="하나 늘리기" disabled={none || n >= max} onPress={() => setPicked(n + 1)} />
-        <Pressable
+        {maxConfirm ? null : <Pressable
           onPress={() => setPicked(max)}
           disabled={none || n >= max}
           accessibilityRole="button"
@@ -79,7 +83,7 @@ export function QtyPicker({ max, total, verb, unit = "개", slider, onConfirm }:
           style={({ pressed }) => [styles.small, (none || n >= max) && styles.disabled, pressed && styles.pressed]}
         >
           <Text style={styles.smallText}>최대 {Math.max(0, max)}</Text>
-        </Pressable>
+        </Pressable>}
       </View>
       {slider && max > 1 ? <QtySlider value={n} max={max} onChange={setPicked} /> : null}
       <View style={styles.qtyRow}>
@@ -89,10 +93,23 @@ export function QtyPicker({ max, total, verb, unit = "개", slider, onConfirm }:
           disabled={none}
           accessibilityRole="button"
           accessibilityLabel={`${verb} ${n}${unit}`}
-          style={({ pressed }) => [styles.confirm, none && styles.disabled, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.confirm, maxConfirm && styles.small, maxConfirm && styles.plainBox, none && styles.disabled, pressed && styles.pressed]}
         >
-          <Text style={styles.confirmText}>{verb} {none ? 0 : n}{unit}</Text>
+          <Text style={[styles.confirmText, maxConfirm && styles.confirmPlain]}>{verb} {none ? 0 : n}{unit}</Text>
         </Pressable>
+        {maxConfirm ? (
+          <Pressable
+            onPress={() => { onConfirm(max); setPicked(1); }}
+            disabled={none}
+            accessibilityRole="button"
+            accessibilityLabel={`${maxConfirm} ${max}${unit}`}
+            hitSlop={4}
+            style={({ pressed }) => [styles.small, styles.smallRow, none && styles.disabled, pressed && styles.pressed]}
+          >
+            <Text style={[styles.smallText, styles.confirmPlain]}>{maxConfirm}</Text>
+            {maxCost && !none ? <Text style={styles.smallCost}>{maxCost}</Text> : null}
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -177,6 +194,11 @@ const styles = StyleSheet.create({
   total: { ...type.body, color: colors.textDim, flex: 1 },
   totalValue: { ...type.bodyStrong, color: colors.text, fontVariant: ["tabular-nums"] },
   confirm: { minHeight: 40, paddingHorizontal: space.lg, borderRadius: radius.sm, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
+  // 옆의 최대 버튼과 같은 모양 (바탕 없이 테두리만, 글씨는 밝게)
+  confirmPlain: { color: colors.text },
+  plainBox: { backgroundColor: "transparent" },
+  smallRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  smallCost: { ...type.caption, color: colors.text, fontVariant: ["tabular-nums"] },
   confirmText: { ...type.label, color: colors.accentText, fontVariant: ["tabular-nums"] },
   sliderRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   sliderEnd: { ...type.caption, color: colors.textFaint, fontVariant: ["tabular-nums"], minWidth: 16, textAlign: "center" },

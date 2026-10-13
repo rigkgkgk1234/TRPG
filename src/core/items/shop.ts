@@ -100,7 +100,7 @@ export function repairPrice(run: RunState, content: Pick<ContentDB, "items">, st
   if (!def || !("durabilityMax" in def) || stack.durability === undefined) return 0;
   const missing = def.durabilityMax - stack.durability;
   if (missing <= 0) return 0;
-  // 0.2 × 15 = 3.0000000000000004 같은 부동소수 오차로 한 닢 더 받지 않게
+  // 0.2 × 15 = 3.0000000000000004 같은 부동소수 오차로 은화 1 더 받지 않게
   const base = Math.ceil(missing * REPAIR_SILVER_PER_DURABILITY - 1e-9);
   return run.player.job === "smith" ? Math.ceil(base * SMITH_REPAIR_RATE) : base;
 }

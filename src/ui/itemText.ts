@@ -32,7 +32,7 @@ export function itemSummary(def: ItemDef): string[] {
       return lines;
     }
     case "material": return ["팔 수 있는 물건"];
-    case "quest": return ["팔거나 버릴 수 없다"];
+    case "quest": return ["팔기, 버리기 불가"];
   }
 }
 

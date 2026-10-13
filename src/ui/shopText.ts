@@ -71,7 +71,7 @@ export function modeDetail(run: RunState, shop: ShopId, mode: ShopMode): string 
       if (w === "critical") return "응급 처치 필요";
       if (treatable(run)) return "중상 치료 가능";
       const max = maxHp(run.player.stats);
-      return run.player.hp < max ? `HP ${run.player.hp}/${max}` : "아픈 데가 없다";
+      return run.player.hp < max ? `HP ${run.player.hp}/${max}` : "아픈 데 없음";
     }
     case "goods":
       return `약 ${SHOPS.healer.stock.length}가지`;

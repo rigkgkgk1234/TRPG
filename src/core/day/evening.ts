@@ -168,7 +168,7 @@ function payTax(ctx: Ctx): void {
   changeSilver(ctx, -r.silver);
   changeDebt(ctx, shortfall + DEBT_INTEREST);
   changeReputation(ctx, TAX_REPUTATION_PENALTY);
-  ctx.feed.push({ kind: "text", text: `세금이 모자랐다. 모자란 은화 ${shortfall}닢에 이자 ${DEBT_INTEREST}닢을 더해 빚으로 남았다.` });
+  ctx.feed.push({ kind: "text", text: `세금이 모자랐다. 모자란 은화 ${shortfall}개에 이자 ${DEBT_INTEREST}개를 더해 빚으로 남았다.` });
 }
 
 /** 흔적을 얻고, 능력치 변화가 있으면 한 번 적용한다. */

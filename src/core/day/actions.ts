@@ -56,13 +56,13 @@ export function actionStatus(
   { skill, stat, region, npc }: ActionTarget = {},
 ): ActionStatus {
   const def = DAILY_ACTIONS.find((a) => a.id === id);
-  if (!def || !def.mvp) return locked("아직 갈 수 없다");
+  if (!def || !def.mvp) return locked("아직 갈 수 없음");
   if (!IMPLEMENTED.has(id)) return locked("준비 중");
-  if (run.ending || run.activeEvent || run.combat) return locked("지금은 할 수 없다");
-  if (run.time.phase !== "am" && run.time.phase !== "pm") return locked("오늘은 이미 저물었다");
+  if (run.ending || run.activeEvent || run.combat) return locked("지금은 할 수 없음");
+  if (run.time.phase !== "am" && run.time.phase !== "pm") return locked("오늘 일과 끝");
 
   for (const c of def.conditions) {
-    if (!evalCondition(c, run)) return locked(conditionReason(c, content) ?? "지금은 할 수 없다");
+    if (!evalCondition(c, run)) return locked(conditionReason(c, content) ?? "지금은 할 수 없음");
   }
 
   if (id === "explore") {
@@ -83,16 +83,16 @@ export function actionStatus(
   if (id === "trainSolo") {
     if (!stat) return locked("할 운동을 고른다");
     if (!isExerciseStat(stat)) return locked("그런 운동은 없다");
-    if (run.player.stats[stat] >= STAT_NATURAL_CAP) return locked(`${josa(STAT_LABEL[stat], "은/는")} 더 단련해도 늘지 않는다`);
-    if (run.player.statUses[stat] >= STAT_GROWTH_USES) return locked("오늘 저녁에 1레벨 오른다");
+    if (run.player.stats[stat] >= STAT_NATURAL_CAP) return locked(`${STAT_LABEL[stat]} 단련 한계`);
+    if (run.player.statUses[stat] >= STAT_GROWTH_USES) return locked("오늘 저녁 1레벨 상승");
   }
 
   if (id === "trainLesson") {
     if (!skill) return locked("훈련할 숙련을 고른다");
     if (!Object.hasOwn(run.player.skills, skill)) return locked("그런 기술은 없다");
-    if (!LESSON_SKILLS.includes(skill)) return locked("레나는 그건 가르치지 않는다");
-    if (run.player.skills[skill].rank >= SKILL_MAX_RANK) return locked("더 배울 것이 없다");
-    if (skillXpRoomToday(run.player, skill) <= 0) return locked(`오늘은 ${josa(SKILL_LABEL[skill], "을/를")} 더 익힐 수 없다`);
+    if (!LESSON_SKILLS.includes(skill)) return locked("레나가 가르치지 않음");
+    if (run.player.skills[skill].rank >= SKILL_MAX_RANK) return locked("더 배울 것 없음");
+    if (skillXpRoomToday(run.player, skill) <= 0) return locked(`오늘은 ${SKILL_LABEL[skill]} 더 익힐 수 없음`);
   }
   return { available: true };
 }

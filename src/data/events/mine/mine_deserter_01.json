@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "trade",
-          "label": "은화 5닢에 가죽 모자를 산다",
+          "label": "은화 5개에 가죽 모자를 산다",
           "conditions": [
             {
               "type": "silver",

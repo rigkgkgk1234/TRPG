@@ -7,13 +7,13 @@ import { FOOD_PRICE, type RunState } from "@/core/types";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
 import { Chip, ChipRow } from "@/ui/components/Controls";
-import { townCells } from "@/ui/components/TownCells";
-import { BasketIcon, HandCoinsIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
+import { bagCell } from "@/ui/components/TownCells";
+import { BasketIcon, MoonStarsIcon, WarningIcon } from "@/ui/icons";
 import { colors, hairline, icon, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
 /** 저녁 패널: 정산을 미리 알려 주고, 모자란 식량을 사거나 먹일 순서를 정한 뒤 잠자리에 든다. */
-export function EveningPanel({ run, onVillage }: { run: RunState; onVillage: () => void }) {
+export function EveningPanel({ run }: { run: RunState }) {
   const insets = useSafeAreaInsets();
   const send = useGame((s) => s.send);
   const [order, setOrder] = useState<FeedOrder>("selfFirst");
@@ -28,8 +28,8 @@ export function EveningPanel({ run, onVillage }: { run: RunState; onVillage: () 
   if (p.foodShort) notes.push({ text: `식량이 ${shortBy} 모자라 누군가는 굶는다.`, tone: "warn" });
   if (p.taxDue) {
     notes.push(p.taxShort
-      ? { text: `오늘은 납세일인데 세금(은화 ${p.taxDue}닢)을 낼 은화가 모자라다. 모자란 만큼 빚이 생기고 평판이 떨어진다.`, tone: "bad" }
-      : { text: `오늘은 납세일이다. 잠들기 전에 세금으로 은화 ${p.taxDue}닢을 낸다.`, tone: "info" });
+      ? { text: `세금(은화 ${p.taxDue}개)을 낼 은화가 모자라다.\n모자란 만큼 빚이 생기고 평판이 떨어진다.`, tone: "bad" }
+      : { text: `오늘은 납세일이다. 잠들기 전에 세금(은화 ${p.taxDue}개)을 낸다.`, tone: "info" });
   }
   if (p.debtEnding) notes.push({ text: "빚이 너무 많다. 이대로 납세일을 맞으면 끝이다.", tone: "bad" });
   if (p.lastDay) notes.push({ text: "서른 번째 밤이다.", tone: "info" });
@@ -73,19 +73,9 @@ export function EveningPanel({ run, onVillage }: { run: RunState; onVillage: () 
       )}
 
       <ButtonGrid>
-        {run.resources.debt > 0 && silver > 0 && (
-          <GridCell>
-            <ActionButton
-              icon={HandCoinsIcon}
-              label="빚 갚기"
-              detail={[`가진 만큼 (최대 ${Math.min(silver, run.resources.debt)})`, `남은 빚 ${run.resources.debt}`]}
-              onPress={() => send({ type: "shop", op: "payDebt", qty: run.resources.debt })}
-            />
-          </GridCell>
-        )}
-        {townCells(run, onVillage)}
+        {bagCell(run)}
         <GridCell>
-          <ActionButton primary icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
+          <ActionButton fill large icon={MoonStarsIcon} label="잠자리에 든다" onPress={() => send({ type: "endDay", order })} />
         </GridCell>
       </ButtonGrid>
     </View>

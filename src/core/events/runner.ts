@@ -87,7 +87,7 @@ function choiceView(run: RunState, content: ContentDB, ev: EventDef, c: ChoiceDe
 /** 고를 수 없는 이유. 조건 → 비용 순으로 처음 걸리는 것 하나. */
 function choiceBlock(run: RunState, content: ContentDB, c: ChoiceDef): string | null {
   for (const cond of c.conditions ?? []) {
-    if (!evalCondition(cond, run)) return c.lockedReason ?? conditionReason(cond, content) ?? "지금은 할 수 없다";
+    if (!evalCondition(cond, run)) return c.lockedReason ?? conditionReason(cond, content) ?? "지금은 할 수 없음";
   }
   const cost = c.cost;
   if (cost?.silver && run.resources.silver < cost.silver) return `은화 ${cost.silver} 필요`;

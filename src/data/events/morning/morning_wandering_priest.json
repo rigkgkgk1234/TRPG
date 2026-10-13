@@ -20,7 +20,7 @@
       "choices": [
         {
           "id": "offer",
-          "label": "은화 한 닢을 바친다",
+          "label": "은화 1개를 바친다",
           "cost": {
             "silver": 1
           },

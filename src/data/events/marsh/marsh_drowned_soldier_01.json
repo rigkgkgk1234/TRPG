@@ -20,7 +20,7 @@
           "id": "search",
           "label": "칼과 주머니를 챙긴다",
           "outcome": {
-            "text": "녹슨 검과 은화 몇 닢을 건졌다.",
+            "text": "녹슨 검과 은화 몇 개를 건졌다.",
             "effects": [
               {
                 "type": "addItem",

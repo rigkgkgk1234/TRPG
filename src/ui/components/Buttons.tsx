@@ -35,11 +35,13 @@ interface ActionButtonProps {
   warn?: boolean;
   /** 눌렀을 때의 밝은 바탕을 늘 깔아 둔다 (고르기 패널의 "뒤로") */
   raised?: boolean;
+  /** 오른쪽 아래 구석의 작은 글씨 (들어가는 조건) */
+  cornerNote?: string;
   onPress: () => void;
 }
 
 /** 허브·저녁 화면의 큰 버튼. 잠긴 버튼도 사유는 읽을 수 있게 흐리게만 한다. 누르면 살짝 눌린다. */
-export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, warn, raised, tight, compact, onPress }: ActionButtonProps) {
+export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, badgeBelow, fill, center, large, detail, disabled, selected, primary, warn, raised, cornerNote, tight, compact, onPress }: ActionButtonProps) {
   const filled = primary || warn;
   const fg = primary ? colors.accentText : warn ? colors.partialText : colors.text;
   return (
@@ -60,7 +62,7 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
         warn && styles.warn,
         raised && styles.raised,
         selected && styles.selected,
-        disabled && styles.disabled,
+        disabled && (filled ? styles.disabledFilled : styles.disabled),
         pressed && styles.pressed,
       ]}
     >
@@ -82,6 +84,7 @@ export function ActionButton({ label, icon: IconC, iconColor, badge, badgeNote, 
         {/* 넓은 버튼의 확률은 오른쪽에, 이름·설명 줄 전체의 세로 가운데에 */}
         {badge && !badgeBelow ? <WithNote main={badge} note={badgeNote} style={styles.badgeSide} noteStyle={styles.badgeSideNote} /> : null}
       </View>
+      {cornerNote ? <Text style={[styles.cornerNote, filled && { color: fg }]} numberOfLines={1}>{cornerNote}</Text> : null}
     </Pressable>
   );
 }
@@ -104,24 +107,16 @@ export function ButtonGrid({ children }: { children: ReactNode }) {
 
 /** "+" 눈금 팔 길이: 선은 격자 안쪽의 교차점에만 "+"로 긋고, 나머지 경계와 가장자리는 비워 둔다 */
 const LINE_TICK = 11;
+/** 선에서 이만큼은 버튼 바탕(누름·고름·뒤로)이 들어오지 않게 칸 안쪽을 비운다 */
+const LINE_CLEAR = 5;
 
 /**
  * 칸 위쪽 경계의 "+" 눈금. 교차점은 늘 격자 가운데 세로줄 위에 있다.
  * - 왼쪽 칸(left 없음): 위 경계의 오른쪽 끝에 가로 팔
  * - 오른쪽 칸(left): 위 경계의 왼쪽 끝에 가로 팔 + 세로 팔(위아래)
- * - 두 칸 폭(split): 위 경계 가운데에 가로 팔 둘 + 세로 팔(위아래). 세 갈래로 만나는 곳도 "+"가 된다
  */
-function Lines({ top, left, split }: { top?: boolean; left?: boolean; split?: boolean }) {
+function Lines({ top, left }: { top?: boolean; left?: boolean }) {
   if (!top) return null;
-  if (split) {
-    return (
-      <>
-        <View pointerEvents="none" style={[styles.tickH, { right: "50%" }]} />
-        <View pointerEvents="none" style={[styles.tickH, { left: "50%" }]} />
-        <View pointerEvents="none" style={[styles.tickCross, { left: "50%" }]} />
-      </>
-    );
-  }
   return left ? (
     <>
       <View pointerEvents="none" style={[styles.tickH, { left: 0 }]} />
@@ -142,15 +137,19 @@ export function GridCell({ minHeight, lineTop, lineLeft, children }: CellProps) 
   );
 }
 
-/** 버튼을 위아래로 쌓는다: 맞닿는 경계 가운데에 "+". backLast면 마지막("뒤로") 위에는 선을 긋지 않는다 */
-export function ButtonStack({ children, backLast }: { children: ReactNode; backLast?: boolean }) {
+/**
+ * 버튼을 위아래로 쌓는다. 한 줄을 다 쓰는 긴 버튼이라 "+"는 긋지 않는다.
+ * divided: 버튼 사이에 가로선을 긋는다 (이벤트 선택지). 고르기 패널의 "뒤로" 위에는 긋지 않는다.
+ */
+export function ButtonStack({ children, divided }: { children: ReactNode; divided?: boolean }) {
   const items = Children.toArray(children).filter(Boolean);
   return (
     <View>
       {items.map((child, i) => (
-        <View key={i}>
+        <View key={i} style={styles.stackItem}>
           {child}
-          <Lines top={i > 0 && !(backLast && i === items.length - 1)} split />
+          {/* 선은 눌린 버튼의 폭만큼만: 양쪽 LINE_CLEAR 안쪽을 눌림 비율(motion.press)로 한 번 더 줄인다 */}
+          {divided && i > 0 ? <View pointerEvents="none" style={styles.divider} /> : null}
         </View>
       ))}
     </View>
@@ -176,6 +175,8 @@ const styles = StyleSheet.create({
   tight: { paddingVertical: space.sm },
   compact: { minHeight: TOUCH_MIN },
   disabled: { opacity: 0.38 },
+  // 칠한 버튼(들어간다 등)은 잠겨도 안의 글씨(조건)를 읽을 수 있게 덜 흐린다
+  disabledFilled: { opacity: 0.6 },
   pressed: { transform: [{ scale: motion.press }], backgroundColor: colors.surfaceRaised },
   labelRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   center: { justifyContent: "center" },
@@ -190,8 +191,11 @@ const styles = StyleSheet.create({
   badgeNote: { fontSize: 11 },
   detailRow: { flexDirection: "row", flexWrap: "wrap", columnGap: space.sm },
   detail: { ...type.caption, color: colors.textDim },
+  cornerNote: { ...type.caption, fontSize: 12, lineHeight: 16, color: colors.textDim, position: "absolute", right: space.md, bottom: space.xs },
   grid: { flexDirection: "row", flexWrap: "wrap" },
-  cell: { width: "50%", flexDirection: "column" },
+  cell: { width: "50%", flexDirection: "column", padding: LINE_CLEAR },
+  stackItem: { padding: LINE_CLEAR },
+  divider: { position: "absolute", top: 0, left: LINE_CLEAR, right: LINE_CLEAR, height: hairline, backgroundColor: colors.borderStrong, transform: [{ scaleX: motion.press }] },
   // 교차점의 가로 팔
   tickH: { position: "absolute", top: 0, width: LINE_TICK, height: hairline, backgroundColor: colors.borderStrong },
   // 교차점의 세로 팔: 위 경계를 사이에 두고 위아래로 LINE_TICK씩

@@ -175,7 +175,7 @@ function Care({ run }: { run: RunState }) {
           <ItemRow
             title="HP 회복"
             price={`HP 1당 은화 ${healPrice(run, 1)}`}
-            meta={[`지금 HP ${run.player.hp}/${max}`, "약을 달여 먹이고 상처를 씻어 준다"]}
+            meta={[`지금 HP ${run.player.hp}/${max}`, "약, 상처 손질"]}
             actions={[]}
             below={
               <QtyPicker
@@ -183,6 +183,8 @@ function Care({ run }: { run: RunState }) {
                 max={maxHealable(run)}
                 unit=""
                 slider
+                maxConfirm="최대 회복"
+                maxCost={String(healPrice(run, maxHealable(run)))}
                 verb="회복"
                 total={(n) => `은화 ${healPrice(run, n)} → HP ${run.player.hp + n}`}
                 onConfirm={(n) => send({ type: "shop", op: "heal", qty: n })}
@@ -201,7 +203,7 @@ function Care({ run }: { run: RunState }) {
         <ItemRow
           title="중상 치료"
           price={`은화 ${treatPrice}`}
-          meta={["상처를 꿰매 준다", "사흘 뒤 경상으로"]}
+          meta={["상처 봉합", "사흘 뒤 경상으로"]}
           actions={[{ label: "치료받기", disabled: run.resources.silver < treatPrice, onPress: () => send({ type: "shop", op: "treat" }) }]}
         />
       ) : (
@@ -266,13 +268,33 @@ function InnBuy({ run }: { run: RunState }) {
   const send = useGame((s) => s.send);
   const c = useListControls();
   const { open, toggle } = useOpenRow();
-  const { silver, food } = run.resources;
+  const { silver, food, debt } = run.resources;
   const foodMax = Math.floor(silver / FOOD_PRICE);
   const rows = sortRows(stockRows(run, "inn"), c.sort);
   return (
     <Section title="토비의 여관">
       <ShopControls sort={c.sort} onSort={c.setSort} />
       <View>
+        {/* 빚이 있을 때만: 가진 은화로 갚을 만큼 골라 갚는다 */}
+        {debt > 0 ? (
+          <ItemRow
+            title="빚 갚기"
+            price={`남은 빚 ${debt}`}
+            meta={[`가진 은화 ${silver}`, "납세일 전에 갚기"]}
+            actions={[{ label: "갚기", selected: open === "debt", disabled: silver < 1 && open !== "debt", onPress: () => toggle("debt") }]}
+            below={open === "debt" ? (
+              <QtyPicker
+                key={debt}
+                max={Math.min(silver, debt)}
+                unit=""
+                slider
+                verb="갚기"
+                total={(n) => `은화 ${n} → 남은 빚 ${debt - n}`}
+                onConfirm={(n) => send({ type: "shop", op: "payDebt", qty: n })}
+              />
+            ) : null}
+          />
+        ) : null}
         <ItemRow
           title="식량"
           price={`은화 ${FOOD_PRICE}`}

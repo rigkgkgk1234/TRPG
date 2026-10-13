@@ -138,7 +138,7 @@ describe("훈련·휴식", () => {
     const ctx = withDice(edit(start("hunter"), (s) => { s.player.statUses.con = 13; }), d20Sequence(20));
     handleAction(ctx, "trainSolo", { stat: "con" });
     expect(ctx.draft.player.statUses.con).toBe(15);
-    expect(actionStatus(ctx.draft, CONTENT, "trainSolo", { stat: "con" })).toEqual({ available: false, reason: "오늘 저녁에 1레벨 오른다" });
+    expect(actionStatus(ctx.draft, CONTENT, "trainSolo", { stat: "con" })).toEqual({ available: false, reason: "오늘 저녁 1레벨 상승" });
     const capped = edit(start("hunter"), (s) => { s.player.stats.per = 4; });
     expect(actionStatus(capped, CONTENT, "trainSolo", { stat: "per" }).available).toBe(false);
     expect(actionStatus(start(), CONTENT, "trainSolo", { stat: "cha" })).toEqual({ available: false, reason: "그런 운동은 없다" });

@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "buy",
-          "label": "은화 2닢에 고기를 산다",
+          "label": "은화 2개에 고기를 산다",
           "conditions": [
             {
               "type": "silver",

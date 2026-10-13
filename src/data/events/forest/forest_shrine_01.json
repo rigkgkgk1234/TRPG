@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "offer",
-          "label": "은화 한 닢을 얹고 잠시 쉰다",
+          "label": "은화 1개를 얹고 잠시 쉰다",
           "cost": {
             "silver": 1
           },

@@ -21,7 +21,7 @@
       "choices": [
         {
           "id": "buy",
-          "label": "은화 열 닢에 산다",
+          "label": "은화 10개에 산다",
           "cost": {
             "silver": 10
           },

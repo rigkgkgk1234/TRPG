@@ -24,7 +24,7 @@
               "max": "light"
             }
           ],
-          "lockedReason": "큰 상처는 제대로 치료를 받아야 한다",
+          "lockedReason": "큰 상처는 약초방 치료 필요",
           "cost": {
             "silver": 2
           },

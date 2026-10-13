@@ -18,7 +18,7 @@
           "label": "큰길까지 데려다준다",
           "check": { "stat": "per", "skill": "tracking", "dc": 10 },
           "outcomes": {
-            "success": { "text": "큰길에 닿자 행상이 은화 두 닢을 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }], "next": "END" },
+            "success": { "text": "큰길에 닿자 행상이 은화 2개를 쥐여 주었다.", "effects": [{ "type": "silver", "delta": 2 }], "next": "END" },
             "fail": { "text": "둘이서 한참을 헤맸다. 결국 행상이 먼저 길을 찾았다.", "effects": [{ "type": "fatigue", "delta": 1 }], "next": "END" }
           }
         },

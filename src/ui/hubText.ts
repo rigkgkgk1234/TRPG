@@ -38,11 +38,11 @@ export function pickingStatus(run: RunState, kind: Picking): ActionStatus {
     const statuses = EXERCISE_STATS.map((stat) => actionStatus(run, CONTENT, "trainSolo", { stat }));
     // 모두 같은 사유(부상 등)면 그 사유를, 운동마다 다르면(상한·성장 대기) 한데 묶어 말한다
     const reasons = new Set(statuses.map((s) => (s.available ? "" : s.reason)));
-    return statuses.find((s) => s.available) ?? (reasons.size === 1 ? statuses[0] : { available: false, reason: "지금은 더 단련할 게 없다" });
+    return statuses.find((s) => s.available) ?? (reasons.size === 1 ? statuses[0] : { available: false, reason: "더 단련할 것 없음" });
   }
   if (LESSON_SKILLS.some((skill) => actionStatus(run, CONTENT, kind, { skill }).available)) return { available: true };
   const withRoom = LESSON_SKILLS.find((s) => skillXpRoomToday(run.player, s) > 0);
-  return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없다" };
+  return withRoom ? actionStatus(run, CONTENT, kind, { skill: withRoom }) : { available: false, reason: "오늘은 더 익힐 수 없음" };
 }
 
 /** 버튼 배지: "60%" 뒤에 작게 "(D20 / 9↑)" */

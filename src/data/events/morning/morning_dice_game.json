@@ -41,7 +41,7 @@
               "next": "END"
             },
             "fail": {
-              "text": "은화 두 닢이 순식간에 사라졌다.",
+              "text": "은화 2개가 순식간에 사라졌다.",
               "next": "END"
             },
             "critFail": {

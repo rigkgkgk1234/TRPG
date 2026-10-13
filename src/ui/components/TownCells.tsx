@@ -9,22 +9,29 @@ import { pushOnce } from "@/ui/navigate";
  * 대화할 주민·결투장·의뢰 중개소(행동 1칸)를 고른다. 다른 버튼과 같은 ButtonGrid 안에 넣어 경계선을 잇는다.
  */
 export function townCells(run: RunState, onVillage: () => void) {
-  const used = run.inventory.slots.filter(Boolean).length;
   const trade = canTrade(run);
   return [
-    <GridCell key="bag">
-      <ActionButton fill icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => pushOnce("/game/inventory")} />
-    </GridCell>,
+    bagCell(run),
     <GridCell key="village">
       <ActionButton
         fill
         icon={StorefrontIcon}
         label="마을"
         large
-        detail={trade ? undefined : "지금은 갈 수 없다"}
+        detail={trade ? undefined : "지금은 갈 수 없음"}
         disabled={!trade}
         onPress={onVillage}
       />
     </GridCell>,
   ];
+}
+
+/** 가방 칸 하나 (저녁에는 가방과 잠자리만 둔다) */
+export function bagCell(run: RunState) {
+  const used = run.inventory.slots.filter(Boolean).length;
+  return (
+    <GridCell key="bag">
+      <ActionButton fill icon={BackpackIcon} label="가방" detail={[`${used}/${INVENTORY_CAPACITY}칸`]} onPress={() => pushOnce("/game/inventory")} />
+    </GridCell>
+  );
 }

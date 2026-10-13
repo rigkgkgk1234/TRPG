@@ -109,7 +109,7 @@ function Panel({ view, run, onPick }: { view: GameView; run: RunState; onPick: (
     case "ending": return <EndingPanel run={run} />;
     case "combat": return <CombatPanel run={run} />;
     case "event": return <EventPanel run={run} />;
-    case "evening": return <EveningPanel run={run} onVillage={() => onPick({ kind: "village" })} />;
+    case "evening": return <EveningPanel run={run} />;
     case "hub": return <HubPanel run={run} onPick={onPick} />;
   }
 }

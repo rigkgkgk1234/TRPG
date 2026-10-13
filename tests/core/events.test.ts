@@ -53,7 +53,7 @@ const CHOICE_EVENT: EventDef = {
   repeat: { mode: "always" }, startScene: "start",
   scenes: {
     start: {
-      text: "{name:은/는} 보리울의 {job}이다. 가진 은화는 {silver}닢.",
+      text: "{name:은/는} 보리울의 {job}이다. 가진 은화는 {silver}개.",
       choices: [
         {
           id: "climb", label: "절벽을 기어오른다", cost: { silver: 2 },
@@ -112,7 +112,7 @@ describe("조건", () => {
     expect(conditionReason({ type: "skill", skill: "tracking", min: 2 }, CONTENT)).toBe("추적 2레벨 필요");
     expect(conditionReason({ type: "equipped", itemId: "hunting_bow" }, CONTENT)).toBe("사냥용 활 장착 필요");
     expect(conditionReason({ type: "hasItem", itemId: "herb", qty: 2 }, CONTENT)).toBe("약초 2개 필요");
-    expect(conditionReason({ type: "wound", max: "light" }, CONTENT)).toBe("중상 상태로는 무리다");
+    expect(conditionReason({ type: "wound", max: "light" }, CONTENT)).toBe("중상 상태로는 불가");
     expect(conditionReason({ type: "flag", flag: "x" }, CONTENT)).toBeNull();
   });
 });
@@ -128,7 +128,7 @@ describe("문장", () => {
 
   it("변형 조건과 {name}·{job}·{silver} 치환", () => {
     const run = start("hunter");
-    expect(resolveText("{name}({job})의 은화 {silver}닢", run)).toBe("하람(사냥꾼)의 은화 5닢");
+    expect(resolveText("{name}({job})의 은화 {silver}개", run)).toBe("하람(사냥꾼)의 은화 5개");
     expect(resolveText("{name:이/가} 어릴 때부터 {job:으로/로} 살아왔다.", run)).toBe("하람이 어릴 때부터 사냥꾼으로 살아왔다.");
     const block = { variants: [{ when: [{ type: "job" as const, job: "hunter" as const }], text: "사냥꾼용" }], fallback: "기본" };
     expect(resolveText(block, run)).toBe("사냥꾼용");
@@ -199,7 +199,7 @@ describe("선택지", () => {
     const view = sceneView(inEvent(start("farmer"), "test_choice"), content);
     expect(view?.kind).toBe("choices");
     if (view?.kind !== "choices") return;
-    expect(view.text).toBe("하람은 보리울의 농부이다. 가진 은화는 10닢.");
+    expect(view.text).toBe("하람은 보리울의 농부이다. 가진 은화는 10개.");
     expect(view.choices.map((c) => c.id)).toEqual(["climb", "bow", "risky"]);
     const [climb, bow, risky] = view.choices;
     expect(climb).toMatchObject({ lockedReason: null, cost: ["은화 -2"], danger: false });
@@ -305,7 +305,7 @@ describe("탐험 흐름", () => {
     expect(actionStatus(start(), content, "explore", { region: "forest" })).toEqual({ available: true });
     expect(actionStatus(start(), content, "explore", { region: "watchtower" })).toEqual({ available: false, reason: "준비 중" });
     expect(actionStatus(edit(start(), (s) => { s.player.wound.level = "serious"; }), content, "explore", { region: "forest" }))
-      .toEqual({ available: false, reason: "중상 상태로는 무리다" });
+      .toEqual({ available: false, reason: "중상 상태로는 불가" });
   });
 
   it("카드 2장 → 더 깊이? → 1장 더(피로 +1) → 마을로, 슬롯은 끝날 때 쓴다", () => {

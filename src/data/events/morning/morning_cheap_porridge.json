@@ -16,7 +16,7 @@
       "choices": [
         {
           "id": "buy",
-          "label": "은화 한 닢어치를 산다",
+          "label": "은화 1개어치를 산다",
           "cost": {
             "silver": 1
           },

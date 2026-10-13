@@ -43,7 +43,7 @@
         },
         {
           "id": "pay",
-          "label": "은화 3닢을 내밀고 지나간다",
+          "label": "은화 3개를 내밀고 지나간다",
           "conditions": [
             {
               "type": "silver",

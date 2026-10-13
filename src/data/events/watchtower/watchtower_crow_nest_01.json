@@ -25,7 +25,7 @@
           },
           "outcomes": {
             "success": {
-              "text": "까마귀가 모아 둔 동전 몇 닢과 놋쇠 단추가 나왔다.",
+              "text": "까마귀가 모아 둔 동전 몇 개와 놋쇠 단추가 나왔다.",
               "effects": [
                 {
                   "type": "silver",

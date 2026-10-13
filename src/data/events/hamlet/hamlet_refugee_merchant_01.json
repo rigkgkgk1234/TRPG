@@ -18,7 +18,7 @@
       "choices": [
         {
           "id": "potion",
-          "label": "은화 14닢에 치유 물약을 산다",
+          "label": "은화 14개에 치유 물약을 산다",
           "conditions": [
             {
               "type": "silver",
@@ -42,7 +42,7 @@
         },
         {
           "id": "bandage",
-          "label": "은화 2닢에 붕대를 산다",
+          "label": "은화 2개에 붕대를 산다",
           "conditions": [
             {
               "type": "silver",
