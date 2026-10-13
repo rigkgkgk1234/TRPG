@@ -125,7 +125,7 @@ function JobDetail({ job, skills, items }: { job: JobDef; skills: string; items:
         <Text style={styles.metaLine}>
           <Text style={styles.metaKey}>시작  </Text>은화 {job.silver}, 식량 {job.food}, 평판 {job.reputation}
         </Text>
-        <Text style={styles.metaLine}><Text style={styles.metaKey}>장비  </Text>{items}</Text>
+        <Text style={styles.metaLine}><Text style={styles.metaKey}>소지품  </Text>{items}</Text>
         <Text style={styles.metaLine}><Text style={styles.metaKey}>일하기  </Text>{job.work.label}, 목표 {job.work.check.dc}</Text>
       </View>
     </>

@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { Ctx } from "@/core/commands";
 import { buildCheckContext } from "@/core/check/modifiers";
+import { gainSkillXp } from "@/core/check/progress";
 import { attackSpec, combatStep, startCombat } from "@/core/combat/combat";
 import { handleAction } from "@/core/day/actions";
 import { runEvening } from "@/core/day/evening";
 import { changeReputation } from "@/core/day/resources";
 import { consumeItem } from "@/core/items/inventory";
-import { entryPrice, sellPrice, SHOPS } from "@/core/items/shop";
+import { entryPrice, healPrice, sellPrice, SHOPS } from "@/core/items/shop";
+import { skillXpToNext } from "@/core/jobPerks";
 import { newRun } from "@/core/newRun";
 import { validateRun } from "@/core/save/validate";
 import type { JobId, Rng, RunState } from "@/core/types";
@@ -60,10 +62,21 @@ describe("직업 열 가지", () => {
     expect(ctx.feed.some((f) => f.kind === "text" && f.text.includes("방어도 +5"))).toBe(true);
   });
 
-  it("옛 병사의 자식은 강타 명중 불리 보정이 −1", () => {
+  it("옛 병사의 자식은 숙련이 50% 빨리 오른다 (필요 XP 3 → 2)", () => {
+    const grow = (job: JobId) => {
+      const ctx = ctxOf(start(job));
+      gainSkillXp(ctx, "blade", 2);
+      return ctx.draft.player.skills.blade.rank;
+    };
+    expect(start("soldier_child").player.skills.blade.rank).toBe(0);
+    expect(grow("soldier_child")).toBe(1);
+    expect(grow("farmer")).toBe(0);
+    expect([0, 1, 2, 3, 4].map((r) => skillXpToNext("soldier_child", r))).toEqual([2, 4, 7, 10, 14]);
+  });
+
+  it("강타 명중 불리 보정은 모든 직업이 −2", () => {
     const enemy = { instanceId: "wolf_1", defId: "wolf", hp: 10, maxHp: 10 } as never;
-    expect(attackSpec(start("soldier_child"), CONTENT, enemy, true).situational).toBe(-1);
-    expect(attackSpec(start("farmer"), CONTENT, enemy, true).situational).toBe(-2);
+    expect(attackSpec(start("soldier_child"), CONTENT, enemy, true).situational).toBe(-2);
   });
 
   it("나무꾼은 숲 탐험이 덜 지친다", () => {
@@ -86,9 +99,15 @@ describe("직업 열 가지", () => {
     expect(entryPrice(start("farmer"), CONTENT, stew, "inn")).toBe(3);
   });
 
-  it("떠돌이 행상은 20% 비싸게 판다", () => {
-    expect(sellPrice(start("peddler"), CONTENT.items.rusty_sword)).toBe(6);
-    expect(sellPrice(start("farmer"), CONTENT.items.rusty_sword)).toBe(5);
+  it("떠돌이 행상은 대장간·약초방에서 20% 싸게 산다 (올림, 여관은 그대로)", () => {
+    // 평판 보정을 빼고 비교하려고 평판을 같게 맞춘다
+    const at10 = (job: JobId) => ({ ...start(job), player: { ...start(job).player, reputation: 10 } });
+    const entry = (shop: "smithy" | "healer" | "inn", itemId: string) => SHOPS[shop].stock.find((e) => e.itemId === itemId)!;
+    expect(entryPrice(at10("peddler"), CONTENT, entry("smithy", "rusty_sword"), "smithy")).toBe(8);
+    expect(entryPrice(at10("farmer"), CONTENT, entry("smithy", "rusty_sword"), "smithy")).toBe(10);
+    expect(entryPrice(at10("peddler"), CONTENT, entry("inn", "hot_stew"), "inn")).toBe(3);
+    expect(healPrice(at10("peddler"), 10)).toBe(8);
+    expect(sellPrice(at10("peddler"), CONTENT.items.rusty_sword)).toBe(5);
   });
 
   it("수도원 견습은 밤에 피로가 1 더 풀린다", () => {

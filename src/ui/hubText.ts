@@ -2,8 +2,9 @@ import { buildCheckContext, previewCheck } from "@/core/check/modifiers";
 import { skillXpRoomToday } from "@/core/check/progress";
 import { actionStatus, type ActionStatus, LESSON_SKILLS, LESSON_XP } from "@/core/day/actions";
 import { EXPLORE_REGIONS } from "@/core/events/explore";
+import { skillXpToNext } from "@/core/jobPerks";
 import { EXERCISE_STATS, STAT_LABEL } from "@/core/labels";
-import { SKILL_MAX_RANK, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, type CheckSpec, type RunState, type SkillId, type StatId } from "@/core/types";
+import { SKILL_MAX_RANK, STAT_GROWTH_USES, type CheckSpec, type RunState, type SkillId, type StatId } from "@/core/types";
 import { CONTENT } from "@/data";
 import { chanceBadgeProps } from "@/ui/rollText";
 
@@ -16,7 +17,7 @@ export const isPicking = (id: string): id is Picking => id === "trainSolo" || id
 export function skillDetail(run: RunState, skill: SkillId): string[] {
   const { rank, xp } = run.player.skills[skill];
   const gain = Math.min(LESSON_XP, skillXpRoomToday(run.player, skill));
-  const progress = rank >= SKILL_MAX_RANK ? "달인" : `성장 ${xp}/${SKILL_XP_TO_NEXT[rank]}${gain > 0 ? ` (+${gain})` : ""}`;
+  const progress = rank >= SKILL_MAX_RANK ? "달인" : `성장 ${xp}/${skillXpToNext(run.player.job, rank)}${gain > 0 ? ` (+${gain})` : ""}`;
   return [`${rank}레벨`, progress];
 }
 

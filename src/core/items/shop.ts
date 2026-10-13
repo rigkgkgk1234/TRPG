@@ -2,7 +2,7 @@ import type { Ctx } from "../commands";
 import type { ContentDB } from "../content";
 import { canTrade, validQty } from "../day/town";
 import { changeFatigue, changeHp, changeSilver, setWound } from "../day/resources";
-import { ERRAND_INN_DISCOUNT, PEDDLER_SELL_BONUS } from "../jobPerks";
+import { ERRAND_INN_DISCOUNT, PEDDLER_BUY_DISCOUNT } from "../jobPerks";
 import { josa } from "../labels";
 import {
   REP_DISCOUNT_RATE,
@@ -87,15 +87,22 @@ export function adjustedPrice(run: RunState, base: number): number {
 
 /** 가게 물건 한 묶음의 값: 평판 보정, 여관 심부름꾼은 여관 물건 반값 (올림) */
 export function entryPrice(run: RunState, content: Pick<ContentDB, "items">, e: ShopEntry, shop: ShopId): number {
-  const base = adjustedPrice(run, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
-  return shop === "inn" && run.player.job === "errand" ? Math.ceil(base * (1 - ERRAND_INN_DISCOUNT) - 1e-9) : base;
+  return shopPrice(run, shop, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
 }
 
-/** 한 개를 팔 때 값: 판매가 지정이 있으면 그것, 아니면 구매가의 50% (내림). 떠돌이 행상은 +20% (내림). 못 팔면 0. */
-export function sellPrice(run: RunState, def: ItemDef | undefined): number {
+/** 가게에서 치르는 값: 평판 보정 뒤 직업 할인 (여관 심부름꾼은 여관 반값, 떠돌이 행상은 대장간·약초방 −20%, 둘 다 올림) */
+export function shopPrice(run: RunState, shop: ShopId, base: number): number {
+  const price = adjustedPrice(run, base);
+  const job = run.player.job;
+  const discount = shop === "inn" && job === "errand" ? ERRAND_INN_DISCOUNT
+    : shop !== "inn" && job === "peddler" ? PEDDLER_BUY_DISCOUNT : 0;
+  return discount ? Math.ceil(price * (1 - discount) - 1e-9) : price;
+}
+
+/** 한 개를 팔 때 값: 판매가 지정이 있으면 그것, 아니면 구매가의 50% (내림). 못 팔면 0. */
+export function sellPrice(_run: RunState, def: ItemDef | undefined): number {
   if (!def || !def.sellable) return 0;
-  const base = def.sellPrice ?? Math.floor(def.price * SELL_RATE);
-  return run.player.job === "peddler" ? Math.floor(base * (1 + PEDDLER_SELL_BONUS) + 1e-9) : base;
+  return def.sellPrice ?? Math.floor(def.price * SELL_RATE);
 }
 
 /** 내구도 5당 은화 1 (올림), 견습 대장장이는 반값 (올림) */
@@ -155,7 +162,7 @@ export function buy(ctx: Ctx, shopId: ShopId, itemId: ItemId, qty = 1): string |
 
 /** 약초방에서 HP를 n만큼 회복할 때 값 */
 export function healPrice(run: RunState, n: number): number {
-  return adjustedPrice(run, n * HEAL_SILVER_PER_HP);
+  return shopPrice(run, "healer", n * HEAL_SILVER_PER_HP);
 }
 
 /** 모자란 HP와 가진 은화로 살 수 있는 회복량 중 작은 쪽 */
@@ -217,7 +224,7 @@ export function treat(ctx: Ctx): string | null {
   const s = ctx.draft;
   if (!canTrade(s)) return "지금은 치료받을 수 없다";
   if (!treatable(s)) return s.player.wound.level === "critical" ? "치명상은 응급 처치부터 받아야 한다" : "치료할 큰 상처가 없다";
-  const price = adjustedPrice(s, TREAT_PRICE);
+  const price = shopPrice(s, "healer", TREAT_PRICE);
   if (s.resources.silver < price) return "은화가 모자란다";
   changeSilver(ctx, -price);
   s.player.wound.treatedDays = 0;
@@ -230,7 +237,7 @@ export function stabilize(ctx: Ctx): string | null {
   const s = ctx.draft;
   if (!canTrade(s)) return "지금은 치료받을 수 없다";
   if (s.player.wound.level !== "critical") return "응급 처치할 상처가 없다";
-  const price = adjustedPrice(s, STABILIZE_PRICE);
+  const price = shopPrice(s, "healer", STABILIZE_PRICE);
   if (s.resources.silver < price) return "은화가 모자란다";
   changeSilver(ctx, -price);
   setWound(ctx, "serious");

@@ -142,11 +142,11 @@ export const JOBS: Record<JobId, JobDef> = {
   },
   herbalist: {
     id: "herbalist", name: "약초꾼", mvp: true,
-    stats: { str: -1, agi: 1, con: 1, per: 2, cha: 1 },
+    stats: { str: 0, agi: 1, con: 1, per: 2, cha: 0 },
     startSkills: { herbalism: 2 },
     silver: 7, food: 3, reputation: 10,
     startItems: [
-      { itemId: "hunting_knife", qty: 1, equip: true },
+      { itemId: "sickle", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
       { itemId: "herb", qty: 3 },
     ],
@@ -166,13 +166,13 @@ export const JOBS: Record<JobId, JobDef> = {
   soldier_child: {
     id: "soldier_child", name: "옛 병사의 자식", mvp: true,
     stats: { str: 1, agi: 2, con: 1, per: 0, cha: 0 },
-    startSkills: { blade: 2 },
+    startSkills: {},
     silver: 6, food: 4, reputation: 10,
     startItems: [
       { itemId: "rusty_sword", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
     ],
-    work: { label: "대련 상대", check: { stat: "agi", skill: "blade", dc: 12 }, baseSilver: 2, bonusSilver: 2, bonusFood: 0, fatigue: 2, bonusSkillXp: "blade" },
+    work: { label: "대련 상대", check: { stat: "agi", dc: 10 }, baseSilver: 2, bonusSilver: 2, bonusFood: 0, fatigue: 2 },
   },
   woodcutter: {
     id: "woodcutter", name: "나무꾼", mvp: true,
@@ -188,20 +188,21 @@ export const JOBS: Record<JobId, JobDef> = {
     startSkills: {},
     silver: 12, food: 2, reputation: 10,
     startItems: [
-      { itemId: "club", qty: 1, equip: true },
+      { itemId: "fire_poker", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
+      { itemId: "healing_potion", qty: 1 },
     ],
     work: { label: "여관 심부름", check: { stat: "cha", dc: 10 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 1 },
   },
   peddler: {
     id: "peddler", name: "떠돌이 행상", mvp: true,
-    stats: { str: 0, agi: 0, con: 1, per: 1, cha: 2 },
+    stats: { str: 0, agi: 0, con: 2, per: 0, cha: 2 },
     startSkills: { haggle: 2 },
     silver: 20, food: 2, reputation: 0,
     startItems: [
       { itemId: "rusty_sword", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
-      { itemId: "silver_scrap", qty: 2 },
+      { itemId: "healing_potion", qty: 1 },
     ],
     work: { label: "물건 팔기", check: { stat: "cha", skill: "haggle", dc: 12 }, baseSilver: 2, bonusSilver: 4, bonusFood: 0, fatigue: 2 },
   },
@@ -211,7 +212,7 @@ export const JOBS: Record<JobId, JobDef> = {
     startSkills: { guard: 1, herbalism: 1 },
     silver: 5, food: 4, reputation: 15,
     startItems: [
-      { itemId: "club", qty: 1, equip: true },
+      { itemId: "oak_staff", qty: 1, equip: true },
       { itemId: "bandage", qty: 2 },
     ],
     work: { label: "예배당 일", check: { stat: "cha", dc: 10 }, baseSilver: 1, bonusSilver: 1, bonusFood: 0, fatigue: 1, bonusReputation: 1 },

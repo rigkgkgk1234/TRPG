@@ -7,9 +7,9 @@ export const JOB_PERK: Record<JobId, string> = {
   hunter: "활과 추적, 낮은 평판",
   herbalist: "경상 치료, 늪 판정 +1",
   recruit: "방어 자세 +1",
-  soldier_child: "강타 명중 +1",
+  soldier_child: "숙련 성장 +50%",
   woodcutter: "숲 탐험 피로 −1",
-  errand: "평판이 오를 때 +1, 여관 물건값 반값",
-  peddler: "판매가 +20%, 평판 0에서 시작",
-  acolyte: "밤에 피로 1 더 회복, 평판 15에서 시작",
+  errand: "평판 획득 +1, 여관 물건값 −50%",
+  peddler: "대장간·약초방 −20%, 시작 평판 0",
+  acolyte: "밤에 피로 1 더 회복, 시작 평판 15",
 };

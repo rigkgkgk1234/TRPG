@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { canTrade } from "@/core/day/town";
 import { EQUIP_SLOTS } from "@/core/items/equipment";
 import {
-  adjustedPrice, entryPrice, hasRoom, healPrice, maxHealable, SHOPS, STABILIZE_FATIGUE, STABILIZE_PRICE, treatable, TREAT_PRICE, type ShopEntry, type ShopId,
+  entryPrice, hasRoom, healPrice, maxHealable, SHOPS, STABILIZE_FATIGUE, STABILIZE_PRICE, shopPrice, treatable, TREAT_PRICE, type ShopEntry, type ShopId,
 } from "@/core/items/shop";
 import { WOUND_LABEL } from "@/core/labels";
 import { FOOD_PRICE, maxHp, type ItemDef, type RunState } from "@/core/types";
@@ -162,8 +162,8 @@ function Care({ run }: { run: RunState }) {
   const [tab, setTab] = useState<CareTab>(run.player.wound.level === "critical" || treatable(run) ? "wound" : "hp");
   const wound = run.player.wound;
   const max = maxHp(run.player.stats);
-  const treatPrice = adjustedPrice(run, TREAT_PRICE);
-  const stabilizePrice = adjustedPrice(run, STABILIZE_PRICE);
+  const treatPrice = shopPrice(run, "healer", TREAT_PRICE);
+  const stabilizePrice = shopPrice(run, "healer", STABILIZE_PRICE);
   return (
     <Section title="마그다 할멈의 치료">
       <ChipRow>

@@ -7,7 +7,7 @@ import { gainTrait } from "../day/evening";
 import { changeFatigue, changeFood, changeHp, changeSilver, setWound, worsenWound } from "../day/resources";
 import { BROKEN_WEAPON_PENALTY, isBroken, wearEquipment } from "../items/equipment";
 import { addItem, canUseItem, consumeItem, countInBag, removeItem } from "../items/inventory";
-import { RECRUIT_DEFEND_BONUS, RECRUIT_MILITIA_BONUS, SOLDIER_CHILD_POWER_RELIEF } from "../jobPerks";
+import { RECRUIT_DEFEND_BONUS, RECRUIT_MILITIA_BONUS } from "../jobPerks";
 import { josa, SKILL_LABEL } from "../labels";
 import {
   d,
@@ -123,11 +123,6 @@ export function playerDefense(run: RunState, content: Pick<ContentDB, "items">, 
   return BASE_DEFENSE + run.player.stats.agi + gear + extra;
 }
 
-/** 강타 명중 불리 보정: 옛 병사의 자식은 덜 빗나간다 */
-function powerHitPenalty(run: RunState): number {
-  return POWER_ATTACK_HIT_PENALTY + (run.player.job === "soldier_child" ? SOLDIER_CHILD_POWER_RELIEF : 0);
-}
-
 /** 방어 자세의 방어도: 기본 + 방어 숙련, 경비대 신병은 +1 */
 function defendBonusOf(run: RunState): number {
   return DEFEND_BONUS + run.player.skills.guard.rank + (run.player.job === "recruit" ? RECRUIT_DEFEND_BONUS : 0);
@@ -137,7 +132,7 @@ function defendBonusOf(run: RunState): number {
 export function attackSpec(run: RunState, content: ContentDB, target: EnemyInstance, power: boolean, weapon?: WeaponDef, offHand = false): CheckSpec {
   const w = weapon ?? equippedWeapon(run, content);
   const def = enemyDef(content, target);
-  const situational = (power ? powerHitPenalty(run) : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
+  const situational = (power ? POWER_ATTACK_HIT_PENALTY : 0) + (offHand ? OFF_HAND_HIT_PENALTY : 0);
   return {
     stat: isBow(w) ? "agi" : "str",
     skill: w.skill,
@@ -219,7 +214,7 @@ export function combatView(run: RunState, content: ContentDB, targetId?: string)
     },
     {
       type: "powerAttack", label: bow ? "조준 사격" : "강타", ...chanceOf(true),
-      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${powerHitPenalty(run)}`, "피로 +1"], lockedReason: null,
+      detail: [`피해 +${POWER_ATTACK_DAMAGE_BONUS}`, `명중 ${POWER_ATTACK_HIT_PENALTY}`, "피로 +1"], lockedReason: null,
     },
     { type: "defend", label: "방어 자세", detail: [`방어도 +${defendBonus}`], lockedReason: null },
     {

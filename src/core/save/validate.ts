@@ -39,6 +39,7 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
   for (const s of SKILL_IDS) {
     const sk = p.skills[s];
     if (!sk || !int(sk.rank, 0, SKILL_MAX_RANK)) return `숙련 ${s}`;
+    // 직업마다 필요치가 다르다(옛 병사의 자식은 적다). 상한은 가장 큰 기본 필요치로 본다
     const need = SKILL_XP_TO_NEXT[sk.rank] ?? 0;
     if (!int(sk.xp, 0, Math.max(0, need - 1))) return `숙련 경험 ${s}`;
   }

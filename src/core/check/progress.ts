@@ -1,9 +1,9 @@
 import type { Ctx } from "../commands";
+import { skillXpToNext } from "../jobPerks";
 import { STAT_IDS } from "../labels";
 import {
   SKILL_MAX_RANK,
   SKILL_XP_CAP_PER_DAY,
-  SKILL_XP_TO_NEXT,
   STAT_GROWTH_USES,
   STAT_NATURAL_CAP,
   type PlayerState,
@@ -30,7 +30,7 @@ export function gainSkillXp(ctx: Ctx, skill: SkillId, amount: number): number {
   p.skillXpToday[skill] = (p.skillXpToday[skill] ?? 0) + gained;
   progress.xp += gained;
 
-  if (progress.xp >= SKILL_XP_TO_NEXT[progress.rank]) {
+  if (progress.xp >= skillXpToNext(p.job, progress.rank)) {
     progress.rank += 1;
     progress.xp = 0;
     ctx.feed.push({ kind: "levelUp", skill, newValue: progress.rank });

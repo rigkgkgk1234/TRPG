@@ -217,11 +217,11 @@ export const JOBS: Record<JobId, JobDef> = {
   },
   herbalist: {
     id: "herbalist", name: "약초꾼", mvp: true,
-    stats: { str: -1, agi: 1, con: 1, per: 2, cha: 1 },
+    stats: { str: 0, agi: 1, con: 1, per: 2, cha: 0 },
     startSkills: { herbalism: 2 },
     silver: 7, food: 3, reputation: 10,
     startItems: [
-      { itemId: "hunting_knife", qty: 1, equip: true },
+      { itemId: "sickle", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
       { itemId: "herb", qty: 3 },
     ],
@@ -241,13 +241,13 @@ export const JOBS: Record<JobId, JobDef> = {
   soldier_child: {
     id: "soldier_child", name: "옛 병사의 자식", mvp: true,
     stats: { str: 1, agi: 2, con: 1, per: 0, cha: 0 },
-    startSkills: { blade: 2 },
+    startSkills: {},
     silver: 6, food: 4, reputation: 10,
     startItems: [
       { itemId: "rusty_sword", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
     ],
-    work: { label: "대련 상대", check: { stat: "agi", skill: "blade", dc: 12 }, baseSilver: 2, bonusSilver: 2, bonusFood: 0, fatigue: 2, bonusSkillXp: "blade" },
+    work: { label: "대련 상대", check: { stat: "agi", dc: 10 }, baseSilver: 2, bonusSilver: 2, bonusFood: 0, fatigue: 2 },
   },
   woodcutter: {
     id: "woodcutter", name: "나무꾼", mvp: true,
@@ -263,20 +263,21 @@ export const JOBS: Record<JobId, JobDef> = {
     startSkills: {},
     silver: 12, food: 2, reputation: 10,
     startItems: [
-      { itemId: "club", qty: 1, equip: true },
+      { itemId: "fire_poker", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
+      { itemId: "healing_potion", qty: 1 },
     ],
     work: { label: "여관 심부름", check: { stat: "cha", dc: 10 }, baseSilver: 2, bonusSilver: 1, bonusFood: 1, fatigue: 1 },
   },
   peddler: {
     id: "peddler", name: "떠돌이 행상", mvp: true,
-    stats: { str: 0, agi: 0, con: 1, per: 1, cha: 2 },
+    stats: { str: 0, agi: 0, con: 2, per: 0, cha: 2 },
     startSkills: { haggle: 2 },
     silver: 20, food: 2, reputation: 0,
     startItems: [
       { itemId: "rusty_sword", qty: 1, equip: true },
       { itemId: "padded_coat", qty: 1, equip: true },
-      { itemId: "silver_scrap", qty: 2 },
+      { itemId: "healing_potion", qty: 1 },
     ],
     work: { label: "물건 팔기", check: { stat: "cha", skill: "haggle", dc: 12 }, baseSilver: 2, bonusSilver: 4, bonusFood: 0, fatigue: 2 },
   },
@@ -286,7 +287,7 @@ export const JOBS: Record<JobId, JobDef> = {
     startSkills: { guard: 1, herbalism: 1 },
     silver: 5, food: 4, reputation: 15,
     startItems: [
-      { itemId: "club", qty: 1, equip: true },
+      { itemId: "oak_staff", qty: 1, equip: true },
       { itemId: "bandage", qty: 2 },
     ],
     work: { label: "예배당 일", check: { stat: "cha", dc: 10 }, baseSilver: 1, bonusSilver: 1, bonusFood: 0, fatigue: 1, bonusReputation: 1 },
@@ -301,10 +302,10 @@ export const JOBS: Record<JobId, JobDef> = {
 | 견습 대장장이 | 수리비 반값, 대장간 일 대실패는 화상 (5-3, 6-2) |
 | 약초꾼 | 약초를 쓰면 경상이 늘 낫는다(다른 직업 50%). 늪 탐험 중 판정 +1("늪 지리") |
 | 경비대 신병 | 방어 자세 방어도 +1. 최종 습격의 자경단 +1명(상한 5) |
-| 옛 병사의 자식 | 강타 명중 불리 보정 −2 → −1 |
+| 옛 병사의 자식 | 숙련 성장 +50%: 다음 레벨까지 필요한 XP가 3/6/10/15/21 → 2/4/7/10/14 (`skillXpToNext`). 시작 숙련은 없다 |
 | 나무꾼 | 숲 탐험 피로 −1. 나무 울타리 이벤트에서 혼자 통나무를 베어 세운다(피로 +1, 행동 소모 없음) |
 | 여관 심부름꾼 | 평판이 오를 때 +1 더(말솜씨 2 보너스와 따로). 여관 물건값 반값(올림, 식량은 제외) |
-| 떠돌이 행상 | 파는 값 +20%(내림). 흥정 숙련(말솜씨)은 행상만 처음부터 갖는다 |
+| 떠돌이 행상 | 대장간·약초방 값 −20%(평판 보정 뒤, 올림. 약초방 HP 회복·치료도). 흥정 숙련(말솜씨)은 행상만 처음부터 갖는다 |
 | 수도원 견습 | 밤 피로 회복 +1 |
 
 ---
@@ -1026,6 +1027,9 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 | `club` | 몽둥이 | blunt | 1d4 | 3 | 내구도 12 |
 | `hunting_knife` | 사냥칼 | blade | 1d4 | 5 | |
 | `pitchfork` | 쇠갈퀴 | blunt | 1d6 | 6 | 양손 |
+| `sickle` | 풀 베는 낫 | blade | 1d6 | 10 | 약초꾼 시작 무기, 가게에서 팔지 않음 |
+| `fire_poker` | 부지깽이 | blunt | 1d6 | 10 | 여관 심부름꾼 시작 무기, 가게에서 팔지 않음 |
+| `oak_staff` | 참나무 지팡이 | blunt | 1d6 | 6 | 양손, 수도원 견습 시작 무기, 가게에서 팔지 않음 |
 | `old_hammer` | 낡은 망치 | blunt | 1d6 | 10 | |
 | `hand_axe` | 손도끼 | blade | 1d6 | 9 | 내구도 16 |
 | `rusty_sword` | 녹슨 검 | blade | 1d6 | 10 | |
@@ -1222,7 +1226,7 @@ export const SAMPLE_ITEMS: ItemDef[] = [
 | 사냥꾼 | 감각+추적 DC 12 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
 | 약초꾼 | 감각+약초 DC 11 | 은화 2 | +1, 약초 1개 | 추가분 2배(약초 2개) | 기본만 |
 | 경비대 신병 | 체력+방어 DC 11 | 은화 3 | +1 | 추가분 2배 | 기본만 |
-| 옛 병사의 자식 | 민첩+검술 DC 12 | 은화 2 | +2, 검술 XP +1 | 추가분 2배 | 기본만 |
+| 옛 병사의 자식 | 민첩 DC 10 | 은화 2 | +2 | 추가분 2배 | 기본만 |
 | 나무꾼 | 체력 DC 9 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
 | 여관 심부름꾼 | 말솜씨 DC 10 | 은화 2 | +1, 식량 +1 | 추가분 2배 | 기본만 |
 | 떠돌이 행상 | 말솜씨+흥정 DC 12 | 은화 2 | +4 | 추가분 2배 | 기본만 |

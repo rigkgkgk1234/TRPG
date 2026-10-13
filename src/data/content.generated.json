@@ -39,6 +39,45 @@
    "twoHanded": true,
    "durabilityMax": 20
   },
+  "sickle": {
+   "id": "sickle",
+   "name": "풀 베는 낫",
+   "category": "weapon",
+   "description": "약초를 베던 낫. 휘두르면 풀처럼 살갗도 벤다.",
+   "price": 10,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blade",
+   "damage": "1d6",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "fire_poker": {
+   "id": "fire_poker",
+   "name": "부지깽이",
+   "category": "weapon",
+   "description": "여관 화덕을 뒤적이던 쇠막대. 묵직하게 손에 감긴다.",
+   "price": 10,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d6",
+   "twoHanded": false,
+   "durabilityMax": 20
+  },
+  "oak_staff": {
+   "id": "oak_staff",
+   "name": "참나무 지팡이",
+   "category": "weapon",
+   "description": "순례길에 짚던 지팡이. 두 손으로 쥐면 든든한 몽둥이가 된다.",
+   "price": 6,
+   "sellable": true,
+   "stackMax": 1,
+   "skill": "blunt",
+   "damage": "1d6",
+   "twoHanded": true,
+   "durabilityMax": 20
+  },
   "old_hammer": {
    "id": "old_hammer",
    "name": "낡은 망치",

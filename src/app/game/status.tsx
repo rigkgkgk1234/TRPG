@@ -1,7 +1,8 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SKILL_IDS, SKILL_LABEL, SKILL_USE_NOTE, STAT_GROWTH_NOTE, STAT_IDS, STAT_LABEL, WOUND_LABEL } from "@/core/labels";
-import { SKILL_MAX_RANK, SKILL_XP_TO_NEXT, STAT_GROWTH_USES, maxHp } from "@/core/types";
+import { skillXpToNext } from "@/core/jobPerks";
+import { SKILL_MAX_RANK, STAT_GROWTH_USES, maxHp } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useShownRun } from "@/store/gameStore";
 import { Section } from "@/ui/components/Controls";
@@ -42,7 +43,7 @@ export default function StatusScreen() {
         {SKILL_IDS.map((s) => {
           const sk = p.skills[s];
           const maxed = sk.rank >= SKILL_MAX_RANK;
-          const need = maxed ? 0 : SKILL_XP_TO_NEXT[sk.rank];
+          const need = maxed ? 0 : skillXpToNext(p.job, sk.rank);
           return (
             <Row key={s} label={SKILL_LABEL[s]} value={`${sk.rank}레벨`}
               progress={maxed ? 1 : sk.xp / need}
