@@ -3,11 +3,11 @@ import type { ContentDB } from "../content";
 import { setWound } from "../day/resources";
 import { applyEffect } from "../events/effects";
 import { josa } from "../labels";
-import type { ConsumableDef, Effect, Inventory, ItemId, RunState, WoundLevel } from "../types";
+import type { ConsumableDef, Effect, Inventory, ItemDef, ItemId, RunState, WoundLevel } from "../types";
 
 /**
  * 이벤트가 쓰는 최소한의 가방 조작: 세기·넣기·빼기. (SYSTEM_SPEC 5-2)
- * 장착·사용·버리기와 "가방이 가득 차면 버릴 것 고르기" 시트는 5주차에서 이 파일을 넓힌다.
+ * 가방이 가득 차 넣지 못한 몫은 overflow에 담고, 정리(takeOverflow·leaveOverflow)는 아래 함수가 맡는다.
  */
 
 /** 가방과 장비 칸을 합친 개수 */
@@ -18,18 +18,32 @@ export function countItem(inv: Inventory, itemId: ItemId): number {
 }
 
 /**
- * 같은 아이템 칸에 stackMax까지 겹치고, 남으면 빈 칸을 쓴다. 칸이 모자라면 남은 것은 두고 온다.
- * @returns 실제로 넣은 개수
+ * 같은 아이템 칸에 stackMax까지 겹치고, 남으면 빈 칸을 쓴다. 칸이 모자라면 남은 것은 overflow(정리 창)로 간다.
+ * @returns 가방에 실제로 넣은 개수
  */
 export function addItem(ctx: Ctx, itemId: ItemId, qty: number): number {
   const def = ctx.content.items[itemId];
   if (!def) throw new Error(`없는 아이템: ${itemId}`);
-  const inv = ctx.draft.inventory;
-  let left = qty;
+  const left = stow(ctx.draft.inventory, def, qty);
+  const added = qty - left;
+  if (added > 0) ctx.feed.push({ kind: "item", itemId, name: def.name, delta: added });
+  if (left > 0) {
+    const over = ctx.draft.overflow;
+    const same = !("durabilityMax" in def) && over.find((o) => o.itemId === itemId);
+    if (same) same.qty += left;
+    else if ("durabilityMax" in def) for (let i = 0; i < left; i++) over.push({ itemId, qty: 1, durability: def.durabilityMax });
+    else over.push({ itemId, qty: left });
+    ctx.feed.push({ kind: "text", text: `가방이 가득 찼다. ${def.name} ${left}개를 넣을 자리가 없다.` });
+  }
+  return added;
+}
 
+/** 가방에 넣을 수 있는 만큼 넣는다 (피드 없이). durability가 있으면 그 내구도로 넣는다. @returns 넣지 못한 개수 */
+function stow(inv: Inventory, def: ItemDef, qty: number, durability?: number): number {
+  let left = qty;
   for (const slot of inv.slots) {
     if (left <= 0) break;
-    if (slot?.itemId !== itemId) continue;
+    if (slot?.itemId !== def.id) continue;
     const n = Math.min(left, def.stackMax - slot.qty);
     slot.qty += n;
     left -= n;
@@ -37,14 +51,35 @@ export function addItem(ctx: Ctx, itemId: ItemId, qty: number): number {
   for (let i = 0; i < inv.slots.length && left > 0; i++) {
     if (inv.slots[i] !== null) continue;
     const n = Math.min(left, def.stackMax);
-    inv.slots[i] = "durabilityMax" in def ? { itemId, qty: n, durability: def.durabilityMax } : { itemId, qty: n };
+    inv.slots[i] = "durabilityMax" in def ? { itemId: def.id, qty: n, durability: durability ?? def.durabilityMax } : { itemId: def.id, qty: n };
     left -= n;
   }
+  return left;
+}
 
-  const added = qty - left;
-  if (added > 0) ctx.feed.push({ kind: "item", itemId, name: def.name, delta: added });
-  if (left > 0) ctx.feed.push({ kind: "text", text: `가방이 가득 차서 ${def.name} ${left}개는 두고 왔다.` });
-  return added;
+/** 정리 창의 "넣기": 넘친 물건 하나를 가방에 넣을 수 있는 만큼 넣는다. 다 넣으면 목록에서 빠진다 */
+export function takeOverflow(ctx: Ctx, index: number): string | null {
+  const over = ctx.draft.overflow;
+  const stack = over[index];
+  if (!stack) return "그런 물건은 없다";
+  const def = ctx.content.items[stack.itemId];
+  if (!def) return "그런 물건은 없다";
+  const left = stow(ctx.draft.inventory, def, stack.qty, stack.durability);
+  const added = stack.qty - left;
+  if (added === 0) return "가방에 자리가 없다";
+  ctx.feed.push({ kind: "item", itemId: stack.itemId, name: def.name, delta: added });
+  if (left > 0) stack.qty = left;
+  else over.splice(index, 1);
+  return null;
+}
+
+/** 정리 창의 "두고 간다": 넘친 물건을 모두 버린다 */
+export function leaveOverflow(ctx: Ctx): void {
+  const over = ctx.draft.overflow;
+  if (over.length === 0) return;
+  const names = over.map((o) => `${ctx.content.items[o.itemId]?.name ?? o.itemId} ${o.qty}개`);
+  ctx.feed.push({ kind: "text", text: `${names.join(", ")}는 두고 왔다.` });
+  ctx.draft.overflow = [];
 }
 
 /**

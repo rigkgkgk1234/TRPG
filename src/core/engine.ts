@@ -5,10 +5,13 @@ import { handleAction } from "./day/actions";
 import { runEvening } from "./day/evening";
 import { buyFood, payDebt } from "./day/town";
 import { discard, equip, unequip } from "./items/equipment";
-import { consumeItem } from "./items/inventory";
+import { consumeItem, leaveOverflow, takeOverflow } from "./items/inventory";
 import { buy, heal, repair, sell, stabilize, treat, type RepairTarget } from "./items/shop";
 import { handleChoice, handleCombat, handleContinue, handleGoDeeper, startPendingStory } from "./events/runner";
 import { createRng, type RunState } from "./types";
+
+/** 가방 정리 중에도 받는 명령 */
+const WHILE_OVERFLOW = new Set<GameCommand["type"]>(["takeOverflow", "leaveOverflow", "discard", "useItem", "equip", "unequip"]);
 
 /**
  * 코어의 유일한 진입점. 원본 상태는 건드리지 않고 새 상태와 피드를 돌려준다. (ARCHITECTURE 3-1)
@@ -21,6 +24,11 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
 
   if (state.ending) {
     feed.push({ kind: "toast", text: "이미 끝난 이야기다" });
+    return { state, feed, save, checkpoint };
+  }
+  // 넣지 못한 물건이 있으면 가방 정리(넣기·버리기·쓰기·걸치기·두고 가기)부터 (SYSTEM_SPEC 5-2)
+  if (state.overflow.length > 0 && !WHILE_OVERFLOW.has(cmd.type)) {
+    feed.push({ kind: "toast", text: "가방부터 정리해야 한다" });
     return { state, feed, save, checkpoint };
   }
 
@@ -62,6 +70,13 @@ export function dispatch(state: RunState, cmd: GameCommand, content: ContentDB):
         break;
       case "discard":
         save = ok(ctx, draft.combat ? "싸우는 중에는 할 수 없다" : discard(ctx, cmd.slotIndex));
+        break;
+      case "takeOverflow":
+        save = ok(ctx, takeOverflow(ctx, cmd.index));
+        break;
+      case "leaveOverflow":
+        leaveOverflow(ctx);
+        save = true;
         break;
       case "useItem":
         save = ok(ctx, draft.combat ? "싸우는 중에는 전투 행동으로 쓴다" : consumeItem(ctx, cmd.itemId, false) ? null : "지금은 쓸 수 없다");

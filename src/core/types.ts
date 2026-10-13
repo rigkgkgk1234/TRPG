@@ -822,7 +822,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
   { id: "travelRowen", label: "로웬 다녀오기", slots: 2, fatigue: 3, conditions: [{ type: "wound", max: "light" }], mvp: false },
 ];
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",
@@ -847,6 +847,8 @@ export interface RunState {
   player: PlayerState;
   resources: Resources;
   inventory: Inventory;
+  /** 가방이 가득 차 넣지 못한 물건. 비어 있지 않으면 정리(넣기·버리기·쓰기·두고 가기)가 끝날 때까지 다른 행동을 받지 않는다 */
+  overflow: ItemStack[];
   time: TimeState;
   flags: Record<FlagId, boolean | number>;
   eventHistory: Record<EventId, EventHistoryEntry>;

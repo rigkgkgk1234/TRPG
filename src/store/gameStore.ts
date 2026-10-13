@@ -61,7 +61,7 @@ interface GameStore {
 }
 
 /** 연출 없이 바로 반영하는 명령 (가방·마을 창에서 연달아 누를 수 있게) */
-const INSTANT = new Set<GameCommand["type"]>(["shop", "equip", "unequip", "useItem", "discard"]);
+const INSTANT = new Set<GameCommand["type"]>(["shop", "equip", "unequip", "useItem", "discard", "takeOverflow", "leaveOverflow"]);
 /**
  * 연출 없는 명령은 이 간격 안에 다시 들어오면 무시한다: 두 번 눌렀을 때 첫 번째로 버튼이 사라지면
  * 그 자리로 올라온 다른 버튼(예: 식량 사기 → 빚 갚기)이 눌리는 것을 막는다.

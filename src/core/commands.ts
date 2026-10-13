@@ -26,7 +26,11 @@ export type GameCommand =
   | { type: "unequip"; slot: EquipSlot }
   /** 전투 밖에서 소모품 쓰기 (전투 중에는 combat 명령의 useItem) */
   | { type: "useItem"; itemId: ItemId }
-  | { type: "discard"; slotIndex: number };
+  | { type: "discard"; slotIndex: number }
+  /** 가방이 가득 차 넣지 못한 물건(overflow)을 넣을 수 있는 만큼 넣는다 */
+  | { type: "takeOverflow"; index: number }
+  /** 넣지 못한 물건을 모두 두고 간다 */
+  | { type: "leaveOverflow" };
 
 export type FeedOrder = "selfFirst" | "familyFirst";
 

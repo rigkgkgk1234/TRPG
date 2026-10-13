@@ -120,6 +120,13 @@ describe("저장 파일", () => {
     const back = decodeSave(seal(JSON.stringify({ ...file, version: 6 })), CONTENT);
     expect(back?.player.skills.haggle).toEqual({ rank: 0, xp: 0 });
   });
+
+  it("버전 7 저장은 넣지 못한 물건을 빈 목록으로 더해 읽는다", () => {
+    const file = JSON.parse(unseal(encodeSave(start(), NOW))!);
+    delete file.data.overflow;
+    const back = decodeSave(seal(JSON.stringify({ ...file, version: 7 })), CONTENT);
+    expect(back?.overflow).toEqual([]);
+  });
 });
 
 describe("저장 슬롯", () => {

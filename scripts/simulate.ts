@@ -13,7 +13,7 @@ import { maxFoodAffordable } from "@/core/day/town";
 import { dispatch } from "@/core/engine";
 import { sceneView, type ChoiceView } from "@/core/events/runner";
 import { countInBag } from "@/core/items/inventory";
-import { entryPrice, SHOPS, treatable } from "@/core/items/shop";
+import { entryPrice, hasRoom, SHOPS, treatable } from "@/core/items/shop";
 import { HERBALIST_REGION, WOODCUTTER_REGION } from "@/core/jobPerks";
 import { ENDING_LABEL, NPC_IDS, REGION_LABEL, SKILL_LABEL } from "@/core/labels";
 import { newRun } from "@/core/newRun";
@@ -86,6 +86,11 @@ interface Ai { rand: () => number }
  * - 하루: 피로 7 이상이거나 HP가 절반 아래면 휴식, 은화가 모자라면 일, 나머지는 오전 훈련·오후 탐험 (가끔 마을 볼일).
  */
 function pickCommand(run: RunState, ai: Ai): GameCommand {
+  // 가방이 가득 차 넣지 못한 물건: 넣을 자리가 있으면 넣고, 없으면 두고 간다
+  if (run.overflow.length > 0) {
+    const i = run.overflow.findIndex((o) => hasRoom(run, CONTENT.items[o.itemId]!, 1));
+    return i >= 0 ? { type: "takeOverflow", index: i } : { type: "leaveOverflow" };
+  }
   const fight = combatView(run, CONTENT);
   if (fight) {
     const low = run.player.hp <= maxHp(run.player.stats) / 3;

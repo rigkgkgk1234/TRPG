@@ -14,6 +14,10 @@ import {
   type RunState,
 } from "../types";
 
+/** 넣지 못한 물건 목록의 상한: 한 번의 결과로 쌓일 수 있는 양을 넉넉히 잡았다 */
+const OVERFLOW_MAX = 20;
+const OVERFLOW_QTY_MAX = 99;
+
 /**
  * 불러온 회차가 게임 규칙으로 나올 수 있는 상태인지 본다. 서명(seal)을 뚫더라도 말이 안 되는 수치
  * (은화 99999, 능력치 9, 이미 정해진 엔딩 등)는 받지 않는다.
@@ -68,6 +72,13 @@ export function validateRun(run: RunState, content: Pick<ContentDB, "items" | "t
   };
   if (!inv.slots.every((s) => stackOk(s))) return "가방 물건";
   for (const slot of EQUIP_SLOTS) if (!stackOk(inv.equipment[slot] ?? null, slot)) return `장비 ${slot}`;
+  // 넣지 못한 물건: 같은 물건은 한 줄로 합쳐 stackMax를 넘을 수 있다
+  if (!Array.isArray(run.overflow) || run.overflow.length > OVERFLOW_MAX) return "넣지 못한 물건";
+  for (const o of run.overflow) {
+    const def = content.items[o?.itemId];
+    if (!def || !int(o.qty, 1, OVERFLOW_QTY_MAX)) return "넣지 못한 물건";
+    if (o.durability !== undefined && !int(o.durability, 0, "durabilityMax" in def ? def.durabilityMax : 0)) return "넣지 못한 물건";
+  }
   const main = inv.equipment.weapon ? content.items[inv.equipment.weapon.itemId] : undefined;
   if (main?.category === "weapon" && main.twoHanded && inv.equipment.offHand) return "양손 무기와 왼손";
 

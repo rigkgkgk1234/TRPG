@@ -999,7 +999,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 ### 5-2. 인벤토리 규칙
 - **가방 10칸** 고정(MVP). 장착 중인 장비는 칸을 차지하지 않는다.
 - 같은 아이템은 `stackMax`까지 한 칸에 겹친다. (약초 5, 물약 3)
-- 가방이 가득 차면 획득 시 "버릴 것 고르기" 시트를 띄운다(버리기 거부 = 새 아이템 포기).
+- 가방이 가득 차면 넣지 못한 몫을 `overflow`에 담고 정리 창을 띄운다. 정리 창에서 가방 물건을 버리거나 써서 자리를 만들고 넣을 수 있다. "두고 간다"를 누르면 남은 것은 버린다. 정리가 끝날 때까지 다른 행동(선택지·하루 행동·가게·잠자리)은 받지 않는다.
 - **식량과 은화는 아이템이 아닌 자원**(칸 차지 없음). 사냥 고기는 획득 즉시 식량으로 환산.
 
 ### 5-3. 내구도
@@ -1443,7 +1443,7 @@ export const DAILY_ACTIONS: DailyActionDef[] = [
 - 한계: 열쇠가 앱 안에 있으므로 앱을 뜯어 분석하는 사람까지 막지는 못한다. 흔한 저장 편집기·메모리 조작 도구로 수치를 바꾸거나 엔딩으로 건너뛰는 것을 막는다.
 
 ```ts
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 export const SAVE_KEYS = {
   run: "brw.run.v1",
   runBackup: "brw.run.v1.bak",
@@ -1468,6 +1468,8 @@ export interface RunState {
   player: PlayerState;
   resources: Resources;
   inventory: Inventory;
+  /** 가방이 가득 차 넣지 못한 물건. 비어 있지 않으면 정리(넣기·버리기·쓰기·두고 가기)가 끝날 때까지 다른 행동을 받지 않는다 */
+  overflow: ItemStack[];
   time: TimeState;
   flags: Record<FlagId, boolean | number>;
   eventHistory: Record<EventId, EventHistoryEntry>;

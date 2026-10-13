@@ -13,6 +13,7 @@ import { TurnLog } from "@/ui/components/TurnLog";
 import { colors } from "@/ui/theme";
 import { EndingHeader, EndingPanel } from "@/ui/views/EndingView";
 import { CombatPanel } from "@/ui/views/CombatView";
+import { OverflowPanel } from "@/ui/views/OverflowPanel";
 import { EventPanel } from "@/ui/views/EventView";
 import { EveningPanel } from "@/ui/views/EveningView";
 import { HubPanel } from "@/ui/views/HubView";
@@ -47,7 +48,7 @@ export default function GameScreen() {
       />
       {/* 이벤트 패널과 고르기 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
       {/* 연출 중에는 누를 수 없게. 전투 칸은 맞는 효과가 보여야 하므로 흐리게 하지 않는다 */}
-      <View style={[(view === "event" || view === "combat" || step) && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
+      <View style={[(view === "event" || view === "combat" || view === "overflow" || step) && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
         {step ? <PickPanel run={shown} step={step} onStep={onPick} /> : <Panel view={view} run={shown} onPick={onPick} />}
       </View>
     </Animated.View>
@@ -107,6 +108,7 @@ function introFor(run: RunState): { title: string; body: string } {
 function Panel({ view, run, onPick }: { view: GameView; run: RunState; onPick: (s: PickStep) => void }) {
   switch (view) {
     case "ending": return <EndingPanel run={run} />;
+    case "overflow": return <OverflowPanel run={run} />;
     case "combat": return <CombatPanel run={run} />;
     case "event": return <EventPanel run={run} />;
     case "evening": return <EveningPanel run={run} />;

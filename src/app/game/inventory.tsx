@@ -16,9 +16,7 @@ import { ItemRow, type RowAction } from "@/ui/components/ItemRow";
 import { durabilityLabel, durabilityText, INFO_SEP, itemSummary } from "@/ui/itemText";
 import { colors, hairline, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
-
-/** "정말 버린다"를 받기 시작하는 시간 */
-const CONFIRM_DELAY_MS = 400;
+import { useDiscardConfirm } from "@/ui/useDiscardConfirm";
 
 /**
  * 가방 모달: 몸에 걸친 것(사람 그림 + 머리·상체·하체·오른손·왼손·발 칸) / 요약 / 가방 10칸.
@@ -29,8 +27,7 @@ export default function InventoryScreen() {
   const insets = useSafeAreaInsets();
   const run = useGame((s) => s.run);
   const send = useGame((s) => s.send);
-  /** "버리기"를 한 번 누른 칸: 같은 물건일 때만 "정말 버린다"로 바뀐다 (칸이 비거나 바뀌면 풀린다) */
-  const [confirmDiscard, setConfirmDiscard] = useState<{ slot: number; itemId: string; at: number } | null>(null);
+  const discardAction = useDiscardConfirm((slotIndex) => send({ type: "discard", slotIndex }));
   /** 고르기 창을 연 장비 칸 */
   const [picking, setPicking] = useState<EquipSlot | null>(null);
   if (!run) return null;
@@ -71,21 +68,7 @@ export default function InventoryScreen() {
           if (canUseItem(run, CONTENT, def.id, false)) {
             actions.push({ label: "쓰기", disabled: locked, onPress: () => send({ type: "useItem", itemId: def.id }) });
           }
-          if (def.category !== "quest") {
-            const confirming = confirmDiscard?.slot === i && confirmDiscard.itemId === stack.itemId;
-            actions.push({
-              label: confirming ? "정말 버린다" : "버리기",
-              danger: confirming,
-              disabled: locked,
-              onPress: () => {
-                if (!confirming) return setConfirmDiscard({ slot: i, itemId: stack.itemId, at: Date.now() });
-                // 두 번 빠르게 누르면 확인 없이 버려지므로, 확인 버튼은 잠깐 뒤부터 받는다
-                if (Date.now() - confirmDiscard.at < CONFIRM_DELAY_MS) return;
-                setConfirmDiscard(null);
-                send({ type: "discard", slotIndex: i });
-              },
-            });
-          }
+          if (def.category !== "quest") actions.push(discardAction(i, stack.itemId, locked));
           const dur = durabilityText(def, stack);
           const blocked = slotOf(def) ? equipBlock(run, CONTENT, i) : null;
           return (

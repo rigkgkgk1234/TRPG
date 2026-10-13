@@ -170,6 +170,8 @@ function commandTitle(cmd: GameCommand, run: RunState): string {
     case "unequip": return `${itemName(run.inventory.equipment[cmd.slot]?.itemId)} ${cmd.slot === "weapon" || cmd.slot === "offHand" ? "내려놓기" : "벗기"}`;
     case "useItem": return `${itemName(cmd.itemId)} 사용`;
     case "discard": return `${itemName(run.inventory.slots[cmd.slotIndex]?.itemId)} 버리기`;
+    case "takeOverflow": return `${itemName(run.overflow[cmd.index]?.itemId)} 넣기`;
+    case "leaveOverflow": return "두고 가기";
   }
 }
 

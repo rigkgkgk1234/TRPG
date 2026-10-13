@@ -14,6 +14,7 @@ import { handleChoice, sceneView } from "@/core/events/runner";
 import { hasCombat, selectEvent } from "@/core/events/selector";
 import { resolveText } from "@/core/events/text";
 import { addItem, countItem, removeItem } from "@/core/items/inventory";
+import { hasRoom } from "@/core/items/shop";
 import { josa } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import { createRng, type EventDef, type JobId, type Rng, type RunState } from "@/core/types";
@@ -295,7 +296,7 @@ describe("효과", () => {
     expect(pm.draft.time.skipNextAm).toBe(true);
   });
 
-  it("아이템: 겹치기, 칸이 모자라면 두고 온다, 뒤 칸부터 뺀다", () => {
+  it("아이템: 겹치기, 칸이 모자라면 넣지 못한 물건으로 남긴다, 뒤 칸부터 뺀다", () => {
     const ctx = ctxOf(start("farmer"));
     expect(addItem(ctx, "herb", 7)).toBe(7);
     expect(ctx.draft.inventory.slots.filter(Boolean).map((s) => s!.qty)).toEqual([5, 2]);
@@ -304,7 +305,43 @@ describe("효과", () => {
 
     const full = ctxOf(edit(start("farmer"), (s) => { s.inventory.slots = s.inventory.slots.map(() => ({ itemId: "goblin_token", qty: 1 })); }));
     expect(addItem(full, "herb", 2)).toBe(0);
-    expect(full.feed).toEqual([{ kind: "text", text: "가방이 가득 차서 약초 2개는 두고 왔다." }]);
+    expect(full.feed).toEqual([{ kind: "text", text: "가방이 가득 찼다. 약초 2개를 넣을 자리가 없다." }]);
+    addItem(full, "herb", 1);
+    addItem(full, "rusty_sword", 2);
+    // 같은 물건은 합치고, 내구도 있는 장비는 하나씩
+    expect(full.draft.overflow).toEqual([{ itemId: "herb", qty: 3 }, { itemId: "rusty_sword", qty: 1, durability: 20 }, { itemId: "rusty_sword", qty: 1, durability: 20 }]);
+  });
+});
+
+describe("가방 정리 (넣지 못한 물건)", () => {
+  const send = (run: RunState, cmd: GameCommand) => dispatch(run, cmd, CONTENT);
+  /** 가방 10칸이 부적으로 차 있고 약초 3개를 넣지 못한 상태 */
+  const crowded = () => edit(start("farmer"), (s) => {
+    s.inventory.slots = s.inventory.slots.map(() => ({ itemId: "goblin_token", qty: 1 }));
+    s.inventory.slots[9] = { itemId: "bandage", qty: 1 };
+    s.overflow = [{ itemId: "herb", qty: 3 }];
+  });
+
+  it("정리하기 전에는 하루 행동·잠자리를 받지 않는다", () => {
+    for (const cmd of [{ type: "chooseAction", action: "rest" }, { type: "endDay" }] as GameCommand[]) {
+      expect(send(crowded(), cmd).feed).toEqual([{ kind: "toast", text: "가방부터 정리해야 한다" }]);
+    }
+  });
+
+  it("버려서 자리를 만들면 넣을 수 있고, 다 넣으면 정리가 끝난다", () => {
+    const run = crowded();
+    expect(send(run, { type: "takeOverflow", index: 0 }).feed).toEqual([{ kind: "toast", text: "가방에 자리가 없다" }]);
+    let next = send(run, { type: "discard", slotIndex: 9 }).state;
+    next = send(next, { type: "takeOverflow", index: 0 }).state;
+    expect(next.overflow).toEqual([]);
+    expect(countItem(next.inventory, "herb")).toBe(3);
+    expect(send(next, { type: "chooseAction", action: "rest" }).feed.some((f) => f.kind === "toast")).toBe(false);
+  });
+
+  it("두고 가면 넣지 못한 물건이 사라진다", () => {
+    const out = send(crowded(), { type: "leaveOverflow" });
+    expect(out.state.overflow).toEqual([]);
+    expect(out.feed).toEqual([{ kind: "text", text: "약초 3개는 두고 왔다." }]);
   });
 });
 
@@ -421,6 +458,8 @@ describe("콘텐츠", () => {
 describe("무작위 플레이", () => {
   /** 할 수 있는 것 중 하나를 무작위로 고른다. 엔진이 받아 주지 않는 명령을 고르면 실패. */
   function randomCommand(run: RunState, pick: Rng): GameCommand {
+    // 가방이 가득 차 넣지 못한 물건이 있으면 넣거나 두고 간다
+    if (run.overflow.length > 0) return pick() < 0.5 && takeable(run) >= 0 ? { type: "takeOverflow", index: takeable(run) } : { type: "leaveOverflow" };
     const fight = combatView(run, CONTENT);
     if (fight) {
       const open = fight.actions.filter((a) => a.lockedReason === null);
@@ -445,6 +484,9 @@ describe("무작위 플레이", () => {
     const ok = actions.filter((a) => a.type === "chooseAction" && actionStatus(run, CONTENT, a.action, { region: a.region }).available);
     return ok[Math.floor(pick() * ok.length)];
   }
+
+  /** 넣을 자리가 있는 넘친 물건의 번호 (없으면 -1) */
+  const takeable = (run: RunState) => run.overflow.findIndex((o) => hasRoom(run, CONTENT.items[o.itemId]!, 1));
 
   it("직업마다 60판: 막히는 장면 없이 30일을 끝낸다", () => {
     for (const job of Object.keys(CONTENT.jobs) as JobId[]) {

@@ -50,4 +50,10 @@ export const MIGRATIONS: Record<number, Migration> = {
     if (skills && !skills.haggle) skills.haggle = { rank: 0, xp: 0 };
     return { ...file, version: 7 };
   },
+  // 8: 가방에 넣지 못한 물건(overflow) → 비어 있는 채로 시작
+  7: (old) => {
+    const file = old as { version: number; data?: { overflow?: unknown[] } };
+    if (file.data && !file.data.overflow) file.data.overflow = [];
+    return { ...file, version: 8 };
+  },
 };
