@@ -45,13 +45,14 @@
             "initiative": "player",
             "canFlee": true,
             "enemyHpModifier": -7,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "고블린이 다친 다리를 끌고 달아나다 허리춤의 주머니를 떨어뜨렸다. 물레방아골 사람들의 은화가 들어 있었다.", "onEnter": [{ "type": "silver", "delta": 2 }], "choices": [] },
     "win": {
       "text": "고블린이 쓰러졌다. 놈의 허리춤에 물레방아골 사람들의 은화가 들어 있었다.",
       "onEnter": [

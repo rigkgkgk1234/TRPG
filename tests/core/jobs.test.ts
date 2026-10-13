@@ -101,13 +101,18 @@ describe("직업 열 가지", () => {
 
   it("떠돌이 행상은 대장간·약초방에서 20% 싸게 산다 (올림, 여관은 그대로)", () => {
     // 평판 보정을 빼고 비교하려고 평판을 같게 맞춘다
-    const at10 = (job: JobId) => ({ ...start(job), player: { ...start(job).player, reputation: 10 } });
+    const at10 = (job: JobId) => {
+      const run = start(job);
+      run.player.reputation = 10;
+      return run;
+    };
     const entry = (shop: "smithy" | "healer" | "inn", itemId: string) => SHOPS[shop].stock.find((e) => e.itemId === itemId)!;
     expect(entryPrice(at10("peddler"), CONTENT, entry("smithy", "rusty_sword"), "smithy")).toBe(8);
     expect(entryPrice(at10("farmer"), CONTENT, entry("smithy", "rusty_sword"), "smithy")).toBe(10);
     expect(entryPrice(at10("peddler"), CONTENT, entry("inn", "hot_stew"), "inn")).toBe(3);
     expect(healPrice(at10("peddler"), 10)).toBe(8);
-    expect(sellPrice(at10("peddler"), CONTENT.items.rusty_sword)).toBe(5);
+    // 파는 값은 그대로
+    expect(sellPrice(CONTENT.items.rusty_sword)).toBe(5);
   });
 
   it("수도원 견습은 밤에 피로가 1 더 풀린다", () => {

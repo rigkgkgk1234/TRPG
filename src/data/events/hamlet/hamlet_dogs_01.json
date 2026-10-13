@@ -75,13 +75,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "들개들이 꼬리를 말고 폐허 너머로 달아났다.", "choices": [] },
     "win": {
       "text": "우두머리가 쓰러지자 다른 하나는 꼬리를 말고 달아났다.",
       "choices": []

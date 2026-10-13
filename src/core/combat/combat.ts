@@ -510,7 +510,7 @@ export function finishCombat(ctx: Ctx): SceneId | "END" | null {
       s.stats.combatsWon += 1;
       victoryXp(ctx, c);
       loot(ctx, c);
-      return c.setup.onVictory;
+      return (c.setup.onRouted && c.enemies.some((e) => e.routed)) ? c.setup.onRouted : c.setup.onVictory;
     case "fled":
       s.stats.timesFled += 1;
       return c.setup.onFled ?? "END";
@@ -538,7 +538,8 @@ function loot(ctx: Ctx, c: CombatState): void {
   for (const e of c.enemies) {
     const def = enemyDef(ctx.content, e);
     const share = (n: number) => (e.routed ? Math.floor(n / 2) : n);
-    if (def.food) changeFood(ctx, share(def.food));
+    // 달아난 짐승의 고기는 얻을 수 없다
+    if (def.food && !e.routed) changeFood(ctx, def.food);
     if (def.silver) changeSilver(ctx, share(def.silver));
     for (const l of def.loot) {
       const qty = share(l.qty);

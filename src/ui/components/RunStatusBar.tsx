@@ -9,6 +9,7 @@ import {
 } from "@/ui/icons";
 import { colors, icon, radius, space, type } from "@/ui/theme";
 import { useGame } from "@/store/gameStore";
+import { HpBar } from "@/ui/components/HpBar";
 import { pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
 
@@ -16,6 +17,17 @@ const FATIGUE_TIRED_AT = 4;
 const FLASH_MS = 1200;
 
 const PHASE_ICON: Record<DayPhase, Icon> = { morning: SunHorizonIcon, am: SunIcon, pm: SunHorizonIcon, evening: MoonStarsIcon };
+
+/** 전투 중 내 HP 막대 높이 */
+const PLAYER_HP_BAR_HEIGHT = 8;
+
+/** 내 HP 막대 색: 70% 이상 초록, 40~69% 노랑, 그 아래 빨강 */
+function hpColor(hp: number, max: number): string {
+  const pct = (hp / max) * 100;
+  if (pct >= 70) return colors.success;
+  if (pct >= 40) return colors.hpMid;
+  return colors.fail;
+}
 
 function fatigueColor(f: number): string | undefined {
   if (f >= FATIGUE_DISADVANTAGE_AT) return colors.fail;
@@ -58,6 +70,29 @@ export function RunStatusBar({ run }: { run: RunState }) {
         </View>
       </View>
 
+      {run.combat ? (
+        // 전투 중: 날짜 막대와 자원 칸 대신 내 HP 막대 (적 HP 막대와 같은 모양·같은 뒤따르는 막대), 피로는 오른쪽 아래
+        <View style={styles.vitals} accessibilityLabel={`HP ${hp}/${hpMax}, 피로 ${r.fatigue}/${FATIGUE_MAX}`}>
+          <HpBar ratio={hp / hpMax} height={PLAYER_HP_BAR_HEIGHT} color={hpColor(hp, hpMax)} trackColor={colors.surfaceRaised} trailColor={colors.textFaint} />
+          <View style={styles.vitalsRow}>
+            <HeartIcon size={icon.sm} weight={icon.weight} color={hpColor(hp, hpMax)} />
+            <Text style={styles.statLabel}>HP</Text>
+            <Text style={styles.statValueRow}>
+              <Text style={styles.vitalValue}>{hp}</Text>
+              <Text style={styles.statSuffix}>/{hpMax}</Text>
+            </Text>
+            <View style={styles.vitalsEnd}>
+              <LightningIcon size={icon.sm} weight={icon.weight} color={fatigueColor(r.fatigue) ?? colors.textFaint} />
+              <Text style={styles.statLabel}>피로</Text>
+              <Text style={styles.statValueRow}>
+                <Text style={[styles.vitalValue, { color: fatigueColor(r.fatigue) ?? colors.text }]}>{r.fatigue}</Text>
+                <Text style={styles.statSuffix}>/{FATIGUE_MAX}</Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+      ) : (
+      <>
       <View style={styles.progress} accessibilityLabel={`${LAST_DAY}일 중 ${time.day}일차`}>
         <View style={[styles.progressFill, { width: `${(time.day / LAST_DAY) * 100}%` }]} />
       </View>
@@ -70,6 +105,8 @@ export function RunStatusBar({ run }: { run: RunState }) {
         <Stat icon={BreadIcon} label="식량" value={r.food} higherIsGood color={r.food < FOOD_PER_DAY ? colors.partial : undefined} />
         {r.debt > 0 && <Stat icon={HandCoinsIcon} label="빚" value={r.debt} color={colors.fail} />}
       </View>
+      </>
+      )}
 
       {warnings.length > 0 && (
         <View style={styles.warnRow}>
@@ -150,6 +187,10 @@ const styles = StyleSheet.create({
   statValueRow: { fontVariant: ["tabular-nums"] },
   statValue: { ...type.number },
   statSuffix: { ...type.caption, color: colors.textFaint },
+  vitals: { gap: space.sm, paddingTop: space.xs },
+  vitalsRow: { flexDirection: "row", alignItems: "center", gap: space.xs },
+  vitalsEnd: { marginLeft: "auto", flexDirection: "row", alignItems: "center", gap: space.xs },
+  vitalValue: { ...type.label, color: colors.text },
   warnRow: { flexDirection: "row", alignItems: "center", gap: space.xs },
   warn: { ...type.caption, color: colors.partial },
 });

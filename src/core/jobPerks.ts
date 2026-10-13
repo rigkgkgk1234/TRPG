@@ -1,13 +1,11 @@
 import { SKILL_XP_TO_NEXT, type JobId, type RegionId } from "./types";
 
 /**
- * 직업 고유 규칙의 수치 (SYSTEM_SPEC 1-5). 규칙을 쓰는 곳은 각 모듈이고, 수치와 "누가 받는가"만 여기 모은다.
+ * 직업 고유 규칙의 수치 (SYSTEM_SPEC 1-5). 규칙을 쓰는 곳은 각 모듈이고(직업 id로 직접 견준다), 수치만 여기 모은다.
  * 견습 대장장이의 수리비 반값(items/shop.ts)과 대장간 화상(day/actions.ts)은 원래 자리에 둔다.
  */
 
-/** 약초꾼: 약초를 쓰면 경상이 늘 낫는다 (다른 직업은 50%) */
-export const HERB_SURE_HEAL_JOB: JobId = "herbalist";
-/** 약초꾼: 이 지역의 탐험 판정 +1 */
+/** 약초꾼: 약초를 쓰면 경상이 늘 낫는다(다른 직업은 50%, items/inventory.ts). 이 지역의 탐험 판정 +1 */
 export const HERBALIST_REGION: RegionId = "marsh";
 export const HERBALIST_REGION_BONUS = 1;
 

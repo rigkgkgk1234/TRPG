@@ -77,13 +77,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "정찰병이 지붕을 건너뛰어 달아났다. 놈이 지키던 지붕에서 강 하류가 훤히 내려다보였다.", "onEnter": [{ "type": "setFlag", "flag": "goblin_tracks_found" }], "choices": [] },
     "win": {
       "text": "정찰병이 쓰러졌다. 놈이 지키던 지붕에서 강 하류가 훤히 내려다보였다.",
       "onEnter": [

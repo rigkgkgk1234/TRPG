@@ -14,7 +14,7 @@ import { dispatch } from "@/core/engine";
 import { sceneView, type ChoiceView } from "@/core/events/runner";
 import { countInBag } from "@/core/items/inventory";
 import { entryPrice, SHOPS, treatable } from "@/core/items/shop";
-import { HERBALIST_REGION as HERBALIST_REGION_ID, WOODCUTTER_REGION } from "@/core/jobPerks";
+import { HERBALIST_REGION, WOODCUTTER_REGION } from "@/core/jobPerks";
 import { ENDING_LABEL, NPC_IDS, REGION_LABEL, SKILL_LABEL } from "@/core/labels";
 import { newRun } from "@/core/newRun";
 import { makeRecord } from "@/core/story/ending";
@@ -54,8 +54,6 @@ const RANDOM_SCENES = new Set([
 /** 스토리에서 이보다 낮은 확률의 판정은 건너뛴다 */
 const STORY_RISK_FLOOR = 0.4;
 const CURVE_DAYS = [1, 5, 10, 15, 20, 25, 30];
-/** smart AI가 고유 규칙 지역을 고를 때 쓴다 */
-const HERBALIST_REGION = { job: "herbalist" as JobId, region: HERBALIST_REGION_ID };
 
 /** 직업별 주력 무기 숙련 (훈련할 것) */
 const MAIN_SKILL: Record<JobId, SkillId> = {
@@ -121,7 +119,7 @@ function pickCommand(run: RunState, ai: Ai): GameCommand {
   const job = run.player.job;
   const region: RegionId = run.time.day < 11 ? "forest"
     : STYLE === "cautious" ? (r < 0.5 ? "forest" : "watchtower")
-    : STYLE === "smart" && job === HERBALIST_REGION.job && r < 0.4 ? HERBALIST_REGION.region
+    : STYLE === "smart" && job === "herbalist" && r < 0.4 ? HERBALIST_REGION
     : STYLE === "smart" && job === "woodcutter" && r < 0.6 ? WOODCUTTER_REGION
     : r < 0.3 ? "forest" : r < 0.6 ? "watchtower" : r < 0.73 ? "marsh" : r < 0.87 ? "mine" : "hamlet";
   const skill = MAIN_SKILL[run.player.job];

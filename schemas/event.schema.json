@@ -985,6 +985,10 @@
         "onVictory": {
           "$ref": "#/definitions/SceneId"
         },
+        "onRouted": {
+          "$ref": "#/definitions/SceneId",
+          "description": "이겼는데 적이 하나라도 겁먹고 달아났으면 onVictory 대신 이 장면 (쓰러뜨린 것을 전제한 글·전리품을 피한다)"
+        },
         "onFled": {
           "$ref": "#/definitions/SceneId"
         },

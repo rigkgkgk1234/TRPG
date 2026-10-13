@@ -33,14 +33,15 @@
     },
     "fight": {
       "text": "멧돼지가 고개를 숙이고 돌진해 온다.",
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onRouted": "routed", "onFled": "fled" } }],
       "choices": []
     },
     "fight_ambushed": {
       "text": "땅에 떨어지자마자 멧돼지가 들이닥쳤다.",
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["boar"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onRouted": "routed", "onFled": "fled" } }],
       "choices": []
     },
+    "routed": { "text": "멧돼지가 씩씩거리며 덤불 속으로 달아났다. 고기는 놓쳤지만 크게 다친 데는 없다.", "choices": [] },
     "win": {
       "text": "거친 숨을 고른다. 이만한 고기면 온 식구가 며칠은 배불리 먹겠다.",
       "choices": []

@@ -61,13 +61,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늑대가 물에 뛰어들어 헤엄쳐 달아났다. 섬을 지나 길을 이어 갔다.", "choices": [] },
     "win": {
       "text": "늑대가 물속으로 굴러떨어졌다. 섬을 지나 길을 이어 갔다.",
       "onEnter": [

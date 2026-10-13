@@ -80,13 +80,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "늑대들이 숲 깊이 달아났다. 떨리는 손으로 주먹을 풀었다." }], "fallback": "늑대들이 숲 깊이 달아났다. 떨리는 손으로 {weapon:을/를} 내렸다." }, "choices": [] },
     "win": {
       "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "두 마리 모두 쓰러졌다. 떨리는 손으로 주먹을 풀었다." }], "fallback": "두 마리 모두 쓰러졌다. 떨리는 손으로 {weapon:을/를} 내렸다." },
       "onEnter": [

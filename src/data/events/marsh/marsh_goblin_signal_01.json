@@ -82,7 +82,7 @@
             ],
             "initiative": "enemy",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
@@ -100,13 +100,14 @@
             ],
             "initiative": "player",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "고블린이 뿔피리도 못 불고 달아났다. 말뚝의 가죽 조각을 떼어 살펴보니 보리울로 오는 길이 그려져 있었다.", "onEnter": [{ "type": "setFlag", "flag": "goblin_plan_known" }], "choices": [] },
     "win": {
       "text": "고블린이 쓰러졌다. 말뚝의 가죽 조각을 떼어 살펴보니 보리울로 오는 길이 그려져 있었다.",
       "onEnter": [

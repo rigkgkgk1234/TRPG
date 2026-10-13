@@ -76,7 +76,7 @@
               "goblin_scout"
             ],
             "initiative": "enemy",
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled",
             "canFlee": true
           }
@@ -84,6 +84,7 @@
       ],
       "choices": []
     },
+    "routed": { "text": "보초가 비명을 지르며 야영지 쪽으로 달아났다. 야영지가 술렁이기 시작했다. 더 머물 수는 없다.", "choices": [] },
     "win": {
       "text": "보초를 쓰러뜨렸지만 야영지가 술렁이기 시작했다. 더 머물 수는 없다.",
       "choices": []

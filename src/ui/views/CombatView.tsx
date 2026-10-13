@@ -131,8 +131,8 @@ export function CombatPanel({ run }: { run: RunState }) {
             </GridCell>
           ))}
         </ButtonGrid>
-        {/* 적이 달아났다: 행동 칸 자리를 알림으로 바꾸고, 확인을 누르면 다시 행동 버튼 (마지막 적이면 전투 뒤 장면으로) */}
-        {rout && <RoutNotice names={rout.names} over={!!rout.frozen} onClose={dismissRout} />}
+        {/* 마지막 적이 달아났다: 행동 칸 자리를 알림으로 바꾸고, 확인을 누르면 전투 뒤 장면으로 (적이 남았으면 알림 없이 이어 간다) */}
+        {rout && <RoutNotice names={rout.names} onClose={dismissRout} />}
       </View>
     </View>
   );
@@ -205,17 +205,16 @@ function EnemyCard({ name, hp, maxHp, status, mine, routed, ...press }: { name: 
   );
 }
 
-/** 달아남 알림: 행동 칸 자리를 그대로 써서 행동 버튼 대신 보여 준다 (칸 높이는 행동 버튼 그대로) */
-function RoutNotice({ names, over, onClose }: { names: string[]; over: boolean; onClose: () => void }) {
+/** 마지막 적이 달아나 전투가 끝났다는 알림: 행동 칸 자리를 그대로 써서 행동 버튼 대신 보여 준다 (칸 높이는 행동 버튼 그대로) */
+function RoutNotice({ names, onClose }: { names: string[]; onClose: () => void }) {
   return (
     <View style={styles.routNotice}>
       <View style={styles.routHeader}>
         <PersonSimpleRunIcon size={icon.md} weight={icon.weight} color={colors.textDim} />
-        <Text style={styles.routTitle}>{over ? "전투가 끝났다" : "적이 달아났다"}</Text>
+        <Text style={styles.routTitle}>전투가 끝났다</Text>
       </View>
       <Text sentences style={styles.routText}>
-        {names.map((n) => `${josa(n, "이/가")} 겁을 먹고 달아났다.`).join(" ")}
-        {over ? " 더 싸울 상대가 없다." : ""}
+        {routLine(names)} 더 싸울 상대가 없다.
       </Text>
       <View style={styles.routButton}>
         <ActionButton primary icon={ArrowRightIcon} label="확인" onPress={onClose} />
@@ -223,6 +222,16 @@ function RoutNotice({ names, over, onClose }: { names: string[]; over: boolean; 
     </View>
   );
 }
+
+/** 같은 적은 묶어 센다: "늑대가 겁을 먹고 달아났다." / "늑대 둘이 겁을 먹고 달아났다." / "늑대와 들개가 …" */
+function routLine(names: string[]): string {
+  const counts = new Map<string, number>();
+  for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
+  const parts = [...counts].map(([n, k]) => (k > 1 ? `${n} ${COUNT_WORD[k] ?? `${k}마리`}` : n));
+  const who = parts.length > 1 ? `${parts.slice(0, -1).map((p, i, a) => (i < a.length - 1 ? `${p},` : josa(p, "과/와"))).join(" ")} ${parts.at(-1)}` : parts[0];
+  return `${josa(who, "이/가")} 겁을 먹고 달아났다.`;
+}
+const COUNT_WORD: Record<number, string> = { 2: "둘", 3: "셋", 4: "넷", 5: "다섯" };
 
 /** 달아난 적의 칸: 달아나는 순간 살짝 빛났다가 회색으로 꺼진다. 처음부터 달아난 상태로 그려지면 바로 꺼진 모양 */
 function RoutFade({ routed, children }: { routed: boolean; children: React.ReactNode }) {

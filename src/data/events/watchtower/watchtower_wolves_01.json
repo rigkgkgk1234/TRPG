@@ -93,13 +93,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늑대들이 계단 아래로 달아났다.", "choices": [] },
     "win": {
       "text": "늑대 두 마리가 계단 아래 쓰러졌다.",
       "onEnter": [

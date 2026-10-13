@@ -382,6 +382,8 @@ export interface CombatSetup {
   playerDefenseBonus?: number;
   firstAttackAdvantage?: boolean;
   onVictory: SceneId;
+  /** 이겼는데 적이 하나라도 겁먹고 달아났으면 onVictory 대신 이 장면 (쓰러뜨린 것을 전제한 글·전리품을 피한다) */
+  onRouted?: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
   /** 끝장 승부: 적이 사기 판정으로 달아나지 않는다. HP가 모두 닳아야 이긴다 (결투장) */

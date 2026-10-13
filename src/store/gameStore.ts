@@ -39,10 +39,11 @@ interface GameStore {
   /** 플레이어가 연출 중에 이미 받은 피해 (상태 바 HP) */
   hurt: number;
   /**
-   * 적이 달아났다는 알림: 연출이 끝나면 전투 패널의 행동 칸 자리에 띄우고, 확인을 누를 때까지 다음으로 넘어가지 않는다.
-   * frozen: 마지막 적이 달아나 전투가 이미 끝났으면, 확인 전까지 그려 둘 전투 장면 (명령 뒤 상태에 명령 전 전투를 얹었다)
+   * 마지막 적이 달아나 전투가 끝났다는 알림: 연출이 끝나면 전투 패널의 행동 칸 자리에 띄우고, 확인을 누를 때까지 다음 장면으로 넘어가지 않는다.
+   * (적이 남아 있으면 알림 없이 전투를 이어 간다)
+   * frozen: 확인 전까지 그려 둘 전투 장면 (명령 뒤 상태에 명령 전 전투를 얹었다)
    */
-  rout: { names: string[]; frozen: RunState | null } | null;
+  rout: { names: string[]; frozen: RunState } | null;
   /** 앱을 켠 뒤 저장을 읽어 봤는지 (읽기 전에는 타이틀의 "이어하기"를 정할 수 없다) */
   hydrated: boolean;
   /** 저장이 깨져 백업에서 되살렸을 때 한 번 보여 줄 안내 */
@@ -214,12 +215,12 @@ export const useGame = create<GameStore>()((set, get) => ({
 /** 화면이 그릴 상태: 연출 중이면 명령 전 상태, 달아난 적 알림이 전투 장면을 붙잡고 있으면 그것, 아니면 현재 상태 */
 export const useShownRun = () => useGame((s) => s.playing?.before ?? s.rout?.frozen ?? s.run);
 
-/** 이번 명령에서 달아난 적이 있으면 알림을 만든다. 마지막 적이 달아나 전투가 끝났으면 명령 전 전투에 이번 피해와 달아남을 얹어 붙잡아 둔다 */
+/** 마지막 적이 달아나 전투가 끝났으면 알림을 만든다: 명령 전 전투에 이번 피해와 달아남을 얹어 붙잡아 둔다 */
 function routNotice(group: LogGroup, run: RunState): GameStore["rout"] {
   const routs = group.items.flatMap((f) => (f.kind === "rout" ? [f] : []));
   if (routs.length === 0) return null;
   const before = group.before.combat;
-  if (run.combat || !before) return { names: routs.map((r) => r.name), frozen: null };
+  if (run.combat || !before) return null;
   const dealt: Record<string, number> = {};
   for (const f of group.items) if (f.kind === "fx" && f.fx.side === "player" && f.fx.hit) dealt[f.fx.targetId] = (dealt[f.fx.targetId] ?? 0) + f.fx.damage;
   const combat = structuredClone(before);

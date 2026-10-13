@@ -57,7 +57,7 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
@@ -75,13 +75,14 @@
             ],
             "initiative": "enemy",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "들개가 꼬리를 말고 덤불 속으로 달아났다. 손이 아직 떨린다. 그래도 무기 쥐는 법은 조금 알 것 같다.", "choices": [] },
     "win": {
       "text": "들개가 꼬리를 말고 쓰러졌다. 손이 아직 떨린다. 그래도 무기 쥐는 법은 조금 알 것 같다.",
       "choices": []

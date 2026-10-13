@@ -77,13 +77,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "멧돼지가 무너진 담 틈으로 달아났다. 고기는 놓쳤다.", "choices": [] },
     "win": {
       "text": "멧돼지가 쓰러졌다. 고기를 넉넉히 챙겼다.",
       "choices": []

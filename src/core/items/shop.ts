@@ -85,7 +85,7 @@ export function adjustedPrice(run: RunState, base: number): number {
   return Math.ceil(base * rate - 1e-9);
 }
 
-/** 가게 물건 한 묶음의 값: 평판 보정, 여관 심부름꾼은 여관 물건 반값 (올림) */
+/** 가게 물건 한 묶음의 값 (평판 보정과 직업 할인은 shopPrice) */
 export function entryPrice(run: RunState, content: Pick<ContentDB, "items">, e: ShopEntry, shop: ShopId): number {
   return shopPrice(run, shop, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
 }
@@ -100,7 +100,7 @@ export function shopPrice(run: RunState, shop: ShopId, base: number): number {
 }
 
 /** 한 개를 팔 때 값: 판매가 지정이 있으면 그것, 아니면 구매가의 50% (내림). 못 팔면 0. */
-export function sellPrice(_run: RunState, def: ItemDef | undefined): number {
+export function sellPrice(def: ItemDef | undefined): number {
   if (!def || !def.sellable) return 0;
   return def.sellPrice ?? Math.floor(def.price * SELL_RATE);
 }
@@ -196,7 +196,7 @@ export function sell(ctx: Ctx, slotIndex: number, qty: number): string | null {
   if (!canTrade(s)) return "지금은 팔 수 없다";
   const stack = s.inventory.slots[slotIndex];
   if (!stack) return "팔 물건이 없다";
-  const each = sellPrice(s, ctx.content.items[stack.itemId]);
+  const each = sellPrice(ctx.content.items[stack.itemId]);
   if (each <= 0) return "토비가 사지 않는 물건이다";
   const n = Math.min(Math.max(1, Math.floor(qty)), stack.qty);
   removeAt(ctx, slotIndex, n);

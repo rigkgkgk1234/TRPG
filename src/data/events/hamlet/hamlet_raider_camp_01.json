@@ -87,13 +87,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "놈들이 곡식 자루를 버려두고 달아났다. 훔친 곡식을 되찾았다.", "onEnter": [{ "type": "food", "delta": 3 }], "choices": [] },
     "win": {
       "text": "둘이 쓰러졌다. 훔친 곡식을 되찾았다.",
       "onEnter": [

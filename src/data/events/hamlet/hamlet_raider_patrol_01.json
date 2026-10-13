@@ -82,13 +82,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "약탈병들이 허둥지둥 달아나다 허리에 찬 가죽을 떨어뜨렸다. 보리울로 들어가는 길이 그려져 있었다.", "onEnter": [{ "type": "setFlag", "flag": "goblin_plan_known" }], "choices": [] },
     "win": {
       "text": "약탈병 둘이 쓰러졌다. 허리에 찬 가죽에는 보리울로 들어가는 길이 그려져 있었다.",
       "onEnter": [

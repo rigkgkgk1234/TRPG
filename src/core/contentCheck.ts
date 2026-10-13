@@ -134,7 +134,7 @@ export function checkContent(content: ContentDB): ContentIssues {
             if (e.combat.canFlee && !e.combat.onFled) warn(where, "도주할 수 있는데 onFled가 없다 (도주하면 이벤트가 바로 끝난다)");
             if (e.combat.enemies.some((id) => content.enemies[id]?.onDefeat === "scripted") && !e.combat.onDefeat) err(where, "스토리 전투(scripted)는 onDefeat 장면이 있어야 한다");
             if (e.combat.closeDefeat && !e.combat.knockout) err(where, "closeDefeat는 결투(knockout)에만 쓴다");
-            for (const next of [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene]) if (next) checkNext(next, where);
+            for (const next of [e.combat.onVictory, e.combat.onRouted, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene]) if (next) checkNext(next, where);
             break;
         }
       }
@@ -206,7 +206,7 @@ function sceneEdges(ev: EventDef): Map<string, string[]> {
 function nextsOf(scene: SceneDef): string[] {
   // 전투는 끝나면 결과별 장면으로 이어진다 (4주차)
   const combat = (scene.onEnter ?? []).flatMap((e) =>
-    e.type === "startCombat" ? [e.combat.onVictory, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene].filter((x): x is string => !!x) : []);
+    e.type === "startCombat" ? [e.combat.onVictory, e.combat.onRouted, e.combat.onFled, e.combat.onDefeat, e.combat.closeDefeat?.scene].filter((x): x is string => !!x) : []);
   if (combat.length > 0) return combat;
   if (scene.choices.length === 0) return [scene.autoNext ?? "END"];
   return scene.choices.flatMap((c) => outcomesOf(c).map(([, o]) => o.next));

@@ -149,13 +149,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "rats_win",
+            "onVictory": "rats_win", "onRouted": "rats_routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "rats_routed": { "text": "쥐 떼를 방앗간에서 쫓아냈다. 주인이 이제 좀 살겠다며 품삯을 쥐여 준다.", "onEnter": [{ "type": "silver", "delta": 4 }, { "type": "fame", "delta": 3 }], "choices": [] },
     "rats_win": {
       "text": "쥐를 잡아 꼬리째 방앗간 주인에게 내밀었다. 주인이 질색하며 품삯을 쥐여 준다.",
       "onEnter": [
@@ -182,13 +183,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "wolf_win",
+            "onVictory": "wolf_win", "onRouted": "wolf_routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "wolf_routed": { "text": "늑대와 들개를 산 너머로 쫓아냈다. 양치기가 고맙다며 고개를 숙인다.", "onEnter": [{ "type": "silver", "delta": 7 }, { "type": "fame", "delta": 5 }], "choices": [] },
     "wolf_win": {
       "text": "늑대 가죽을 우리 앞에 걸어 두었다. 양치기가 고맙다며 고개를 숙인다.",
       "onEnter": [
@@ -214,13 +216,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "bandit_win",
+            "onVictory": "bandit_win", "onRouted": "bandit_routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "bandit_routed": { "text": "도적이 산길로 달아났다. 잡아 오지 못해 중개인이 현상금을 절반만 세어 준다.", "onEnter": [{ "type": "silver", "delta": 5 }, { "type": "fame", "delta": 3 }], "choices": [] },
     "bandit_win": {
       "text": "도적을 묶어 중개소로 끌고 왔다. 중개인이 현상금을 세어 준다.",
       "onEnter": [

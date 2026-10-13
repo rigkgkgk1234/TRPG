@@ -87,13 +87,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늪 고블린들이 짐을 내던지고 달아났다. 짐에서 말린 생선과 은화를 챙겼다.", "onEnter": [{ "type": "food", "delta": 2 }, { "type": "silver", "delta": 2 }], "choices": [] },
     "win": {
       "text": "둘이 쓰러졌다. 놈들이 지고 있던 짐에서 말린 생선과 은화를 챙겼다.",
       "onEnter": [

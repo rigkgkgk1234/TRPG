@@ -202,6 +202,15 @@ describe("전투 진행", () => {
     expect(texts(ctx)).toContain("늑대가 겁을 먹고 달아났다.");
   });
 
+  it("적이 달아나 이기면 onRouted 장면으로 가고, 달아난 짐승의 고기는 얻지 못한다", () => {
+    // 위와 같은 굴림: 늑대(식량 1)가 달아난다
+    const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 9; s.combat!.setup.onRouted = "routed"; }), seq(f20(15), fd(2, 6), f20(2), 0.1, 0.99));
+    combatStep(ctx, { type: "attack", targetId: "wolf_1" });
+    const food = ctx.draft.resources.food;
+    expect(finishCombat(ctx)).toBe("routed");
+    expect(ctx.draft.resources.food).toBe(food);
+  });
+
   it("끝장 승부(noRout, 결투장)에서는 HP가 절반 아래여도 달아나지 않는다", () => {
     // 위와 같은 굴림인데 사기 판정을 하지 않아 늑대가 그대로 남고 다음 라운드로 넘어간다
     const ctx = ctxOf(edit(inCombat(start("farmer"), ["wolf"]), (s) => { s.combat!.enemies[0].hp = 9; s.combat!.setup.noRout = true; }), seq(f20(15), fd(2, 6), f20(2), 0.1));

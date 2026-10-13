@@ -583,7 +583,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 
 - 늪·은광·폐허(위험 2)의 적은 시작 캐릭터 기준 사망률 1~5%로, 박쥐 떼가 가장 약하고 거머리·늪 고블린·동굴 거미·고블린 약탈병이 늑대~멧돼지 수준이다 (`npm run simulate:combat`).
 
-- **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(전리품 절반).
+- **사기**: HP가 절반 이하가 된 라운드 종료 시 이 확률로 도망 → 승리 처리(은화·전리품 절반, 고기(식량)는 없음). 이벤트에 `onRouted` 장면이 있으면 승리 장면 대신 그리로 간다.
 
 **밸런스 확인 (시작 사냥꾼 vs 늑대)**
 - 사냥꾼 명중 70% × 평균 피해 3.5 → 늑대(HP 12)를 약 5라운드에 처치.
@@ -661,6 +661,8 @@ export interface CombatSetup {
   playerDefenseBonus?: number;
   firstAttackAdvantage?: boolean;
   onVictory: SceneId;
+  /** 이겼는데 적이 하나라도 겁먹고 달아났으면 onVictory 대신 이 장면 (쓰러뜨린 것을 전제한 글·전리품을 피한다) */
+  onRouted?: SceneId;
   onFled?: SceneId;
   onDefeat?: SceneId;
   /** 끝장 승부: 적이 사기 판정으로 달아나지 않는다. HP가 모두 닳아야 이긴다 (결투장) */

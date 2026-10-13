@@ -59,13 +59,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "어미 거미가 갱도 깊이 달아났다. 남은 알주머니는 모두 태웠다.", "onEnter": [{ "type": "fatigue", "delta": 1 }], "choices": [] },
     "win": {
       "text": "어미 거미가 쓰러졌다. 남은 알주머니도 모두 태웠다.",
       "onEnter": [

@@ -1,6 +1,6 @@
 import { Children, useState, type ReactNode } from "react";
 import { Text as RNText, StyleSheet, type LayoutChangeEvent, type TextProps } from "react-native";
-import { keepWords, WJ } from "@/ui/keepWords";
+import { keepWords, NBSP, WJ } from "@/ui/keepWords";
 
 /**
  * 앱의 모든 글자는 이 Text를 쓴다 (react-native의 Text 대신).
@@ -44,7 +44,6 @@ function joinText(children: ReactNode): ReactNode[] {
   return out;
 }
 
-const NBSP = "\u00a0";
 /** 문장이 끝나는 낱말: 마침표·물음표·느낌표·말줄임표로 끝난다 (닫는 따옴표·괄호까지) */
 const SENTENCE_END = /[.!?…]["”’')\]]?$/;
 /** 어림잡은 너비가 실제보다 작을 때를 대비해 줄 너비를 조금 덜 쓴다 */
@@ -59,7 +58,7 @@ function keepSentencesIn(children: ReactNode, width: number, style: { fontSize?:
 }
 
 /** 한 줄에 들어가는 문장은 안의 띄어쓰기를 줄바꿈 없는 띄어쓰기로 바꾼다. 줄보다 긴 문장은 그대로 둬 보통처럼 끊는다 */
-export function keepSentences(text: string, fits: (sentence: string) => boolean): string {
+function keepSentences(text: string, fits: (sentence: string) => boolean): string {
   let out = "";
   let sentence = "";
   const flush = () => {

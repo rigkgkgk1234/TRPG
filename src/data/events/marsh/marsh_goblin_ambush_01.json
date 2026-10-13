@@ -77,7 +77,7 @@
             ],
             "initiative": "player",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
@@ -95,13 +95,14 @@
             ],
             "initiative": "enemy",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늪 고블린이 갈대 사이로 달아났다. 진흙탕에 떨어진 주머니를 챙겼다.", "choices": [] },
     "win": {
       "text": "늪 고블린이 진흙탕에 쓰러졌다. 허리춤에 찬 주머니를 챙겼다.",
       "choices": []

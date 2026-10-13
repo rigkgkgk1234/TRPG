@@ -77,13 +77,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "정찰병이 갱도 깊이 달아났다. 벽의 숯 그림은 산 너머로 이어지는 길을 가리키고 있었다.", "onEnter": [{ "type": "setFlag", "flag": "goblin_tracks_found" }], "choices": [] },
     "win": {
       "text": "정찰병이 쓰러졌다. 벽의 숯 그림은 산 너머로 이어지는 길을 가리키고 있었다.",
       "onEnter": [

@@ -82,13 +82,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늪 고블린이 물속으로 뛰어들어 달아났다. 뗏목에 실린 짐에는 보리울 쪽 마을의 곡식 자루가 섞여 있었다.", "onEnter": [{ "type": "setFlag", "flag": "goblin_tracks_found" }], "choices": [] },
     "win": {
       "text": "늪 고블린이 쓰러졌다. 뗏목에 실린 짐에는 보리울 쪽 마을의 곡식 자루가 섞여 있었다.",
       "onEnter": [

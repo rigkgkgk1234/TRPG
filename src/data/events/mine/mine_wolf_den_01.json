@@ -66,13 +66,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늑대가 굴 밖으로 달아났다. 굴 안쪽에서 광부가 떨어뜨린 은 부스러기를 주웠다.", "onEnter": [{ "type": "addItem", "itemId": "silver_scrap", "qty": 1 }], "choices": [] },
     "win": {
       "text": "늑대가 쓰러졌다. 굴 안쪽에서 광부가 떨어뜨린 은 부스러기를 주웠다.",
       "onEnter": [

@@ -65,13 +65,14 @@
             ],
             "initiative": "enemy",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "어미 멧돼지가 새끼들을 몰고 덤불 너머로 사라졌다. 거친 숨만 남았다.", "choices": [] },
     "win": {
       "text": "어미 멧돼지가 쓰러졌다. 새끼들은 사방으로 흩어졌다. 고기를 넉넉히 챙겼다.",
       "choices": []

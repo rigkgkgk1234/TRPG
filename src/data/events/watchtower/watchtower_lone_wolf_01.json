@@ -68,13 +68,14 @@
             ],
             "initiative": "roll",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "늑대가 탑 아래로 달아났다. 떨리는 숨을 고르고 다시 탑을 올려다보았다.", "choices": [] },
     "win": {
       "text": "늑대가 쓰러졌다. 떨리는 숨을 고르고 다시 탑을 올려다보았다.",
       "onEnter": [

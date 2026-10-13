@@ -2,7 +2,7 @@
 export const WJ = "\u2060";
 
 /** 줄을 바꾸지 않는 띄어쓰기 */
-const NBSP = "\u00a0";
+export const NBSP = "\u00a0";
 
 /**
  * 띄어쓰기에서만 줄이 바뀌도록 붙어 있는 글자 사이에 단어 이음표를 넣는다.

@@ -1792,6 +1792,7 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -1810,10 +1811,15 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "멧돼지가 씩씩거리며 덤불 속으로 달아났다. 고기는 놓쳤지만 크게 다친 데는 없다.",
      "choices": []
     },
     "win": {
@@ -3110,10 +3116,15 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "어미 멧돼지가 새끼들을 몰고 덤불 너머로 사라졌다. 거친 숨만 남았다.",
      "choices": []
     },
     "win": {
@@ -3695,6 +3706,7 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -3713,10 +3725,15 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "들개가 꼬리를 말고 덤불 속으로 달아났다. 손이 아직 떨린다. 그래도 무기 쥐는 법은 조금 알 것 같다.",
      "choices": []
     },
     "win": {
@@ -4003,6 +4020,7 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -4022,6 +4040,7 @@
         "canFlee": true,
         "enemyHpModifier": -6,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -4040,10 +4059,27 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "숨을 몰아쉰다. 늑대가 숲 깊이 사라진 것을 보고서야 주먹을 풀었다."
+       }
+      ],
+      "fallback": "숨을 몰아쉰다. 늑대가 숲 깊이 사라진 것을 보고서야 {weapon:을/를} 내렸다."
+     },
      "choices": []
     },
     "win": {
@@ -4157,10 +4193,27 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": {
+      "variants": [
+       {
+        "when": [
+         {
+          "type": "unarmed"
+         }
+        ],
+        "text": "늑대들이 숲 깊이 달아났다. 떨리는 손으로 주먹을 풀었다."
+       }
+      ],
+      "fallback": "늑대들이 숲 깊이 달아났다. 떨리는 손으로 {weapon:을/를} 내렸다."
+     },
      "choices": []
     },
     "win": {
@@ -4680,8 +4733,23 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "rats_win",
+        "onRouted": "rats_routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "rats_routed": {
+     "text": "쥐 떼를 방앗간에서 쫓아냈다. 주인이 이제 좀 살겠다며 품삯을 쥐여 준다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 4
+      },
+      {
+       "type": "fame",
+       "delta": 3
       }
      ],
      "choices": []
@@ -4713,8 +4781,23 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "wolf_win",
+        "onRouted": "wolf_routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "wolf_routed": {
+     "text": "늑대와 들개를 산 너머로 쫓아냈다. 양치기가 고맙다며 고개를 숙인다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 7
+      },
+      {
+       "type": "fame",
+       "delta": 5
       }
      ],
      "choices": []
@@ -4745,8 +4828,23 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "bandit_win",
+        "onRouted": "bandit_routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "bandit_routed": {
+     "text": "도적이 산길로 달아났다. 잡아 오지 못해 중개인이 현상금을 절반만 세어 준다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 5
+      },
+      {
+       "type": "fame",
+       "delta": 3
       }
      ],
      "choices": []
@@ -5414,10 +5512,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "들개들이 꼬리를 말고 폐허 너머로 달아났다.",
      "choices": []
     },
     "win": {
@@ -5584,6 +5687,7 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -5603,8 +5707,19 @@
         "canFlee": true,
         "enemyHpModifier": -5,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "고블린이 자루를 내던지고 달아났다. 자루에는 물레방아골 사람들의 냄비와 숟가락이 들어 있었다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 2
       }
      ],
      "choices": []
@@ -6681,8 +6796,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "놈들이 곡식 자루를 버려두고 달아났다. 훔친 곡식을 되찾았다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 3
       }
      ],
      "choices": []
@@ -6787,8 +6913,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "약탈병들이 허둥지둥 달아나다 허리에 찬 가죽을 떨어뜨렸다. 보리울로 들어가는 길이 그려져 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
       }
      ],
      "choices": []
@@ -6983,8 +7120,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "정찰병이 지붕을 건너뛰어 달아났다. 놈이 지키던 지붕에서 강 하류가 훤히 내려다보였다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
       }
      ],
      "choices": []
@@ -7238,8 +7386,19 @@
         "canFlee": true,
         "enemyHpModifier": -7,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "고블린이 다친 다리를 끌고 달아나다 허리춤의 주머니를 떨어뜨렸다. 물레방아골 사람들의 은화가 들어 있었다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 2
       }
      ],
      "choices": []
@@ -7463,10 +7622,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "멧돼지가 진흙을 튀기며 갈대숲으로 달아났다. 고기는 놓쳤다.",
      "choices": []
     },
     "win": {
@@ -8014,6 +8178,7 @@
         "initiative": "player",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -8032,10 +8197,15 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늪 고블린이 갈대 사이로 달아났다. 진흙탕에 떨어진 주머니를 챙겼다.",
      "choices": []
     },
     "win": {
@@ -8137,8 +8307,23 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늪 고블린들이 짐을 내던지고 달아났다. 짐에서 말린 생선과 은화를 챙겼다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 2
+      },
+      {
+       "type": "silver",
+       "delta": 2
       }
      ],
      "choices": []
@@ -8247,6 +8432,7 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -8265,8 +8451,19 @@
         "initiative": "player",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "고블린이 뿔피리도 못 불고 달아났다. 말뚝의 가죽 조각을 떼어 살펴보니 보리울로 오는 길이 그려져 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
       }
      ],
      "choices": []
@@ -9057,8 +9254,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늪 고블린이 물속으로 뛰어들어 달아났다. 뗏목에 실린 짐에는 보리울 쪽 마을의 곡식 자루가 섞여 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
       }
      ],
      "choices": []
@@ -9460,6 +9668,7 @@
         "initiative": "player",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
@@ -9478,8 +9687,19 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "뱀이 물속으로 미끄러져 사라졌다. 뱀이 웅크리고 있던 둥지에 물새 알 두 개가 남아 있었다.",
+     "onEnter": [
+      {
+       "type": "food",
+       "delta": 1
       }
      ],
      "choices": []
@@ -9575,10 +9795,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늑대가 물에 뛰어들어 헤엄쳐 달아났다. 섬을 지나 길을 이어 갔다.",
      "choices": []
     },
     "win": {
@@ -10952,8 +11177,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "정찰병이 갱도 깊이 달아났다. 벽의 숯 그림은 산 너머로 이어지는 길을 가리키고 있었다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_tracks_found"
       }
      ],
      "choices": []
@@ -11587,8 +11823,20 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "쥐들이 벽 틈으로 흩어졌다. 갉아 먹던 자루 바닥에 은 부스러기가 굴러다녔다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 1
       }
      ],
      "choices": []
@@ -11966,8 +12214,24 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "거미들이 천장 틈으로 달아났다. 광맥에서 은 부스러기를 넉넉히 긁어모았다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 2
+      },
+      {
+       "type": "silver",
+       "delta": 3
       }
      ],
      "choices": []
@@ -12054,8 +12318,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "어미 거미가 갱도 깊이 달아났다. 남은 알주머니는 모두 태웠다.",
+     "onEnter": [
+      {
+       "type": "fatigue",
+       "delta": 1
       }
      ],
      "choices": []
@@ -12149,8 +12424,19 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "거미가 천장 틈으로 달아났다. 거미줄에 걸린 주머니에서 은화를 꺼냈다.",
+     "onEnter": [
+      {
+       "type": "silver",
+       "delta": 3
       }
      ],
      "choices": []
@@ -12498,8 +12784,20 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늑대가 굴 밖으로 달아났다. 굴 안쪽에서 광부가 떨어뜨린 은 부스러기를 주웠다.",
+     "onEnter": [
+      {
+       "type": "addItem",
+       "itemId": "silver_scrap",
+       "qty": 1
       }
      ],
      "choices": []
@@ -14283,8 +14581,23 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "고블린이 울타리를 넘어 어둠 속으로 달아났다. 이웃들이 하나둘 모여들었다. 놈들이 마을까지 넘보고 있다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_scout_seen"
+      },
+      {
+       "type": "reputation",
+       "delta": 3
       }
      ],
      "choices": []
@@ -16404,11 +16717,16 @@
         ],
         "initiative": "enemy",
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled",
         "canFlee": true
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "보초가 비명을 지르며 야영지 쪽으로 달아났다. 야영지가 술렁이기 시작했다. 더 머물 수는 없다.",
      "choices": []
     },
     "win": {
@@ -19298,10 +19616,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "멧돼지가 무너진 담 틈으로 달아났다. 고기는 놓쳤다.",
      "choices": []
     },
     "win": {
@@ -19862,10 +20185,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늑대가 탑 아래로 달아났다. 떨리는 숨을 고르고 다시 탑을 올려다보았다.",
      "choices": []
     },
     "win": {
@@ -20995,8 +21323,19 @@
         "initiative": "enemy",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
+      }
+     ],
+     "choices": []
+    },
+    "routed": {
+     "text": "고블린들이 허둥지둥 달아나다 숯으로 그린 지도를 떨어뜨렸다. 놈들의 길이 보인다.",
+     "onEnter": [
+      {
+       "type": "setFlag",
+       "flag": "goblin_plan_known"
       }
      ],
      "choices": []
@@ -21112,10 +21451,15 @@
         "initiative": "roll",
         "canFlee": true,
         "onVictory": "win",
+        "onRouted": "routed",
         "onFled": "fled"
        }
       }
      ],
+     "choices": []
+    },
+    "routed": {
+     "text": "늑대들이 계단 아래로 달아났다.",
      "choices": []
     },
     "win": {

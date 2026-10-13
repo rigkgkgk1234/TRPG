@@ -50,19 +50,20 @@
     },
     "fight": {
       "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "피할 수 없다. 전투에 대비해 몸을 푼다." }], "fallback": "피할 수 없다. {weapon:을/를} 고쳐 쥔다." },
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "roll", "canFlee": true, "onVictory": "win", "onRouted": "routed", "onFled": "fled" } }],
       "choices": []
     },
     "fight_advantage": {
       "text": "상처 입은 늑대가 다리를 절며 다가온다.",
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "player", "canFlee": true, "enemyHpModifier": -6, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "player", "canFlee": true, "enemyHpModifier": -6, "onVictory": "win", "onRouted": "routed", "onFled": "fled" } }],
       "choices": []
     },
     "fight_ambushed": {
       "text": "날카로운 이빨이 등을 노린다!",
-      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onFled": "fled" } }],
+      "onEnter": [{ "type": "startCombat", "combat": { "enemies": ["wolf"], "initiative": "enemy", "canFlee": true, "onVictory": "win", "onRouted": "routed", "onFled": "fled" } }],
       "choices": []
     },
+    "routed": { "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "숨을 몰아쉰다. 늑대가 숲 깊이 사라진 것을 보고서야 주먹을 풀었다." }], "fallback": "숨을 몰아쉰다. 늑대가 숲 깊이 사라진 것을 보고서야 {weapon:을/를} 내렸다." }, "choices": [] },
     "win": {
       "text": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 주먹을 풀었다." }], "fallback": "숨을 몰아쉰다. 늑대가 다시 일어나지 않는 것을 보고서야 {weapon:을/를} 내렸다." },
       "onEnter": [{ "type": "incFlag", "flag": "wolves_killed", "delta": 1 }],

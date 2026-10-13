@@ -78,7 +78,7 @@
             ],
             "initiative": "player",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
@@ -96,13 +96,14 @@
             ],
             "initiative": "enemy",
             "canFlee": true,
-            "onVictory": "win",
+            "onVictory": "win", "onRouted": "routed",
             "onFled": "fled"
           }
         }
       ],
       "choices": []
     },
+    "routed": { "text": "뱀이 물속으로 미끄러져 사라졌다. 뱀이 웅크리고 있던 둥지에 물새 알 두 개가 남아 있었다.", "onEnter": [{ "type": "food", "delta": 1 }], "choices": [] },
     "win": {
       "text": "뱀이 축 늘어졌다. 뱀이 웅크리고 있던 둥지에 물새 알 두 개가 남아 있었다.",
       "onEnter": [
