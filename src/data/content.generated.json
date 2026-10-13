@@ -4468,6 +4468,106 @@
     }
    }
   },
+  "forest_woodcutter_oak_01": {
+   "id": "forest_woodcutter_oak_01",
+   "category": "explore",
+   "region": "forest",
+   "title": "벼락 맞은 참나무",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "woodcutter"
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "벼락 맞은 참나무가 길을 막고 쓰러져 있다. 줄기는 단단하고 마른 가지가 수북하다. 나무꾼의 눈에는 땔감이 아니라 은화로 보인다.",
+     "choices": [
+      {
+       "id": "split",
+       "label": "가지를 쳐 장작으로 묶는다",
+       "check": {
+        "stat": "con",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "해가 기울 무렵 장작 세 짐이 쌓였다. 여관에 넘기니 값을 잘 쳐 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 5
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "옹이에 도끼날이 자꾸 튕겼다. 한 짐만 겨우 묶었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "honey",
+       "label": "줄기 속 벌집을 꺼낸다",
+       "check": {
+        "stat": "agi",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "연기를 피워 벌을 쫓고 꿀이 든 벌집을 통째로 꺼냈다.",
+         "effects": [
+          {
+           "type": "food",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "벌 떼가 얼굴로 몰려들었다. 퉁퉁 부은 채 도망쳤다.",
+         "effects": [
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "forest_wounded_hunter_01": {
    "id": "forest_wounded_hunter_01",
    "category": "explore",
@@ -8657,6 +8757,90 @@
     }
    }
   },
+  "marsh_herbalist_bog_01": {
+   "id": "marsh_herbalist_bog_01",
+   "category": "explore",
+   "region": "marsh",
+   "title": "물이끼 아래 약초 무리",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "herbalist"
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 2,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "물이끼가 두껍게 깔린 웅덩이 가장자리에 잎이 톱니 같은 풀이 무리 지어 자란다. 약초꾼의 눈에는 한눈에 보인다. 늪 약초다. 다만 뿌리 근처에 독초가 섞여 있다.",
+     "choices": [
+      {
+       "id": "dig",
+       "label": "독초를 가려 뿌리째 캔다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 13
+       },
+       "outcomes": {
+        "success": {
+         "text": "독초를 한 줄기도 섞지 않고 캐냈다. 마그다 할멈이 보면 놀랄 양이다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "독초 즙이 손에 묻어 손끝이 저렸다. 몇 포기만 겨우 건졌다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rare_herb",
+           "qty": 1
+          },
+          {
+           "type": "hp",
+           "delta": -2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "pick",
+       "label": "잎만 조금 뜯는다",
+       "outcome": {
+        "text": "잎 몇 장을 조심스럽게 뜯었다. 달이면 상처에 쓸 만하다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "herb",
+          "qty": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "marsh_leech_pool_01": {
    "id": "marsh_leech_pool_01",
    "category": "explore",
@@ -8719,6 +8903,32 @@
          "text": "돌아가던 길도 진창이었다. 발이 빠진 사이 물속의 것이 다가왔다.",
          "next": "fight"
         }
+       }
+      },
+      {
+       "id": "herb_paste",
+       "label": "거머리가 싫어하는 풀즙을 바르고 건넌다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "herbalist"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "쓴 냄새 나는 풀즙을 다리에 바르자 거머리가 슬금슬금 물러났다. 물가에서 늪 약초 한 포기를 뜯었다.",
+        "effects": [
+         {
+          "type": "addItem",
+          "itemId": "rare_herb",
+          "qty": 1
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
        }
       },
       {
@@ -15143,6 +15353,56 @@
        }
       },
       {
+       "id": "haggle",
+       "label": "녹을 짚어 가며 값을 깎는다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "peddler"
+        },
+        {
+         "type": "notFlag",
+         "flag": "brock_haggled"
+        }
+       ],
+       "hideIfLocked": true,
+       "cost": {
+        "silver": 6
+       },
+       "check": {
+        "stat": "cha",
+        "skill": "haggle",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "녹이 슨 곳을 몇 번 짚었더니 브록이 손을 들었다. 은화 6개에 검을 넘겨받았다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "rusty_sword",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "브록이 값은 못 깎는다며 은화를 도로 밀어 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 6
+          },
+          {
+           "type": "setFlag",
+           "flag": "brock_haggled"
+          }
+         ],
+         "next": "start"
+        }
+       }
+      },
+      {
        "id": "leave",
        "label": "돈이 없다며 사양한다",
        "outcome": {
@@ -15296,6 +15556,107 @@
     }
    }
   },
+  "npc_hamon_chapel": {
+   "id": "npc_hamon_chapel",
+   "category": "npc",
+   "npc": "hamon",
+   "title": "예배당의 저녁 기도",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "acolyte"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "하몬 촌장이 예배당 앞에서 기다리고 있었다. 고블린 소문에 겁먹은 이웃들이 모여 있으니 저녁 기도를 이끌어 달라고 한다.",
+     "choices": [
+      {
+       "id": "pray",
+       "label": "저녁 기도를 이끈다",
+       "check": {
+        "stat": "cha",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "떨리던 목소리들이 하나로 모였다. 기도가 끝나자 이웃들의 얼굴이 한결 밝아졌다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "말이 자꾸 엉켰다. 그래도 끝까지 자리를 지킨 것을 다들 고마워했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "tend",
+       "label": "앓는 아이부터 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "열이 오른 아이의 이마에 약초 찜질을 얹었다. 새벽녘에 열이 내렸다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "할 수 있는 건 곁을 지키는 것뿐이었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 하겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "npc_hamon_dispute": {
    "id": "npc_hamon_dispute",
    "category": "npc",
@@ -15432,6 +15793,56 @@
           {
            "type": "fatigue",
            "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "new_logs",
+       "label": "숲에서 곧은 나무를 베어 와 새로 세운다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "woodcutter"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "con",
+        "dc": 9
+       },
+       "outcomes": {
+        "success": {
+         "text": "곧은 나무만 골라 베어 왔다. 새 울타리는 전보다 단단하다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "나무를 끌고 오느라 진이 빠졌다. 울타리는 반쯤 세웠다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
           }
          ],
          "next": "END"
@@ -15600,8 +16011,124 @@
        }
       },
       {
+       "id": "drill",
+       "label": "경비대식으로 순번표를 다시 짠다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "recruit"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "두 사람씩 짝을 지어 짧게 돌리자 다들 조금씩 눈을 붙일 수 있게 됐다. 촌장이 경비대는 역시 다르다고 했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 4
+         },
+         {
+          "type": "incFlag",
+          "flag": "favors_done",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
        "id": "leave",
        "label": "집안일이 바쁘다며 나온다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_lena_father": {
+   "id": "npc_lena_father",
+   "category": "npc",
+   "npc": "lena",
+   "title": "아버지의 부대",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "soldier_child"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "once"
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "이름을 들은 레나가 손을 멈춘다. 국경에서 같은 부대에 있던 사람이 그 성을 썼다고 한다. 칼끝을 늘 낮게 두던 사람이었다고.",
+     "choices": [
+      {
+       "id": "story",
+       "label": "아버지 이야기를 청한다",
+       "outcome": {
+        "text": "레나는 아버지가 지키던 고개 이야기를 오래 들려주었다. 그리고 그 낮은 자세를 몇 번 보여 주었다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "blade",
+          "amount": 3
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "spar",
+       "label": "아버지의 자세로 겨뤄 보자고 한다",
+       "check": {
+        "stat": "agi",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "목검이 레나의 어깨에 닿았다. 레나가 한참 웃더니 아버지를 꼭 닮았다고 했다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "blade",
+           "amount": 3
+          },
+          {
+           "type": "fame",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "세 합 만에 넘어졌다. 레나가 손을 내밀며 또 오라고 했다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "blade",
+           "amount": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "말없이 고개만 숙인다",
        "outcome": {
         "next": "END"
        }
@@ -15663,6 +16190,54 @@
           {
            "type": "reputation",
            "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "train",
+       "label": "경비대에서 배운 대로 창 쥐는 법부터 가르친다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "recruit"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "con",
+        "skill": "guard",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "창을 처음 쥐어 본 사람들도 대열을 맞추기 시작했다. 레나가 신병 교관 노릇을 제대로 한다며 웃었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 4
+          },
+          {
+           "type": "skillXp",
+           "skill": "guard",
+           "amount": 1
+          },
+          {
+           "type": "incFlag",
+           "flag": "favors_done",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "구령이 엉켜 대열이 흩어졌다. 그래도 몇 사람은 남아 창을 쥐었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
           }
          ],
          "next": "END"
@@ -15763,6 +16338,53 @@
           {
            "type": "fatigue",
            "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "father_stance",
+       "label": "아버지에게 배운 자세로 맞선다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "soldier_child"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "agi",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "칼끝을 낮게 두고 파고들자 레나가 한 발 물러섰다. 그 자세를 어디서 배웠느냐고 물었다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "blade",
+           "amount": 2
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "자세만 흉내 냈을 뿐 몸이 따라가지 못했다. 정강이에 목검을 맞았다.",
+         "effects": [
+          {
+           "type": "skillXp",
+           "skill": "blade",
+           "amount": 1
+          },
+          {
+           "type": "hp",
+           "delta": -2
           }
          ],
          "next": "END"
@@ -15913,6 +16535,44 @@
        }
       },
       {
+       "id": "sell_bundles",
+       "label": "남는 다발을 떼어다 장터에 판다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "peddler"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "cha",
+        "skill": "haggle",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "약초 다발을 장터에 내놓자 금세 동났다. 할멈이 몫을 넉넉히 떼어 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "흥정이 길어지는 사이 손님이 떠났다. 몇 다발만 팔았다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
        "id": "leave",
        "label": "다음에 오겠다고 한다",
        "outcome": {
@@ -15983,6 +16643,56 @@
          }
         ],
         "next": "END"
+       }
+      },
+      {
+       "id": "tend_neighbors",
+       "label": "할멈 대신 앓는 이웃들을 살핀다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "acolyte"
+        }
+       ],
+       "hideIfLocked": true,
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "기도와 찜질로 밤을 새웠다. 할멈이 일을 덜어 줘서 고맙다며 은화를 쥐여 주었다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "할 수 있는 일이 많지 않았다. 그래도 곁을 지킨 것을 다들 고마워했다.",
+         "effects": [
+          {
+           "type": "reputation",
+           "delta": 1
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
        }
       },
       {
@@ -16067,6 +16777,45 @@
          }
         ],
         "next": "END"
+       }
+      },
+      {
+       "id": "brew_self",
+       "label": "늪 약초를 직접 달인다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "herbalist"
+        }
+       ],
+       "hideIfLocked": true,
+       "cost": {
+        "item": {
+         "itemId": "rare_herb",
+         "qty": 1
+        }
+       },
+       "check": {
+        "stat": "per",
+        "skill": "herbalism",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "할멈이 팔짱을 끼고 지켜보다 고개를 끄덕였다. 제대로 된 물약이 나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "healing_potion",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "불 조절을 그르쳐 약이 탔다. 할멈이 혀를 찼다.",
+         "next": "END"
+        }
        }
       },
       {
@@ -16228,6 +16977,31 @@
        }
       },
       {
+       "id": "split_grain",
+       "label": "결을 읽어 단숨에 쪼갠다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "woodcutter"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "나뭇결을 따라 도끼를 내리치자 통나무가 쩍쩍 갈라졌다. 토비가 입을 다물지 못했다.",
+        "effects": [
+         {
+          "type": "silver",
+          "delta": 4
+         },
+         {
+          "type": "food",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
        "id": "leave",
        "label": "다음에 하겠다고 한다",
        "outcome": {
@@ -16292,6 +17066,44 @@
        }
       },
       {
+       "id": "rounds",
+       "label": "잔을 나르며 이 손님 저 손님 말을 맞춰 본다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "errand"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": {
+         "variants": [
+          {
+           "when": [
+            {
+             "type": "dayRange",
+             "min": 15
+            }
+           ],
+           "text": "이야기를 맞춰 보니 하나로 이어졌다. 숲 동쪽에서 고블린을 봤다는 사냥꾼이 셋이나 되고, 감시탑 쪽 길도 위험하다고 한다."
+          }
+         ],
+         "fallback": "이야기를 맞춰 보니 하나로 이어졌다. 로웬 상인들이 감시탑 쪽 길을 피해 다닌다. 무너진 담 쪽에 도적이 드나든다는 것이다."
+        },
+        "effects": [
+         {
+          "type": "setFlag",
+          "flag": "bandit_hideout_known"
+         },
+         {
+          "type": "reputation",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
        "id": "leave",
        "label": "한 귀로 흘려듣는다",
        "outcome": {
@@ -16337,8 +17149,219 @@
        }
       },
       {
+       "id": "both",
+       "label": "홀과 부엌을 한꺼번에 맡는다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "errand"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "주문을 받으며 감자까지 깎았다. 토비가 이런 날은 품삯을 더 줘야 한다며 은화를 얹었다.",
+        "effects": [
+         {
+          "type": "food",
+          "delta": 2
+         },
+         {
+          "type": "silver",
+          "delta": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
        "id": "leave",
        "label": "다음에 하겠다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_market_day": {
+   "id": "npc_toby_market_day",
+   "category": "npc",
+   "npc": "toby",
+   "title": "장날의 여관",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "errand"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 5
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "장날이라 여관이 손님으로 미어터진다. 토비가 심부름꾼이 제일 필요한 날이라며 앞치마를 던져 준다.",
+     "choices": [
+      {
+       "id": "run",
+       "label": "홀과 부엌을 뛰어다닌다",
+       "check": {
+        "stat": "cha",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "주문 하나 틀리지 않고 해 질 녘까지 버텼다. 단골들이 이름을 외워 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 4
+          },
+          {
+           "type": "reputation",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "접시를 두 개나 깨뜨렸다. 토비가 한숨을 쉬면서도 품삯은 주었다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 2
+          },
+          {
+           "type": "fatigue",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "listen",
+       "label": "손님들 사정을 하나하나 들어 준다",
+       "check": {
+        "stat": "per",
+        "dc": 11
+       },
+       "outcomes": {
+        "success": {
+         "text": "자리마다 말동무를 해 주었더니 팁이 쏠쏠했다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          },
+          {
+           "type": "reputation",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "바쁜 날에 수다만 떤다고 토비에게 한 소리 들었다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "오늘은 바쁘다고 한다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "npc_toby_peddler_friend": {
+   "id": "npc_toby_peddler_friend",
+   "category": "npc",
+   "npc": "toby",
+   "title": "길동무 행상",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "peddler"
+    }
+   ],
+   "weight": 8,
+   "repeat": {
+    "mode": "cooldown",
+    "days": 6
+   },
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "여관에 낯익은 행상이 묵고 있다. 길에서 몇 번 마주친 사이다. 팔다 남은 물건 꾸러미를 통째로 넘기겠다고 한다.",
+     "choices": [
+      {
+       "id": "deal",
+       "label": "은화 4개에 꾸러미를 받아 되판다",
+       "cost": {
+        "silver": 4
+       },
+       "check": {
+        "stat": "cha",
+        "skill": "haggle",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "꾸러미를 풀어 마을 사람들에게 하나씩 팔았다. 들인 돈의 두 배가 넘게 남았다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 10
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "꾸러미 속은 반쯤 쓸모없는 잡동사니였다. 겨우 본전 가까이 건졌다.",
+         "effects": [
+          {
+           "type": "silver",
+           "delta": 3
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "news",
+       "label": "길 소식을 주고받는다",
+       "outcome": {
+        "text": "로웬 가는 길의 다리가 무너졌다는 소식을 들었다. 마을 사람들에게 전하자 다들 고마워했다.",
+        "effects": [
+         {
+          "type": "reputation",
+          "delta": 2
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "leave",
+       "label": "다음에 보자고 한다",
        "outcome": {
         "next": "END"
        }
@@ -20601,6 +21624,102 @@
     }
    }
   },
+  "watchtower_recruit_post_01": {
+   "id": "watchtower_recruit_post_01",
+   "category": "explore",
+   "region": "watchtower",
+   "title": "무너진 경비대 초소",
+   "conditions": [
+    {
+     "type": "job",
+     "job": "recruit"
+    },
+    {
+     "type": "dayRange",
+     "min": 8
+    }
+   ],
+   "weight": 6,
+   "repeat": {
+    "mode": "once"
+   },
+   "dangerTier": 1,
+   "startScene": "start",
+   "scenes": {
+    "start": {
+     "text": "탑 아래에 경비대 초소가 무너진 채 남아 있다. 벽에 걸린 순번표와 녹슨 방패를 보니 경비대에서 배운 것들이 떠오른다.",
+     "choices": [
+      {
+       "id": "lookout",
+       "label": "망루에 올라 경비대식으로 사방을 살핀다",
+       "check": {
+        "stat": "per",
+        "skill": "guard",
+        "dc": 12
+       },
+       "outcomes": {
+        "success": {
+         "text": "숲 가장자리에 연기가 몇 줄기 오른다. 사냥꾼이 피운 불이 아니다. 촌장에게 알려야겠다.",
+         "effects": [
+          {
+           "type": "setFlag",
+           "flag": "goblin_tracks_found"
+          },
+          {
+           "type": "reputation",
+           "delta": 2
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "바람이 매워 눈을 오래 뜨고 있을 수 없었다.",
+         "effects": [
+          {
+           "type": "fatigue",
+           "delta": 1
+          }
+         ],
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "shield",
+       "label": "녹슨 방패를 손질해 챙긴다",
+       "check": {
+        "stat": "str",
+        "dc": 10
+       },
+       "outcomes": {
+        "success": {
+         "text": "녹을 긁어내자 쓸 만한 나무 방패가 나왔다.",
+         "effects": [
+          {
+           "type": "addItem",
+           "itemId": "wooden_shield",
+           "qty": 1
+          }
+         ],
+         "next": "END"
+        },
+        "fail": {
+         "text": "손잡이가 썩어 손안에서 부서졌다.",
+         "next": "END"
+        }
+       }
+      },
+      {
+       "id": "leave",
+       "label": "그냥 지나간다",
+       "outcome": {
+        "next": "END"
+       }
+      }
+     ]
+    }
+   }
+  },
   "watchtower_rotten_floor_01": {
    "id": "watchtower_rotten_floor_01",
    "category": "explore",
@@ -20943,6 +22062,58 @@
          {
           "type": "fatigue",
           "delta": 1
+         },
+         {
+          "type": "skillXp",
+          "skill": "guard",
+          "amount": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "insignia",
+       "label": "갑옷의 부대 문장을 살핀다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "soldier_child"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "갑옷 어깨에 아버지가 말하던 부대 문장이 새겨져 있었다. 이름 모를 전우에게 아버지 대신 고개를 숙였다.",
+        "effects": [
+         {
+          "type": "skillXp",
+          "skill": "blade",
+          "amount": 2
+         },
+         {
+          "type": "fatigue",
+          "delta": 1
+         }
+        ],
+        "next": "END"
+       }
+      },
+      {
+       "id": "pray",
+       "label": "기도를 올리고 묻어 준다",
+       "conditions": [
+        {
+         "type": "job",
+         "job": "acolyte"
+        }
+       ],
+       "hideIfLocked": true,
+       "outcome": {
+        "text": "돌무덤을 쌓고 수도원에서 배운 기도를 올렸다. 지친 몸이 오히려 가벼워졌다.",
+        "effects": [
+         {
+          "type": "fatigue",
+          "delta": -1
          },
          {
           "type": "skillXp",

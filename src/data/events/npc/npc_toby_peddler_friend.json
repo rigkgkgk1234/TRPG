@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_peddler_friend",
+  "category": "npc",
+  "npc": "toby",
+  "title": "길동무 행상",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "peddler"
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 6
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "여관에 낯익은 행상이 묵고 있다. 길에서 몇 번 마주친 사이다. 팔다 남은 물건 꾸러미를 통째로 넘기겠다고 한다.",
+      "choices": [
+        {
+          "id": "deal",
+          "label": "은화 4개에 꾸러미를 받아 되판다",
+          "cost": {
+            "silver": 4
+          },
+          "check": {
+            "stat": "cha",
+            "skill": "haggle",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "꾸러미를 풀어 마을 사람들에게 하나씩 팔았다. 들인 돈의 두 배가 넘게 남았다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 10
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "꾸러미 속은 반쯤 쓸모없는 잡동사니였다. 겨우 본전 가까이 건졌다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "news",
+          "label": "길 소식을 주고받는다",
+          "outcome": {
+            "text": "로웬 가는 길의 다리가 무너졌다는 소식을 들었다. 마을 사람들에게 전하자 다들 고마워했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "다음에 보자고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

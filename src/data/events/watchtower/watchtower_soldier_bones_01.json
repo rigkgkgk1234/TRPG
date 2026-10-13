@@ -74,6 +74,58 @@
             ],
             "next": "END"
           }
+        },
+        {
+          "id": "insignia",
+          "label": "갑옷의 부대 문장을 살핀다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "soldier_child"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "갑옷 어깨에 아버지가 말하던 부대 문장이 새겨져 있었다. 이름 모를 전우에게 아버지 대신 고개를 숙였다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "blade",
+                "amount": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "pray",
+          "label": "기도를 올리고 묻어 준다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "acolyte"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "돌무덤을 쌓고 수도원에서 배운 기도를 올렸다. 지친 몸이 오히려 가벼워졌다.",
+            "effects": [
+              {
+                "type": "fatigue",
+                "delta": -1
+              },
+              {
+                "type": "skillXp",
+                "skill": "guard",
+                "amount": 1
+              }
+            ],
+            "next": "END"
+          }
         }
       ]
     }

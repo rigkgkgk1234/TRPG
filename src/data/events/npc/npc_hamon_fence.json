@@ -79,6 +79,56 @@
           }
         },
         {
+          "id": "new_logs",
+          "label": "숲에서 곧은 나무를 베어 와 새로 세운다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "woodcutter"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "con",
+            "dc": 9
+          },
+          "outcomes": {
+            "success": {
+              "text": "곧은 나무만 골라 베어 왔다. 새 울타리는 전보다 단단하다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 4
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "나무를 끌고 오느라 진이 빠졌다. 울타리는 반쯤 세웠다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
           "id": "decline",
           "label": "오늘은 바쁘다고 한다",
           "outcome": {

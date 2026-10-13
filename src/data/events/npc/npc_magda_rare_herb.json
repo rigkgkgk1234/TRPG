@@ -38,6 +38,45 @@
           }
         },
         {
+          "id": "brew_self",
+          "label": "늪 약초를 직접 달인다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "herbalist"
+            }
+          ],
+          "hideIfLocked": true,
+          "cost": {
+            "item": {
+              "itemId": "rare_herb",
+              "qty": 1
+            }
+          },
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "할멈이 팔짱을 끼고 지켜보다 고개를 끄덕였다. 제대로 된 물약이 나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "healing_potion",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "불 조절을 그르쳐 약이 탔다. 할멈이 혀를 찼다.",
+              "next": "END"
+            }
+          }
+        },
+        {
           "id": "leave",
           "label": "다음에 구해 오겠다고 한다",
           "outcome": {

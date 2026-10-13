@@ -59,6 +59,54 @@
           }
         },
         {
+          "id": "train",
+          "label": "경비대에서 배운 대로 창 쥐는 법부터 가르친다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "recruit"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "con",
+            "skill": "guard",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "창을 처음 쥐어 본 사람들도 대열을 맞추기 시작했다. 레나가 신병 교관 노릇을 제대로 한다며 웃었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 4
+                },
+                {
+                  "type": "skillXp",
+                  "skill": "guard",
+                  "amount": 1
+                },
+                {
+                  "type": "incFlag",
+                  "flag": "favors_done",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "구령이 엉켜 대열이 흩어졌다. 그래도 몇 사람은 남아 창을 쥐었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
           "id": "leave",
           "label": "남의 집 일에 나서지 않는다",
           "outcome": {

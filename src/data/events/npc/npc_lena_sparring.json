@@ -87,6 +87,53 @@
               "next": "END"
             }
           }
+        },
+        {
+          "id": "father_stance",
+          "label": "아버지에게 배운 자세로 맞선다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "soldier_child"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "칼끝을 낮게 두고 파고들자 레나가 한 발 물러섰다. 그 자세를 어디서 배웠느냐고 물었다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 2
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "자세만 흉내 냈을 뿐 몸이 따라가지 못했다. 정강이에 목검을 맞았다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
         }
       ]
     }

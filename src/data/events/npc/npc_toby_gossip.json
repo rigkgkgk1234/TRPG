@@ -53,6 +53,44 @@
           }
         },
         {
+          "id": "rounds",
+          "label": "잔을 나르며 이 손님 저 손님 말을 맞춰 본다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "errand"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": {
+              "variants": [
+                {
+                  "when": [
+                    {
+                      "type": "dayRange",
+                      "min": 15
+                    }
+                  ],
+                  "text": "이야기를 맞춰 보니 하나로 이어졌다. 숲 동쪽에서 고블린을 봤다는 사냥꾼이 셋이나 되고, 감시탑 쪽 길도 위험하다고 한다."
+                }
+              ],
+              "fallback": "이야기를 맞춰 보니 하나로 이어졌다. 로웬 상인들이 감시탑 쪽 길을 피해 다닌다. 무너진 담 쪽에 도적이 드나든다는 것이다."
+            },
+            "effects": [
+              {
+                "type": "setFlag",
+                "flag": "bandit_hideout_known"
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
           "id": "leave",
           "label": "한 귀로 흘려듣는다",
           "outcome": {

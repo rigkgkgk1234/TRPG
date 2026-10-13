@@ -1,0 +1,91 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_lena_father",
+  "category": "npc",
+  "npc": "lena",
+  "title": "아버지의 부대",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "soldier_child"
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "once"
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "이름을 들은 레나가 손을 멈춘다. 국경에서 같은 부대에 있던 사람이 그 성을 썼다고 한다. 칼끝을 늘 낮게 두던 사람이었다고.",
+      "choices": [
+        {
+          "id": "story",
+          "label": "아버지 이야기를 청한다",
+          "outcome": {
+            "text": "레나는 아버지가 지키던 고개 이야기를 오래 들려주었다. 그리고 그 낮은 자세를 몇 번 보여 주었다.",
+            "effects": [
+              {
+                "type": "skillXp",
+                "skill": "blade",
+                "amount": 3
+              },
+              {
+                "type": "reputation",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "spar",
+          "label": "아버지의 자세로 겨뤄 보자고 한다",
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "목검이 레나의 어깨에 닿았다. 레나가 한참 웃더니 아버지를 꼭 닮았다고 했다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 3
+                },
+                {
+                  "type": "fame",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "세 합 만에 넘어졌다. 레나가 손을 내밀며 또 오라고 했다.",
+              "effects": [
+                {
+                  "type": "skillXp",
+                  "skill": "blade",
+                  "amount": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "말없이 고개만 숙인다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

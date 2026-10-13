@@ -1,0 +1,85 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "marsh_herbalist_bog_01",
+  "category": "explore",
+  "region": "marsh",
+  "title": "물이끼 아래 약초 무리",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "herbalist"
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 2,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "물이끼가 두껍게 깔린 웅덩이 가장자리에 잎이 톱니 같은 풀이 무리 지어 자란다. 약초꾼의 눈에는 한눈에 보인다. 늪 약초다. 다만 뿌리 근처에 독초가 섞여 있다.",
+      "choices": [
+        {
+          "id": "dig",
+          "label": "독초를 가려 뿌리째 캔다",
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 13
+          },
+          "outcomes": {
+            "success": {
+              "text": "독초를 한 줄기도 섞지 않고 캐냈다. 마그다 할멈이 보면 놀랄 양이다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "독초 즙이 손에 묻어 손끝이 저렸다. 몇 포기만 겨우 건졌다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rare_herb",
+                  "qty": 1
+                },
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "pick",
+          "label": "잎만 조금 뜯는다",
+          "outcome": {
+            "text": "잎 몇 장을 조심스럽게 뜯었다. 달이면 상처에 쓸 만하다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "herb",
+                "qty": 2
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

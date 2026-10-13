@@ -52,6 +52,44 @@
           }
         },
         {
+          "id": "sell_bundles",
+          "label": "남는 다발을 떼어다 장터에 판다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "peddler"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "cha",
+            "skill": "haggle",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "약초 다발을 장터에 내놓자 금세 동났다. 할멈이 몫을 넉넉히 떼어 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "흥정이 길어지는 사이 손님이 떠났다. 몇 다발만 팔았다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
           "id": "leave",
           "label": "다음에 오겠다고 한다",
           "outcome": {

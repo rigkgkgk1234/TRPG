@@ -18,7 +18,19 @@
       "choices": [
         {
           "id": "wade",
-          "label": { "variants": [{ "when": [{ "type": "unarmed" }], "text": "전투에 대비해 몸을 풀고 그대로 건넌다" }], "fallback": "{weapon:을/를} 들고 그대로 건넌다" },
+          "label": {
+            "variants": [
+              {
+                "when": [
+                  {
+                    "type": "unarmed"
+                  }
+                ],
+                "text": "전투에 대비해 몸을 풀고 그대로 건넌다"
+              }
+            ],
+            "fallback": "{weapon:을/를} 들고 그대로 건넌다"
+          },
           "outcome": {
             "next": "fight"
           }
@@ -49,6 +61,32 @@
               "text": "돌아가던 길도 진창이었다. 발이 빠진 사이 물속의 것이 다가왔다.",
               "next": "fight"
             }
+          }
+        },
+        {
+          "id": "herb_paste",
+          "label": "거머리가 싫어하는 풀즙을 바르고 건넌다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "herbalist"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "쓴 냄새 나는 풀즙을 다리에 바르자 거머리가 슬금슬금 물러났다. 물가에서 늪 약초 한 포기를 뜯었다.",
+            "effects": [
+              {
+                "type": "addItem",
+                "itemId": "rare_herb",
+                "qty": 1
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
           }
         },
         {

@@ -1,0 +1,103 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "npc_toby_market_day",
+  "category": "npc",
+  "npc": "toby",
+  "title": "장날의 여관",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "errand"
+    }
+  ],
+  "weight": 8,
+  "repeat": {
+    "mode": "cooldown",
+    "days": 5
+  },
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "장날이라 여관이 손님으로 미어터진다. 토비가 심부름꾼이 제일 필요한 날이라며 앞치마를 던져 준다.",
+      "choices": [
+        {
+          "id": "run",
+          "label": "홀과 부엌을 뛰어다닌다",
+          "check": {
+            "stat": "cha",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "주문 하나 틀리지 않고 해 질 녘까지 버텼다. 단골들이 이름을 외워 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 4
+                },
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "접시를 두 개나 깨뜨렸다. 토비가 한숨을 쉬면서도 품삯은 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "listen",
+          "label": "손님들 사정을 하나하나 들어 준다",
+          "check": {
+            "stat": "per",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "자리마다 말동무를 해 주었더니 팁이 쏠쏠했다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 3
+                },
+                {
+                  "type": "reputation",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "바쁜 날에 수다만 떤다고 토비에게 한 소리 들었다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "오늘은 바쁘다고 한다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

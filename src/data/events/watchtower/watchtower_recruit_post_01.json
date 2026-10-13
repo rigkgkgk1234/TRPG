@@ -1,0 +1,97 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "watchtower_recruit_post_01",
+  "category": "explore",
+  "region": "watchtower",
+  "title": "무너진 경비대 초소",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "recruit"
+    },
+    {
+      "type": "dayRange",
+      "min": 8
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "탑 아래에 경비대 초소가 무너진 채 남아 있다. 벽에 걸린 순번표와 녹슨 방패를 보니 경비대에서 배운 것들이 떠오른다.",
+      "choices": [
+        {
+          "id": "lookout",
+          "label": "망루에 올라 경비대식으로 사방을 살핀다",
+          "check": {
+            "stat": "per",
+            "skill": "guard",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "숲 가장자리에 연기가 몇 줄기 오른다. 사냥꾼이 피운 불이 아니다. 촌장에게 알려야겠다.",
+              "effects": [
+                {
+                  "type": "setFlag",
+                  "flag": "goblin_tracks_found"
+                },
+                {
+                  "type": "reputation",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "바람이 매워 눈을 오래 뜨고 있을 수 없었다.",
+              "effects": [
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "shield",
+          "label": "녹슨 방패를 손질해 챙긴다",
+          "check": {
+            "stat": "str",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "녹을 긁어내자 쓸 만한 나무 방패가 나왔다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "wooden_shield",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "손잡이가 썩어 손안에서 부서졌다.",
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

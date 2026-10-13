@@ -34,6 +34,35 @@
           }
         },
         {
+          "id": "both",
+          "label": "홀과 부엌을 한꺼번에 맡는다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "errand"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "주문을 받으며 감자까지 깎았다. 토비가 이런 날은 품삯을 더 줘야 한다며 은화를 얹었다.",
+            "effects": [
+              {
+                "type": "food",
+                "delta": 2
+              },
+              {
+                "type": "silver",
+                "delta": 2
+              },
+              {
+                "type": "fatigue",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
           "id": "leave",
           "label": "다음에 하겠다고 한다",
           "outcome": {

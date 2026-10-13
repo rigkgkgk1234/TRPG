@@ -72,6 +72,32 @@
           }
         },
         {
+          "id": "drill",
+          "label": "경비대식으로 순번표를 다시 짠다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "recruit"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "두 사람씩 짝을 지어 짧게 돌리자 다들 조금씩 눈을 붙일 수 있게 됐다. 촌장이 경비대는 역시 다르다고 했다.",
+            "effects": [
+              {
+                "type": "reputation",
+                "delta": 4
+              },
+              {
+                "type": "incFlag",
+                "flag": "favors_done",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
           "id": "leave",
           "label": "집안일이 바쁘다며 나온다",
           "outcome": {

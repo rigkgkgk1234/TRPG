@@ -62,6 +62,56 @@
           }
         },
         {
+          "id": "tend_neighbors",
+          "label": "할멈 대신 앓는 이웃들을 살핀다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "acolyte"
+            }
+          ],
+          "hideIfLocked": true,
+          "check": {
+            "stat": "per",
+            "skill": "herbalism",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "기도와 찜질로 밤을 새웠다. 할멈이 일을 덜어 줘서 고맙다며 은화를 쥐여 주었다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 2
+                },
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "할 수 있는 일이 많지 않았다. 그래도 곁을 지킨 것을 다들 고마워했다.",
+              "effects": [
+                {
+                  "type": "reputation",
+                  "delta": 1
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
           "id": "leave",
           "label": "괜찮다며 손을 뺀다",
           "outcome": {

@@ -1,0 +1,101 @@
+{
+  "$schema": "../../../../schemas/event.schema.json",
+  "id": "forest_woodcutter_oak_01",
+  "category": "explore",
+  "region": "forest",
+  "title": "벼락 맞은 참나무",
+  "conditions": [
+    {
+      "type": "job",
+      "job": "woodcutter"
+    }
+  ],
+  "weight": 6,
+  "repeat": {
+    "mode": "once"
+  },
+  "dangerTier": 1,
+  "startScene": "start",
+  "scenes": {
+    "start": {
+      "text": "벼락 맞은 참나무가 길을 막고 쓰러져 있다. 줄기는 단단하고 마른 가지가 수북하다. 나무꾼의 눈에는 땔감이 아니라 은화로 보인다.",
+      "choices": [
+        {
+          "id": "split",
+          "label": "가지를 쳐 장작으로 묶는다",
+          "check": {
+            "stat": "con",
+            "dc": 10
+          },
+          "outcomes": {
+            "success": {
+              "text": "해가 기울 무렵 장작 세 짐이 쌓였다. 여관에 넘기니 값을 잘 쳐 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 5
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "옹이에 도끼날이 자꾸 튕겼다. 한 짐만 겨우 묶었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 2
+                },
+                {
+                  "type": "fatigue",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "honey",
+          "label": "줄기 속 벌집을 꺼낸다",
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "outcomes": {
+            "success": {
+              "text": "연기를 피워 벌을 쫓고 꿀이 든 벌집을 통째로 꺼냈다.",
+              "effects": [
+                {
+                  "type": "food",
+                  "delta": 2
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "벌 떼가 얼굴로 몰려들었다. 퉁퉁 부은 채 도망쳤다.",
+              "effects": [
+                {
+                  "type": "hp",
+                  "delta": -2
+                }
+              ],
+              "next": "END"
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "label": "그냥 지나간다",
+          "outcome": {
+            "next": "END"
+          }
+        }
+      ]
+    }
+  }
+}

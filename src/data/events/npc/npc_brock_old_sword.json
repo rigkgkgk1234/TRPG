@@ -38,6 +38,56 @@
           }
         },
         {
+          "id": "haggle",
+          "label": "녹을 짚어 가며 값을 깎는다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "peddler"
+            },
+            {
+              "type": "notFlag",
+              "flag": "brock_haggled"
+            }
+          ],
+          "hideIfLocked": true,
+          "cost": {
+            "silver": 6
+          },
+          "check": {
+            "stat": "cha",
+            "skill": "haggle",
+            "dc": 11
+          },
+          "outcomes": {
+            "success": {
+              "text": "녹이 슨 곳을 몇 번 짚었더니 브록이 손을 들었다. 은화 6개에 검을 넘겨받았다.",
+              "effects": [
+                {
+                  "type": "addItem",
+                  "itemId": "rusty_sword",
+                  "qty": 1
+                }
+              ],
+              "next": "END"
+            },
+            "fail": {
+              "text": "브록이 값은 못 깎는다며 은화를 도로 밀어 주었다.",
+              "effects": [
+                {
+                  "type": "silver",
+                  "delta": 6
+                },
+                {
+                  "type": "setFlag",
+                  "flag": "brock_haggled"
+                }
+              ],
+              "next": "start"
+            }
+          }
+        },
+        {
           "id": "leave",
           "label": "돈이 없다며 사양한다",
           "outcome": {

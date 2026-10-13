@@ -50,6 +50,31 @@
           }
         },
         {
+          "id": "split_grain",
+          "label": "결을 읽어 단숨에 쪼갠다",
+          "conditions": [
+            {
+              "type": "job",
+              "job": "woodcutter"
+            }
+          ],
+          "hideIfLocked": true,
+          "outcome": {
+            "text": "나뭇결을 따라 도끼를 내리치자 통나무가 쩍쩍 갈라졌다. 토비가 입을 다물지 못했다.",
+            "effects": [
+              {
+                "type": "silver",
+                "delta": 4
+              },
+              {
+                "type": "food",
+                "delta": 1
+              }
+            ],
+            "next": "END"
+          }
+        },
+        {
           "id": "leave",
           "label": "다음에 하겠다고 한다",
           "outcome": {
