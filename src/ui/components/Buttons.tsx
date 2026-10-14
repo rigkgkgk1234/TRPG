@@ -1,5 +1,6 @@
-import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Children, cloneElement, isValidElement, useId, useState, type ReactElement, type ReactNode } from "react";
+import { Image, Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import Svg, { Defs, LinearGradient, Polygon, Stop } from "react-native-svg";
 import type { Icon } from "@/ui/icons";
 import { WithNote } from "@/ui/components/RollFormula";
 import { colors, hairline, icon as iconToken, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
@@ -131,10 +132,83 @@ function Lines({ top, left }: { top?: boolean; left?: boolean }) {
 export function GridCell({ minHeight, lineTop, lineLeft, children }: CellProps) {
   return (
     <View style={[styles.cell, minHeight !== undefined && { minHeight }]}>
+      {children != null && <EdgeGlow />}
       {children}
       <Lines top={lineTop} left={lineLeft} />
     </View>
   );
+}
+
+/** 빛은 버튼 칸보다 GLOW_BEYOND만큼 넓게 그려 행동 칸 바탕까지 번지게 한다 */
+const GLOW_BEYOND = 13;
+/** 버튼 가장자리에서 GLOW_AT만큼 들어온 곳부터 가운데까지 같은 밝기로 채우고, 거기서 바깥으로 GLOW_OUT만큼 가며 사라진다 (버튼 밖 GLOW_BEYOND까지) */
+const GLOW_AT = 10;
+const GLOW_OUT = GLOW_AT + GLOW_BEYOND;
+/** 가장 밝은 곳의 불투명도 */
+const GLOW_OPACITY = 0.2;
+
+/** 그림 가장자리에서 가운데까지 거리(m) 위의 그라디언트 멈춤점 [비율, 불투명도] */
+function glowStops(m: number): [number, number][] {
+  const at = Math.min(GLOW_BEYOND + GLOW_AT, m / 2);
+  const out = Math.max(0, at - GLOW_OUT);
+  // 직선으로 올리면 시작과 끝에서 밝기가 꺾여 줄이 보이므로 S자 곡선(smoothstep)을 여러 점으로 나눠 그린다
+  const ramp = Array.from({ length: GLOW_STEPS + 1 }, (_, k): [number, number] => {
+    const t = k / GLOW_STEPS;
+    return [(out + (at - out) * t) / m, GLOW_OPACITY * t * t * (3 - 2 * t)];
+  });
+  return [[0, 0], ...ramp, [1, GLOW_OPACITY]];
+}
+
+/** S자 곡선을 나누는 점 수 */
+const GLOW_STEPS = 8;
+
+/**
+ * 디더링 점 무늬: 밝게 하는 점과 어둡게 하는 점이 평균 0이 되게 섞인 아주 옅은 무늬.
+ * 빛과 바탕의 차이가 화면 밝기 몇 단계뿐이라 그라디언트가 계단(네모난 줄)으로 보이는 것을 흩뜨린다.
+ */
+const NOISE = require("../../../assets/textures/noise.png");
+
+/**
+ * 버튼 바탕 아래에 까는 옅은 빛. 안쪽은 고르게 채우고 가장자리 쪽만 바깥으로 흐려진다.
+ * 칸을 모서리에서 가운데로 나눈 네 조각(위·아래는 사다리꼴, 좌우는 삼각형)에 변마다 그라디언트를 하나씩 칠해 겹치지 않게 한다.
+ */
+function EdgeGlow() {
+  const id = `glow${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width: w, height: h } = e.nativeEvent.layout;
+    if (!size || size.w !== w || size.h !== h) setSize({ w, h });
+  };
+  const sides = size ? glowSides(size.w, size.h) : [];
+  return (
+    <View pointerEvents="none" style={styles.glow} onLayout={onLayout}>
+      {size && (
+        <Svg width={size.w} height={size.h}>
+          <Defs>
+            {sides.map((sd) => (
+              <LinearGradient key={sd.key} id={`${id}${sd.key}`} gradientUnits="userSpaceOnUse" x1={sd.from[0]} y1={sd.from[1]} x2={sd.to[0]} y2={sd.to[1]}>
+                {glowStops(sd.m).map(([at, a], k) => <Stop key={k} offset={at} stopColor={colors.edgeGlow} stopOpacity={a} />)}
+              </LinearGradient>
+            ))}
+          </Defs>
+          {sides.map((sd) => <Polygon key={sd.key} points={sd.points} fill={`url(#${id}${sd.key})`} />)}
+        </Svg>
+      )}
+      {size && <Image source={NOISE} resizeMode="repeat" style={StyleSheet.absoluteFill} />}
+    </View>
+  );
+}
+
+/** 네 조각: 꼭짓점과 그라디언트 방향(변 → 가운데). 짧은 쪽 절반(m)까지 번진다 */
+function glowSides(w: number, h: number) {
+  const m = Math.min(w, h) / 2;
+  const p = (...xy: number[][]) => xy.map(([x, y]) => `${x},${y}`).join(" ");
+  return [
+    { key: "t", m, points: p([0, 0], [w, 0], [w - m, m], [m, m]), from: [0, 0], to: [0, m] },
+    { key: "b", m, points: p([0, h], [w, h], [w - m, h - m], [m, h - m]), from: [0, h], to: [0, h - m] },
+    { key: "l", m, points: p([0, 0], [m, m], [m, h - m], [0, h]), from: [0, 0], to: [m, 0] },
+    { key: "r", m, points: p([w, 0], [w - m, m], [w - m, h - m], [w, h]), from: [w, 0], to: [w - m, 0] },
+  ];
 }
 
 /**
@@ -194,6 +268,9 @@ const styles = StyleSheet.create({
   cornerNote: { ...type.caption, fontSize: 12, lineHeight: 16, color: colors.textDim, position: "absolute", right: space.md, bottom: space.xs },
   grid: { flexDirection: "row", flexWrap: "wrap" },
   cell: { width: "50%", flexDirection: "column", padding: LINE_CLEAR },
+  // 선을 비워 둔 만큼(LINE_CLEAR) 들어와서 버튼이 차지하는 자리에만 깐다
+  // 버튼 자리(LINE_CLEAR 안쪽)보다 GLOW_BEYOND만큼 넓게 깔아 흐려지는 끝이 칸 밖 바탕까지 이어진다
+  glow: { position: "absolute", top: LINE_CLEAR - GLOW_BEYOND, right: LINE_CLEAR - GLOW_BEYOND, bottom: LINE_CLEAR - GLOW_BEYOND, left: LINE_CLEAR - GLOW_BEYOND },
   stackItem: { padding: LINE_CLEAR },
   divider: { position: "absolute", top: 0, left: LINE_CLEAR, right: LINE_CLEAR, height: hairline, backgroundColor: colors.borderStrong, transform: [{ scaleX: motion.press }] },
   // 교차점의 가로 팔

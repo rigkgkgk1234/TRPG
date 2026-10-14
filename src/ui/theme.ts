@@ -15,6 +15,8 @@ export const colors = {
   /** 지난 기록 사이처럼 겨우 보이는 구분선 */
   borderFaint: "#18181b",
   borderStrong: "#393940",
+  /** 행동 칸 버튼 가장자리의 안쪽 빛: 패널 바탕보다 조금 밝다 */
+  edgeGlow: "#24242a",
   text: "#eceef1",
   textDim: "#a3a8b1",
   /** 지난 기록처럼 한 단계 물러난 글자 */
