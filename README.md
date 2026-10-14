@@ -77,7 +77,9 @@ npm run simulate -- --runs 500 --ai smart --jobs herbalist,peddler --seed 0
   - `items.json`·`enemies.json`·`traits.json`
   - 직업은 설계서의 `JOBS`에 있다.
 - `src/store/`: Zustand 스토어. 회차를 들고 명령을 `dispatch`에 넘긴다. 저장을 먼저 하고 연출은 그 다음에 한다.
-- `src/ui/`: 컴포넌트·뷰·테마 (다크 테마, Pretendard, Phosphor 아이콘)
+- `src/ui/`: 컴포넌트·뷰·테마 (다크 테마, Pretendard, Phosphor 아이콘). 효과음은 `sound.ts`
+- `assets/sounds/`: 효과음. Kenney Casino Audio(CC0)를 잘라 모노 m4a로 바꿨다.
+- 테두리 장식(`src/ui/components/Ornament.tsx`)은 Kenney Fantasy UI Borders(CC0)의 벡터를 옮겨 그렸다.
 - `schemas/`: 콘텐츠 JSON 스키마
 - `scripts/`: 타입·스키마·콘텐츠 생성, 시뮬레이터
 - `tests/core/`: 코어 테스트

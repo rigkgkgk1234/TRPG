@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { formatSigned } from "@/core/labels";
 import { WithNote } from "@/ui/components/RollFormula";
+import { OrnamentTitle } from "@/ui/components/Ornament";
 import { colors, hairline, motion, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
@@ -81,12 +82,17 @@ function StepButton({ text, disabled, onPress }: { text: string; disabled: boole
   );
 }
 
-export function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+/** ornament: 제목을 가운데에 두고 양옆으로 매듭 선을 뻗는다 (기록 화면) */
+export function Section({ title, hint, ornament = false, children }: { title: string; hint?: string; ornament?: boolean; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHead}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {hint ? <Text style={styles.sectionHint}>{hint}</Text> : null}
+        {ornament ? (
+          <OrnamentTitle>
+            <Text style={styles.sectionTitle}>{title}</Text>
+          </OrnamentTitle>
+        ) : <Text style={styles.sectionTitle}>{title}</Text>}
+        {hint ? <Text style={[styles.sectionHint, ornament && styles.sectionHintCenter]}>{hint}</Text> : null}
       </View>
       {children}
     </View>
@@ -151,4 +157,5 @@ const styles = StyleSheet.create({
   sectionHead: { gap: 2 },
   sectionTitle: { ...type.heading, color: colors.text },
   sectionHint: { ...type.caption, color: colors.textFaint },
+  sectionHintCenter: { textAlign: "center" },
 });

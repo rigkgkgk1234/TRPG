@@ -19,7 +19,7 @@ export default function RecordsScreen() {
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + space.xl }]}>
-      <Section title="엔딩" hint={`${ENDINGS.length}개 중 ${meta.endingsSeen.length}개를 보았다. 지금까지 ${meta.totalRuns}회차를 마쳤다.`}>
+      <Section ornament title="엔딩" hint={`${ENDINGS.length}개 중 ${meta.endingsSeen.length}개를 보았다. 지금까지 ${meta.totalRuns}회차를 마쳤다.`}>
         <View style={styles.grid}>
           {ENDINGS.map((id) => {
             const seen = meta.endingsSeen.includes(id);
@@ -32,7 +32,7 @@ export default function RecordsScreen() {
         </View>
       </Section>
 
-      <Section title="흔적" hint={`${traits.length}개 중 ${meta.traitsSeen.length}개를 얻어 보았다.`}>
+      <Section ornament title="흔적" hint={`${traits.length}개 중 ${meta.traitsSeen.length}개를 얻어 보았다.`}>
         {traits.map((t) => {
           const seen = meta.traitsSeen.includes(t.id);
           return (
@@ -44,7 +44,7 @@ export default function RecordsScreen() {
         })}
       </Section>
 
-      <Section title="지난 회차">
+      <Section ornament title="지난 회차">
         {meta.history.length === 0 ? (
           <Text style={styles.dim}>아직 끝낸 회차가 없다.</Text>
         ) : (

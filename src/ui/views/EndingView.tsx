@@ -7,6 +7,7 @@ import type { RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useMeta } from "@/store/metaStore";
 import { ActionButton, ButtonGrid, GridCell } from "@/ui/components/Buttons";
+import { OrnamentTitle } from "@/ui/components/Ornament";
 import { colors, hairline, space, type } from "@/ui/theme";
 import { once, pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
@@ -20,7 +21,9 @@ export function EndingHeader({ run }: { run: RunState }) {
   return (
     <View style={[styles.header, { paddingTop: insets.top + space.xxl }]}>
       <Text style={styles.kicker}>{run.player.name}의 {run.time.day}일</Text>
-      <Text style={styles.title}>{ENDING_LABEL[run.ending!]}</Text>
+      <OrnamentTitle>
+        <Text style={styles.title}>{ENDING_LABEL[run.ending!]}</Text>
+      </OrnamentTitle>
     </View>
   );
 }
@@ -81,8 +84,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
-  kicker: { ...type.label, color: colors.textFaint },
-  title: { ...type.display, color: colors.crit },
+  // 가운데 정렬: 작은 머리글 아래 엔딩 이름 양옆으로 매듭 선이 뻗는다
+  kicker: { ...type.label, color: colors.textFaint, textAlign: "center" },
+  title: { ...type.display, color: colors.crit, flexShrink: 1, textAlign: "center" },
   panel: {
     paddingHorizontal: space.lg,
     paddingTop: space.lg + 4,

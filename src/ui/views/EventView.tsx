@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react";
-import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Animated, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DEEP_FATIGUE, EXPLORE_CARDS } from "@/core/events/explore";
 import { sceneView, type ChoiceView, type ExploreProgress } from "@/core/events/runner";
@@ -8,12 +7,13 @@ import type { EventCategory, RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { ActionButton, ButtonStack } from "@/ui/components/Buttons";
-import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
+import { OrnamentRule } from "@/ui/components/Ornament";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { REGION_ICON } from "@/ui/gameIcons";
 import { ArrowRightIcon, CaretDownIcon, CaretRightIcon, CaretUpIcon, ChatCircleDotsIcon, LockSimpleIcon, MoonStarsIcon, ScrollIcon, SignOutIcon, SkullIcon, SunHorizonIcon, SwordIcon, TreeIcon, type Icon } from "@/ui/icons";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
+import { useSheet } from "@/ui/useSheet";
 
 /**
  * 이벤트 패널: 장면 글 → 선택지. 선택지마다 성공 확률·비용·잠김 사유·위험 표시를 붙인다. (SYSTEM_SPEC 4-2)
@@ -45,6 +45,7 @@ export function EventPanel({ run }: { run: RunState }) {
           ) : (
             <Header title={view.title} progress={view.progress} category={view.category} place={run.activeEvent ? CONTENT.events[run.activeEvent.eventId]?.npc : undefined} collapsed={sheet.collapsed} />
           )}
+          {!sheet.collapsed && <OrnamentRule style={styles.rule} />}
         </Pressable>
       </View>
       {!sheet.collapsed && (
@@ -90,39 +91,6 @@ export function EventPanel({ run }: { run: RunState }) {
       )}
     </Animated.View>
   );
-}
-
-/** 이만큼 끌면 접거나 편다 */
-const SWIPE_DISTANCE = 40;
-
-/**
- * 끌어서 접고 펴는 시트. 펼친 상태에서 아래로 끌면 손가락을 따라 내려가고, 놓을 때 거리가 충분하면 접는다.
- * 접힌 상태에서는 위로 끌거나 누르면 편다. 새 장면이 오면 선택지를 놓치지 않게 다시 편다.
- */
-function useSheet(sceneKey: string) {
-  // 접은 장면을 기억한다: 장면이 바뀌면 저절로 펼친 상태가 된다
-  const [collapsedAt, setCollapsedAt] = useState<string | null>(null);
-  const collapsed = collapsedAt === sceneKey;
-  const setCollapsed = (c: boolean) => setCollapsedAt(c ? sceneKey : null);
-  const [drag] = useState(() => new Animated.Value(0));
-
-  const responder = useMemo(() => {
-    const settle = () => Animated.spring(drag, { toValue: 0, useNativeDriver: NATIVE_DRIVER }).start();
-    return PanResponder.create({
-      // 탭은 안쪽 Pressable에 맡기고, 세로로 끌기 시작하면 Pressable에게서 가져온다 (Capture여야 빼앗을 수 있다)
-      onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx),
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderMove: (_, g) => { if (!collapsed) drag.setValue(Math.max(0, g.dy)); },
-      onPanResponderRelease: (_, g) => {
-        if (!collapsed && g.dy > SWIPE_DISTANCE) { drag.setValue(0); setCollapsedAt(sceneKey); }
-        else if (collapsed && g.dy < -SWIPE_DISTANCE) setCollapsedAt(null);
-        else settle();
-      },
-      onPanResponderTerminate: settle,
-    });
-  }, [drag, collapsed, sceneKey]);
-
-  return { collapsed, drag, panHandlers: responder.panHandlers, toggle: () => setCollapsed(!collapsed) };
 }
 
 const CATEGORY_ICON: Partial<Record<EventCategory, Icon>> = { morning: SunHorizonIcon, night: MoonStarsIcon, npc: ChatCircleDotsIcon };
@@ -184,6 +152,7 @@ const styles = StyleSheet.create({
   handle: { alignSelf: "center", width: 36, height: 4, borderRadius: radius.pill, backgroundColor: colors.borderStrong },
   header: { flexDirection: "row", alignItems: "center", gap: space.sm, paddingHorizontal: space.lg },
   caretEnd: { marginLeft: "auto" },
+  rule: { marginHorizontal: space.lg },
   title: { ...type.heading, color: colors.text, flexShrink: 1 },
   progress: { ...type.label, color: colors.textFaint, marginLeft: "auto", fontVariant: ["tabular-nums"] },
   text: { ...type.body, color: colors.text },

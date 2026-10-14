@@ -13,6 +13,7 @@ import { Chip, ChipRow } from "@/ui/components/Controls";
 import { NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { HIT_FX_MS, HP_BAR_HEIGHT, HitEffect } from "@/ui/components/HitEffect";
 import { HpBar } from "@/ui/components/HpBar";
+import { OrnamentFrame } from "@/ui/components/Ornament";
 import { ArrowRightIcon, CrosshairIcon, FirstAidKitIcon, PersonSimpleRunIcon, ShieldIcon, SwordIcon, type Icon } from "@/ui/icons";
 import { chanceBadgeProps } from "@/ui/rollText";
 import { colors, hairline, icon, radius, space, type } from "@/ui/theme";
@@ -172,11 +173,12 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
               status={e.state === "down" || hp <= 0 ? "쓰러짐" : e.state === "routed" ? "달아남" : `HP ${hp}/${e.maxHp}`}
               mine={mine}
               routed={routed}
+              selected={selected}
               onPress={() => onSelect(e.id)}
               disabled={!selectable || out}
               accessibilityRole={selectable ? "button" : undefined}
               accessibilityState={{ selected }}
-              style={[styles.enemy, selected && styles.enemySelected, out && !routed && styles.enemyOut]}
+              style={[styles.enemy, out && !routed && styles.enemyOut]}
             />
             </RoutFade>
           </EnemyRow>
@@ -186,14 +188,21 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
   );
 }
 
+/** 적 칸 매듭 틀의 배율 (칸이 낮아 작게) */
+const ENEMY_FRAME_UNIT = 0.6;
+
 const hpRatio = (hp: number, max: number) => Math.min(1, Math.max(0, hp / max));
 
 type Mine = { seq: number; fx: Extract<CombatFx, { side: "player" }> };
 
 /** 적 칸 하나: 이름, HP 막대, 숫자를 한 줄에 (칸 높이가 늘 같다). HP 막대를 적으로 보고 공격 효과를 그 위에 겹친다 */
-function EnemyCard({ name, hp, maxHp, status, mine, routed, ...press }: { name: string; hp: number; maxHp: number; status: string; mine: Mine | null; routed: boolean } & Omit<PressableProps, "children">) {
+function EnemyCard({ name, hp, maxHp, status, mine, routed, selected, ...press }: { name: string; hp: number; maxHp: number; status: string; mine: Mine | null; routed: boolean; selected: boolean } & Omit<PressableProps, "children">) {
   return (
     <Pressable {...press} accessibilityLabel={`${name} HP ${Math.max(0, hp)}/${maxHp}`}>
+      {/* 테두리 대신 모서리 꺾쇠 틀(panel_border_000). 고른 적은 파란 틀에 옅은 바탕 */}
+      {selected
+        ? <OrnamentFrame shape="tick" unit={ENEMY_FRAME_UNIT} color={colors.accent} fill={colors.accentSoft} />
+        : <OrnamentFrame shape="tick" unit={ENEMY_FRAME_UNIT} color={colors.borderStrong} />}
       <Text style={styles.enemyName} numberOfLines={1}>{name}</Text>
       <View style={styles.barWrap}>
         <HpBar ratio={hpRatio(hp, maxHp)} height={HP_BAR_HEIGHT} color={routed ? colors.textFaint : colors.fail} trackColor={colors.border} trailColor={colors.textFaint} />
@@ -357,11 +366,7 @@ const styles = StyleSheet.create({
     gap: space.md,
     paddingHorizontal: space.md,
     paddingVertical: space.sm + 2,
-    borderRadius: radius.md,
-    borderWidth: hairline,
-    borderColor: colors.border,
   },
-  enemySelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   enemyOut: { opacity: 0.45 },
   actions: { position: "relative" },
   // 행동 버튼은 그 아래 그대로 두고(칸 높이 유지) 같은 바탕으로 가린다

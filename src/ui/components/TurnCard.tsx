@@ -7,10 +7,12 @@ import { useGame } from "@/store/gameStore";
 import { isVolley, VOLLEY_GAP_MS, VOLLEY_SHOTS } from "@/store/volley";
 import { DiceRoll, NATIVE_DRIVER } from "@/ui/components/DiceRoll";
 import { HIT_FX_MS } from "@/ui/components/HitEffect";
+import { OrnamentCorner } from "@/ui/components/Ornament";
 import { BandaidsIcon, TrendUpIcon, WarningIcon, type Icon } from "@/ui/icons";
 import { OUTCOME_COLOR, signed, TONE_COLOR, type Change, type Line, type TurnSummary } from "@/ui/turnSummary";
 import { RollFormula } from "@/ui/components/RollFormula";
 import { rollModeNote } from "@/ui/rollText";
+import { playSound, stopSound } from "@/ui/sound";
 import { colors, icon, motion, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
@@ -61,17 +63,24 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
     if (!animate) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     let t = 0;
+    // 굴리기 시작할 때 흔드는 소리, 멈출 때 떨어지는 소리 (유리·불리는 두 개가 떨어지는 소리)
+    const shake = () => { if (!skipped.current) playSound("diceShake"); };
+    const land = (r: CheckResult) => {
+      stopSound("diceShake");
+      if (!skipped.current) playSound(r.dice.length > 1 ? "diceLand" : "dieLand");
+    };
     beats.forEach((b, i) => {
       const fx = fxOf(b);
-      if (b.kind === "roll") {
+      if (b.kind === "roll" && roll) {
+        shake();
         t += motion.dice;
-        timers.push(setTimeout(() => setRolling(false), t));
+        timers.push(setTimeout(() => { setRolling(false); land(roll); }, t));
         t += motion.settle;
-      } else if (b.kind === "offRoll") {
+      } else if (b.kind === "offRoll" && offRoll) {
         t += motion.stagger;
-        timers.push(setTimeout(() => { setOffPending(false); setOffRolling(true); }, t));
+        timers.push(setTimeout(() => { setOffPending(false); setOffRolling(true); shake(); }, t));
         t += motion.dice;
-        timers.push(setTimeout(() => setOffRolling(false), t));
+        timers.push(setTimeout(() => { setOffRolling(false); land(offRoll); }, t));
         t += motion.settle;
       } else {
         // 상대 공격처럼 연출이 붙은 줄은 앞 연출이 끝날 틈을 둔다
@@ -103,6 +112,7 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
 
   const skip = () => {
     skipped.current = true;
+    stopSound("diceShake");
     setHolding(false);
     setRolling(false);
     setOffRolling(false);
@@ -130,9 +140,9 @@ export function TurnCard({ summary, animate, dense = false, onDone }: { summary:
 
   return (
     <Pressable onPress={skip} disabled={done} accessibilityHint={done ? undefined : "눌러서 결과 바로 보기"} style={[styles.card, dense && styles.cardDense]}>
-      {/* 왼쪽 위·오른쪽 아래 모서리 꺾쇠로 카드를 묶는다 */}
-      <View pointerEvents="none" style={[styles.corner, styles.cornerTopLeft]} />
-      <View pointerEvents="none" style={[styles.corner, styles.cornerBottomRight]} />
+      {/* 왼쪽 위·오른쪽 아래 매듭 모서리로 카드를 묶는다 */}
+      <OrnamentCorner corner="topLeft" arm={CORNER} unit={CORNER_UNIT} style={styles.cornerTopLeft} />
+      <OrnamentCorner corner="bottomRight" arm={CORNER} unit={CORNER_UNIT} style={styles.cornerBottomRight} />
       {dense ? (
         // 좁은 칸: 바뀐 것(HP 등)은 제목 줄 오른쪽에 둬서 한 줄을 아낀다
         <View style={styles.titleRow}>
@@ -258,19 +268,19 @@ export function FadeIn({ animate, style, children }: { animate: boolean; style?:
   return <Animated.View style={[style, { opacity: v, transform: [{ translateY }] }]}>{children}</Animated.View>;
 }
 
-/** 모서리 꺾쇠 한 변의 길이 */
-const CORNER = 14;
+/** 모서리 장식: 한 변의 길이(원본 단위)와 배율. 선 굵기는 2 × 배율, 화면에서 한 변은 약 28 */
+const CORNER = 33;
+const CORNER_UNIT = 0.85;
 
 const styles = StyleSheet.create({
-  // 상자 없이 여백과 두 모서리의 꺾쇠(왼쪽 위 ┌, 오른쪽 아래 ┘)로만 묶는다 (지난 기록과 같은 바탕 위에 놓인 장부 한 장)
+  // 상자 없이 여백과 두 모서리의 매듭 장식(왼쪽 위, 오른쪽 아래)으로만 묶는다 (지난 기록과 같은 바탕 위에 놓인 장부 한 장)
   card: {
     paddingVertical: space.sm,
     paddingHorizontal: space.lg,
     gap: space.lg,
   },
-  corner: { position: "absolute", width: CORNER, height: CORNER, borderColor: colors.accent },
-  cornerTopLeft: { top: 0, left: 0, borderTopWidth: 2, borderLeftWidth: 2 },
-  cornerBottomRight: { bottom: 0, right: 0, borderBottomWidth: 2, borderRightWidth: 2 },
+  cornerTopLeft: { position: "absolute", top: 0, left: 0 },
+  cornerBottomRight: { position: "absolute", bottom: 0, right: 0 },
   cardDense: { gap: space.xs + 2 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: space.sm },
   titleDense: { ...type.heading, color: colors.text, flexShrink: 1, marginRight: "auto" },

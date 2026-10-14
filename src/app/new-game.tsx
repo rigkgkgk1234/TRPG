@@ -9,6 +9,7 @@ import { useGame } from "@/store/gameStore";
 import { ActionButton } from "@/ui/components/Buttons";
 import { JOB_ICON } from "@/ui/gameIcons";
 import { JOB_PERK } from "@/ui/jobText";
+import { OrnamentFrame } from "@/ui/components/Ornament";
 import { colors, fonts, hairline, icon, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { once } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
@@ -87,6 +88,7 @@ function JobCard({ job, selected, onPress }: { job: JobDef; selected: boolean; o
       accessibilityState={{ selected }}
       style={({ pressed }) => [styles.card, selected && styles.cardSelected, pressed && styles.pressed]}
     >
+      {selected && <OrnamentFrame fill={colors.accentSoft} />}
       <View style={styles.cardHead}>
         <View style={[styles.jobIcon, selected && styles.jobIconSelected]}>
           <JobIcon size={icon.md} weight={icon.weight} color={selected ? colors.accentText : colors.textDim} />
@@ -160,7 +162,8 @@ const styles = StyleSheet.create({
     borderWidth: hairline,
     borderColor: colors.borderStrong,
   },
-  cardSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
+  // 고른 카드는 테두리 대신 매듭 틀(OrnamentFrame)로 두른다
+  cardSelected: { borderColor: "transparent" },
   pressed: { transform: [{ scale: 0.99 }] },
   cardHead: { flexDirection: "row", alignItems: "center", gap: space.md },
   jobIcon: {

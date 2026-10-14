@@ -2,7 +2,8 @@ import type { Href } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
-import { colors, hairline, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
+import { OrnamentFrame } from "@/ui/components/Ornament";
+import { colors, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
 
@@ -42,10 +43,11 @@ function TitleButton({ href, label, sub, primary }: { href: Href; label: string;
     <Pressable
       onPress={() => pushOnce(href)}
       accessibilityRole="button"
-      style={({ pressed }) => [styles.button, primary && styles.primary, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
-      <Text style={[styles.buttonText, primary && styles.primaryText]}>{label}</Text>
-      {sub ? <Text style={[styles.buttonSub, primary && styles.primaryText]}>{sub}</Text> : null}
+      {primary ? <OrnamentFrame fill={colors.accentSoft} /> : <OrnamentFrame color={colors.borderStrong} />}
+      <Text style={styles.buttonText}>{label}</Text>
+      {sub ? <Text style={styles.buttonSub}>{sub}</Text> : null}
     </Pressable>
   );
 }
@@ -54,19 +56,12 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: space.xl, justifyContent: "space-between" },
   titleBox: { flex: 1, justifyContent: "center", gap: space.lg },
   title: { ...type.display, fontSize: 52, lineHeight: 60, letterSpacing: -1.6, color: colors.text },
-  buttons: { gap: space.sm },
-  button: {
-    minHeight: TOUCH_MIN + 4,
-    borderRadius: radius.md,
-    borderWidth: hairline,
-    borderColor: colors.borderStrong,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primary: { backgroundColor: colors.accent, borderColor: colors.accent },
+  // 버튼 너비는 화면 폭의 85%, 가운데 정렬
+  buttons: { gap: space.sm, width: "85%", alignSelf: "center" },
+  // 테두리 대신 매듭 틀(OrnamentFrame)로 두른다. 주 버튼은 고른 직업 카드처럼 파란 틀에 옅은 바탕
+  button: { minHeight: TOUCH_MIN + 4, alignItems: "center", justifyContent: "center" },
   pressed: { transform: [{ scale: motion.press }] },
   buttonText: { ...type.bodyStrong, color: colors.text },
-  primaryText: { color: colors.accentText },
   hidden: { opacity: 0 },
   buttonSub: { ...type.caption, color: colors.textDim },
   notice: { padding: space.md, borderRadius: radius.md, backgroundColor: colors.badBg, marginBottom: space.xs },

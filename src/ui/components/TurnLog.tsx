@@ -2,11 +2,12 @@ import { memo, useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { OUTCOME_LABEL } from "@/core/labels";
 import { useGame, type LogGroup } from "@/store/gameStore";
+import { KnotDivider, OrnamentTitle } from "@/ui/components/Ornament";
 import { TurnCard } from "@/ui/components/TurnCard";
 import { changesLine, OUTCOME_COLOR, summarizeTurn } from "@/ui/turnSummary";
 import { useReducedMotion } from "@/ui/useReducedMotion";
 import { RollFormula } from "@/ui/components/RollFormula";
-import { colors, hairline, space, type } from "@/ui/theme";
+import { colors, space, type } from "@/ui/theme";
 import { Text } from "@/ui/Text";
 
 /**
@@ -55,11 +56,21 @@ export function TurnLog({ intro, compact, cover }: { intro?: { title: string; bo
       {older.length > 0 && (
         <View style={styles.history}>
           <Text style={styles.historyTitle}>지난 기록</Text>
-          {older.map((g, i) => (
-            <View key={g.id} style={i > 0 && styles.divided}>
-              <HistoryRow group={g} />
-            </View>
-          ))}
+          {older.map((g, i) => {
+            // 날이 바뀌는 곳에는 매듭 선 사이에 그 날짜를 두고, 같은 날 안에서는 가는 매듭 선으로 나눈다
+            const day = g.before.time.day;
+            const newDay = i === 0 || older[i - 1].before.time.day !== day;
+            return (
+              <View key={g.id} style={styles.entry}>
+                {newDay ? (
+                  <OrnamentTitle end="bar" unit={DAY_RULE_UNIT} style={i > 0 && styles.dayGap}>
+                    <Text style={styles.day}>{day}일차</Text>
+                  </OrnamentTitle>
+                ) : <KnotDivider />}
+                <HistoryRow group={g} />
+              </View>
+            );
+          })}
         </View>
       )}
     </ScrollView>
@@ -89,6 +100,9 @@ const HistoryRow = memo(function HistoryRow({ group }: { group: LogGroup }) {
   );
 });
 
+/** 날짜 머리 매듭 선의 배율 (기본 0.75보다 15% 가늘게) */
+const DAY_RULE_UNIT = 0.75 * 0.85;
+
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
   // 글 길이와 상관없이 남는 자리를 그대로 쓴다 → 글이 바뀌어도 아래 전투 패널이 움직이지 않는다
@@ -102,8 +116,10 @@ const styles = StyleSheet.create({
   history: { gap: space.lg, paddingHorizontal: space.xs },
   historyTitle: { ...type.overline, color: colors.textFaint },
   row: { gap: 2 },
-  // 지난 기록 사이의 아주 흐린 선: 선 위아래로 간격을 반씩 나눈다
-  divided: { borderTopWidth: hairline, borderTopColor: colors.borderFaint, paddingTop: space.lg },
+  // 지난 기록 사이의 아주 흐린 매듭 선: 선 위아래로 간격을 반씩 나눈다
+  entry: { gap: space.lg },
+  dayGap: { marginTop: space.md },
+  day: { ...type.label, color: colors.textDim },
   rowHead: { flexDirection: "row", alignItems: "baseline", gap: space.sm },
   rowTitle: { ...type.bodyStrong, color: colors.textDim, flexShrink: 1 },
   rowOutcome: { ...type.label },
