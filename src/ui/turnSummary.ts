@@ -129,7 +129,7 @@ export function summarizeTurn(group: LogGroup): TurnSummary {
 
   const when = `${run.time.day}일차 ${PHASE_LABEL[run.time.phase]}`;
   const event = eventTitle(group.cmd, run);
-  return { when: event ? `${when}, ${event}` : when, title: commandTitle(group.cmd, run), roll, offRoll, offRollAt, rollFx, offRollFx, lineFx, changesLast: group.cmd.type === "combat", changes, events, notices };
+  return { when: event ? `${when}, ${event}` : when, title: group.title ?? commandTitle(group.cmd, run), roll, offRoll, offRollAt, rollFx, offRollFx, lineFx, changesLast: group.cmd.type === "combat", changes, events, notices };
 }
 
 /** 지난 기록용 변화 요약: "은화 +3, 식량 +1, 피로 +2" (없으면 첫 사건이나 거절 사유) */

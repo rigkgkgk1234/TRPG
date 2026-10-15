@@ -34,7 +34,7 @@ export function HpBar({ ratio, height, color, trackColor, trailColor }: { ratio:
           </Svg>
           {trailColor && (
             // 막대 전체 모양을 왼쪽으로 밀어 넣어 비스듬한 끝이 함께 움직이게 한다 (왼쪽 끝은 곧아서 잘려도 같은 모양)
-            <View style={[StyleSheet.absoluteFill, styles.clip]} pointerEvents="none">
+            <View style={[{ pointerEvents: "none" }, StyleSheet.absoluteFill, styles.clip]}>
               <Animated.View style={{ transform: [{ translateX: trail.interpolate({ inputRange: [0, 1], outputRange: [-width, 0] }) }] }}>
                 <Svg width={width} height={height}>
                   <Polygon points={shape(width)} fill={trailColor} />

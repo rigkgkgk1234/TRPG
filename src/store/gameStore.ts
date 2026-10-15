@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { CombatFx, FeedItem, GameCommand } from "@/core/commands";
 import { dispatch } from "@/core/engine";
 import { newRun } from "@/core/newRun";
+import { scenarioFinished, scenarioStart, type ScenarioSetup } from "@/core/scenario";
 import { checksum, type JobId, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import { makeRecord } from "@/core/story/ending";
@@ -17,6 +18,8 @@ export interface LogGroup {
   id: number;
   /** 무엇을 했는지 (결과 카드 제목) */
   cmd: GameCommand;
+  /** 명령이 아닌 일의 카드 제목 (상황 시험을 시작할 때 일어난 일). 있으면 cmd 대신 쓴다 */
+  title?: string;
   /** 명령을 보내기 직전 상태. 고른 선택지의 이름·시각을 여기서 읽는다 (immer가 바뀌지 않은 부분을 공유하므로 가볍다) */
   before: RunState;
   items: FeedItem[];
@@ -34,6 +37,8 @@ interface GameStore {
   playing: { id: number; before: RunState } | null;
   /** 지금 재생할 전투 연출 (결과 카드가 박자에 맞춰 넣는다). seq가 바뀌면 효과를 처음부터 다시 */
   fx: { seq: number; fx: CombatFx } | null;
+  /** 마지막 내 공격 효과: 적의 반격 효과가 와도 내 타격 효과가 끝까지 재생되게 따로 둔다 */
+  hitFx: { seq: number; fx: Extract<CombatFx, { side: "player" }> } | null;
   /** 연출 중에 이미 보여 준 피해: 전투 칸은 명령 전 HP에서 이만큼 빼서 그린다 (적 instanceId → 피해) */
   hpCut: Record<string, number>;
   /** 플레이어가 연출 중에 이미 받은 피해 (상태 바 HP) */
@@ -53,6 +58,16 @@ interface GameStore {
   dismissRout: () => void;
   playFx: (fx: CombatFx) => void;
   startNew: (job: JobId, name: string) => void;
+  /**
+   * 개발용 상황 시험. 시험 중에는 아무것도 저장하지 않고(진행·백업·엔딩 기록), 고른 상황이 끝나면 done이 된다.
+   * 저장돼 있던 원래 회차는 그대로 두었다가 exitScenario가 다시 불러온다.
+   */
+  scenario: { setup: ScenarioSetup; done: boolean } | null;
+  startScenario: (setup: Omit<ScenarioSetup, "seed" | "now">) => void;
+  /** 같은 설정으로 새로 (시드만 바꿔) */
+  restartScenario: () => void;
+  /** 시험을 버리고 저장돼 있던 원래 회차로 */
+  exitScenario: () => void;
   /** 저장된 회차를 불러온다. 앱을 켤 때 한 번 */
   hydrate: () => Promise<void>;
   /** 앱이 뒤로 갈 때 */
@@ -94,12 +109,13 @@ export const useGame = create<GameStore>()((set, get) => ({
   run: null,
   log: [],
   playing: null,
-  fx: null,
+  fx: null, hitFx: null,
   hpCut: {},
   hurt: 0,
   rout: null,
   hydrated: false,
   notice: null,
+  scenario: null,
 
   send: (cmd) => {
     const { run, log, playing } = get();
@@ -123,12 +139,18 @@ export const useGame = create<GameStore>()((set, get) => ({
       // 되돌렸다는 안내는 다음 행동을 하면 거둔다
       notice: null,
       playing: animate ? { id: group.id, before: run } : null,
-      fx: null,
+      fx: null, hitFx: null,
       hpCut: {},
       hurt: 0,
       rout: null,
     });
     const next = result.state;
+    const scenario = get().scenario;
+    if (scenario) {
+      // 상황 시험은 저장하지 않는다. 고른 상황이 끝나면 시험 끝 패널을 띄운다
+      if (scenarioFinished(next, scenario.setup)) set({ scenario: { ...scenario, done: true } });
+      return;
+    }
     if (next.ending) {
       // 기록을 먼저 남기고, 저장이 끝난 뒤에 진행 저장을 지운다 (순서가 바뀌면 기록이 사라질 수 있다)
       const record = makeRecord(next, CONTENT, new Date().toISOString(), run);
@@ -144,7 +166,8 @@ export const useGame = create<GameStore>()((set, get) => ({
   finishPlaying: () => {
     const { playing, log, run } = get();
     const group = playing && log.find((g) => g.id === playing.id);
-    set({ playing: null, fx: null, hpCut: {}, hurt: 0, rout: group && run ? routNotice(group, run) : null });
+    // 내 타격 효과는 결과 카드가 끝나도 남겨 끝까지 재생한다 (둔기 고리처럼 긴 효과). 전투가 끝나면 지운다
+    set({ playing: null, fx: null, hpCut: {}, hurt: 0, rout: group && run ? routNotice(group, run) : null, ...(run?.combat ? {} : { hitFx: null }) });
   },
 
   dismissRout: () => set({ rout: null }),
@@ -160,12 +183,13 @@ export const useGame = create<GameStore>()((set, get) => ({
     };
     set({
       fx: { seq, fx },
+      ...(fx.side === "player" ? { hitFx: { seq, fx } } : {}),
       ...(fx.side === "foe" && fx.hit ? { hurt: hurt + fx.damage } : {}),
     });
     if (fx.side === "player" && fx.hit) {
       set({ hpCut: { ...hpCut, [fx.targetId]: (hpCut[fx.targetId] ?? 0) + (parts ? parts[0] : fx.damage) } });
       parts?.slice(1).forEach((dmg, i) => setTimeout(() => {
-        if (get().fx?.seq === seq) cut(fx.targetId, dmg);
+        if (get().hitFx?.seq === seq) cut(fx.targetId, dmg);
       }, VOLLEY_GAP_MS * (i + 1)));
     }
   },
@@ -176,13 +200,35 @@ export const useGame = create<GameStore>()((set, get) => ({
     const previous = get().run;
     const run = newRun(CONTENT, job, name, { seed, now: now.toISOString() });
     fingerprint = stamp(run);
-    set({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, rout: null });
+    set({ run, log: [], playing: null, fx: null, hitFx: null, hpCut: {}, hurt: 0, rout: null, scenario: null });
     // 끝나지 않은 회차를 버리면 포기 기록을 남기고, 이전 회차의 백업이 새 회차로 되살아나지 않게 지운다
     persist(async () => {
       if (previous && !previous.ending) await useMeta.getState().record(makeRecord(previous, CONTENT, now.toISOString(), undefined, true));
       await clearRun();
       await saveCheckpoint(run);
     });
+  },
+
+  startScenario: (base) => {
+    const now = new Date();
+    const setup: ScenarioSetup = { ...base, seed: (now.getTime() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0, now: now.toISOString() };
+    const { run, before, feed } = scenarioStart(CONTENT, setup);
+    fingerprint = stamp(run);
+    // 시작할 때 일어난 일(장면 글, 적의 선공)은 첫 결과 카드로 보여 준다 (연출 없이 바로)
+    const ev = setup.start.kind === "event" || setup.start.kind === "combat" ? CONTENT.events[setup.start.eventId] : undefined;
+    const log: LogGroup[] = feed.length > 0 ? [{ id: nextLogId++, cmd: { type: "continue" }, title: `상황 시험: ${ev?.title ?? ""}`, before, items: feed }] : [];
+    set({ run, log, playing: null, fx: null, hitFx: null, hpCut: {}, hurt: 0, rout: null, notice: null, scenario: { setup, done: scenarioFinished(run, setup) } });
+  },
+
+  restartScenario: () => {
+    const scenario = get().scenario;
+    if (scenario) get().startScenario(scenario.setup);
+  },
+
+  exitScenario: () => {
+    if (!get().scenario) return;
+    set({ scenario: null, run: null, log: [], playing: null, fx: null, hitFx: null, hpCut: {}, hurt: 0, rout: null });
+    void get().hydrate();
   },
 
   hydrate: async () => {
@@ -204,6 +250,7 @@ export const useGame = create<GameStore>()((set, get) => ({
   },
 
   flush: () => {
+    if (get().scenario) return;
     const run = get().run;
     if (!intact(run)) return void restoreAfterTamper();
     if (run && !run.ending) persist(() => saveRun(run));
@@ -241,5 +288,6 @@ async function restoreAfterTamper(): Promise<void> {
   }
   const run = loaded && !loaded.run.ending ? loaded.run : null;
   fingerprint = stamp(run);
-  useGame.setState({ run, log: [], playing: null, fx: null, hpCut: {}, hurt: 0, rout: null, notice: TAMPER_NOTICE });
+  // 상황 시험 중이었어도 되돌아온 것은 진짜 회차이므로 시험 표시를 지운다 (남아 있으면 저장되지 않는다)
+  useGame.setState({ run, log: [], playing: null, fx: null, hitFx: null, hpCut: {}, hurt: 0, rout: null, notice: TAMPER_NOTICE, scenario: null });
 }

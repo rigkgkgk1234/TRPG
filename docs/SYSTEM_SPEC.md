@@ -554,7 +554,7 @@ export function successChance(modifierTotal: number, dc: number, mode: RollMode)
 | 결과 | 처리 |
 |------|------|
 | 자연 20 | 기적적으로 일어섬. HP 1, 경상. 흔적 「죽다 살아난 자」 |
-| 성공 | 누군가에게 발견됨. HP 1, 중상, 은화 -30%, 그날의 남은 행동 소실(다음 날 아침 집에서 깨어남). 흔적 「죽다 살아난 자」 |
+| 성공 | 누군가에게 발견됨(마을·개암나무 숲은 마을 사람, 그 밖의 탐험지는 지나가던 모험가). HP 1, 중상, 은화 -30%, 그날의 남은 행동 소실(다음 날 아침 집에서 깨어남). 흔적 「죽다 살아난 자」 |
 | 실패 / 자연 1 | **사망 → 회차 종료** (사망 엔딩, 묘비문 기록) |
 
 - 시작 확률: 농부(체력+2) 65%, 사냥꾼(체력+1) 60%. 죽음은 언제나 진짜 위협이다.
@@ -1010,7 +1010,7 @@ export const SAMPLE_EVENT_WOLF: EventDef = {
 
 ### 5-4. 가격 규칙
 - 판매가 = 구매가의 50%(내림). `quest` 판매 불가.
-- 평판 보정: 평판 60 이상 → 구매가 -10% / 10 미만 → +10% / 5 미만 → +20% (올림). 시작 평판(10)은 보정 없음, 사냥꾼(5)은 +10%.
+- 평판 보정: 평판 30 이상 → 구매가 -20% / 20 이상 → -10% / 10 미만 → +10% / 5 미만 → +20% (올림). 시작 평판(10)은 보정 없음, 사냥꾼(5)은 +10%.
 - 약초방 HP 회복: HP 1당 은화 1(평판 보정, 올림). 원하는 만큼(최대 HP까지) 고른다. 소모품 기준(HP 2당 1)보다 비싸 약을 사 두는 쪽이 싸다.
 - 겹치는 물건(약·여관 음식·식량)은 수량을 정해 한 번에 사고, 팔 때도 수량을 정한다.
 - 상점 이용·수리·치료 같은 **거래는 행동 슬롯을 소모하지 않는다**(아침·저녁 '마을 메뉴'에서 가능, 탐험 중 불가).
@@ -1181,8 +1181,10 @@ export interface Inventory {
 export const INVENTORY_CAPACITY = 10;
 export const SELL_RATE = 0.5;
 export const REPAIR_SILVER_PER_DURABILITY = 1 / 5;
-export const REP_DISCOUNT_THRESHOLD = 60;
+export const REP_DISCOUNT_THRESHOLD = 20;
 export const REP_DISCOUNT_RATE = 0.1;
+export const REP_BIG_DISCOUNT_THRESHOLD = 30;
+export const REP_BIG_DISCOUNT_RATE = 0.2;
 export const REP_SURCHARGE_THRESHOLD = 10;
 export const REP_SURCHARGE_RATE = 0.1;
 export const REP_HEAVY_SURCHARGE_THRESHOLD = 5;

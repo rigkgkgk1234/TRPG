@@ -52,6 +52,7 @@ export default function RootLayout() {
         <Stack.Screen name="game/inventory" options={{ title: "가방", presentation: "modal" }} />
         <Stack.Screen name="records" options={{ title: "기록" }} />
         <Stack.Screen name="dev/dice" options={{ title: "판정 테스트" }} />
+        <Stack.Screen name="dev/scenario" options={{ title: "상황 시험" }} />
       </Stack>
     </>
   );

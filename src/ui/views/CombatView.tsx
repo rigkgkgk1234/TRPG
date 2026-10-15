@@ -153,6 +153,7 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
   const selectable = active.length > 1;
   // 결과 카드가 박자에 맞춰 넣는 전투 연출과, 연출 중에 이미 보여 준 피해
   const fx = useGame((s) => s.fx);
+  const hitFx = useGame((s) => s.hitFx);
   const hpCut = useGame((s) => s.hpCut);
   return (
     <View style={styles.enemies}>
@@ -161,7 +162,8 @@ function Enemies({ view, onSelect }: { view: CombatView; onSelect: (id: string) 
         const hp = e.hp - (hpCut[e.id] ?? 0);
         const routed = e.state === "routed" && hp > 0;
         const out = e.state !== "active" || hp <= 0;
-        const mine = fx?.fx.side === "player" && fx.fx.targetId === e.id ? { seq: fx.seq, fx: fx.fx } : null;
+        // 내 공격 효과는 적의 반격이 와도 끝까지 재생한다 (hitFx는 다음 내 공격까지 남는다)
+        const mine = hitFx?.fx.targetId === e.id ? { seq: hitFx.seq, fx: hitFx.fx } : null;
         const attacking = fx?.fx.side === "foe" && fx.fx.enemyId === e.id ? fx.seq : null;
         return (
           <EnemyRow key={e.id} shakeSeq={mine?.fx.hit ? mine.seq : null} impact={mine?.fx.weapon} volley={!!mine && isVolley(mine.fx)} lungeSeq={attacking} front={mine !== null}>
@@ -265,7 +267,7 @@ function RoutFade({ routed, children }: { routed: boolean; children: React.React
   return (
     <Animated.View style={{ opacity: dim.interpolate({ inputRange: [0, 1], outputRange: [1, ROUT_OPACITY] }) }}>
       {children}
-      <Animated.View pointerEvents="none" style={[styles.routGlow, { opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0, ROUT_GLOW] }) }]} />
+      <Animated.View style={[{ pointerEvents: "none" }, styles.routGlow, { opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0, ROUT_GLOW] }) }]} />
     </Animated.View>
   );
 }

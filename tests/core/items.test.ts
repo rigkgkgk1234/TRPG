@@ -83,12 +83,15 @@ describe("가게", () => {
     expect(adjustedPrice(at(10), 25)).toBe(25);
     expect(adjustedPrice(at(5), 25)).toBe(28);
     expect(adjustedPrice(at(4), 25)).toBe(30);
-    expect(adjustedPrice(at(60), 25)).toBe(23);
+    expect(adjustedPrice(at(19), 25)).toBe(25);
+    expect(adjustedPrice(at(20), 25)).toBe(23);
+    expect(adjustedPrice(at(29), 25)).toBe(23);
+    expect(adjustedPrice(at(30), 25)).toBe(20);
     expect(adjustedPrice(at(9), 3)).toBe(4);
   });
 
   it("가죽 갑옷을 사면 몸 칸이 비어 있으니 바로 입는다", () => {
-    const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 30; }));
+    const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 15; }));
     expect(buy(ctx, "smithy", "leather_armor")).toBeNull();
     expect(ctx.draft.resources.silver).toBe(6);
     expect(ctx.draft.inventory.equipment.armor).toEqual({ itemId: "leather_armor", qty: 1, durability: 25 });
@@ -96,7 +99,7 @@ describe("가게", () => {
   });
 
   it("이미 든 칸이면 가방으로, 은화·자리가 모자라면 거절, 화살은 팔지 않는다", () => {
-    const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 30; }));
+    const ctx = ctxOf(edit(start("farmer"), (s) => { s.resources.silver = 30; s.player.reputation = 15; }));
     expect(buy(ctx, "smithy", "rusty_sword")).toBeNull();
     expect(ctx.draft.inventory.slots[0]?.itemId).toBe("rusty_sword");
     expect(buy(ctx, "smithy", "soldier_sword")).toBe("은화가 모자란다");
@@ -158,7 +161,7 @@ describe("가게", () => {
 });
 
 describe("수량 거래와 약초방 HP 회복", () => {
-  const rich = (silver = 40) => edit(start("farmer"), (s) => { s.resources.silver = silver; s.player.reputation = 30; s.inventory.slots = s.inventory.slots.map(() => null); });
+  const rich = (silver = 40) => edit(start("farmer"), (s) => { s.resources.silver = silver; s.player.reputation = 15; s.inventory.slots = s.inventory.slots.map(() => null); });
 
   it("약을 3개 사면 값도 3배, 한 칸에 겹쳐 넣는다", () => {
     const ctx = ctxOf(rich());

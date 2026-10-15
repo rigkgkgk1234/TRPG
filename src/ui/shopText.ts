@@ -1,6 +1,6 @@
 import { EQUIP_SLOTS } from "@/core/items/equipment";
 import { repairPrice, sellPrice, SHOPS, stackAt, treatable, type RepairTarget, type ShopId } from "@/core/items/shop";
-import { maxHp, REP_DISCOUNT_THRESHOLD, REP_HEAVY_SURCHARGE_THRESHOLD, REP_SURCHARGE_THRESHOLD, type ItemDef, type ItemStack, type RunState } from "@/core/types";
+import { maxHp, REP_BIG_DISCOUNT_THRESHOLD, REP_DISCOUNT_THRESHOLD, REP_HEAVY_SURCHARGE_THRESHOLD, REP_SURCHARGE_THRESHOLD, type ItemDef, type ItemStack, type RunState } from "@/core/types";
 import { CONTENT } from "@/data";
 import {
   BasketIcon, BeerSteinIcon, FirstAidKitIcon, HammerIcon, HandCoinsIcon, HeartbeatIcon, ShoppingCartIcon, WrenchIcon, type Icon,
@@ -21,6 +21,7 @@ export const SHOP_ICON: Record<ShopId, Icon> = { smithy: HammerIcon, healer: Fir
 
 export function reputationNote(run: RunState): string {
   const rep = run.player.reputation;
+  if (rep >= REP_BIG_DISCOUNT_THRESHOLD) return `평판 ${rep}: 물건값 20% 할인`;
   if (rep >= REP_DISCOUNT_THRESHOLD) return `평판 ${rep}: 물건값 10% 할인`;
   if (rep < REP_HEAVY_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 20% 웃돈`;
   if (rep < REP_SURCHARGE_THRESHOLD) return `평판 ${rep}: 물건값 10% 웃돈`;

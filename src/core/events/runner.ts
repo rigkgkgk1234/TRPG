@@ -194,6 +194,13 @@ export function startPendingStory(ctx: Ctx): boolean {
   return true;
 }
 
+/** 개발용 상황 시험(core/scenario.ts): 이벤트를 원하는 장면부터 시작한다 */
+export function startEventAt(ctx: Ctx, ev: EventDef, sceneId: SceneId, explore?: ActiveEventState["explore"]): void {
+  recordEvent(ctx.draft, ev.id);
+  ctx.draft.activeEvent = { eventId: ev.id, sceneId, explore };
+  enterScene(ctx, sceneId);
+}
+
 /** 스토리 이벤트 하나를 바로 시작한다 (30일차 습격처럼 정해진 때에) */
 export function startStoryEvent(ctx: Ctx, eventId: string): boolean {
   const ev = ctx.content.events[eventId];

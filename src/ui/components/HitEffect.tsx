@@ -8,6 +8,13 @@ import { colors } from "@/ui/theme";
 
 /** 효과 한 번의 길이 (ms) */
 export const HIT_FX_MS = 600;
+/** 둔기 타격은 묵직하게 길게 재생한다 (ms) */
+const SMASH_MS = 1400;
+
+/** 내 공격 효과 한 번의 길이 (ms): 빗나감, 둔기 타격, 그 밖 */
+function hitFxMs(fx: PlayerFx): number {
+  return !fx.hit ? WHIFF_MS : fx.weapon === "blunt" ? SMASH_MS : HIT_FX_MS;
+}
 
 type PlayerFx = Extract<CombatFx, { side: "player" }>;
 type T = Animated.Value;
@@ -60,7 +67,7 @@ function Volley({ fx, from, maxHp }: { fx: PlayerFx; from: number; maxHp: number
     lo: Math.max(0, start - (cut[i] + dmg) / maxHp),
   }));
   return (
-    <View pointerEvents="none" style={styles.layer}>
+    <View style={[{ pointerEvents: "none" }, styles.layer]}>
       {segments.slice(0, shots).map((sg, i) => <VolleyShot key={i} hi={sg.hi} lo={sg.lo} last={i === VOLLEY_SHOTS - 1} />)}
     </View>
   );
@@ -71,7 +78,7 @@ function VolleyShot({ hi, lo, last }: { hi: number; lo: number; last: boolean })
   const t = useFxClock(HIT_FX_MS);
   return (
     <>
-      <Chunk t={t} left={lo} width={Math.max(0, hi - lo)} shatter={null} />
+      <Chunk t={t} left={lo} width={Math.max(0, hi - lo)} shatter={false} />
       <View style={[styles.point, { left: `${lo * 100}%` }]}>
         <Arrow t={t} crit={last} flash={false} />
       </View>
@@ -80,19 +87,19 @@ function VolleyShot({ hi, lo, last }: { hi: number; lo: number; last: boolean })
 }
 
 function SingleHit({ fx, from, to }: { fx: PlayerFx; from: number; to: number }) {
-  const t = useFxClock(fx.hit ? HIT_FX_MS : WHIFF_MS);
+  const t = useFxClock(hitFxMs(fx));
 
   if (!fx.hit) {
     return (
-      <View pointerEvents="none" style={styles.layer}>
+      <View style={[{ pointerEvents: "none" }, styles.layer]}>
         <Whiff t={t} />
       </View>
     );
   }
   const at = `${to * 100}%` as const;
   return (
-    <View pointerEvents="none" style={styles.layer}>
-        <Chunk t={t} left={to} width={Math.max(0, from - to)} shatter={fx.weapon === "blunt" ? "heavy" : fx.weapon === "fist" ? "light" : null} />
+    <View style={[{ pointerEvents: "none" }, styles.layer]}>
+        <Chunk t={t} left={to} width={Math.max(0, from - to)} shatter={fx.weapon === "blunt" || fx.weapon === "fist"} />
         {/* 맞은 자리: 너비 0인 기준점에 효과를 가운데 맞춘다 */}
         <View style={[styles.point, { left: at }]}>
           {fx.weapon === "blade" ? <Slash t={t} crit={fx.crit} />
@@ -107,13 +114,11 @@ function SingleHit({ fx, from, to }: { fx: PlayerFx; from: number; to: number })
 /** 깎인 막대 조각이 하얗게 빛나는 세기 (1이면 완전히 하얗다) */
 const CHUNK_GLOW = 0.7;
 
-/** 깎인 막대 조각: 하얗게 번쩍인 뒤 떨어지거나(베기·화살) 부풀며 부서진다(타격, 둔기는 더 크게) */
-function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number; shatter: "heavy" | "light" | null }) {
+/** 깎인 막대 조각: 하얗게 번쩍인 뒤 떨어지거나(베기·화살) 부풀며 부서진다(둔기·맨손) */
+function Chunk({ t, left, width, shatter }: { t: T; left: number; width: number; shatter: boolean }) {
   if (width <= 0) return null;
   const opacity = t.interpolate({ inputRange: [0, 0.15, 0.55, 1], outputRange: [1, 1, 0.8, 0] });
-  const transform = shatter === "heavy"
-    ? [{ scaleY: t.interpolate({ inputRange: [0, 0.08, 0.4, 1], outputRange: [1, 3.8, 2, 0.3] }) }, { scaleX: t.interpolate({ inputRange: [0, 0.08, 1], outputRange: [1, 1.3, 1.7] }) }]
-    : shatter
+  const transform = shatter
     ? [{ scaleY: t.interpolate({ inputRange: [0, 0.15, 0.5, 1], outputRange: [1, 2.6, 1.6, 0.4] }) }, { scaleX: t.interpolate({ inputRange: [0, 0.15, 1], outputRange: [1, 1.15, 1.4] }) }]
     : [
         { translateY: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 0, 24] }) },
@@ -136,15 +141,15 @@ const CUT_PATH = `M0 ${CUT_H / 2} Q${CUT_W / 2} ${-CUT_H / 2} ${CUT_W} ${CUT_H /
 /** 베기 불꽃이 튀는 방향: 칼자국을 따라 앞뒤로 (각도) */
 const SLASH_SPARKS = [-38, -24, -10, 4, 142, 156, 170];
 const SLASH_SPARKS_CRIT = [-48, -34, -20, -6, 8, 22, 36, 132, 146, 160, 174, 188, 202];
-/** 베기 파편: 칼이 지나간 쪽(오른쪽 위)으로 흩날렸다 떨어진다 */
-const SLASH_DEBRIS: Debris[] = [[96, 30, -240], [70, 46, 200], [44, 38, -160], [118, 16, 260], [-36, 20, 140], [24, 54, -200]];
+/** 베기 파편: 칼이 빠져나간 쪽(왼쪽)으로 흩날렸다 떨어진다 */
+const SLASH_DEBRIS: Debris[] = [[-96, 30, 240], [-70, 46, -200], [-44, 38, 160], [-118, 16, -260], [36, 20, -140], [-24, 54, 200]];
 
 /** 검: 커다란 칼자국(붉은 잔광이 뒤따른다) + 칼날을 따라 튀는 불꽃 + 충격파 + 흩날리는 파편. 대성공은 X자 */
 function Slash({ t, crit }: { t: T; crit: boolean }) {
-  const cut = (deg: string, start: number, key: string) => {
+  const cut = (deg: string, start: number, key: string, fromRight: boolean) => {
     const draw = t.interpolate({ inputRange: [0, start, start + 0.14, 1], outputRange: [0.01, 0.01, 1, 1], extrapolate: "clamp" });
-    // 왼쪽 끝을 고정하고 오른쪽으로 그어 나간다 (scaleX는 가운데 기준이라 그만큼 옮긴다)
-    const shift = draw.interpolate({ inputRange: [0, 1], outputRange: [-CUT_W / 2, 0] });
+    // 한쪽 끝을 고정하고 반대쪽으로 그어 나간다 (scaleX는 가운데 기준이라 그만큼 옮긴다). fromRight면 오른쪽 끝에서 왼쪽으로
+    const shift = draw.interpolate({ inputRange: [0, 1], outputRange: [fromRight ? CUT_W / 2 : -CUT_W / 2, 0] });
     const fade = t.interpolate({ inputRange: [0, start, start + 0.02, start + 0.35, 1], outputRange: [0, 0, 1, 1, 0] });
     const glow = t.interpolate({ inputRange: [0, start, start + 0.04, start + 0.5], outputRange: [0, 0, 0.7, 0], extrapolate: "clamp" });
     return (
@@ -165,7 +170,8 @@ function Slash({ t, crit }: { t: T; crit: boolean }) {
   };
   return (
     <>
-      {crit ? [cut("-24deg", 0, "a"), cut("24deg", 0.14, "b")] : cut("-20deg", 0, "a")}
+      {/* 오른쪽 위에서 왼쪽 아래로 벤다. 대성공은 이어서 왼쪽 위에서 오른쪽 아래로 한 번 더 그어 X자 */}
+      {crit ? [cut("-24deg", 0, "a", true), cut("24deg", 0.14, "b", false)] : cut("-20deg", 0, "a", true)}
       <Burst t={t} at={0.08} flash={crit ? 1.6 : 1.2} rings={crit ? [[5, 0], [3.4, 0.1]] : [[4.2, 0]]}
         spikes={crit ? SLASH_SPARKS_CRIT : SLASH_SPARKS} reach={crit ? 110 : 96} debris={SLASH_DEBRIS} />
     </>
@@ -188,6 +194,22 @@ function Impact({ t, crit }: { t: T; crit: boolean }) {
   );
 }
 
+/** 충격파 고리가 퍼지며 사라지는 데 걸리는 몫 (맞은 뒤 진행 0~1 기준) */
+const RING_LIFE = 0.3;
+
+/**
+ * 효과 시계(진행 p, Easing.out(quad))에서 진행 p인 때보다 실제 시간 비율 dt만큼 뒤의 진행.
+ * 시계가 처음에 빠르고 끝에 느려서, "0.4초 더"는 진행 비율이 아니라 시간으로 더해야 한다.
+ */
+function laterBy(p: number, dt: number): number {
+  const x = 1 - Math.sqrt(1 - Math.min(1, p));
+  const later = Math.min(1, x + dt);
+  return 1 - (1 - later) * (1 - later);
+}
+
+/** 섬광 모양: 가장 진한 불투명도, 밝기를 유지하는 몫(0~1, 섬광이 사라질 때까지 기준) */
+type FlashLook = { opacity: number; hold: number };
+
 /** 파편 하나: [가로로 날아가는 거리, 솟구치는 높이, 회전] — 솟았다가 아래로 떨어진다 */
 type Debris = [number, number, number];
 
@@ -196,39 +218,90 @@ const SMASH_SPIKES = [0, 45, 90, 135, 180, 225, 270, 315];
 const SMASH_SPIKES_CRIT = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
 const SMASH_DEBRIS: Debris[] = [[-86, 34, -260], [-58, 56, 200], [-24, 64, -160], [22, 60, 220], [56, 50, -200], [88, 30, 180], [-40, 20, 120], [44, 22, -140]];
 
+/** 둔기 섬광(가운데 속이 찬 하얀 원): 투명도 90%로 옅게, 충격파 고리와 함께 사라지고 그 절반까지는 밝기를 유지한다 */
+const SMASH_FLASH: FlashLook = { opacity: 0.1, hold: 0.5 };
+/** 둔기 충격파 고리는 다른 무기보다 이만큼(ms) 늦게 사라진다 */
+const SMASH_RING_EXTRA_MS = 400;
+
 /** 둔기: 큰 섬광 + 충격파 두 겹(대성공은 세 겹) + 사방으로 튀는 충격선 + 솟았다 떨어지는 파편 */
 function Smash({ t, crit }: { t: T; crit: boolean }) {
   return (
-    <Burst t={t} at={0} flash={crit ? 1.9 : 1.5} rings={crit ? [[6, 0], [4.4, 0.08], [3, 0.16]] : [[5, 0], [3.4, 0.1]]}
+    <Burst flashLook={SMASH_FLASH} ringExtra={{ ms: SMASH_RING_EXTRA_MS, duration: SMASH_MS }} t={t} at={0} flash={crit ? 1.9 : 1.5} rings={crit ? [[6, 0], [4.4, 0.08], [3, 0.16]] : [[5, 0], [3.4, 0.1]]}
       spikes={crit ? SMASH_SPIKES_CRIT : SMASH_SPIKES} reach={crit ? 96 : 80} debris={SMASH_DEBRIS} spread={crit ? 1.3 : 1} />
   );
+}
+
+/** 맞은 순간 폭발의 크기 배율 (섬광·충격파·튀는 선·파편) */
+const BURST_SIZE = 0.8;
+/** 튀는 선과 파편 수 배율 */
+const BURST_AMOUNT = 1.5;
+/** 튀는 선과 파편이 퍼지는 거리 배율 */
+const BURST_REACH = 1.3;
+
+/** 튀는 선을 BURST_AMOUNT배로: 이웃한 두 선 사이 가운데에 하나씩 끼워 넣는다 */
+function moreSpikes(list: number[]): number[] {
+  const extra = Math.round(list.length * BURST_AMOUNT) - list.length;
+  const added = Array.from({ length: extra }, (_, i) => {
+    const j = Math.floor((i * list.length) / extra);
+    const a = list[j];
+    const b = list[(j + 1) % list.length] + (j + 1 === list.length ? 360 : 0);
+    return (a + b) / 2;
+  });
+  return [...list, ...added];
+}
+
+/** 파편을 BURST_AMOUNT배로: 있는 파편을 조금 덜 멀리, 더 높이, 반대로 돌게 바꿔 더한다 */
+function moreDebris(list: Debris[]): Debris[] {
+  const extra = Math.round(list.length * BURST_AMOUNT) - list.length;
+  const added = Array.from({ length: extra }, (_, i): Debris => {
+    const [dx, up, spin] = list[Math.floor((i * list.length) / extra)];
+    return [dx * 0.6, up * 1.25, -spin];
+  });
+  return [...list, ...added];
 }
 
 /**
  * 맞은 순간의 폭발: 섬광 + 충격파 + 튀는 선 + 파편. 둔기·검·활이 같이 쓴다.
  * at: 맞는 순간(t 기준, 활은 화살이 닿은 뒤). flash: 섬광 크기(0이면 섬광 없음). rings: [최종 크기, at 뒤 지연], spikes: 튀는 선의 각도, reach: 튀는 선이 닿는 거리
  */
-function Burst({ t, at, flash, rings, spikes, reach, debris, spread = 1 }: {
+function Burst({ t, at, flash: flashSize, rings: ringList, spikes: spikeList, reach: reachSize, debris: debrisList, spread = 1, flashLook, ringExtra }: {
   t: T; at: number; flash: number; rings: [number, number][]; spikes: number[]; reach: number; debris: Debris[]; spread?: number;
+  /** 섬광을 따로 다룰 때: 가장 진한 불투명도, 밝기를 유지하는 몫 (없으면 짧게 번쩍인다) */
+  flashLook?: FlashLook;
+  /** 충격파 고리를 실제 시간으로 이만큼 늦게 사라지게 한다: 더할 ms와 효과 전체 길이(ms) */
+  ringExtra?: { ms: number; duration: number };
 }) {
+  // 무기마다 정한 크기에 BURST_SIZE를 곱하고, 튀는 선과 파편은 BURST_AMOUNT배로 늘려 BURST_REACH배 멀리 보낸다
+  const flash = flashSize * BURST_SIZE;
+  const rings = ringList.map(([to, delay]): [number, number] => [to * BURST_SIZE, delay]);
+  const reach = reachSize * BURST_SIZE * BURST_REACH;
+  const spikes = moreSpikes(spikeList);
+  const debris = moreDebris(debrisList).map(([dx, up, spin]): Debris => [dx * BURST_SIZE * BURST_REACH, up * BURST_SIZE * BURST_REACH, spin]);
   // 맞은 뒤의 진행(0~1)을 t로 바꾼다
   const k = (p: number) => at + p * (1 - at);
   // 섬광은 크게 번쩍이고 금방 사라진다 (회색 원으로 남지 않게)
-  const flashScale = t.interpolate({ inputRange: [0, at, k(0.05), k(0.2)], outputRange: [0.3, 0.3, flash, flash * 1.2], extrapolate: "clamp" });
-  const flashOpacity = t.interpolate({ inputRange: [0, at, k(0.02), k(0.08), k(0.2)], outputRange: [0, 0, 1, 0.85, 0], extrapolate: "clamp" });
+  // 따로 다루는 섬광은 마지막 충격파 고리가 사라질 때 같이 사라진다
+  const flashEnd = Math.min(1, Math.max(...ringList.map(([, delay]) => delay)) + RING_LIFE);
+  const flashScale = flashLook
+    ? t.interpolate({ inputRange: [0, at, k(0.05)], outputRange: [0.3, 0.3, flash], extrapolate: "clamp" })
+    : t.interpolate({ inputRange: [0, at, k(0.05), k(0.2)], outputRange: [0.3, 0.3, flash, flash * 1.2], extrapolate: "clamp" });
+  const flashOpacity = flashLook
+    ? t.interpolate({ inputRange: [0, at, k(0.02), k(Math.max(0.03, flashEnd * flashLook.hold)), k(flashEnd)], outputRange: [0, 0, flashLook.opacity, flashLook.opacity, 0], extrapolate: "clamp" })
+    : t.interpolate({ inputRange: [0, at, k(0.02), k(0.08), k(0.2)], outputRange: [0, 0, 1, 0.85, 0], extrapolate: "clamp" });
   // 충격파: 빠르게 크게 퍼지며 엷어진다
   const ring = ([to, delay]: [number, number], i: number) => {
-    const scale = t.interpolate({ inputRange: [0, k(delay), k(delay + 0.3)], outputRange: [0.5, 0.5, to], extrapolate: "clamp" });
-    const opacity = t.interpolate({ inputRange: [0, k(delay), k(delay + 0.02), k(delay + 0.3)], outputRange: [0, 0, 1, 0], extrapolate: "clamp" });
+    const end = ringExtra ? laterBy(delay + RING_LIFE, ringExtra.ms / ringExtra.duration) : delay + RING_LIFE;
+    const scale = t.interpolate({ inputRange: [0, k(delay), k(end)], outputRange: [0.5, 0.5, to], extrapolate: "clamp" });
+    const opacity = t.interpolate({ inputRange: [0, k(delay), k(delay + 0.02), k(end)], outputRange: [0, 0, 1, 0], extrapolate: "clamp" });
     return <Animated.View key={i} style={[styles.smashRing, { opacity, transform: [{ scale }] }]} />;
   };
   const spike = (deg: number) => {
-    const out = t.interpolate({ inputRange: [0, at, k(0.03), k(0.28)], outputRange: [16, 16, 22, reach], extrapolate: "clamp" });
+    const out = t.interpolate({ inputRange: [0, at, k(0.03), k(0.28)], outputRange: [16 * BURST_SIZE, 16 * BURST_SIZE, 22 * BURST_SIZE, reach], extrapolate: "clamp" });
     const opacity = t.interpolate({ inputRange: [0, at, k(0.02), k(0.18), k(0.3)], outputRange: [0, 0, 1, 0.9, 0], extrapolate: "clamp" });
-    const scaleX = t.interpolate({ inputRange: [0, at, k(0.03), k(0.28)], outputRange: [0.5, 0.5, 1.4, 0.2], extrapolate: "clamp" });
+    const scaleX = t.interpolate({ inputRange: [0, at, k(0.03), k(0.28)], outputRange: [0.5, 0.5, 1.4, 0.2].map((v) => v * BURST_SIZE), extrapolate: "clamp" });
     return (
       <View key={deg} style={[styles.spikeArm, { transform: [{ rotate: `${deg}deg` }] }]}>
-        <Animated.View style={[styles.spike, { opacity, transform: [{ translateX: out }, { scaleX }] }]} />
+        <Animated.View style={[styles.spike, { opacity, transform: [{ translateX: out }, { scaleX }, { scaleY: BURST_SIZE }] }]} />
       </View>
     );
   };
@@ -238,7 +311,7 @@ function Burst({ t, at, flash, rings, spikes, reach, debris, spread = 1 }: {
     const y = t.interpolate({ inputRange: [0, at, k(0.18), k(0.4), 1], outputRange: [0, 0, -up, -up * 0.7, up * 1.4] });
     const rotate = t.interpolate({ inputRange: [0, at, 1], outputRange: ["0deg", "0deg", `${spin}deg`] });
     const opacity = t.interpolate({ inputRange: [0, at, k(0.02), k(0.75), 1], outputRange: [0, 0, 1, 1, 0] });
-    return <Animated.View key={i} style={[styles.debris, i % 2 === 0 && styles.debrisRed, { opacity, transform: [{ translateX: x }, { translateY: y }, { rotate }] }]} />;
+    return <Animated.View key={i} style={[styles.debris, i % 2 === 0 && styles.debrisRed, { opacity, transform: [{ translateX: x }, { translateY: y }, { rotate }, { scale: BURST_SIZE }] }]} />;
   };
   return (
     <>

@@ -23,8 +23,8 @@ export function ItemRow({ title, meta, warn, price, actions, dim, below }: {
   dim?: boolean;
   meta?: string[];
   warn?: string | null;
-  /** 오른쪽 위 값 표시 ("은화 25") */
-  price?: string;
+  /** 오른쪽 위 값 표시 ("은화 25", 평판으로 바뀐 값은 PriceTag) */
+  price?: ReactNode;
   actions: RowAction[];
   below?: ReactNode;
 }) {
@@ -34,7 +34,7 @@ export function ItemRow({ title, meta, warn, price, actions, dim, below }: {
         <View style={styles.body}>
           <View style={styles.head}>
             <Text style={[styles.title, dim && { color: colors.textDim }]}>{title}</Text>
-            {price ? <Text style={styles.price}>{price}</Text> : null}
+            {price != null ? <Text style={styles.price}>{price}</Text> : null}
           </View>
           {(meta?.length || warn) ? (
             <View style={styles.meta}>

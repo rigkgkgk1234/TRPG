@@ -5,6 +5,8 @@ import { changeFatigue, changeHp, changeSilver, setWound } from "../day/resource
 import { ERRAND_INN_DISCOUNT, PEDDLER_BUY_DISCOUNT } from "../jobPerks";
 import { josa } from "../labels";
 import {
+  REP_BIG_DISCOUNT_RATE,
+  REP_BIG_DISCOUNT_THRESHOLD,
   REP_DISCOUNT_RATE,
   REP_DISCOUNT_THRESHOLD,
   REP_HEAVY_SURCHARGE_RATE,
@@ -72,22 +74,28 @@ export const HEAL_SILVER_PER_HP = 1;
 const SMITH_REPAIR_RATE = 0.5;
 
 /**
- * 평판 가격 보정: 60 이상이면 10% 싸게, 10 미만이면 10%, 5 미만이면 20% 비싸게 (올림). (SYSTEM_SPEC 5-4)
+ * 평판 가격 보정: 30 이상이면 20%, 20 이상이면 10% 싸게, 10 미만이면 10%, 5 미만이면 20% 비싸게 (올림). (SYSTEM_SPEC 5-4)
  * 식량은 이 보정을 받지 않는다 (town.ts 참고).
  */
 export function adjustedPrice(run: RunState, base: number): number {
   const rep = run.player.reputation;
   const rate =
-    rep >= REP_DISCOUNT_THRESHOLD ? 1 - REP_DISCOUNT_RATE
+    rep >= REP_BIG_DISCOUNT_THRESHOLD ? 1 - REP_BIG_DISCOUNT_RATE
+    : rep >= REP_DISCOUNT_THRESHOLD ? 1 - REP_DISCOUNT_RATE
     : rep < REP_HEAVY_SURCHARGE_THRESHOLD ? 1 + REP_HEAVY_SURCHARGE_RATE
     : rep < REP_SURCHARGE_THRESHOLD ? 1 + REP_SURCHARGE_RATE
     : 1;
   return Math.ceil(base * rate - 1e-9);
 }
 
+/** 가게 물건 한 묶음의 원래 값 (보정 전) */
+export function entryBasePrice(content: Pick<ContentDB, "items">, e: ShopEntry): number {
+  return e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty;
+}
+
 /** 가게 물건 한 묶음의 값 (평판 보정과 직업 할인은 shopPrice) */
 export function entryPrice(run: RunState, content: Pick<ContentDB, "items">, e: ShopEntry, shop: ShopId): number {
-  return shopPrice(run, shop, e.price ?? (content.items[e.itemId]?.price ?? 0) * e.qty);
+  return shopPrice(run, shop, entryBasePrice(content, e));
 }
 
 /** 가게에서 치르는 값: 평판 보정 뒤 직업 할인 (여관 심부름꾼은 여관 반값, 떠돌이 행상은 대장간·약초방 −20%, 둘 다 올림) */

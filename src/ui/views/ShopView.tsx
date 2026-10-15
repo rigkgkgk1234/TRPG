@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { canTrade } from "@/core/day/town";
 import { EQUIP_SLOTS } from "@/core/items/equipment";
 import {
-  entryPrice, hasRoom, healPrice, maxHealable, SHOPS, STABILIZE_FATIGUE, STABILIZE_PRICE, shopPrice, treatable, TREAT_PRICE, type ShopEntry, type ShopId,
+  entryBasePrice, entryPrice, HEAL_SILVER_PER_HP, hasRoom, healPrice, maxHealable, SHOPS, STABILIZE_FATIGUE, STABILIZE_PRICE, shopPrice, treatable, TREAT_PRICE, type ShopEntry, type ShopId,
 } from "@/core/items/shop";
 import { WOUND_LABEL } from "@/core/labels";
 import { FOOD_PRICE, maxHp, type ItemDef, type RunState } from "@/core/types";
@@ -11,6 +11,7 @@ import { CONTENT } from "@/data";
 import { useGame } from "@/store/gameStore";
 import { Chip, ChipRow, Section } from "@/ui/components/Controls";
 import { ItemRow } from "@/ui/components/ItemRow";
+import { PriceTag } from "@/ui/components/PriceTag";
 import { QtyPicker, ShopControls } from "@/ui/components/ShopControls";
 import { durabilityLabel, durabilityText, itemSummary } from "@/ui/itemText";
 import { MODE_LABEL, repairRows, reputationNote, sellRows, SHOP_ICON, type ShopMode } from "@/ui/shopText";
@@ -92,7 +93,7 @@ function maxBuyable(run: RunState, def: ItemDef, e: ShopEntry, shop: ShopId): nu
 function stockRows(run: RunState, shop: ShopId) {
   return SHOPS[shop].stock.flatMap((e) => {
     const def = CONTENT.items[e.itemId];
-    return def ? [{ e, def, price: entryPrice(run, CONTENT, e, shop) }] : [];
+    return def ? [{ e, def, base: entryBasePrice(CONTENT, e), price: entryPrice(run, CONTENT, e, shop) }] : [];
   });
 }
 
@@ -109,13 +110,13 @@ function SmithyBuy({ run }: { run: RunState }) {
       <ShopControls groups={SMITHY_GROUPS} group={c.group} onGroup={c.setGroup} sort={c.sort} onSort={c.setSort} />
       {rows.length === 0 ? <Empty text="이 종류는 팔지 않는다." /> : (
         <View>
-          {rows.map(({ e, def, price }) => {
+          {rows.map(({ e, def, base, price }) => {
             const owned = EQUIP_SLOTS.some((slot) => run.inventory.equipment[slot]?.itemId === def.id);
             return (
               <ItemRow
                 key={e.itemId}
                 title={def.name}
-                price={`은화 ${price}`}
+                price={<PriceTag base={base} price={price} />}
                 meta={[...itemSummary(def), ...(durabilityLabel(def) ? [durabilityLabel(def)!] : []), ...(owned ? ["지금 쓰는 것"] : [])]}
                 actions={[{ label: "사기", disabled: run.resources.silver < price, onPress: () => send({ type: "shop", op: "buy", shop: "smithy", target: e.itemId }) }]}
               />
@@ -174,7 +175,7 @@ function Care({ run }: { run: RunState }) {
         run.player.hp >= max ? <Empty text={`HP가 가득 차 있다 (${run.player.hp}/${max}).`} /> : (
           <ItemRow
             title="HP 회복"
-            price={`HP 1당 은화 ${healPrice(run, 1)}`}
+            price={<PriceTag prefix="HP 1당 은화 " base={HEAL_SILVER_PER_HP} price={healPrice(run, 1)} />}
             meta={[`지금 HP ${run.player.hp}/${max}`, "약, 상처 손질"]}
             actions={[]}
             below={
@@ -195,14 +196,14 @@ function Care({ run }: { run: RunState }) {
       ) : wound.level === "critical" ? (
         <ItemRow
           title="응급 처치"
-          price={`은화 ${stabilizePrice}`}
+          price={<PriceTag base={STABILIZE_PRICE} price={stabilizePrice} />}
           meta={["치명상 → 치료받은 중상", `피로 +${STABILIZE_FATIGUE}`]}
           actions={[{ label: "처치받기", disabled: run.resources.silver < stabilizePrice, onPress: () => send({ type: "shop", op: "stabilize" }) }]}
         />
       ) : treatable(run) ? (
         <ItemRow
           title="중상 치료"
-          price={`은화 ${treatPrice}`}
+          price={<PriceTag base={TREAT_PRICE} price={treatPrice} />}
           meta={["상처 봉합", "사흘 뒤 경상으로"]}
           actions={[{ label: "치료받기", disabled: run.resources.silver < treatPrice, onPress: () => send({ type: "shop", op: "treat" }) }]}
         />
@@ -232,19 +233,19 @@ function HealerGoods({ run }: { run: RunState }) {
 }
 
 /** 겹치는 물건 목록: "사기"를 누르면 그 줄 아래에 수량 고르기를 펼친다 */
-function QtyStock({ run, shop, rows }: { run: RunState; shop: ShopId; rows: { e: ShopEntry; def: ItemDef; price: number }[] }) {
+function QtyStock({ run, shop, rows }: { run: RunState; shop: ShopId; rows: { e: ShopEntry; def: ItemDef; base: number; price: number }[] }) {
   const send = useGame((s) => s.send);
   const { open, toggle } = useOpenRow();
   return (
     <View>
-      {rows.map(({ e, def, price }) => {
+      {rows.map(({ e, def, base, price }) => {
         const max = maxBuyable(run, def, e, shop);
         const owned = run.inventory.slots.reduce((n, s) => n + (s?.itemId === def.id ? s.qty : 0), 0);
         return (
           <ItemRow
             key={e.itemId}
             title={def.name}
-            price={`은화 ${price}`}
+            price={<PriceTag base={base} price={price} />}
             meta={[...itemSummary(def), ...(owned > 0 ? [`가진 것 ${owned}`] : [])]}
             actions={[{ label: "사기", selected: open === e.itemId, disabled: max < 1 && open !== e.itemId, onPress: () => toggle(e.itemId) }]}
             below={open === e.itemId ? (

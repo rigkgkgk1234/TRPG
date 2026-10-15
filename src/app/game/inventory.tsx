@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { equippedWeapon, offHandWeapon, playerDefense } from "@/core/combat/combat";
-import { EQUIP_SLOT_LABEL, EQUIP_SLOTS, equipBlock, slotOf, slotsFor, type EquipSlot } from "@/core/items/equipment";
+import { josa } from "@/core/labels";
+import { autoEquipSlot, EQUIP_SLOT_LABEL, EQUIP_SLOTS, equipBlock, slotsFor, type EquipSlot } from "@/core/items/equipment";
 import { canUseItem } from "@/core/items/inventory";
 import { INVENTORY_CAPACITY } from "@/core/types";
 import { CONTENT } from "@/data";
@@ -30,6 +31,8 @@ export default function InventoryScreen() {
   const discardAction = useDiscardConfirm((slotIndex) => send({ type: "discard", slotIndex }));
   /** 고르기 창을 연 장비 칸 */
   const [picking, setPicking] = useState<EquipSlot | null>(null);
+  /** 두 손이 다 찬 채로 한 손 무기를 장착하려 할 때 어느 손인지 묻는 창 (가방 칸 번호) */
+  const [handFor, setHandFor] = useState<number | null>(null);
   if (!run) return null;
 
   const inv = run.inventory;
@@ -61,16 +64,21 @@ export default function InventoryScreen() {
           const def = CONTENT.items[stack.itemId];
           if (!def) return null;
           const actions: RowAction[] = [];
-          if (slotOf(def)) {
-            const blocked = equipBlock(run, CONTENT, i);
-            actions.push({ label: def.category === "armor" ? "입기" : "들기", disabled: locked || !!blocked, onPress: () => send({ type: "equip", slotIndex: i }) });
+          // 한 손 무기는 오른손이 차 있으면 왼손으로, 두 손이 다 차 있으면 어느 손인지 묻는다
+          const auto = autoEquipSlot(run, CONTENT, def);
+          const blocked = auto && auto !== "ask" ? equipBlock(run, CONTENT, i, auto) : null;
+          if (auto) {
+            actions.push({
+              label: "장착",
+              disabled: locked || !!blocked,
+              onPress: () => (auto === "ask" ? setHandFor(i) : send({ type: "equip", slotIndex: i, to: auto })),
+            });
           }
           if (canUseItem(run, CONTENT, def.id, false)) {
             actions.push({ label: "쓰기", disabled: locked, onPress: () => send({ type: "useItem", itemId: def.id }) });
           }
           if (def.category !== "quest") actions.push(discardAction(i, stack.itemId, locked));
           const dur = durabilityText(def, stack);
-          const blocked = slotOf(def) ? equipBlock(run, CONTENT, i) : null;
           return (
             <ItemRow
               key={i}
@@ -84,6 +92,7 @@ export default function InventoryScreen() {
       </View>
 
       {picking && <SlotDialog run={run} slot={picking} locked={locked} onClose={() => setPicking(null)} />}
+      {handFor !== null && <HandDialog run={run} slotIndex={handFor} onClose={() => setHandFor(null)} />}
     </ScrollView>
   );
 }
@@ -189,6 +198,39 @@ function SlotDialog({ run, slot, locked, onClose }: { run: RunState; slot: Equip
           </PickGrid>
         </View>
       )}
+    </DialogFrame>
+  );
+}
+
+/** 두 손이 다 찬 채로 한 손 무기를 장착할 때: 오른손·왼손 중 고르면 그 손에 든 것은 가방으로 */
+function HandDialog({ run, slotIndex, onClose }: { run: RunState; slotIndex: number; onClose: () => void }) {
+  const send = useGame((s) => s.send);
+  const stack = run.inventory.slots[slotIndex];
+  const def = stack ? CONTENT.items[stack.itemId] : undefined;
+  if (!def) return null;
+  const hand = (slot: EquipSlot) => {
+    const held = run.inventory.equipment[slot];
+    const heldDef = held ? CONTENT.items[held.itemId] : undefined;
+    const blocked = equipBlock(run, CONTENT, slotIndex, slot);
+    return (
+      <PickCell
+        key={slot}
+        wide
+        label={EQUIP_SLOT_LABEL[slot]}
+        sub={heldDef ? `${josa(heldDef.name, "과/와")} 교체` : "비어 있음"}
+        reason={blocked ?? undefined}
+        disabled={!!blocked}
+        onPress={() => {
+          send({ type: "equip", slotIndex, to: slot });
+          onClose();
+        }}
+      />
+    );
+  };
+  return (
+    <DialogFrame visible onClose={onClose} actions={<ActionButton center label="닫기" onPress={onClose} />}>
+      <DialogHead title={`${def.name} 장착`} subtitle="어느 손에 장착할까?" />
+      <PickGrid>{(["weapon", "offHand"] as const).map(hand)}</PickGrid>
     </DialogFrame>
   );
 }

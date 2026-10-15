@@ -147,10 +147,10 @@ function QtySlider({ value, max, onChange }: { value: number; max: number; onCha
         accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
         onAccessibilityAction={(e) => onChange(Math.min(max, Math.max(1, value + (e.nativeEvent.actionName === "increment" ? 1 : -1))))}
       >
-        <View pointerEvents="none" style={styles.track}>
+        <View style={[{ pointerEvents: "none" }, styles.track]}>
           <View style={[styles.trackFill, held && styles.trackFillHeld, { width: `${frac * 100}%` }]} />
         </View>
-        <View pointerEvents="none" style={[styles.thumb, held && styles.thumbHeld, { left: `${frac * 100}%`, marginLeft: -THUMB * frac }]} />
+        <View style={[{ pointerEvents: "none" }, styles.thumb, held && styles.thumbHeld, { left: `${frac * 100}%`, marginLeft: -THUMB * frac }]} />
       </View>
       <Text style={styles.sliderEnd}>{max}</Text>
     </View>
@@ -212,11 +212,6 @@ const styles = StyleSheet.create({
   thumbHeld: {
     borderWidth: 2,
     borderColor: colors.accent,
-    shadowColor: colors.accent,
-    shadowOpacity: 0.9,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 6,
   },
   disabled: { opacity: 0.35 },
   pressed: { transform: [{ scale: motion.press }] },

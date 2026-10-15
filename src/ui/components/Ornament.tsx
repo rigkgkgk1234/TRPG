@@ -48,7 +48,7 @@ export function OrnamentCorner({ corner, shape = "knot", unit = 1, arm = 18, col
   const y = corner === "topLeft" || corner === "topRight" ? -24 : 24 - arm;
   const size = arm * unit;
   return (
-    <Svg pointerEvents="none" width={size} height={size} viewBox={`${x} ${y} ${arm} ${arm}`} style={style}>
+    <Svg width={size} height={size} viewBox={`${x} ${y} ${arm} ${arm}`} style={[{ pointerEvents: "none" }, style]}>
       <Path d={FRAMES[shape].path} fill={color} />
     </Svg>
   );
@@ -58,7 +58,7 @@ export function OrnamentCorner({ corner, shape = "knot", unit = 1, arm = 18, col
 export function OrnamentRule({ unit = 0.75, color = colors.borderStrong, style }: { unit?: number; color?: string; style?: StyleProp<ViewStyle> }) {
   const line = { height: 2 * unit, backgroundColor: color };
   return (
-    <View pointerEvents="none" style={[{ gap: 2 * unit, paddingVertical: 1 }, style]}>
+    <View style={[{ pointerEvents: "none" }, { gap: 2 * unit, paddingVertical: 1 }, style]}>
       <View style={line} />
       <View style={line} />
     </View>
@@ -78,7 +78,7 @@ export function OrnamentFrame({ shape = "knot", unit = 0.75, arm = 16, color = c
   const n = f.notch * unit;
   const corner = (c: Corner, pos: ViewStyle) => <OrnamentCorner corner={c} shape={shape} unit={unit} arm={arm} color={color} style={[styles.abs, pos]} />;
   return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { margin: -inset }]}>
+    <View style={[{ pointerEvents: "none" }, StyleSheet.absoluteFill, { margin: -inset }]}>
       {/* 모서리 홈 바깥은 칠하지 않게 가운데 띠와 좌우 띠 셋으로 나눠 칠한다 (겹치지 않아 반투명 색도 고르다) */}
       {fill && (
         <>
@@ -103,7 +103,7 @@ export function OrnamentFrame({ shape = "knot", unit = 0.75, arm = 16, color = c
 export function KnotRule({ end = "knot", unit = 0.75, color = colors.borderStrong, flip = false, style }: { end?: RuleEnd; unit?: number; color?: string; flip?: boolean; style?: StyleProp<ViewStyle> }) {
   // 늘어나는 두 줄도 끝 장식과 같은 SVG로 그려야 이어지는 곳의 굵기·밝기가 같다
   return (
-    <View pointerEvents="none" style={[styles.knotRule, flip && styles.reverse, style]}>
+    <View style={[{ pointerEvents: "none" }, styles.knotRule, flip && styles.reverse, style]}>
       <Svg height={18 * unit} style={styles.grow}>
         <Rect x="0" y={6 * unit} width="100%" height={2 * unit} fill={color} />
         <Rect x="0" y={10 * unit} width="100%" height={2 * unit} fill={color} />
@@ -129,7 +129,7 @@ export function OrnamentTitle({ children, end, unit, color, style }: { children:
 /** 가운데 작은 매듭이 있는 가는 선 */
 export function KnotDivider({ unit = 1, color = colors.borderFaint, style }: { unit?: number; color?: string; style?: StyleProp<ViewStyle> }) {
   return (
-    <View pointerEvents="none" style={[styles.knotRow, style]}>
+    <View style={[{ pointerEvents: "none" }, styles.knotRow, style]}>
       <View style={[styles.line, { backgroundColor: color }]} />
       <Svg width={6 * unit} height={6 * unit} viewBox="0 0 6 6">
         <Path d={KNOT_PATH} fill={color} fillRule="evenodd" />

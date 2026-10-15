@@ -589,7 +589,11 @@ function defeat(ctx: Ctx, c: CombatState): SceneId | "END" | null {
     return c.setup.onDefeat ?? "END";
   }
   if (roll !== 1 && total >= DEATH_SAVE_DC) {
-    ctx.feed.push({ kind: "text", text: "지나가던 마을 사람이 쓰러진 것을 발견해 집까지 업어다 주었다." });
+    // 마을 가까운 개암나무 숲과 마을 안에서는 마을 사람이, 먼 탐험지에서는 지나가던 모험가가 찾아 준다
+    const region = s.activeEvent?.explore?.region;
+    ctx.feed.push({ kind: "text", text: region && region !== "forest"
+      ? "지나가던 모험가가 쓰러진 것을 발견해 마을까지 데려다 주었다."
+      : "지나가던 마을 사람이 쓰러진 것을 발견해 집까지 업어다 주었다." });
     changeHp(ctx, 1 - s.player.hp);
     if (WOUND_ORDER.indexOf(s.player.wound.level) < WOUND_ORDER.indexOf("serious")) setWound(ctx, "serious");
     changeSilver(ctx, -Math.floor(s.resources.silver * RESCUED_SILVER_LOSS));

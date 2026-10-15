@@ -54,6 +54,20 @@ export const BROKEN_WEAPON_PENALTY = 2;
  * @param to 넣을 칸 (생략하면 기본 칸)
  * @returns 거절 사유, 성공이면 null
  */
+/**
+ * 가방에서 "장착"을 눌렀을 때 들어갈 칸. 한 손 무기는 오른손이 비었으면 오른손, 오른손에 한 손 무기가 있고 왼손이 비었으면 왼손.
+ * 오른손에 한 손 무기, 왼손에도 무언가 들고 있으면 어느 손인지 물어야 한다("ask"). 그 밖에는 그 물건의 첫 칸.
+ */
+export function autoEquipSlot(run: RunState, content: Pick<ContentDB, "items">, def: ItemDef | undefined): EquipSlot | "ask" | null {
+  const slots = slotsFor(def);
+  if (slots.length === 0) return null;
+  if (!slots.includes("offHand") || !slots.includes("weapon")) return slots[0];
+  const eq = run.inventory.equipment;
+  const main = eq.weapon ? content.items[eq.weapon.itemId] : undefined;
+  if (!main || main.category !== "weapon" || main.twoHanded) return "weapon";
+  return eq.offHand ? "ask" : "offHand";
+}
+
 export function equipBlock(run: RunState, content: Pick<ContentDB, "items">, slotIndex: number, to?: EquipSlot): string | null {
   const stack = run.inventory.slots[slotIndex];
   const def = stack ? content.items[stack.itemId] : undefined;

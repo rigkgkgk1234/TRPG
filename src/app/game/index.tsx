@@ -18,6 +18,7 @@ import { EventPanel } from "@/ui/views/EventView";
 import { EveningPanel } from "@/ui/views/EveningView";
 import { HubPanel } from "@/ui/views/HubView";
 import { PickIntro, PickPanel, type PickStep } from "@/ui/views/PickPanel";
+import { ScenarioEndPanel } from "@/ui/views/ScenarioEndPanel";
 
 /**
  * 게임 본 화면: 상태 바 / 결과 기록 / 아래 패널. 허브·이벤트·전투·저녁·엔딩은 라우터 이동 없이 상태에서 고른다. (ARCHITECTURE 3-3)
@@ -28,6 +29,7 @@ export default function GameScreen() {
   const shown = useShownRun();
   const busy = useGame((s) => s.playing !== null);
   const notice = useGame((s) => s.notice);
+  const scenario = useGame((s) => s.scenario);
   const shake = useHurtShake();
   /** 훈련·교습·탐험·마을을 누르면 아래 패널 자리에 펼치는 고르기 단계. 그때의 날·때·뷰를 같이 적어 두고, 바뀌면 버린다 */
   const [pick, setPick] = useState<{ step: PickStep; at: string } | null>(null);
@@ -43,13 +45,15 @@ export default function GameScreen() {
       {view === "ending" ? <EndingHeader run={shown} /> : <RunStatusBar run={shown} />}
       <TurnLog
         compact={view === "combat"}
-        intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : introFor(run)}
+        intro={notice ? { title: "마지막 저장으로 돌아왔다", body: notice } : scenario ? SCENARIO_INTRO : introFor(run)}
         cover={step ? { key: JSON.stringify(step), node: <PickIntro run={shown} step={step} /> } : undefined}
       />
       {/* 이벤트 패널과 고르기 패널은 글이 길면 줄어들어 스크롤한다. 전투 패널은 높이를 고정하고 결과 카드가 나머지를 쓴다 (나머지 패널은 내용 높이 그대로) */}
       {/* 연출 중에는 누를 수 없게. 전투 칸은 맞는 효과가 보여야 하므로 흐리게 하지 않는다 */}
       <View style={[(view === "event" || view === "combat" || view === "overflow" || step) && styles.shrink, busy && (view === "combat" ? styles.locked : styles.busy)]}>
-        {step ? <PickPanel run={shown} step={step} onStep={onPick} /> : <Panel view={view} run={shown} onPick={onPick} />}
+        {/* 상황 시험은 고른 상황이 끝나면(연출이 끝난 뒤) 이어 가지 않고 시험 끝 패널로 멈춘다 */}
+        {scenario?.done && !busy ? <ScenarioEndPanel />
+          : step ? <PickPanel run={shown} step={step} onStep={onPick} /> : <Panel view={view} run={shown} onPick={onPick} />}
       </View>
     </Animated.View>
   );
@@ -92,6 +96,8 @@ function useHurtShake(): Animated.Value {
 }
 
 /** 기록이 없을 때 위쪽에 보여 줄 글: 첫날 아침이면 시작 안내, 이어서 들어왔으면 어디서 멈췄는지 */
+const SCENARIO_INTRO = { title: "상황 시험", body: "여기서 한 일은 저장되지 않는다. 고른 상황이 끝나면 시험도 끝난다." };
+
 function introFor(run: RunState): { title: string; body: string } {
   if (run.time.day === 1 && run.time.phase === "am") {
     return {

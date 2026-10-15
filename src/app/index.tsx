@@ -1,4 +1,5 @@
-import type { Href } from "expo-router";
+import { useFocusEffect, type Href } from "expo-router";
+import { useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGame } from "@/store/gameStore";
@@ -7,14 +8,19 @@ import { colors, motion, radius, space, TOUCH_MIN, type } from "@/ui/theme";
 import { pushOnce } from "@/ui/navigate";
 import { Text } from "@/ui/Text";
 
+const SHOW_DICE_TEST = false;
+
 /** 타이틀. 저장을 다 읽은 뒤에 버튼을 보여 준다 (읽기 전에 "새 게임"만 잠깐 보이지 않게). 설정은 8주차. */
 export default function TitleScreen() {
   const insets = useSafeAreaInsets();
   const hydrated = useGame((s) => s.hydrated);
-  const resume = useGame((s) => (s.run && !s.run.ending ? `${s.run.player.name}, ${s.run.time.day}일차` : null));
+  const resume = useGame((s) => (s.run && !s.run.ending && !s.scenario ? `${s.run.player.name}, ${s.run.time.day}일차` : null));
   const notice = useGame((s) => s.notice);
   const dismissNotice = useGame((s) => s.dismissNotice);
   const canResume = resume !== null;
+  // 상황 시험을 하다 돌아오면 그 시험은 버리고 저장된 원래 회차를 다시 불러온다
+  const exitScenario = useGame((s) => s.exitScenario);
+  useFocusEffect(useCallback(() => exitScenario(), [exitScenario]));
   return (
     <View style={[styles.root, { paddingTop: insets.top + space.xxl, paddingBottom: insets.bottom + space.xl }]}>
       <View style={styles.titleBox}>
@@ -29,9 +35,17 @@ export default function TitleScreen() {
         {canResume && <TitleButton href="/game" label="이어하기" sub={resume} primary />}
         <TitleButton href="/new-game" label="새 게임" primary={!canResume} />
         <TitleButton href="/records" label="기록" />
-        <Pressable onPress={() => pushOnce("/dev/dice")} accessibilityRole="link" style={styles.devLink} hitSlop={8}>
-          <Text style={styles.devText}>판정 테스트 (개발용)</Text>
-        </Pressable>
+        {/* 판정 테스트 화면(dev/dice)은 남겨 두고 링크만 숨긴다 */}
+        {SHOW_DICE_TEST && (
+          <Pressable onPress={() => pushOnce("/dev/dice")} accessibilityRole="link" style={styles.devLink} hitSlop={8}>
+            <Text style={styles.devText}>판정 테스트 (개발용)</Text>
+          </Pressable>
+        )}
+        {__DEV__ && (
+          <Pressable onPress={() => pushOnce("/dev/scenario")} accessibilityRole="link" style={styles.devLink} hitSlop={8}>
+            <Text style={styles.devText}>상황 시험 (개발용)</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

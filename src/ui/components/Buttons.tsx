@@ -120,11 +120,11 @@ function Lines({ top, left }: { top?: boolean; left?: boolean }) {
   if (!top) return null;
   return left ? (
     <>
-      <View pointerEvents="none" style={[styles.tickH, { left: 0 }]} />
-      <View pointerEvents="none" style={[styles.tickCross, { left: 0 }]} />
+      <View style={[{ pointerEvents: "none" }, styles.tickH, { left: 0 }]} />
+      <View style={[{ pointerEvents: "none" }, styles.tickCross, { left: 0 }]} />
     </>
   ) : (
-    <View pointerEvents="none" style={[styles.tickH, { right: 0 }]} />
+    <View style={[{ pointerEvents: "none" }, styles.tickH, { right: 0 }]} />
   );
 }
 
@@ -149,6 +149,7 @@ const GLOW_OPACITY = 0.2;
 
 /** 그림 가장자리에서 가운데까지 거리(m) 위의 그라디언트 멈춤점 [비율, 불투명도] */
 function glowStops(m: number): [number, number][] {
+  if (!(m > 0)) return [[0, 0], [1, 0]];
   const at = Math.min(GLOW_BEYOND + GLOW_AT, m / 2);
   const out = Math.max(0, at - GLOW_OUT);
   // 직선으로 올리면 시작과 끝에서 밝기가 꺾여 줄이 보이므로 S자 곡선(smoothstep)을 여러 점으로 나눠 그린다
@@ -179,10 +180,12 @@ function EdgeGlow() {
     const { width: w, height: h } = e.nativeEvent.layout;
     if (!size || size.w !== w || size.h !== h) setSize({ w, h });
   };
-  const sides = size ? glowSides(size.w, size.h) : [];
+  // 숨겨진 칸처럼 크기가 0이면 그리지 않는다 (그라디언트 멈춤점을 0으로 나누게 된다)
+  const drawable = size !== null && size.w > 0 && size.h > 0;
+  const sides = drawable ? glowSides(size.w, size.h) : [];
   return (
-    <View pointerEvents="none" style={styles.glow} onLayout={onLayout}>
-      {size && (
+    <View style={[{ pointerEvents: "none" }, styles.glow]} onLayout={onLayout}>
+      {drawable && (
         <Svg width={size.w} height={size.h}>
           <Defs>
             {sides.map((sd) => (
@@ -194,7 +197,7 @@ function EdgeGlow() {
           {sides.map((sd) => <Polygon key={sd.key} points={sd.points} fill={`url(#${id}${sd.key})`} />)}
         </Svg>
       )}
-      {size && <Image source={NOISE} resizeMode="repeat" style={StyleSheet.absoluteFill} />}
+      {drawable && <Image source={NOISE} resizeMode="repeat" style={StyleSheet.absoluteFill} />}
     </View>
   );
 }
@@ -223,7 +226,7 @@ export function ButtonStack({ children, divided }: { children: ReactNode; divide
         <View key={i} style={styles.stackItem}>
           {child}
           {/* 선은 눌린 버튼의 폭만큼만: 양쪽 LINE_CLEAR 안쪽을 눌림 비율(motion.press)로 한 번 더 줄인다 */}
-          {divided && i > 0 ? <View pointerEvents="none" style={styles.divider} /> : null}
+          {divided && i > 0 ? <View style={[{ pointerEvents: "none" }, styles.divider]} /> : null}
         </View>
       ))}
     </View>
